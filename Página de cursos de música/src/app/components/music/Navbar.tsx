@@ -69,7 +69,7 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
         borderBottom: scrolled ? `1px solid ${BORDER}` : "1px solid transparent",
         transition: "background 0.3s ease, border-color 0.3s ease",
       }}>
-        <div style={{
+        <div className="gmusic-header-bar" style={{
           width: "100%", height: "100%", padding: "0 48px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           maxWidth: 1440, margin: "0 auto", boxSizing: "border-box",
@@ -111,6 +111,7 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
             {loggedIn ? (
               /* Usuario logueado */
               <button
+                className="gmusic-profile-trigger"
                 onClick={() => setProfileOpen(!profileOpen)}
                 style={{
                   display: "flex", alignItems: "center", gap: 10,
@@ -120,7 +121,6 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
                   cursor: "pointer", transition: "all 0.15s",
                 }}
               >
-                {/* Avatar */}
                 <div style={{
                   width: 26, height: 26, borderRadius: 2,
                   background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.25)",
@@ -128,7 +128,7 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
                 }}>
                   <span style={{ fontSize: 10, color: GM_GOLD, fontFamily: "Inter,sans-serif", fontWeight: 700 }}>{initials}</span>
                 </div>
-                <div style={{ textAlign: "left" }}>
+                <div className="gmusic-profile-trigger-text" style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 12, color: WHITE_WARM, fontFamily: "Inter,sans-serif", fontWeight: 500, lineHeight: 1.2 }}>
                     {MOCK_USER.name}
                   </div>
@@ -137,6 +137,7 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
                   </div>
                 </div>
                 <svg
+                  className="gmusic-profile-trigger-chevron"
                   width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2"
                   style={{ transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
                 >
@@ -203,75 +204,51 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
               style={{ position: "fixed", inset: 0, zIndex: 997 }}
             />
             <motion.div
+              className="gmusic-profile-dropdown"
               initial={{ opacity: 0, y: -8, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.97 }}
               transition={{ duration: 0.2 }}
               style={{
                 position: "fixed", top: 80, right: 48, zIndex: 998,
-                width: 300,
-                background: "rgba(17,17,17,0.97)", backdropFilter: "blur(20px)",
-                border: `1px solid rgba(201,168,76,0.2)`,
+                width: 280,
+                background: "rgba(18, 18, 18, 0.98)", backdropFilter: "blur(20px)",
+                border: "1px solid rgba(201,168,76,0.22)",
                 borderRadius: 4,
-                boxShadow: "0 24px 48px rgba(0,0,0,0.7)",
+                boxShadow: "0 16px 40px rgba(0,0,0,0.65)",
               }}
             >
-              {/* Header del panel */}
-              <div style={{ padding: "18px 20px 14px", borderBottom: `1px solid ${BORDER}` }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ padding: "14px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{
-                    width: 40, height: 40, borderRadius: 3,
+                    width: 36, height: 36, borderRadius: 3,
                     background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                   }}>
-                    <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 15, color: GM_GOLD }}>{initials}</span>
+                    <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, color: GM_GOLD }}>{initials}</span>
                   </div>
-                  <div>
-                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 16, color: WHITE_WARM, fontWeight: 400 }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 15, color: WHITE_WARM, fontWeight: 400, lineHeight: 1.25 }}>
                       Bienvenido, {MOCK_USER.name}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(201,168,76,0.6)", fontFamily: "Inter,sans-serif", letterSpacing: "1px", textTransform: "uppercase", marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: "rgba(201,168,76,0.65)", fontFamily: "Inter,sans-serif", letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 3 }}>
                       {getUserLevelMonthLabel()}
                     </div>
                   </div>
                 </div>
+                <p style={{ margin: "10px 0 0", fontSize: 11, lineHeight: 1.45, color: "rgba(255,255,255,0.35)", fontFamily: "Inter,sans-serif" }}>
+                  Entra a tu estudio y retoma tu camino.
+                </p>
               </div>
 
-              {/* Stats compactas */}
-              <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                {[
-                  { icon: "🔥", value: MOCK_USER.streakDays, label: "racha" },
-                  { icon: "⚡", value: `${MOCK_USER.xp.toLocaleString()}`, label: "XP" },
-                  { icon: "✓", value: `${MOCK_USER.weeklyDone}/${MOCK_USER.weeklyTotal}`, label: "semana" },
-                ].map(stat => (
-                  <div key={stat.label} style={{ textAlign: "center", padding: "8px 4px", background: "rgba(255,255,255,0.02)", borderRadius: 2, border: `1px solid ${BORDER}` }}>
-                    <div style={{ fontSize: 14, marginBottom: 2 }}>{stat.icon}</div>
-                    <div style={{ fontFamily: "'Playfair Display',serif", fontSize: 14, color: GM_GOLD }}>{stat.value}</div>
-                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", fontFamily: "Inter,sans-serif", letterSpacing: "0.5px", textTransform: "uppercase" }}>{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Progreso semanal */}
-              <div style={{ padding: "12px 20px", borderBottom: `1px solid ${BORDER}` }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter,sans-serif" }}>Progreso semanal</span>
-                  <span style={{ fontSize: 11, color: GM_GOLD, fontFamily: "Inter,sans-serif", fontWeight: 600 }}>{MOCK_USER.weeklyDone}/{MOCK_USER.weeklyTotal}</span>
-                </div>
-                <div style={{ height: 4, background: "rgba(255,255,255,0.05)", borderRadius: 2, overflow: "hidden" }}>
-                  <div style={{ width: `${(MOCK_USER.weeklyDone / MOCK_USER.weeklyTotal) * 100}%`, height: "100%", background: GM_GOLD, borderRadius: 2, transition: "width 0.5s" }} />
-                </div>
-              </div>
-
-              {/* Acciones */}
-              <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
                 <button
                   onClick={() => { setProfileOpen(false); setPage && setPage("mi-estudio"); }}
                   style={{
-                    width: "100%", height: 38, borderRadius: 2,
-                    background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)",
-                    color: GM_GOLD, fontSize: 12, fontFamily: "Inter,sans-serif", fontWeight: 600,
-                    cursor: "pointer", letterSpacing: "0.5px",
+                    width: "100%", height: 40, borderRadius: 2,
+                    background: GM_GOLD, border: "none",
+                    color: "#0A0A0A", fontSize: 12, fontFamily: "Inter,sans-serif", fontWeight: 600,
+                    cursor: "pointer", letterSpacing: "0.02em",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
                   }}
                 >
@@ -281,23 +258,23 @@ export function Navbar({ currentPage, setPage, loggedIn = true }: NavbarProps) {
                 <button
                   onClick={() => { setProfileOpen(false); setPage && setPage("mi-camino"); }}
                   style={{
-                    width: "100%", height: 36, borderRadius: 2,
-                    background: "rgba(255,255,255,0.02)", border: `1px solid ${BORDER}`,
-                    color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "Inter,sans-serif",
-                    cursor: "pointer", letterSpacing: "0.5px",
+                    width: "100%", height: 34, borderRadius: 2,
+                    background: "transparent", border: `1px solid ${BORDER}`,
+                    color: "rgba(255,255,255,0.55)", fontSize: 11, fontFamily: "Inter,sans-serif", fontWeight: 500,
+                    cursor: "pointer", letterSpacing: "0.02em",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
                   }}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 3l14 9-14 9V3z" /></svg>
-                  Continuar curso
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 11l19-9-9 19-2-8-8-2z" /></svg>
+                  Continuar mi Camino
                 </button>
                 <button
                   onClick={() => setProfileOpen(false)}
                   style={{
-                    width: "100%", height: 32, borderRadius: 2,
+                    width: "100%", height: 28, borderRadius: 2,
                     background: "none", border: "none",
-                    color: "rgba(255,255,255,0.2)", fontSize: 11, fontFamily: "Inter,sans-serif",
-                    cursor: "pointer",
+                    color: "rgba(255,255,255,0.28)", fontSize: 10, fontFamily: "Inter,sans-serif",
+                    cursor: "pointer", letterSpacing: "0.04em", textTransform: "uppercase",
                   }}
                 >
                   Cerrar sesión

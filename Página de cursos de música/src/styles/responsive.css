@@ -5,10 +5,30 @@
 
 /* Tablet — 768px */
 @media (max-width: 768px) {
-  /* Navbar */
+  /* Navbar — nav oculto; perfil visible como puente a app interna */
   .gmusic-nav { display: none !important; }
-  .gmusic-ctas { display: none !important; }
   .gmusic-hamburger { display: flex !important; }
+
+  .gmusic-profile-trigger {
+    padding: 0 8px !important;
+    height: 36px !important;
+    gap: 0 !important;
+  }
+  .gmusic-profile-trigger-text,
+  .gmusic-profile-trigger-chevron {
+    display: none !important;
+  }
+
+  .gmusic-profile-dropdown {
+    top: 76px !important;
+    right: 16px !important;
+    left: auto !important;
+    width: min(280px, calc(100vw - 32px)) !important;
+  }
+
+  .gmusic-header-bar {
+    padding: 0 16px !important;
+  }
 
   /* Hero */
   .hero-buttons {
