@@ -1,9 +1,19 @@
 # Gmusic Learning Engine — API Contract (MVP)
 
 Contrato REST v1 para el motor de aprendizaje.  
-**Estado:** especificación; backend aún **sin base real conectada**. Los mocks deben respetar este contrato.
+**Estado:** Fase 3A — backend Express con PostgreSQL real para endpoints de **solo lectura** (`health`, `me/dashboard`, `me/path`). Sesiones y apoderados pendientes.
 
 Referencias: `learning-engine.md`, `database-schema.md`, `backend-provider-options.md`.
+
+---
+
+## Autenticación (desarrollo — Fase 3A)
+
+| Variable | Default | Uso |
+|----------|---------|-----|
+| `GMUSIC_DEV_USER_EMAIL` | `carlos@gmusic.academy` | Resuelve al alumno `STUDENT` sin JWT |
+
+**Solo desarrollo local.** Reemplazar por `Authorization: Bearer <token>` antes de staging/producción.
 
 ---
 
@@ -101,7 +111,7 @@ Camino pedagógico para **Mi Camino**. Módulos y nodos con estado calculado en 
 
 | Param | Tipo | Descripción |
 |-------|------|-------------|
-| `courseSlug` | string | Default: `guitarra-fundamento` |
+| `courseSlug` | string | Default: `ruta-guitarra-12-meses` |
 
 **Response 200**
 
@@ -207,8 +217,7 @@ Inicia una sesión de práctica en un nodo. Crea `LessonSession` con `status: ST
           { "id": "b", "text": "5a cuerda (La)" },
           { "id": "c", "text": "6a cuerda (Mi grave)" },
           { "id": "d", "text": "4a cuerda (Re)" }
-        ],
-        "explanationAfterAnswer": "La 6a cuerda es la más gruesa y produce Mi grave."
+        ]
       }
     }
   ]
@@ -217,7 +226,7 @@ Inicia una sesión de práctica en un nodo. Crea `LessonSession` con `status: ST
 
 **Reglas**
 
-- No incluir `secureAnswer` ni `correctOptionId` en la respuesta.
+- No incluir `secureAnswer`, `correctOptionId` ni explicaciones post-respuesta en payloads previos a responder.
 - El nodo debe estar `available` o `active` para el alumno.
 - Una sesión `STARTED` previa en el mismo nodo puede reutilizarse o rechazarse — implementación TBD; MVP mock: siempre crear nueva.
 
@@ -429,13 +438,7 @@ Reporte de actividad de un alumno. **Requiere** `GuardianLink` entre apoderado y
 
 ## Implementación mock (sin DB)
 
-Hasta conectar PostgreSQL, el backend puede:
-
-1. Servir fixtures JSON estáticos que cumplan este contrato.
-2. Usar handlers in-memory con IDs fijos alineados a seeds futuros.
-3. Simular idempotencia en `complete` guardando sesiones en `Map<sessionId, result>`.
-
-**No cambiar** shapes de respuesta al conectar Prisma; solo la fuente de datos.
+**Obsoleto para Fase 3A+.** Los endpoints `GET /me/dashboard` y `GET /me/path` leen PostgreSQL vía Prisma. Los POST de sesión pueden seguir en fixture hasta Fase 3B.
 
 ---
 
