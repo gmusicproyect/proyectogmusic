@@ -9,6 +9,8 @@ build/
 
 # Local/system files
 .DS_Store
+.env
+.env.local
 
 # Accidental duplicate repo/folder
 paginawebgmusic/

@@ -1,9 +1,46 @@
 # Backend Provider Options — Gmusic MVP
 
 Comparación breve para elegir dónde hospedar **PostgreSQL** del motor de aprendizaje.  
-Contexto: Prisma + Node.js + REST. **Fase actual:** documentación y schema; aún **sin conexión a base real**.
+Contexto: Prisma 6 + Node.js + REST. **Fase actual:** schema, contrato API e **infra local** (`docker-compose.yml`); aún **sin migraciones ni `.env` real commiteado**.
 
 Referencias: `learning-engine.md`, `database-schema.md`, skill `gmusic-learning-engine`.
+
+---
+
+## Infra local (implementada)
+
+| Artefacto | Propósito |
+|-----------|-----------|
+| `docker-compose.yml` | Postgres 15 Alpine en `localhost:5432` |
+| `.env.example` | Plantilla de `DATABASE_URL` — **no commitear `.env` real** |
+| `prisma/schema.prisma` | Schema de referencia (validar sin DB levantada) |
+
+### Levantar Postgres local
+
+```bash
+docker compose up -d
+docker compose ps   # health: healthy
+```
+
+Contenedor: `gmusic_postgres_local` · DB: `gmusic_learning_db` · usuario: `gmusic_admin`.
+
+Copiar entorno:
+
+```bash
+cp .env.example .env
+```
+
+### Validar schema sin base real
+
+Prisma **6** por ahora (no migrar a Prisma 7 hasta adaptar `prisma.config.ts`):
+
+```bash
+DATABASE_URL='postgresql://user:pass@localhost:5432/gmusic' npx prisma@6 validate --schema prisma/schema.prisma
+```
+
+### Staging / producción MVP
+
+**Supabase** como Postgres gestionado + **Auth** (cuando toque conectar cloud). El backend Node/Prisma sigue siendo la API del motor de aprendizaje; usar Supabase principalmente como host Postgres y auth de usuarios, no como reemplazo del learning engine REST.
 
 ---
 
@@ -34,7 +71,7 @@ Referencias: `learning-engine.md`, `database-schema.md`, skill `gmusic-learning-
 | Dashboard SQL, backups, branches (plan pago) | Vendor coupling si se usa Auth/Storage como core |
 | Buena DX para equipos pequeños | Latencia depende de región elegida al crear proyecto |
 
-**Encaje Gmusic:** Bueno si quieres **solo la base** y mantener el backend Node/Prisma separado. Usar Supabase como **host Postgres**, no como backend principal.
+**Encaje Gmusic:** Bueno si quieres **solo la base** y mantener el backend Node/Prisma separado. Usar Supabase como **host Postgres**, no como backend principal. **Elegido para staging/producción MVP** (Postgres gestionado + Auth); desarrollo local sigue en Docker.
 
 **DATABASE_URL ejemplo:** `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
 
@@ -87,7 +124,7 @@ Referencias: `learning-engine.md`, `database-schema.md`, skill `gmusic-learning-
 
 **Encaje Gmusic:** **Recomendado para fase 1** mientras no conectes producción. Permite validar schema, seeds y endpoints mock sin cuenta cloud.
 
-**DATABASE_URL ejemplo:** `postgresql://gmusic:gmusic@localhost:5432/gmusic_dev`
+**DATABASE_URL ejemplo (local, ver `.env.example`):** `postgresql://gmusic_admin:gmusic_secure_password@localhost:5432/gmusic_learning_db?schema=public`
 
 ---
 
@@ -110,10 +147,10 @@ Referencias: `learning-engine.md`, `database-schema.md`, skill `gmusic-learning-
 
 | Fase | Proveedor sugerido | Motivo |
 |------|-------------------|--------|
-| **Ahora** (schema, contrato API, mocks) | **Docker local** | Sin dependencias cloud; `DATABASE_URL` en `.env` local cuando toque migrar |
-| **Staging / primer deploy** | **Neon** o **Railway** | Neon si priorizas DB; Railway si despliegas API + DB juntos |
-| **Producción temprana** | **Neon** + API en Railway/Vercel | Separar compute y datos; Prisma en Node |
-| **Si más adelante necesitas Auth/Storage** | Evaluar **Supabase** solo para esos módulos | Mantener motor de aprendizaje en API propia |
+| **Ahora** (schema, contrato API, infra local) | **Docker local** | `docker-compose.yml` + `.env.example`; sin migraciones hasta prompt Codex |
+| **Staging / producción MVP** | **Supabase** | Postgres gestionado + Auth; API learning engine en Node/Prisma |
+| **Alternativa staging** | **Neon** o **Railway** | Neon si priorizas DB serverless; Railway si API + DB en un proyecto |
+| **Si más adelante necesitas Storage/Realtime** | Evaluar módulos Supabase adicionales | Mantener motor de aprendizaje en API propia |
 
 ---
 
@@ -134,13 +171,22 @@ npx prisma db seed
 
 ---
 
-## Variables de entorno (referencia futura)
+## Variables de entorno
+
+| Archivo | Commitear | Notas |
+|---------|-----------|-------|
+| `.env.example` | Sí | Plantilla sin secretos de producción |
+| `.env` | **No** | Copia local; incluye credenciales reales |
 
 ```env
-# Solo documentación — no commitear secretos
-DATABASE_URL=postgresql://...
-# Opcional según proveedor
-DIRECT_URL=postgresql://...   # Neon/Supabase: migraciones sin pooler
+# .env.example — desarrollo local (docker compose)
+DATABASE_URL="postgresql://gmusic_admin:gmusic_secure_password@localhost:5432/gmusic_learning_db?schema=public"
+
+# Supabase staging/prod MVP (cuando exista proyecto):
+# DATABASE_URL=postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres
+
+# Opcional en Supabase/Neon: migraciones sin pooler
+# DIRECT_URL=postgresql://...
 ```
 
 ---

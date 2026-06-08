@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: gmusic_postgres_local
+    environment:
+      POSTGRES_USER: gmusic_admin
+      POSTGRES_PASSWORD: gmusic_secure_password
+      POSTGRES_DB: gmusic_learning_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gmusic_admin -d gmusic_learning_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
