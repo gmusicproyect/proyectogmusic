@@ -46,3 +46,44 @@ export interface ApiErrorBody {
     message: string;
   };
 }
+
+export type PathNodeStatus = "locked" | "available" | "active" | "completed";
+export type PathContentKind = "video" | "audio_lab" | "reward";
+
+export interface PathBadgeResponse {
+  instrument: string;
+  month: string;
+  level: string;
+}
+
+export interface PathNodeResponse {
+  id: string;
+  title: string;
+  order: number;
+  status: PathNodeStatus;
+  duration: string;
+  contentKind: PathContentKind;
+}
+
+export interface PathModuleResponse {
+  id: string;
+  index: number;
+  title: string;
+  focus: string;
+  nodesCompleted: number;
+  nodesTotal: number;
+  nodes: PathNodeResponse[];
+}
+
+export interface PathCourseResponse {
+  id: string;
+  title: string;
+  slug: string;
+  badge: PathBadgeResponse;
+}
+
+export interface PathResponse {
+  course: PathCourseResponse;
+  modules: PathModuleResponse[];
+  activeNodeId: string | null;
+}

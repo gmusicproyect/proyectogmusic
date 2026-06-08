@@ -1,31 +1,17 @@
-export type NodeStatus = "completed" | "active" | "locked";
-export type NodeType = "video" | "audio_lab" | "reward";
-export type PathLane = "left" | "center" | "right";
+import type { PathModuleData } from "./gmusic-path-types";
+import { countPathProgress } from "./gmusic-path-types";
 
-export const NODE_TYPE_LABELS: Record<NodeType, string> = {
-  video: "Lección",
-  audio_lab: "Práctica guiada",
-  reward: "Material de estudio",
-};
+export type {
+  NodeStatus,
+  NodeType,
+  PathLane,
+  PathNodeData,
+  PathModuleData,
+  PathBadgeData,
+} from "./gmusic-path-types";
+export { NODE_TYPE_LABELS, countPathProgress } from "./gmusic-path-types";
 
-export interface PathNodeData {
-  id: string;
-  title: string;
-  type: NodeType;
-  status: NodeStatus;
-  lane: PathLane;
-  duration?: string;
-}
-
-export interface PathModuleData {
-  id: string;
-  index: number;
-  title: string;
-  focus: string;
-  nodes: PathNodeData[];
-}
-
-export const PATH_BADGE = {
+export const PATH_BADGE: PathBadgeData = {
   instrument: "Guitarra",
   month: "Mes 2",
   level: "Fundamento",
@@ -83,8 +69,17 @@ export const PATH_MODULES: PathModuleData[] = [
 
 export const ACTIVE_NODE_ID = "m3-n3";
 
-export function countPathProgress(modules: PathModuleData[]) {
-  const all = modules.flatMap((m) => m.nodes);
-  const completed = all.filter((n) => n.status === "completed").length;
-  return { completed, total: all.length };
+/** Enriquece nodos mock con datos de panel para desarrollo explícito. */
+export function getMockPathModules(): PathModuleData[] {
+  return PATH_MODULES.map((module) => ({
+    ...module,
+    nodes: module.nodes.map((node) => {
+      if (node.id !== ACTIVE_NODE_ID) return node;
+      return {
+        ...node,
+        typeLabel: ACTIVE_NODE_PANEL.typeLabel,
+        description: ACTIVE_NODE_PANEL.description,
+      };
+    }),
+  }));
 }

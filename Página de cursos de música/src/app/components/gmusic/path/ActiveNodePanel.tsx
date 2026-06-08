@@ -1,15 +1,25 @@
 import { Button } from "../../ui/button";
-import { ACTIVE_NODE_PANEL } from "../../../data/gmusic-path-data";
 import { GM_GOLD, GM_TEXT, GM_TEXT_SEC, GM_SURFACE, GM_BORDER } from "../tokens";
 
-interface ActiveNodePanelProps {
+export interface ActiveNodePanelProps {
   compact?: boolean;
+  eyebrow: string;
+  title: string;
+  typeLabel: string;
+  description: string;
   onStartLesson: () => void;
+  isLoading?: boolean;
 }
 
-export function ActiveNodePanel({ compact, onStartLesson }: ActiveNodePanelProps) {
-  const { title, typeLabel, description } = ACTIVE_NODE_PANEL;
-
+export function ActiveNodePanel({
+  compact,
+  eyebrow,
+  title,
+  typeLabel,
+  description,
+  onStartLesson,
+  isLoading = false,
+}: ActiveNodePanelProps) {
   return (
     <div
       className={`rounded-lg border p-5 md:p-6 ${compact ? "" : "lg:sticky lg:top-6"}`}
@@ -24,7 +34,7 @@ export function ActiveNodePanel({ compact, onStartLesson }: ActiveNodePanelProps
         className="text-[10px] font-medium tracking-[0.2em] uppercase mb-3"
         style={{ color: "rgba(212, 175, 55, 0.65)" }}
       >
-        Próxima práctica
+        {eyebrow}
       </p>
       <h2
         className={`font-medium mb-2 leading-snug ${compact ? "text-lg" : "text-xl"}`}
@@ -40,10 +50,11 @@ export function ActiveNodePanel({ compact, onStartLesson }: ActiveNodePanelProps
       </p>
       <Button
         onClick={onStartLesson}
-        className="w-full font-medium min-h-[44px] tracking-wide"
+        disabled={isLoading}
+        className="w-full font-medium min-h-[44px] tracking-wide disabled:opacity-55"
         style={{ background: GM_GOLD, color: "#0A0A0A" }}
       >
-        Iniciar lección
+        {isLoading ? "Cargando…" : "Iniciar lección"}
       </Button>
     </div>
   );

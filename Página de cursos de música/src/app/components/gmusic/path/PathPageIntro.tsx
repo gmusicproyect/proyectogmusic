@@ -1,17 +1,27 @@
 import { Guitar } from "lucide-react";
 import { GM_TEXT, GM_TEXT_SEC, GM_GOLD, GM_GOLD_MATT, GM_BORDER } from "../tokens";
-import { PATH_BADGE, countPathProgress, PATH_MODULES } from "../../../data/gmusic-path-data";
+import type { PathBadgeData } from "../../../data/gmusic-path-types";
 
-export function PathPageIntro() {
-  const { completed, total } = countPathProgress(PATH_MODULES);
+export interface PathPageIntroProps {
+  badge: PathBadgeData;
+  completedSteps: number;
+  totalSteps: number;
+  isLoading?: boolean;
+}
 
+export function PathPageIntro({
+  badge,
+  completedSteps,
+  totalSteps,
+  isLoading = false,
+}: PathPageIntroProps) {
   return (
     <div className="mb-6 lg:mb-10">
       <p
         className="text-[11px] font-medium tracking-[0.2em] uppercase mb-3"
         style={{ color: "rgba(212, 175, 55, 0.55)" }}
       >
-        Ruta de guitarra · {PATH_BADGE.level}
+        Ruta de guitarra · {badge.level}
       </p>
       <h1
         className="text-2xl md:text-4xl font-semibold mb-2 tracking-tight"
@@ -32,12 +42,12 @@ export function PathPageIntro() {
           }}
         >
           <Guitar className="w-3.5 h-3.5" style={{ color: GM_GOLD }} />
-          <span>{PATH_BADGE.instrument}</span>
+          <span>{badge.instrument}</span>
           <span style={{ color: GM_GOLD_MATT }}>·</span>
-          <span>{PATH_BADGE.month}</span>
+          <span>{badge.month}</span>
         </div>
         <span className="text-xs" style={{ color: "rgba(160,160,165,0.7)" }}>
-          {completed} de {total} pasos completados
+          {isLoading ? "Cargando progreso…" : `${completedSteps} de ${totalSteps} pasos completados`}
         </span>
       </div>
     </div>

@@ -1,28 +1,38 @@
 import { useEffect, useRef } from "react";
-import { PATH_MODULES, ACTIVE_NODE_ID, type PathNodeData } from "../../../data/gmusic-path-data";
+import type { PathModuleData, PathNodeData } from "../../../data/gmusic-path-types";
 import { PathModuleDivider } from "./PathModuleDivider";
 import { PathNode } from "./PathNode";
 import { PathConnector } from "./PathConnector";
 import { LevelingChallengeButton } from "./LevelingChallengeButton";
 
-interface SerpentinePathMapProps {
+export interface SerpentinePathMapProps {
+  modules: PathModuleData[];
+  activeNodeId: string | null;
+  selectedNodeId?: string | null;
   onLevelingChallenge: () => void;
   onNodeSelect?: (node: PathNodeData) => void;
 }
 
-export function SerpentinePathMap({ onLevelingChallenge, onNodeSelect }: SerpentinePathMapProps) {
+export function SerpentinePathMap({
+  modules,
+  activeNodeId,
+  selectedNodeId,
+  onLevelingChallenge,
+  onNodeSelect,
+}: SerpentinePathMapProps) {
   const activeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!activeNodeId) return;
     const t = setTimeout(() => {
       activeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 400);
     return () => clearTimeout(t);
-  }, []);
+  }, [activeNodeId, modules]);
 
   return (
     <div className="relative max-w-lg mx-auto px-1 sm:px-4 pb-8">
-      {PATH_MODULES.map((mod, modIdx) => {
+      {modules.map((mod, modIdx) => {
         const completedInModule = mod.nodes.filter((n) => n.status === "completed").length;
 
         return (
@@ -37,8 +47,8 @@ export function SerpentinePathMap({ onLevelingChallenge, onNodeSelect }: Serpent
             <div className="relative">
               {mod.nodes.map((node, i) => {
                 const next = mod.nodes[i + 1];
-                const lit = node.status === "completed" || node.status === "active";
-                const isActiveNode = node.id === ACTIVE_NODE_ID;
+                const isActiveNode = node.id === activeNodeId;
+                const isSelected = node.id === selectedNodeId;
 
                 return (
                   <div
@@ -47,13 +57,24 @@ export function SerpentinePathMap({ onLevelingChallenge, onNodeSelect }: Serpent
                     className="relative"
                     style={{ zIndex: 1 }}
                   >
-                    {next && <PathConnector from={node.lane} to={next.lane} lit={lit && node.status === "completed"} />}
-                    <PathNode node={node} stepIndex={i + 1} onSelect={onNodeSelect} />
+                    {next && (
+                      <PathConnector
+                        from={node.lane}
+                        to={next.lane}
+                        lit={node.status === "completed"}
+                      />
+                    )}
+                    <PathNode
+                      node={node}
+                      stepIndex={i + 1}
+                      isSelected={isSelected}
+                      onSelect={onNodeSelect}
+                    />
                   </div>
                 );
               })}
             </div>
-            {modIdx === PATH_MODULES.length - 1 && (
+            {modIdx === modules.length - 1 && (
               <LevelingChallengeButton onClick={onLevelingChallenge} />
             )}
           </div>

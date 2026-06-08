@@ -1,6 +1,6 @@
 import { Check, Lock, Guitar, BookOpen } from "lucide-react";
-import type { PathNodeData } from "../../../data/gmusic-path-data";
-import { NODE_TYPE_LABELS } from "../../../data/gmusic-path-data";
+import type { PathNodeData } from "../../../data/gmusic-path-types";
+import { NODE_TYPE_LABELS } from "../../../data/gmusic-path-types";
 import {
   GM_GOLD,
   GM_GOLD_GLOW,
@@ -14,6 +14,7 @@ import {
 interface PathNodeProps {
   node: PathNodeData;
   stepIndex: number;
+  isSelected?: boolean;
   onSelect?: (node: PathNodeData) => void;
 }
 
@@ -21,6 +22,7 @@ function NodeMarker({ node }: { node: PathNodeData }) {
   const { status, type } = node;
   const isLocked = status === "locked";
   const isActive = status === "active";
+  const isAvailable = status === "available";
   const isCompleted = status === "completed";
 
   if (isCompleted) {
@@ -56,7 +58,23 @@ function NodeMarker({ node }: { node: PathNodeData }) {
     );
   }
 
-  if (type === "reward") {
+  if (isAvailable) {
+    return (
+      <div
+        className="flex items-center justify-center rounded-md shrink-0"
+        style={{
+          width: 44,
+          height: 44,
+          background: GM_SURFACE,
+          border: `1px solid rgba(212, 175, 55, 0.35)`,
+        }}
+      >
+        <Guitar className="w-4 h-4" style={{ color: "rgba(212, 175, 55, 0.75)" }} />
+      </div>
+    );
+  }
+
+  if (isLocked && type === "reward") {
     return (
       <div
         className="flex items-center justify-center rounded-md shrink-0 opacity-40"
@@ -87,11 +105,13 @@ function NodeMarker({ node }: { node: PathNodeData }) {
   );
 }
 
-export function PathNode({ node, stepIndex, onSelect }: PathNodeProps) {
+export function PathNode({ node, stepIndex, isSelected = false, onSelect }: PathNodeProps) {
   const { status, lane, title, type, duration } = node;
   const isLocked = status === "locked";
   const isActive = status === "active";
+  const isAvailable = status === "available";
   const isCompleted = status === "completed";
+  const isSelectable = isActive || isAvailable;
   const typeLabel = NODE_TYPE_LABELS[type];
 
   const justify =
@@ -101,7 +121,7 @@ export function PathNode({ node, stepIndex, onSelect }: PathNodeProps) {
     lane === "left" ? "items-start text-left" : lane === "right" ? "items-end text-right" : "items-center text-center";
 
   const handleClick = () => {
-    if (!isLocked && onSelect) onSelect(node);
+    if (isSelectable && onSelect) onSelect(node);
   };
 
   const flexDirection =
@@ -125,18 +145,32 @@ export function PathNode({ node, stepIndex, onSelect }: PathNodeProps) {
         </span>
       )}
 
+      {isAvailable && !isActive && (
+        <span
+          className="mb-2 text-[10px] font-medium tracking-[0.2em] uppercase"
+          style={{ color: "rgba(212, 175, 55, 0.55)" }}
+        >
+          Paso desbloqueado
+        </span>
+      )}
+
       <button
         type="button"
         onClick={handleClick}
-        disabled={isLocked}
+        disabled={!isSelectable}
         className={`flex gap-3 max-w-[280px] transition-opacity ${cardAlign}`}
         style={{
           flexDirection,
-          cursor: isLocked ? "default" : "pointer",
+          cursor: isSelectable ? "pointer" : "default",
           opacity: isLocked ? 0.55 : 1,
           background: "none",
           border: "none",
+          borderRadius: 12,
           padding: 0,
+          boxShadow:
+            isSelected && isSelectable
+              ? "inset 0 0 0 1px rgba(212, 175, 55, 0.35)"
+              : "none",
           textAlign: lane === "right" ? "right" : lane === "left" ? "left" : "center",
         }}
       >
@@ -145,7 +179,9 @@ export function PathNode({ node, stepIndex, onSelect }: PathNodeProps) {
         <div className={`flex flex-col min-w-0 ${lane === "center" ? "items-center" : ""}`}>
           <span
             className="text-[10px] tracking-widest uppercase mb-0.5"
-            style={{ color: isActive ? GM_GOLD : "rgba(160,160,165,0.7)" }}
+            style={{
+              color: isActive || isAvailable ? GM_GOLD : "rgba(160,160,165,0.7)",
+            }}
           >
             {String(stepIndex).padStart(2, "0")} · {typeLabel}
             {duration ? ` · ${duration}` : ""}
@@ -153,7 +189,7 @@ export function PathNode({ node, stepIndex, onSelect }: PathNodeProps) {
           <span
             className="text-sm font-medium leading-snug"
             style={{
-              color: isActive ? GM_TEXT : isCompleted ? GM_TEXT_SEC : "#666",
+              color: isActive ? GM_TEXT : isAvailable ? GM_TEXT_SEC : isCompleted ? GM_TEXT_SEC : "#666",
             }}
           >
             {title}

@@ -11,3 +11,7 @@ export function getApiBaseUrl(): string {
 export function isDashboardMockEnabled(): boolean {
   return import.meta.env.VITE_USE_DASHBOARD_MOCK === "true";
 }
+
+export function isPathMockEnabled(): boolean {
+  return import.meta.env.VITE_USE_PATH_MOCK === "true";
+}
