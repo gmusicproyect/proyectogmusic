@@ -1,21 +1,37 @@
 import { useState } from "react";
-import { Guitar, Menu } from "lucide-react";
+import { Guitar, Menu, Lock } from "lucide-react";
 import { GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "./tokens";
 import { MOCK_USER, getUserPathLabel } from "../../data/mock-user";
 
 export type GmusicNavId = "estudio" | "camino" | "progreso" | "comunidad";
+export type GmusicLockedNavId = "progreso" | "comunidad";
+
+export const LOCKED_NAV_MODAL = {
+  title: "Disponible en el plan completo",
+  subtitle: "Esta sección se desbloquea con la suscripción activa.",
+  footer: "Continúa en tu camino actual mientras activas tu plan.",
+} as const;
+
+export function isLockedNav(id: string): id is GmusicLockedNavId {
+  return id === "progreso" || id === "comunidad";
+}
 
 interface GmusicInternalHeaderProps {
   activeNav: GmusicNavId;
   setPage: (page: string) => void;
-  onPlaceholder: (stage: string) => void;
+  onPlaceholder: (key: string) => void;
 }
 
-const NAV_ITEMS: { id: GmusicNavId; label: string; page?: string; placeholder?: string }[] = [
+const NAV_ITEMS: {
+  id: GmusicNavId;
+  label: string;
+  page?: string;
+  locked?: boolean;
+}[] = [
   { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
   { id: "camino", label: "Mi Camino", page: "mi-camino" },
-  { id: "progreso", label: "Mi Progreso", placeholder: "Etapa 03" },
-  { id: "comunidad", label: "Comunidad", placeholder: "Etapa 04" },
+  { id: "progreso", label: "Mi Progreso", locked: true },
+  { id: "comunidad", label: "Comunidad", locked: true },
 ];
 
 const HEADER_BORDER = "rgba(255, 255, 255, 0.08)";
@@ -25,61 +41,79 @@ export function GmusicInternalHeader({ activeNav, setPage, onPlaceholder }: Gmus
 
   const handleNav = (item: (typeof NAV_ITEMS)[number]) => {
     if (item.page) setPage(item.page);
-    else if (item.placeholder) onPlaceholder(item.placeholder);
+    else if (item.locked) onPlaceholder(item.id);
     setMobileMenuOpen(false);
   };
 
-  const navColor = (id: GmusicNavId) => (activeNav === id ? GM_GOLD : GM_TEXT_SEC);
+  const navColor = (item: (typeof NAV_ITEMS)[number]) => {
+    if (activeNav === item.id) return GM_GOLD;
+    if (item.locked) return "rgba(160,160,165,0.45)";
+    return GM_TEXT_SEC;
+  };
+
+  const NavLabel = ({ item }: { item: (typeof NAV_ITEMS)[number] }) => (
+    <span className="inline-flex items-center gap-1.5">
+      {item.label}
+      {item.locked && (
+        <Lock
+          className="w-3 h-3 shrink-0"
+          style={{ color: "rgba(160,160,165,0.4)", opacity: 0.9 }}
+          aria-hidden
+        />
+      )}
+    </span>
+  );
 
   return (
     <header
       className="sticky top-0 z-50 border-b"
       style={{
         borderColor: HEADER_BORDER,
-        background: "rgba(10, 10, 10, 0.82)",
+        background: "rgba(10, 10, 10, 0.88)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
       }}
     >
-      <div className="max-w-7xl mx-auto px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center min-h-[72px] gap-4">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
+      <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center min-h-[85px] gap-6 py-1">
+          <div className="flex items-center gap-3">
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.15)]"
               style={{
                 background: "rgba(212, 175, 55, 0.1)",
-                border: "1px solid rgba(212, 175, 55, 0.22)",
+                border: "1px solid rgba(212, 175, 55, 0.25)",
               }}
             >
-              <Guitar className="w-4 h-4" style={{ color: GM_GOLD }} />
+              <Guitar className="w-5 h-5 animate-pulse" style={{ color: GM_GOLD }} />
             </div>
-            <span className="font-semibold text-base tracking-tight" style={{ color: GM_TEXT }}>
+            <span className="font-semibold text-lg tracking-tight text-white">
               Gmusic <span style={{ color: GM_GOLD, fontWeight: 500 }}>Estudio</span>
             </span>
           </div>
 
-          {/* Nav — desktop centrada */}
-          <nav className="hidden md:flex items-center justify-center gap-1">
+          <nav className="hidden md:flex items-center justify-center gap-4 lg:gap-6">
             {NAV_ITEMS.map((item) => {
               const active = activeNav === item.id;
               return (
                 <button
                   key={item.id}
+                  type="button"
                   onClick={() => handleNav(item)}
-                  className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+                  className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-102 cursor-pointer"
                   style={{
-                    color: active ? GM_GOLD : GM_TEXT_SEC,
-                    background: active ? "rgba(212, 175, 55, 0.1)" : "transparent",
+                    color: navColor(item),
+                    background: active ? "rgba(212, 175, 55, 0.08)" : "transparent",
+                    border: active ? "1px solid rgba(212, 175, 55, 0.18)" : "1px solid transparent",
+                    boxShadow: active ? "0 4px 15px rgba(212,175,55,0.05)" : "none",
+                    opacity: item.locked ? 0.7 : 1,
                   }}
                 >
-                  {item.label}
+                  <NavLabel item={item} />
                 </button>
               );
             })}
           </nav>
 
-          {/* Perfil + hamburger */}
           <div className="flex items-center justify-end gap-2">
             <div
               className="hidden md:flex items-center gap-3 rounded-2xl px-4 py-2.5"
@@ -109,6 +143,7 @@ export function GmusicInternalHeader({ activeNav, setPage, onPlaceholder }: Gmus
             </div>
 
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2.5 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center"
               style={{
@@ -153,14 +188,16 @@ export function GmusicInternalHeader({ activeNav, setPage, onPlaceholder }: Gmus
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => handleNav(item)}
                 className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium min-h-[44px] transition-colors"
                 style={{
-                  color: navColor(item.id),
+                  color: navColor(item),
                   background: activeNav === item.id ? "rgba(212,175,55,0.08)" : "transparent",
+                  opacity: item.locked ? 0.85 : 1,
                 }}
               >
-                {item.label}
+                <NavLabel item={item} />
               </button>
             ))}
           </div>
