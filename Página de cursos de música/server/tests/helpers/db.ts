@@ -1,4 +1,4 @@
-import { Role, SessionStatus } from "@prisma/client";
+import { Role, SessionStatus, SubscriptionStatus } from "@prisma/client";
 import assert from "node:assert/strict";
 import { config } from "../../config.js";
 import { prisma } from "../../lib/prisma.js";
@@ -505,6 +505,80 @@ export async function countAttemptsForSession(sessionId: string) {
   return prisma.exerciseAttempt.count({
     where: { sessionId },
   });
+}
+
+export interface SubscriptionRowSnapshot {
+  id: string;
+  userId: string;
+  status: SubscriptionStatus;
+  planId: string;
+  endsAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export async function captureUserSubscriptionsSnapshot(
+  userId: string
+): Promise<SubscriptionRowSnapshot[]> {
+  const rows = await prisma.subscription.findMany({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.userId,
+    status: row.status,
+    planId: row.planId,
+    endsAt: row.endsAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  }));
+}
+
+export async function restoreUserSubscriptionsSnapshot(
+  userId: string,
+  snapshot: SubscriptionRowSnapshot[]
+): Promise<void> {
+  await prisma.subscription.deleteMany({ where: { userId } });
+
+  if (snapshot.length === 0) {
+    return;
+  }
+
+  await prisma.subscription.createMany({
+    data: snapshot.map((row) => ({
+      id: row.id,
+      userId: row.userId,
+      status: row.status,
+      planId: row.planId,
+      endsAt: row.endsAt,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    })),
+  });
+}
+
+export function assertUserSubscriptionsSnapshotsEqual(
+  current: SubscriptionRowSnapshot[],
+  expected: SubscriptionRowSnapshot[]
+): void {
+  assert.equal(current.length, expected.length);
+
+  for (let index = 0; index < expected.length; index++) {
+    const currentRow = current[index];
+    const expectedRow = expected[index];
+    assert.equal(currentRow?.id, expectedRow?.id);
+    assert.equal(currentRow?.userId, expectedRow?.userId);
+    assert.equal(currentRow?.status, expectedRow?.status);
+    assert.equal(currentRow?.planId, expectedRow?.planId);
+    assert.equal(
+      currentRow?.endsAt?.toISOString() ?? null,
+      expectedRow?.endsAt?.toISOString() ?? null
+    );
+    assert.equal(currentRow?.createdAt.toISOString(), expectedRow?.createdAt.toISOString());
+    assert.equal(currentRow?.updatedAt.toISOString(), expectedRow?.updatedAt.toISOString());
+  }
 }
 
 export async function getTodayStreak(userId: string, timezone: string) {

@@ -1,7 +1,7 @@
 # Gmusic Learning Engine — API Contract (MVP)
 
 Contrato REST v1 para el motor de aprendizaje.  
-**Estado:** Fase 3B.2 — lectura (`health`, `me/dashboard`, `me/path`), creación (`POST /lesson-sessions`) y cierre (`POST /lesson-sessions/:id/complete`) implementados. Pendientes: apoderados.
+**Estado:** Fase 3B.2 — lectura (`health`, `me/dashboard`, `me/path`, `me/access`), creación (`POST /lesson-sessions`) y cierre (`POST /lesson-sessions/:id/complete`) implementados. Pendientes: apoderados.
 
 Referencias: `learning-engine.md`, `database-schema.md`, `backend-provider-options.md`.
 
@@ -97,6 +97,71 @@ Resumen para **Mi Estudio**. Equivalente server-side de datos hoy en `MOCK_USER`
 | Código HTTP | `error.code` | Cuándo |
 |-------------|--------------|--------|
 | 401 | `UNAUTHORIZED` | Sin token o token inválido |
+| 403 | `FORBIDDEN` | Rol no alumno |
+
+---
+
+### `GET /api/v1/me/access`
+
+Fuente de verdad backend para **acceso a la zona privada del alumno** (Mi Estudio / Mi Camino).
+No expone datos de pago ni suscripciones de otros usuarios.
+
+**Auth:** alumno (`Role.STUDENT`). En desarrollo usa `GMUSIC_DEV_USER_EMAIL`; en producción `devStudentAuth` responde `401`.
+
+**Reglas de acceso**
+
+| Condición | `canAccessStudentZone` | `reason` |
+|-----------|------------------------|----------|
+| Al menos una `Subscription` con `status = ACTIVE` y `endsAt` null o futuro | `true` | `ACTIVE_SUBSCRIPTION` |
+| Sin suscripción válida (incluye vencida, `CANCELED`, `PAST_DUE`) | `false` | `NO_ACTIVE_SUBSCRIPTION` |
+
+Si hay varias suscripciones ACTIVE vigentes, el servidor elige **determinísticamente** la de `endsAt` válido más lejano (`endsAt = null` tiene prioridad sobre fechas finitas; desempate por `id`).
+
+**Response 200 — acceso permitido**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Juan Lizama",
+    "email": "juan@gmusic.academy"
+  },
+  "access": {
+    "canAccessStudentZone": true,
+    "reason": "ACTIVE_SUBSCRIPTION"
+  },
+  "subscription": {
+    "status": "ACTIVE",
+    "planId": "gmusic-semester-6-months",
+    "endsAt": "2026-12-09T22:01:13.367Z"
+  }
+}
+```
+
+**Response 200 — acceso denegado**
+
+```json
+{
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "Carlos",
+    "email": "carlos@gmusic.academy"
+  },
+  "access": {
+    "canAccessStudentZone": false,
+    "reason": "NO_ACTIVE_SUBSCRIPTION"
+  },
+  "subscription": null
+}
+```
+
+**Campos prohibidos en la respuesta:** montos, métodos de pago, IDs de transacción, credenciales, `secureAnswer`, datos de otros usuarios.
+
+**Errores**
+
+| Código HTTP | `error.code` | Cuándo |
+|-------------|--------------|--------|
+| 401 | `UNAUTHORIZED` | Sin auth / producción sin JWT |
 | 403 | `FORBIDDEN` | Rol no alumno |
 
 ---
