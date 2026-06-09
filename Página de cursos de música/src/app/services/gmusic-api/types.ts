@@ -87,3 +87,35 @@ export interface PathResponse {
   modules: PathModuleResponse[];
   activeNodeId: string | null;
 }
+
+export type ExerciseType =
+  | "IDENTIFY_NOTE"
+  | "CHORD_SHAPE"
+  | "EAR_TRAINING"
+  | "RHYTHM_TAP";
+
+/** Ejercicio público devuelto por POST /lesson-sessions (sin secureAnswer). */
+export interface PublicExercise {
+  id: string;
+  type: ExerciseType;
+  difficulty: number;
+  instruction: string;
+  /** Payload sanitizado del servidor; estructura opaca en el cliente. */
+  contentPayload: unknown;
+}
+
+export interface LessonSessionResponse {
+  sessionId: string;
+  nodeId: string;
+  status: "STARTED";
+  startedAt: string;
+  expiresAt: string;
+  exercises: PublicExercise[];
+}
+
+export type LessonSessionStartKind = "created" | "reused";
+
+export interface LessonSessionStartResult {
+  session: LessonSessionResponse;
+  kind: LessonSessionStartKind;
+}

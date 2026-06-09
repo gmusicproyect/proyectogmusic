@@ -1,6 +1,8 @@
 export { fetchDashboard } from "./dashboard";
 export { fetchPath } from "./path";
-export { GmusicApiError, apiGet, isAbortError } from "./client";
+export { createLessonSession } from "./lesson-session";
+export { loadLessonSessionOnce } from "./lesson-session-load";
+export { GmusicApiError, apiGet, apiPost, isAbortError } from "./client";
 export { getApiBaseUrl, isDashboardMockEnabled, isPathMockEnabled } from "./config";
 export { getMockDashboardResponse } from "./mock-dashboard";
 export { getMockPathResponse } from "./mock-path";
@@ -30,4 +32,12 @@ export type {
   PathNodeResponse,
   PathNodeStatus,
   PathContentKind,
+  PublicExercise,
+  LessonSessionResponse,
+  LessonSessionStartResult,
+  LessonSessionStartKind,
+  ExerciseType,
 } from "./types";
+export type {
+  LessonSessionLoadOutcome,
+} from "./lesson-session-load";

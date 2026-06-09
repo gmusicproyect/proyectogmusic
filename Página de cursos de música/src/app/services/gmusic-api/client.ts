@@ -44,3 +44,37 @@ export async function apiGet<T>(
 
   return (await response.json()) as T;
 }
+
+export async function apiPost<T>(
+  path: string,
+  body: unknown,
+  options?: { signal?: AbortSignal }
+): Promise<{ data: T; status: number }> {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+    signal: options?.signal,
+  });
+
+  if (!response.ok) {
+    let code = "INTERNAL_ERROR";
+    let message = `Error ${response.status} al consultar la API.`;
+
+    try {
+      const errorBody = (await response.json()) as ApiErrorBody;
+      if (errorBody.error?.code) code = errorBody.error.code;
+      if (errorBody.error?.message) message = errorBody.error.message;
+    } catch {
+      // Respuesta no JSON; mantener mensaje genérico.
+    }
+
+    throw new GmusicApiError(message, response.status, code);
+  }
+
+  const data = (await response.json()) as T;
+  return { data, status: response.status };
+}
