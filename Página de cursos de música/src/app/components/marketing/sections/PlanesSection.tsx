@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { PUBLIC_FREE_LESSON_PAGE } from "../../../utils/academia-track-matrix";
 import { GOLD, GOLD_SOFT, WHITE_WARM, TEXT_SEC, BG_SURFACE, BORDER, fadeUp, vp } from "../tokens";
 
 interface PlanesSectionProps {
@@ -105,7 +106,7 @@ export function PlanesSection({ setPage }: PlanesSectionProps) {
           <motion.button
             whileHover={{ background: GOLD_SOFT, boxShadow: "0 10px 32px rgba(201,168,76,0.35)" }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => setPage("fundamento-preview")}
+            onClick={() => setPage(PUBLIC_FREE_LESSON_PAGE)}
             style={{
               height: 50, padding: "0 40px", borderRadius: 2,
               background: GOLD, color: "#080808", fontSize: 13, fontWeight: 700,

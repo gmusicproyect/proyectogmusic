@@ -1,44 +1,13 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-
-const LEVELS = [
-  {
-    id: "fundamento",
-    subtitle: "Nivel 1 · Básico",
-    title: "Fundamento",
-    description: "Postura, primeras notas y primeros acordes.",
-    forWho: "Nunca has tocado o quieres volver a empezar",
-    duracion: "Meses 1–4 del programa",
-    bgImage: "https://images.unsplash.com/photo-1603661850942-3b922be12831?w=900&q=80",
-    nextStep: "Ver clase gratuita",
-    nextHint: "Guitarra · Sin tarjeta · 7 min",
-    comingSoon: false,
-  },
-  {
-    id: "tecnica",
-    subtitle: "Nivel 2 · Intermedio",
-    title: "Técnica",
-    description: "Escalas, rasgueos, precisión, control y fluidez.",
-    forWho: "Tocas, pero quieres más precisión y fluidez",
-    duracion: "Meses 4–8 del programa",
-    bgImage: "https://images.unsplash.com/photo-1579797990179-4ca11c8b47fd?w=900&q=80",
-    nextStep: "Próximamente",
-    nextHint: "Disponible en una próxima etapa",
-    comingSoon: true,
-  },
-  {
-    id: "crea",
-    subtitle: "Nivel 3 · Avanzado",
-    title: "Crea",
-    description: "Canciones, composición y expresión propia.",
-    forWho: "Tienes técnica y quieres expresarte",
-    duracion: "Meses 9–12 del programa",
-    bgImage: "https://images.unsplash.com/photo-1444623151656-030273ddb785?w=900&q=80",
-    nextStep: "Próximamente",
-    nextHint: "Disponible en una próxima etapa",
-    comingSoon: true,
-  },
-];
+import {
+  ACADEMIA_TIERS,
+  getTracksForTier,
+  isFreeClassTrack,
+  PUBLIC_FREE_LESSON_PAGE,
+  type AcademiaTierId,
+  type AcademiaTrackCombination,
+} from "../../utils/academia-track-matrix";
 
 const GOLD = "#C9A84C";
 const GOLD_BORDER = "rgba(201,168,76,0.3)";
@@ -51,65 +20,63 @@ export function InteractiveLevelSelector({
   setPage: (page: string) => void;
   setLevel: (level: string) => void;
 }) {
-  const [active, setActive] = useState(0);
+  const [activeTierId, setActiveTierId] = useState<AcademiaTierId>("basico");
+  const [activeFocusIndex, setActiveFocusIndex] = useState(0);
 
-  const handleSelect = (levelId: string) => {
-    if (levelId !== "fundamento") return;
-    setLevel(levelId);
-    setPage("fundamento-preview");
+  const tracks = getTracksForTier(activeTierId);
+
+  const handleStart = (track: AcademiaTrackCombination) => {
+    if (!isFreeClassTrack(track)) return;
+    setLevel(track.focusId);
+    setPage(PUBLIC_FREE_LESSON_PAGE);
   };
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 24 }}>
-
-      {/* Indicador de camino */}
-      <div style={{
-        display: "flex", alignItems: "center", gap: 0,
-        maxWidth: 480,
-      }}>
-        {LEVELS.map((l, i) => (
-          <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 0 }}>
-            <div
-              onClick={() => setActive(i)}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "4px 14px", borderRadius: 2, cursor: "pointer",
-                background: active === i ? "rgba(201,168,76,0.1)" : "transparent",
-                border: `1px solid ${active === i ? GOLD_BORDER : "transparent"}`,
-                transition: "all 0.2s",
-              }}
-            >
-              <span style={{
-                fontSize: 10, fontWeight: 700, letterSpacing: "0.3px",
-                fontFamily: "Inter, sans-serif",
-                color: active === i ? GOLD : "rgba(255,255,255,0.25)",
-                transition: "color 0.2s",
-              }}>{l.subtitle}</span>
-              <span style={{
-                fontSize: 13, fontFamily: "Inter, sans-serif",
-                color: active === i ? WHITE_WARM : "rgba(255,255,255,0.25)",
-                fontWeight: active === i ? 500 : 400,
-                transition: "color 0.2s",
-              }}>{l.title}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 0, maxWidth: 420 }}>
+        {ACADEMIA_TIERS.map((tier, i) => {
+          const isActive = activeTierId === tier.id;
+          return (
+            <div key={tier.id} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTierId(tier.id);
+                  setActiveFocusIndex(0);
+                }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "4px 14px", borderRadius: 2, cursor: "pointer",
+                  background: isActive ? "rgba(201,168,76,0.1)" : "transparent",
+                  border: `1px solid ${isActive ? GOLD_BORDER : "transparent"}`,
+                  transition: "all 0.2s",
+                  color: isActive ? GOLD : "rgba(255,255,255,0.25)",
+                  fontSize: 13, fontFamily: "Inter, sans-serif",
+                  fontWeight: isActive ? 600 : 400,
+                }}
+              >
+                {tier.label}
+              </button>
+              {i < ACADEMIA_TIERS.length - 1 && (
+                <div style={{ width: 20, height: 1, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
+              )}
             </div>
-            {i < LEVELS.length - 1 && (
-              <div style={{ width: 20, height: 1, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Cards expandibles */}
       <div style={{
         display: "flex", flexDirection: "row", gap: 12,
         height: "min(360px, 42vh)", width: "100%",
       }}>
-        {LEVELS.map((level, i) => {
-          const isActive = active === i;
+        {tracks.map((track, i) => {
+          const isActive = activeFocusIndex === i;
+          const showFreeClass = isFreeClassTrack(track);
+
           return (
             <motion.div
-              key={level.id}
-              onMouseEnter={() => setActive(i)}
+              key={`${track.tierId}-${track.focusId}`}
+              onMouseEnter={() => setActiveFocusIndex(i)}
               animate={{ flex: isActive ? 4 : 1 }}
               transition={{ type: "spring", stiffness: 280, damping: 28 }}
               style={{
@@ -121,13 +88,12 @@ export function InteractiveLevelSelector({
                 transition: "border-color 0.3s, box-shadow 0.3s",
               }}
             >
-              {/* Imagen de fondo */}
               <motion.div
                 animate={{ scale: isActive ? 1.05 : 1 }}
                 transition={{ duration: 0.8 }}
                 style={{
                   position: "absolute", inset: 0,
-                  backgroundImage: `url(${level.bgImage})`,
+                  backgroundImage: `url(${track.bgImage})`,
                   backgroundSize: "cover", backgroundPosition: "center",
                   opacity: isActive ? 0.45 : 0.15,
                   filter: isActive ? "grayscale(20%)" : "grayscale(70%)",
@@ -135,13 +101,11 @@ export function InteractiveLevelSelector({
                 }}
               />
 
-              {/* Overlay oscuro */}
               <div style={{
                 position: "absolute", inset: 0,
                 background: "linear-gradient(to top, rgba(8,8,8,0.95) 0%, rgba(8,8,8,0.5) 50%, rgba(8,8,8,0.15) 100%)",
               }} />
 
-              {/* Glow dorado sutil en activo */}
               {isActive && (
                 <div style={{
                   position: "absolute", bottom: 0, left: 0, right: 0, height: "50%",
@@ -150,7 +114,6 @@ export function InteractiveLevelSelector({
                 }} />
               )}
 
-              {/* Contenido */}
               <div style={{
                 position: "absolute", inset: 0, padding: isActive ? "28px 24px" : "20px 0",
                 display: "flex", flexDirection: "column",
@@ -166,27 +129,25 @@ export function InteractiveLevelSelector({
                   >
                     <div style={{
                       fontSize: 10, fontWeight: 700, letterSpacing: "0.3px",
-                      color: GOLD,
-                      fontFamily: "Inter, sans-serif", marginBottom: 6,
+                      color: GOLD, fontFamily: "Inter, sans-serif", marginBottom: 6,
                     }}>
-                      {level.subtitle}
+                      {track.tierLabel}
                     </div>
                     <h3 style={{
                       fontFamily: "'Playfair Display', serif",
-                      fontSize: 26, fontWeight: 400, letterSpacing: "-0.5px",
+                      fontSize: 26, fontWeight: 400, letterSpacing: 0,
                       color: WHITE_WARM, margin: "0 0 10px", lineHeight: 1.15,
                     }}>
-                      {level.title}
+                      {track.focusTitle}
                     </h3>
                     <p style={{
                       color: "rgba(255,255,255,0.58)", fontSize: 13,
                       lineHeight: 1.6, fontFamily: "Inter, sans-serif",
                       margin: "0 0 16px", maxWidth: 300,
                     }}>
-                      {level.description}
+                      {track.description}
                     </p>
 
-                    {/* Datos compactos */}
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 20 }}>
                       <div style={{
                         display: "flex", alignItems: "center", gap: 8,
@@ -195,7 +156,7 @@ export function InteractiveLevelSelector({
                         border: "1px solid rgba(255,255,255,0.06)",
                       }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2"/></svg>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter, sans-serif" }}>{level.forWho}</span>
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter, sans-serif" }}>{track.forWho}</span>
                       </div>
                       <div style={{
                         display: "flex", alignItems: "center", gap: 8,
@@ -204,12 +165,29 @@ export function InteractiveLevelSelector({
                         border: "1px solid rgba(255,255,255,0.06)",
                       }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter, sans-serif" }}>{level.duracion}</span>
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter, sans-serif" }}>{track.duracion}</span>
                       </div>
                     </div>
 
-                    {/* CTA con hint del siguiente paso */}
-                    {level.comingSoon ? (
+                    {showFreeClass ? (
+                      <motion.button
+                        type="button"
+                        whileHover={{ background: "rgba(201,168,76,0.85)", boxShadow: "0 8px 24px rgba(201,168,76,0.25)" }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleStart(track)}
+                        style={{
+                          width: "100%", height: 44, borderRadius: 2,
+                          background: GOLD, color: "#080808",
+                          fontSize: 12, fontWeight: 700, border: "none",
+                          cursor: "pointer", letterSpacing: "1px",
+                          textTransform: "uppercase", fontFamily: "Inter, sans-serif",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        }}
+                      >
+                        Ver clase gratuita
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                      </motion.button>
+                    ) : (
                       <div
                         aria-disabled="true"
                         style={{
@@ -222,32 +200,15 @@ export function InteractiveLevelSelector({
                           cursor: "not-allowed",
                         }}
                       >
-                        {level.nextStep}
+                        Próximamente
                       </div>
-                    ) : (
-                      <motion.button
-                        whileHover={{ background: "rgba(201,168,76,0.85)", boxShadow: "0 8px 24px rgba(201,168,76,0.25)" }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => handleSelect(level.id)}
-                        style={{
-                          width: "100%", height: 44, borderRadius: 2,
-                          background: GOLD, color: "#080808",
-                          fontSize: 12, fontWeight: 700, border: "none",
-                          cursor: "pointer", letterSpacing: "1px",
-                          textTransform: "uppercase", fontFamily: "Inter, sans-serif",
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                        }}
-                      >
-                        {level.nextStep}
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                      </motion.button>
                     )}
                     <div style={{
                       fontSize: 11, color: "rgba(201,168,76,0.45)",
                       fontFamily: "Inter, sans-serif", marginTop: 8,
                       letterSpacing: "0.5px",
                     }}>
-                      {level.nextHint}
+                      {showFreeClass ? "Guitarra · Sin tarjeta · 7 min" : "Disponible en una próxima etapa"}
                     </div>
                   </motion.div>
                 ) : (
@@ -266,12 +227,12 @@ export function InteractiveLevelSelector({
                       fontSize: 10, fontWeight: 700, letterSpacing: "0.3px",
                       color: "rgba(201,168,76,0.4)",
                       fontFamily: "Inter, sans-serif",
-                    }}>{level.subtitle}</span>
+                    }}>{track.tierLabel}</span>
                     <span style={{
                       fontFamily: "'Playfair Display', serif",
                       fontSize: 20, fontWeight: 400, letterSpacing: "1px",
                       color: "rgba(255,255,255,0.4)",
-                    }}>{level.title}</span>
+                    }}>{track.focusTitle}</span>
                   </motion.div>
                 )}
               </div>

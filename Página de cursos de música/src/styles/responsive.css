@@ -5,7 +5,7 @@
 
 /* Tablet — 768px */
 @media (max-width: 768px) {
-  /* Navbar — nav oculto; perfil visible como puente a app interna */
+  /* Navbar — nav oculto; CTAs de auth públicos visibles pero deshabilitados hasta A3 */
   .gmusic-nav { display: none !important; }
   .gmusic-hamburger { display: flex !important; }
 

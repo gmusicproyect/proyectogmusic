@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { PUBLIC_FREE_LESSON_PAGE } from "../../../utils/academia-track-matrix";
 import { GOLD, GOLD_SOFT, GOLD_BORDER, WHITE_WARM, TEXT_SEC, BORDER, fadeUp } from "../tokens";
 
 interface HeroSectionProps {
@@ -70,7 +71,7 @@ export function HeroSection({ setPage, scrollTo }: HeroSectionProps) {
             <motion.button
               whileHover={{ background: GOLD_SOFT, boxShadow: "0 8px 32px rgba(201,168,76,0.35)" }}
               whileTap={{ scale: 0.97 }} transition={{ duration: 0.15 }}
-              onClick={() => setPage("fundamento-preview")}
+              onClick={() => setPage(PUBLIC_FREE_LESSON_PAGE)}
               style={{
                 height: 50, padding: "0 32px", borderRadius: 2,
                 background: GOLD, color: "#080808", fontSize: 13, fontWeight: 700,
