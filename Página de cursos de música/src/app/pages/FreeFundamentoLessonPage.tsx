@@ -1,13 +1,16 @@
-import { useId, useState, type CSSProperties } from "react";
-import { motion } from "motion/react";
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
+import { VideoPlayerLesson } from "../components/dashboard/VideoPlayerLesson";
+import { MultipleChoiceExercise } from "../components/gmusic/lesson/MultipleChoiceExercise";
 import { navigateToHomeSection } from "../utils/public-home-navigation";
 import {
-  canAdvanceFreeFundamentoLesson,
-  FREE_FUNDAMENTO_GUITAR_IMAGE_ALT,
-  FREE_FUNDAMENTO_GUITAR_IMAGE_URL,
-  FREE_FUNDAMENTO_LESSON_OPTIONS,
-  FREE_FUNDAMENTO_LESSON_QUESTION,
+  buildFreeFundamentoChallengeExercise,
+  FREE_FUNDAMENTO_LESSON_TITLE,
+  FREE_FUNDAMENTO_STATIONS,
+  isExpectedFreeFundamentoAnswer,
   nextFreeFundamentoLessonPhase,
+  playFreeFundamentoSuccessFeedback,
   type FreeFundamentoLessonPhase,
 } from "../utils/free-fundamento-lesson";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
@@ -16,359 +19,422 @@ interface FreeFundamentoLessonPageProps {
   setPage: (page: string) => void;
 }
 
-const secondaryButtonStyle: CSSProperties = {
-  height: 44,
-  borderRadius: 2,
-  background: "transparent",
-  color: "rgba(255,255,255,0.55)",
-  fontSize: 12,
-  fontWeight: 600,
-  border: "1px solid rgba(255,255,255,0.12)",
-  cursor: "pointer",
-  letterSpacing: "0.5px",
-  fontFamily: "Inter, sans-serif",
+const STATION_INDEX: Record<FreeFundamentoLessonPhase, number> = {
+  video: 0,
+  challenge: 1,
+  success: 2,
 };
 
-export function FreeFundamentoLessonPage({ setPage }: FreeFundamentoLessonPageProps) {
-  const [phase, setPhase] = useState<FreeFundamentoLessonPhase>("lesson");
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const groupName = useId();
-  const questionId = useId();
+function FreeFundamentoStationStepper({ phase }: { phase: FreeFundamentoLessonPhase }) {
+  const activeIndex = STATION_INDEX[phase];
 
-  const canContinue = canAdvanceFreeFundamentoLesson(selectedOptionId);
+  return (
+    <div
+      role="progressbar"
+      aria-valuemin={1}
+      aria-valuemax={3}
+      aria-valuenow={activeIndex + 1}
+      aria-label={`Estación ${activeIndex + 1} de 3`}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        flexWrap: "wrap",
+        width: "100%",
+      }}
+    >
+      {FREE_FUNDAMENTO_STATIONS.map((station, index) => {
+        const isActive = index === activeIndex;
+        const isComplete = index < activeIndex;
+
+        return (
+          <div key={station.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "6px 12px",
+                borderRadius: 999,
+                border: `1px solid ${isActive ? "rgba(201,168,76,0.45)" : isComplete ? "rgba(201,168,76,0.22)" : "rgba(255,255,255,0.08)"}`,
+                background: isActive ? "rgba(201,168,76,0.12)" : "rgba(255,255,255,0.02)",
+              }}
+            >
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  fontFamily: "Inter, sans-serif",
+                  color: isActive || isComplete ? "#080808" : "rgba(255,255,255,0.45)",
+                  background: isActive || isComplete ? GOLD : "rgba(255,255,255,0.08)",
+                }}
+              >
+                {index + 1}
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontFamily: "Inter, sans-serif",
+                  color: isActive ? WHITE_WARM : isComplete ? "rgba(201,168,76,0.75)" : "rgba(255,255,255,0.35)",
+                }}
+              >
+                {station.label}
+              </span>
+            </div>
+            {index < FREE_FUNDAMENTO_STATIONS.length - 1 && (
+              <div
+                aria-hidden="true"
+                style={{
+                  width: 28,
+                  height: 1,
+                  background: index < activeIndex ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.08)",
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function FreeFundamentoLessonPage({ setPage }: FreeFundamentoLessonPageProps) {
+  const [phase, setPhase] = useState<FreeFundamentoLessonPhase>("video");
+  const [videoComplete, setVideoComplete] = useState(false);
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [challengeResolved, setChallengeResolved] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  const challengeExercise = useMemo(() => buildFreeFundamentoChallengeExercise(), []);
+
+  const handleVideoComplete = () => {
+    setVideoComplete(true);
+  };
+
+  const handleOptionSelect = (optionId: string) => {
+    if (challengeResolved) return;
+
+    setSelectedOptionId(optionId);
+
+    if (isExpectedFreeFundamentoAnswer(optionId)) {
+      setChallengeResolved(true);
+      setFeedbackMessage("¡Exacto! El cuerpo es el apoyo estable sobre tu pierna.");
+      playFreeFundamentoSuccessFeedback();
+      return;
+    }
+
+    setFeedbackMessage("Casi. Piensa en la caja resonante del instrumento.");
+  };
 
   const handleContinue = () => {
-    if (!canContinue) return;
-    setPhase(nextFreeFundamentoLessonPhase(phase));
+    if (phase === "video" && videoComplete) {
+      setPhase(nextFreeFundamentoLessonPhase(phase));
+      return;
+    }
+
+    if (phase === "challenge" && challengeResolved) {
+      setPhase(nextFreeFundamentoLessonPhase(phase));
+    }
   };
+
+  const canContinue =
+    (phase === "video" && videoComplete) ||
+    (phase === "challenge" && challengeResolved);
 
   return (
     <div
       style={{
+        height: "100vh",
         minHeight: "100vh",
+        width: "100%",
         background: "#080808",
-        padding: "120px 24px 96px",
+        color: WHITE_WARM,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        {phase === "lesson" ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-          >
-            <span
+      <header
+        style={{
+          flexShrink: 0,
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(8,8,8,0.96)",
+          backdropFilter: "blur(16px)",
+          padding: "16px 20px 14px",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 960,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            marginBottom: 14,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <p
               style={{
-                display: "inline-block",
-                fontSize: 11,
-                fontWeight: 500,
-                letterSpacing: "3px",
+                margin: 0,
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                color: GOLD,
+                color: "rgba(201,168,76,0.65)",
                 fontFamily: "Inter, sans-serif",
-                marginBottom: 16,
               }}
             >
               Clase gratuita · Fundamento
-            </span>
-
+            </p>
             <h1
               style={{
+                margin: "4px 0 0",
                 fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(28px, 4.5vw, 40px)",
+                fontSize: "clamp(20px, 3vw, 28px)",
                 fontWeight: 400,
                 letterSpacing: 0,
                 lineHeight: 1.2,
                 color: WHITE_WARM,
-                margin: "0 0 24px",
               }}
             >
-              Tu guitarra y postura
+              {FREE_FUNDAMENTO_LESSON_TITLE}
             </h1>
+          </div>
 
-            <img
-              src={FREE_FUNDAMENTO_GUITAR_IMAGE_URL}
-              alt={FREE_FUNDAMENTO_GUITAR_IMAGE_ALT}
-              width={720}
-              height={405}
-              loading="lazy"
-              decoding="async"
-              style={{
-                width: "100%",
-                maxWidth: 720,
-                height: "auto",
-                aspectRatio: "16 / 9",
-                objectFit: "cover",
-                borderRadius: 4,
-                border: "1px solid rgba(255,255,255,0.08)",
-                marginBottom: 28,
-                display: "block",
-              }}
-            />
+          <button
+            type="button"
+            onClick={() => navigateToHomeSection(setPage, "academia")}
+            aria-label="Salir de la clase gratuita"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(255,255,255,0.03)",
+              color: "rgba(255,255,255,0.65)",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <X size={16} />
+          </button>
+        </div>
 
-            <section style={{ marginBottom: 28 }}>
-              <h2
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: "1.5px",
-                  textTransform: "uppercase",
-                  color: GOLD,
-                  fontFamily: "Inter, sans-serif",
-                  margin: "0 0 10px",
-                }}
-              >
-                Postura básica
-              </h2>
-              <p
-                style={{
-                  margin: "0 0 12px",
-                  fontSize: 15,
-                  lineHeight: 1.7,
-                  color: TEXT_SEC,
-                  fontFamily: "Inter, sans-serif",
-                }}
-              >
-                Siéntate con la espalda recta pero relajada. Apoya el cuerpo de la
-                guitarra sobre tu pierna y mantén el cuello inclinado hacia arriba para
-                ver las cuerdas con comodidad.
-              </p>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 15,
-                  lineHeight: 1.7,
-                  color: TEXT_SEC,
-                  fontFamily: "Inter, sans-serif",
-                }}
-              >
-                La mano que no rasguea va en el mástil; la otra, cerca del puente. No
-                aprietes: la tensión frena el aprendizaje.
-              </p>
-            </section>
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <FreeFundamentoStationStepper phase={phase} />
+        </div>
+      </header>
 
-            <section style={{ marginBottom: 32 }}>
-              <h2
+      <main
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "20px",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: phase === "challenge" ? 720 : 960, minHeight: 0 }}>
+          <AnimatePresence mode="wait">
+            {phase === "video" && (
+              <motion.div
+                key="video-stage"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28 }}
+                style={{ width: "100%" }}
+              >
+                <VideoPlayerLesson
+                  title={FREE_FUNDAMENTO_LESSON_TITLE}
+                  subtitle="Postura, apoyo y primer contacto con la guitarra"
+                  duration="7 min"
+                  lessonLabel="Fundamento"
+                  onPlaybackComplete={handleVideoComplete}
+                />
+              </motion.div>
+            )}
+
+            {phase === "challenge" && (
+              <motion.div
+                key="challenge-stage"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.28 }}
                 style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: "1.5px",
-                  textTransform: "uppercase",
-                  color: GOLD,
-                  fontFamily: "Inter, sans-serif",
-                  margin: "0 0 10px",
+                  width: "100%",
+                  padding: "8px 4px",
                 }}
               >
-                Partes principales
-              </h2>
-              <ul
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  listStyle: "none",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 8,
-                }}
-              >
-                {[
-                  "Cuerpo (caja): donde suena y apoyas el instrumento.",
-                  "Mástil: donde presionas las cuerdas para cambiar notas.",
-                  "Cuerdas: se rasguean o pulsan para crear sonido.",
-                ].map((item) => (
-                  <li
-                    key={item}
+                <MultipleChoiceExercise
+                  exercise={challengeExercise}
+                  selectedOptionId={selectedOptionId}
+                  disabled={challengeResolved}
+                  onSelect={handleOptionSelect}
+                />
+
+                {feedbackMessage && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
                     style={{
+                      margin: "18px 0 0",
                       fontSize: 14,
                       lineHeight: 1.6,
-                      color: "rgba(255,255,255,0.72)",
                       fontFamily: "Inter, sans-serif",
+                      color: challengeResolved ? GOLD : "rgba(255,255,255,0.58)",
                     }}
                   >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </section>
+                    {feedbackMessage}
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
 
-            <fieldset
-              style={{
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 4,
-                padding: "20px 18px",
-                margin: "0 0 20px",
-                background: "rgba(255,255,255,0.02)",
-              }}
-            >
-              <legend
-                id={questionId}
+            {phase === "success" && (
+              <motion.div
+                key="success-stage"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.32 }}
                 style={{
-                  padding: "0 6px",
-                  fontSize: 15,
-                  fontWeight: 500,
-                  color: WHITE_WARM,
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                }}
-              >
-                {FREE_FUNDAMENTO_LESSON_QUESTION}
-              </legend>
-
-              <div
-                role="radiogroup"
-                aria-labelledby={questionId}
-                style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}
-              >
-                {FREE_FUNDAMENTO_LESSON_OPTIONS.map((option) => {
-                  const isSelected = selectedOptionId === option.id;
-                  return (
-                    <label
-                      key={option.id}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 10,
-                        padding: "12px 14px",
-                        borderRadius: 4,
-                        border: `1px solid ${isSelected ? "rgba(201,168,76,0.45)" : "rgba(255,255,255,0.08)"}`,
-                        background: isSelected ? "rgba(201,168,76,0.08)" : "transparent",
-                        cursor: "pointer",
-                        fontSize: 14,
-                        lineHeight: 1.5,
-                        color: "rgba(255,255,255,0.78)",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name={groupName}
-                        value={option.id}
-                        checked={isSelected}
-                        onChange={() => setSelectedOptionId(option.id)}
-                        style={{ marginTop: 3, accentColor: GOLD }}
-                      />
-                      <span>{option.label}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                maxWidth: 420,
-              }}
-            >
-              <button
-                type="button"
-                disabled={!canContinue}
-                onClick={handleContinue}
-                style={{
-                  height: 48,
                   width: "100%",
-                  borderRadius: 2,
-                  background: canContinue ? GOLD : "rgba(201,168,76,0.25)",
-                  color: canContinue ? "#080808" : "rgba(255,255,255,0.35)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  border: "none",
-                  cursor: canContinue ? "pointer" : "not-allowed",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  fontFamily: "Inter, sans-serif",
+                  maxWidth: 560,
+                  margin: "0 auto",
+                  textAlign: "center",
+                  padding: "24px 12px",
                 }}
               >
-                Continuar
-              </button>
+                <div
+                  style={{
+                    width: 72,
+                    height: 72,
+                    margin: "0 auto 20px",
+                    borderRadius: "50%",
+                    border: "1px solid rgba(201,168,76,0.35)",
+                    background: "rgba(201,168,76,0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 28,
+                    color: GOLD,
+                  }}
+                >
+                  ✓
+                </div>
 
-              <button
-                type="button"
-                onClick={() => navigateToHomeSection(setPage, "academia")}
-                style={{ ...secondaryButtonStyle, width: "100%" }}
-              >
-                Volver a Academia
-              </button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-          >
-            <h1
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(28px, 4.5vw, 40px)",
-                fontWeight: 400,
-                letterSpacing: 0,
-                lineHeight: 1.25,
-                color: WHITE_WARM,
-                margin: "0 0 16px",
-              }}
-            >
-              Completaste tu primera clase gratuita
-            </h1>
+                <h2
+                  style={{
+                    margin: "0 0 12px",
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: "clamp(28px, 4vw, 36px)",
+                    fontWeight: 400,
+                    letterSpacing: 0,
+                    color: WHITE_WARM,
+                  }}
+                >
+                  ¡Primera clase completada!
+                </h2>
 
-            <p
+                <p
+                  style={{
+                    margin: "0 0 28px",
+                    fontSize: 15,
+                    lineHeight: 1.7,
+                    color: TEXT_SEC,
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  Ya tienes la base para empezar con confianza. El siguiente paso es
+                  elegir tu plan en Gmusic Estudio.
+                </p>
+
+                <motion.button
+                  type="button"
+                  whileHover={{
+                    background: "rgba(201,168,76,0.85)",
+                    boxShadow: "0 8px 24px rgba(201,168,76,0.25)",
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigateToHomeSection(setPage, "planes")}
+                  style={{
+                    height: 48,
+                    width: "100%",
+                    maxWidth: 360,
+                    borderRadius: 2,
+                    background: GOLD,
+                    color: "#080808",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: "pointer",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  Ver planes
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
+
+      {phase !== "success" && (
+        <footer
+          style={{
+            flexShrink: 0,
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(8,8,8,0.96)",
+            padding: "16px 20px 24px",
+          }}
+        >
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+            <button
+              type="button"
+              disabled={!canContinue}
+              onClick={handleContinue}
               style={{
-                margin: "0 0 32px",
-                fontSize: 15,
-                lineHeight: 1.7,
-                color: TEXT_SEC,
+                width: "100%",
+                height: 48,
+                borderRadius: 2,
+                background: canContinue ? GOLD : "rgba(201,168,76,0.18)",
+                color: canContinue ? "#080808" : "rgba(255,255,255,0.35)",
+                fontSize: 12,
+                fontWeight: 700,
+                border: "none",
+                cursor: canContinue ? "pointer" : "not-allowed",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
                 fontFamily: "Inter, sans-serif",
               }}
             >
-              Ya conoces lo esencial para empezar. Cuando quieras seguir, explora los
-              planes de Gmusic.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                maxWidth: 420,
-              }}
-            >
-              <motion.button
-                type="button"
-                whileHover={{
-                  background: "rgba(201,168,76,0.85)",
-                  boxShadow: "0 8px 24px rgba(201,168,76,0.25)",
-                }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigateToHomeSection(setPage, "planes")}
-                style={{
-                  height: 48,
-                  borderRadius: 2,
-                  background: GOLD,
-                  color: "#080808",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  border: "none",
-                  cursor: "pointer",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  fontFamily: "Inter, sans-serif",
-                }}
-              >
-                Conocer los planes
-              </motion.button>
-
-              <button
-                type="button"
-                onClick={() => navigateToHomeSection(setPage, "academia")}
-                style={secondaryButtonStyle}
-              >
-                Volver a Academia
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </div>
+              {phase === "video" ? "Continuar al desafío" : "Continuar"}
+            </button>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

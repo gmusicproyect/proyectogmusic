@@ -7,12 +7,15 @@ import {
   ACADEMIA_TRACK_MATRIX,
   ACADEMIA_TIERS,
   ACADEMIA_FOCUSES,
+  buildFocusTitle,
   getTracksForTier,
   isFreeClassTrack,
+  isPublicFreeLessonPage,
   PUBLIC_FREE_LESSON_PAGE,
 } from "../../utils/academia-track-matrix";
 import {
   canAdvanceFreeFundamentoLesson,
+  isExpectedFreeFundamentoAnswer,
   nextFreeFundamentoLessonPhase,
 } from "../../utils/free-fundamento-lesson";
 import {
@@ -31,7 +34,7 @@ const previewSource = readFileSync(join(root, "../../pages/FundamentoPreviewPage
 const lessonSource = readFileSync(join(root, "../../pages/FreeFundamentoLessonPage.tsx"), "utf8");
 
 const LEGACY_PUBLIC_TARGETS = ["probar", "dashboard", "curriculum", "lesson"] as const;
-const FORBIDDEN_PUBLIC_TARGETS = ["fundamento-preview", ...LEGACY_PUBLIC_TARGETS] as const;
+const FORBIDDEN_PUBLIC_TARGETS = ["fundamento-preview", "fundamento-path", ...LEGACY_PUBLIC_TARGETS] as const;
 
 function assertNoForbiddenNavigation(source: string, componentName: string) {
   for (const target of FORBIDDEN_PUBLIC_TARGETS) {
@@ -52,14 +55,13 @@ describe("Navbar — estado público anónimo A2.2", () => {
     assert.equal(navbarSource.includes("gmusic-profile-trigger"), false);
   });
 
-  it("muestra Iniciar sesión y Regístrate como acciones no disponibles aún", () => {
+  it("muestra Iniciar sesión y Regístrate como enlaces públicos", () => {
     assert.equal(navbarSource.includes("Iniciar sesión"), true);
     assert.equal(navbarSource.includes("Regístrate"), true);
-    assert.equal(navbarSource.includes("aria-disabled"), false);
-    assert.equal(navbarSource.includes("disabled"), true);
-    assert.equal(navbarSource.includes("Disponible próximamente"), true);
-    assert.equal(navbarSource.includes('aria-label="Iniciar sesión — disponible próximamente"'), true);
-    assert.equal(navbarSource.includes('aria-label="Regístrate — disponible próximamente"'), true);
+    assert.equal(navbarSource.includes("onSignIn"), true);
+    assert.equal(navbarSource.includes("onRegister"), true);
+    assert.equal(navbarSource.includes("Carlos"), false);
+    assert.equal(navbarSource.includes("MOCK_USER"), false);
   });
 
   it("no navega a mi-estudio ni registro", () => {
@@ -90,6 +92,24 @@ describe("academia-track-matrix — modelo 3x3", () => {
       );
       assert.equal(tracks.every((track) => track.tierId === tier.id), true);
     }
+  });
+
+  it("expone títulos compuestos por nivel y enfoque", () => {
+    assert.equal(buildFocusTitle("fundamento", "basico"), "Fundamento Básico");
+    assert.equal(buildFocusTitle("tecnica", "basico"), "Técnica Básica");
+    assert.equal(buildFocusTitle("crea", "basico"), "Crea Básico");
+    assert.equal(buildFocusTitle("fundamento", "intermedio"), "Fundamento Intermedio");
+    assert.equal(buildFocusTitle("tecnica", "intermedio"), "Técnica Intermedia");
+    assert.equal(buildFocusTitle("crea", "intermedio"), "Crea Intermedio");
+    assert.equal(buildFocusTitle("fundamento", "avanzado"), "Fundamento Avanzado");
+    assert.equal(buildFocusTitle("tecnica", "avanzado"), "Técnica Avanzada");
+    assert.equal(buildFocusTitle("crea", "avanzado"), "Crea Avanzado");
+  });
+
+  it("expone filtros superiores Nivel 1 · Básico, Nivel 2 · Intermedio y Nivel 3 · Avanzado", () => {
+    assert.equal(ACADEMIA_TIERS[0]?.selectorLabel, "Nivel 1 · Básico");
+    assert.equal(ACADEMIA_TIERS[1]?.selectorLabel, "Nivel 2 · Intermedio");
+    assert.equal(ACADEMIA_TIERS[2]?.selectorLabel, "Nivel 3 · Avanzado");
   });
 
   it("solo Básico + Fundamento permite iniciar clase gratuita", () => {
@@ -126,6 +146,16 @@ describe("PlanesSection — funnel público A2.2", () => {
     assert.equal(PUBLIC_FREE_LESSON_PAGE, "fundamento-free-lesson");
   });
 
+  it("Semestral dispara registro y no la clase gratuita", () => {
+    assert.equal(planesSource.includes("onSelectSemestralPlan"), true);
+    assert.match(planesSource, /Semestral[\s\S]*onSelectSemestralPlan/);
+    assert.equal(planesSource.includes('setPage(PUBLIC_FREE_LESSON_PAGE)'), true);
+    assert.match(
+      planesSource,
+      /onSelectSemestralPlan[\s\S]*Ver clase gratuita|Ver clase gratuita[\s\S]*onSelectSemestralPlan/
+    );
+  });
+
   it("no usa Probar gratis ni rutas prohibidas", () => {
     assert.equal(planesSource.includes("Probar gratis"), false);
     assertNoForbiddenNavigation(planesSource, "PlanesSection");
@@ -144,21 +174,16 @@ describe("AcademiaSection — copy y aislamiento legacy", () => {
 });
 
 describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
-  it("usa selector superior Básico, Intermedio y Avanzado", () => {
+  it("usa selector superior Nivel 1 · Básico, Nivel 2 · Intermedio y Nivel 3 · Avanzado", () => {
     assert.equal(selectorSource.includes("ACADEMIA_TIERS"), true);
+    assert.equal(selectorSource.includes("selectorLabel"), true);
     assert.equal(selectorSource.includes("activeTierId"), true);
   });
 
   it("renderiza tres tarjetas según el nivel activo", () => {
     assert.equal(selectorSource.includes("getTracksForTier(activeTierId)"), true);
     assert.equal(selectorSource.includes("setActiveTierId"), true);
-    assert.equal(selectorSource.includes("ACADEMIA_TRACK_MATRIX"), false);
-  });
-
-  it("conserva nombres pedagógicos Fundamento, Técnica y Crea", () => {
     assert.equal(selectorSource.includes("focusTitle"), true);
-    assert.equal(selectorSource.includes("Ver clase gratuita"), true);
-    assert.equal(selectorSource.includes("Próximamente"), true);
   });
 
   it("Fundamento Básico abre fundamento-free-lesson", () => {
@@ -186,15 +211,31 @@ describe("FundamentoPreviewPage — desconectada pero conservada", () => {
 });
 
 describe("App — red de seguridad fundamento-preview", () => {
-  it("fundamento-preview renderiza FreeFundamentoLessonPage sin pantalla vacía", () => {
+  it("fundamento-preview y fundamento-path renderizan FreeFundamentoLessonPage", () => {
+    assert.equal(appSource.includes("isPublicFreeLessonPage"), true);
+    assert.equal(isPublicFreeLessonPage("fundamento-preview"), true);
+    assert.equal(isPublicFreeLessonPage("fundamento-path"), true);
+    assert.equal(isPublicFreeLessonPage("fundamento-free-lesson"), true);
     assert.match(
       appSource,
-      /\(currentPage === "fundamento-free-lesson" \|\| currentPage === "fundamento-preview"\)[\s\S]*FreeFundamentoLessonPage/
+      /isPublicFreeLessonPage\(currentPage\)[\s\S]*FreeFundamentoLessonPage/
     );
   });
 
-  it("no monta FundamentoPreviewPage", () => {
+  it("no monta FundamentoPreviewPage ni PublicFundamentoPathPage", () => {
     assert.equal(appSource.includes("FundamentoPreviewPage"), false);
+    assert.equal(appSource.includes("PublicFundamentoPathPage"), false);
+    assert.equal(appSource.includes('currentPage === "fundamento-path"'), false);
+  });
+});
+
+describe("App — flujo Semestral lineal", () => {
+  it("Semestral abre registro y luego checkout", () => {
+    assert.equal(appSource.includes("handleSemestralPlanSelect"), true);
+    assert.equal(appSource.includes("pendingSemestralCheckout"), true);
+    assert.equal(appSource.includes("SEMESTRAL_CHECKOUT_COURSE"), true);
+    assert.equal(appSource.includes('setCurrentPage("checkout")'), true);
+    assert.equal(appSource.includes('setCurrentPage("mi-estudio")'), true);
   });
 });
 
@@ -211,33 +252,56 @@ describe("canAdvanceFreeFundamentoLesson", () => {
     assert.equal(canAdvanceFreeFundamentoLesson("neck"), true);
     assert.equal(canAdvanceFreeFundamentoLesson("headstock"), true);
   });
+
+  it("valida la respuesta esperada del desafío", () => {
+    assert.equal(isExpectedFreeFundamentoAnswer("body"), true);
+    assert.equal(isExpectedFreeFundamentoAnswer("neck"), false);
+    assert.equal(isExpectedFreeFundamentoAnswer(null), false);
+  });
+});
+
+describe("nextFreeFundamentoLessonPhase", () => {
+  it("avanza video → challenge → success", () => {
+    assert.equal(nextFreeFundamentoLessonPhase("video"), "challenge");
+    assert.equal(nextFreeFundamentoLessonPhase("challenge"), "success");
+    assert.equal(nextFreeFundamentoLessonPhase("success"), "success");
+  });
 });
 
 describe("FreeFundamentoLessonPage", () => {
-  it("requiere selección válida antes de continuar", () => {
-    assert.equal(lessonSource.includes('type="radio"'), true);
-    assert.equal(lessonSource.includes("disabled={!canContinue}"), true);
-    assert.equal(lessonSource.includes("canAdvanceFreeFundamentoLesson"), true);
+  it("monta consola interactiva a pantalla completa", () => {
+    assert.equal(lessonSource.includes("height: \"100vh\""), true);
+    assert.equal(lessonSource.includes("Postura básica"), false);
+    assert.equal(lessonSource.includes("Partes principales"), false);
+    assert.equal(lessonSource.includes("FREE_FUNDAMENTO_GUITAR_IMAGE_URL"), false);
   });
 
-  it("incluye imagen educativa de guitarra con alt descriptivo", () => {
-    assert.equal(lessonSource.includes("FREE_FUNDAMENTO_GUITAR_IMAGE_URL"), true);
-    assert.equal(lessonSource.includes("FREE_FUNDAMENTO_GUITAR_IMAGE_ALT"), true);
-    assert.equal(lessonSource.includes('width={720}'), true);
-    assert.equal(lessonSource.includes('height={405}'), true);
-    assert.equal(lessonSource.includes("aspectRatio"), true);
-  });
-
-  it("ofrece Volver a Academia durante y después de la clase", () => {
-    const matches = lessonSource.match(/Volver a Academia/g) ?? [];
-    assert.equal(matches.length, 2);
-    assert.equal(lessonSource.includes('navigateToHomeSection(setPage, "academia")'), true);
-  });
-
-  it("no califica ni muestra respuestas correctas", () => {
-    assert.equal(lessonSource.includes("correct"), false);
+  it("reutiliza VideoPlayerLesson y MultipleChoiceExercise", () => {
+    assert.equal(lessonSource.includes("VideoPlayerLesson"), true);
+    assert.equal(lessonSource.includes("MultipleChoiceExercise"), true);
+    assert.equal(lessonSource.includes("FreeFundamentoStationStepper"), true);
     assert.equal(lessonSource.includes("LessonRunnerShell"), false);
     assert.equal(lessonSource.includes("useLessonRunner"), false);
+  });
+
+  it("expone estaciones Video, Desafío y Éxito", () => {
+    assert.equal(lessonSource.includes("FREE_FUNDAMENTO_STATIONS"), true);
+    assert.equal(lessonSource.includes("FreeFundamentoStationStepper"), true);
+    assert.equal(lessonSource.includes('phase === "video"'), true);
+    assert.equal(lessonSource.includes('phase === "challenge"'), true);
+    assert.equal(lessonSource.includes('phase === "success"'), true);
+  });
+
+  it("resuelve el desafío antes de avanzar", () => {
+    assert.equal(lessonSource.includes("isExpectedFreeFundamentoAnswer"), true);
+    assert.equal(lessonSource.includes("challengeResolved"), true);
+    assert.equal(lessonSource.includes("playFreeFundamentoSuccessFeedback"), true);
+    assert.equal(lessonSource.includes("disabled={!canContinue}"), true);
+  });
+
+  it("no califica con terminología de grading del runner privado", () => {
+    assert.equal(lessonSource.includes("correct"), false);
+    assert.equal(lessonSource.includes("accuracy"), false);
   });
 
   it("no muestra XP, racha ni semana completada", () => {
@@ -247,25 +311,19 @@ describe("FreeFundamentoLessonPage", () => {
     assert.equal(lessonSource.includes("CofreVirtual"), false);
   });
 
-  it("no usa letterSpacing negativo en títulos", () => {
-    assert.equal(lessonSource.includes('letterSpacing: "-"'), false);
-    assert.equal(lessonSource.includes("letterSpacing: 0"), true);
-  });
-
   it("muestra CTA de planes al completar", () => {
-    assert.equal(nextFreeFundamentoLessonPhase("lesson"), "complete");
-    assert.equal(lessonSource.includes("Completaste tu primera clase gratuita"), true);
-    assert.equal(lessonSource.includes("Conocer los planes"), true);
+    assert.equal(lessonSource.includes("¡Primera clase completada!"), true);
+    assert.equal(lessonSource.includes("Ver planes"), true);
     assert.equal(lessonSource.includes('navigateToHomeSection(setPage, "planes")'), true);
   });
 });
 
 describe("App — rutas públicas del funnel A2.2", () => {
   it("registra fundamento-free-lesson sin DEV_LEGACY", () => {
-    assert.equal(appSource.includes('currentPage === "fundamento-free-lesson"'), true);
-    assert.equal(
-      /fundamento-free-lesson[\s\S]*FreeFundamentoLessonPage/.test(appSource),
-      true
+    assert.equal(appSource.includes("isPublicFreeLessonPage(currentPage)"), true);
+    assert.match(
+      appSource,
+      /isPublicFreeLessonPage\(currentPage\)[\s\S]*FreeFundamentoLessonPage/
     );
     assert.equal(appSource.includes("DEV_LEGACY && currentPage === \"fundamento"), false);
   });

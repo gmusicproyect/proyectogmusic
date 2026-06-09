@@ -1,16 +1,18 @@
 import { motion } from "motion/react";
 import { PUBLIC_FREE_LESSON_PAGE } from "../../../utils/academia-track-matrix";
+import { SEMESTRAL_PLAN_NAME } from "../../../utils/public-subscription-flow";
 import { GOLD, GOLD_SOFT, WHITE_WARM, TEXT_SEC, BG_SURFACE, BORDER, fadeUp, vp } from "../tokens";
 
 interface PlanesSectionProps {
   setPage: (page: string) => void;
+  onSelectSemestralPlan: () => void;
 }
 
-export function PlanesSection({ setPage }: PlanesSectionProps) {
+export function PlanesSection({ setPage, onSelectSemestralPlan }: PlanesSectionProps) {
   const planes = [
-    { nombre: "Mensual", tag: null },
-    { nombre: "Semestral", tag: "El más elegido" },
-    { nombre: "Anual", tag: null },
+    { nombre: "Mensual", tag: null, selectable: false },
+    { nombre: SEMESTRAL_PLAN_NAME, tag: "El más elegido", selectable: true },
+    { nombre: "Anual", tag: null, selectable: false },
   ];
 
   return (
@@ -61,11 +63,17 @@ export function PlanesSection({ setPage }: PlanesSectionProps) {
         }}>
           {planes.map((plan, i) => {
             const isCenter = i === 1;
+            const CardWrapper = plan.selectable ? motion.button : motion.div;
+
             return (
-              <motion.div
+              <CardWrapper
                 key={plan.nombre}
+                type={plan.selectable ? "button" : undefined}
+                onClick={plan.selectable ? onSelectSemestralPlan : undefined}
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={vp} transition={{ duration: 0.55, delay: 0.1 + i * 0.1 }}
+                whileHover={plan.selectable ? { borderColor: "rgba(201,168,76,0.5)" } : undefined}
+                whileTap={plan.selectable ? { scale: 0.98 } : undefined}
                 style={{
                   background: isCenter ? "rgba(201,168,76,0.04)" : BG_SURFACE,
                   border: `1px solid ${isCenter ? "rgba(201,168,76,0.28)" : BORDER}`,
@@ -73,6 +81,14 @@ export function PlanesSection({ setPage }: PlanesSectionProps) {
                   display: "flex", flexDirection: "column", alignItems: "center",
                   gap: 16, textAlign: "center",
                   ...(isCenter ? { marginTop: -12, marginBottom: -12 } : {}),
+                  ...(plan.selectable
+                    ? {
+                        cursor: "pointer",
+                        width: "100%",
+                        color: "inherit",
+                        font: "inherit",
+                      }
+                    : {}),
                 }}
               >
                 {plan.tag && (
@@ -87,13 +103,13 @@ export function PlanesSection({ setPage }: PlanesSectionProps) {
                   color: WHITE_WARM, letterSpacing: "-0.5px",
                 }}>{plan.nombre}</div>
                 <div style={{
-                  fontSize: 11, color: "rgba(201,168,76,0.5)",
+                  fontSize: 11, color: plan.selectable ? GOLD : "rgba(201,168,76,0.5)",
                   fontFamily: "Inter, sans-serif", letterSpacing: "1.5px", textTransform: "uppercase",
                 }}>
-                  Próximamente
+                  {plan.selectable ? "Inscribirme" : "Próximamente"}
                 </div>
                 <div style={{ width: 32, height: 1, background: "rgba(201,168,76,0.2)" }} />
-              </motion.div>
+              </CardWrapper>
             );
           })}
         </div>

@@ -33,7 +33,7 @@ export function InteractiveLevelSelector({
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 0, maxWidth: 420 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 0, maxWidth: 560 }}>
         {ACADEMIA_TIERS.map((tier, i) => {
           const isActive = activeTierId === tier.id;
           return (
@@ -55,7 +55,7 @@ export function InteractiveLevelSelector({
                   fontWeight: isActive ? 600 : 400,
                 }}
               >
-                {tier.label}
+                {tier.selectorLabel}
               </button>
               {i < ACADEMIA_TIERS.length - 1 && (
                 <div style={{ width: 20, height: 1, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
@@ -131,7 +131,7 @@ export function InteractiveLevelSelector({
                       fontSize: 10, fontWeight: 700, letterSpacing: "0.3px",
                       color: GOLD, fontFamily: "Inter, sans-serif", marginBottom: 6,
                     }}>
-                      {track.tierLabel}
+                      {track.tierSelectorLabel}
                     </div>
                     <h3 style={{
                       fontFamily: "'Playfair Display', serif",
@@ -227,7 +227,7 @@ export function InteractiveLevelSelector({
                       fontSize: 10, fontWeight: 700, letterSpacing: "0.3px",
                       color: "rgba(201,168,76,0.4)",
                       fontFamily: "Inter, sans-serif",
-                    }}>{track.tierLabel}</span>
+                    }}>{track.tierSelectorLabel}</span>
                     <span style={{
                       fontFamily: "'Playfair Display', serif",
                       fontSize: 20, fontWeight: 400, letterSpacing: "1px",

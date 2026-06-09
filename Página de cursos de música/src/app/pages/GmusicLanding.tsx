@@ -13,9 +13,10 @@ interface GmusicLandingProps {
   setPage: (page: string) => void;
   setAlbum?: (album: any) => void;
   setLevel?: (level: string) => void;
+  onSelectSemestralPlan: () => void;
 }
 
-export function GmusicLanding({ setPage, setLevel }: GmusicLandingProps) {
+export function GmusicLanding({ setPage, setLevel, onSelectSemestralPlan }: GmusicLandingProps) {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 80, behavior: "smooth" });
@@ -26,7 +27,7 @@ export function GmusicLanding({ setPage, setLevel }: GmusicLandingProps) {
       <HeroSection setPage={setPage} scrollTo={scrollTo} />
       <AcademiaSection setPage={setPage} setLevel={setLevel ?? (() => {})} />
       <ComunidadSection setPage={setPage} />
-      <PlanesSection setPage={setPage} />
+      <PlanesSection setPage={setPage} onSelectSemestralPlan={onSelectSemestralPlan} />
       <ContactoSection setPage={setPage} />
       <FooterSection scrollTo={scrollTo} />
     </div>

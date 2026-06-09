@@ -2,14 +2,15 @@ import { useState, useEffect, type CSSProperties } from "react";
 import { GM_GOLD } from "../gmusic/tokens";
 const WHITE_WARM = "#F5F0E8";
 const BORDER = "rgba(255,255,255,0.06)";
-const AUTH_COMING_SOON_HINT = "Disponible próximamente";
 
 interface NavbarProps {
   currentPage?: string;
   setPage?: (page: string) => void;
+  onSignIn?: () => void;
+  onRegister?: () => void;
 }
 
-export function Navbar({ currentPage, setPage }: NavbarProps) {
+export function Navbar({ currentPage, setPage, onSignIn, onRegister }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,16 +56,16 @@ export function Navbar({ currentPage, setPage }: NavbarProps) {
     ["Contacto", "contacto"],
   ];
 
-  const disabledAuthButtonStyle = (primary: boolean): CSSProperties => ({
-    background: primary ? "rgba(201,168,76,0.16)" : "rgba(255,255,255,0.03)",
-    color: primary ? "rgba(10,10,10,0.42)" : "rgba(201,168,76,0.42)",
+  const authButtonStyle = (primary: boolean): CSSProperties => ({
+    background: primary ? GM_GOLD : "rgba(0,0,0,0)",
+    color: primary ? "#0A0A0A" : GM_GOLD,
     fontSize: 13,
     fontWeight: primary ? 600 : 500,
     padding: "0 18px",
     height: 36,
     borderRadius: 2,
-    border: primary ? "1px solid rgba(201,168,76,0.12)" : "1px solid rgba(255,255,255,0.08)",
-    cursor: "not-allowed",
+    border: primary ? "none" : "1px solid rgba(201,168,76,0.35)",
+    cursor: "pointer",
     letterSpacing: "0.3px",
     fontFamily: "Inter,sans-serif",
   });
@@ -83,19 +84,15 @@ export function Navbar({ currentPage, setPage }: NavbarProps) {
     >
       <button
         type="button"
-        disabled
-        title={AUTH_COMING_SOON_HINT}
-        aria-label="Iniciar sesión — disponible próximamente"
-        style={{ ...disabledAuthButtonStyle(false), width: stacked ? "100%" : undefined }}
+        onClick={onSignIn}
+        style={{ ...authButtonStyle(false), width: stacked ? "100%" : undefined }}
       >
         Iniciar sesión
       </button>
       <button
         type="button"
-        disabled
-        title={AUTH_COMING_SOON_HINT}
-        aria-label="Regístrate — disponible próximamente"
-        style={{ ...disabledAuthButtonStyle(true), width: stacked ? "100%" : undefined }}
+        onClick={onRegister}
+        style={{ ...authButtonStyle(true), width: stacked ? "100%" : undefined }}
       >
         Regístrate
       </button>

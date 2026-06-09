@@ -17,6 +17,8 @@ import { LessonPage } from "./pages/LessonPage";
 import { CurriculumPage } from "./pages/CurriculumPage";
 import { FreeFundamentoLessonPage } from "./pages/FreeFundamentoLessonPage";
 import { AuthModal } from "./components/music/AuthModal";
+import { isPublicFreeLessonPage } from "./utils/academia-track-matrix";
+import { SEMESTRAL_CHECKOUT_COURSE } from "./utils/public-subscription-flow";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
   getInitialPageFromPath,
@@ -57,6 +59,8 @@ export default function App() {
 
   // Modal state
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<"login" | "register">("register");
+  const [pendingSemestralCheckout, setPendingSemestralCheckout] = useState(false);
 
   // Music player functions
   const onPlay = (track) => { setCurrentTrack(track); setPlaying(true); };
@@ -71,17 +75,31 @@ export default function App() {
     setCurrentTrack(next); setPlaying(true);
   };
 
+  const openAuthModal = (tab: "login" | "register") => {
+    setAuthModalTab(tab);
+    setShowAuthModal(true);
+  };
+
+  const handleSemestralPlanSelect = () => {
+    setPendingSemestralCheckout(true);
+    setSelectedCourse(SEMESTRAL_CHECKOUT_COURSE);
+    openAuthModal("register");
+  };
+
   // Auth handlers
   const handleAuthSuccess = (user) => {
     setUserData(user);
     setUserState("registered");
     setShowAuthModal(false);
+    if (pendingSemestralCheckout) {
+      setPendingSemestralCheckout(false);
+      setCurrentPage("checkout");
+    }
   };
 
   const handleCheckoutSuccess = () => {
     setUserState("premium");
-    setCurrentPage("course-detail"); // Redirigir de vuelta al curso
-    alert("¡Pago completado! Ahora tienes acceso completo al curso.");
+    setCurrentPage("mi-estudio");
   };
 
   const handleCourseClick = (course) => {
@@ -113,8 +131,14 @@ export default function App() {
 
   return (
     <div style={{ fontFamily:"'Inter','Outfit',sans-serif", background:"#080808", minHeight:"100vh", color:"#fff" }}>
-      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino"].includes(currentPage) && (
-        <Navbar currentPage={currentPage} setPage={handlePageChange} />
+      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino"].includes(currentPage) &&
+        !isPublicFreeLessonPage(currentPage) && (
+        <Navbar
+          currentPage={currentPage}
+          setPage={handlePageChange}
+          onSignIn={() => openAuthModal("login")}
+          onRegister={() => openAuthModal("register")}
+        />
       )}
 
       {currentPage === "home" && (
@@ -126,6 +150,7 @@ export default function App() {
           setPage={handlePageChange}
           setAlbum={setSelectedAlbum}
           setLevel={setSelectedLevel}
+          onSelectSemestralPlan={handleSemestralPlanSelect}
         />
       )}
 
@@ -179,7 +204,7 @@ export default function App() {
         <CheckoutPage
           course={selectedCourse}
           user={userData}
-          onClose={() => setCurrentPage("course-detail")}
+          onClose={() => setCurrentPage(selectedCourse.id === SEMESTRAL_CHECKOUT_COURSE.id ? "home" : "course-detail")}
           onSuccess={handleCheckoutSuccess}
         />
       )}
@@ -192,7 +217,7 @@ export default function App() {
         <ProbarPage setPage={setCurrentPage} />
       )}
 
-      {(currentPage === "fundamento-free-lesson" || currentPage === "fundamento-preview") && (
+      {isPublicFreeLessonPage(currentPage) && (
         <FreeFundamentoLessonPage setPage={handlePageChange} />
       )}
 
@@ -216,13 +241,17 @@ export default function App() {
 
       {/* Modal de autenticación */}
       <AuthModal
+        key={authModalTab}
         isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
+        onClose={() => {
+          setShowAuthModal(false);
+          setPendingSemestralCheckout(false);
+        }}
         onSuccess={handleAuthSuccess}
-        defaultTab="register"
+        defaultTab={authModalTab}
       />
 
-      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && (
+      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && !isPublicFreeLessonPage(currentPage) && (
         <MusicPlayer
           track={currentTrack}
           playlist={playlist}

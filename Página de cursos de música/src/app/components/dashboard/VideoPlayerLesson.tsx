@@ -12,6 +12,7 @@ interface VideoPlayerLessonProps {
   lessonLabel: string;
   cinemaMode?: boolean;
   onCinemaToggle?: () => void;
+  onPlaybackComplete?: () => void;
 }
 
 function formatTime(s: number) {
@@ -20,7 +21,7 @@ function formatTime(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, cinemaMode, onCinemaToggle }: VideoPlayerLessonProps) {
+export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, cinemaMode, onCinemaToggle, onPlaybackComplete }: VideoPlayerLessonProps) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0-100
   const [hovered, setHovered] = useState(false);
@@ -29,6 +30,7 @@ export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, cine
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hideControlsRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const playbackCompleteRef = useRef(false);
 
   // Simulate playback
   const totalSeconds = 12 * 60; // 12 min
@@ -47,6 +49,13 @@ export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, cine
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [playing]);
+
+  useEffect(() => {
+    if (progress >= 100 && !playbackCompleteRef.current) {
+      playbackCompleteRef.current = true;
+      onPlaybackComplete?.();
+    }
+  }, [progress, onPlaybackComplete]);
 
   const handleMouseMove = () => {
     setShowControls(true);
