@@ -119,3 +119,28 @@ export interface LessonSessionStartResult {
   session: LessonSessionResponse;
   kind: LessonSessionStartKind;
 }
+
+export type AccessReason = "ACTIVE_SUBSCRIPTION" | "NO_ACTIVE_SUBSCRIPTION";
+
+export interface AccessUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AccessInfo {
+  canAccessStudentZone: boolean;
+  reason: AccessReason;
+}
+
+export interface AccessSubscription {
+  status: "ACTIVE";
+  planId: string;
+  endsAt: string | null;
+}
+
+export interface AccessResponse {
+  user: AccessUser;
+  access: AccessInfo;
+  subscription: AccessSubscription | null;
+}

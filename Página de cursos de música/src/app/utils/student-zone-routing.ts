@@ -1,3 +1,5 @@
+import { scrollToHomeSection } from "./public-home-navigation";
+
 const STUDENT_ZONE_PAGES = new Set(["mi-estudio", "welcome", "mi-camino"]);
 
 const PAGE_TITLES: Record<string, string> = {
@@ -74,4 +76,14 @@ export function navigateStudentZoneAware(
 
   setPage(page);
   setDocumentTitle(page);
+}
+
+export function navigateDeniedToHomePlans(
+  setPage: (page: string) => void,
+  currentPage: string,
+  scrollPlans: (sectionId: string) => void = scrollToHomeSection,
+  delayMs = 100
+): void {
+  navigateStudentZoneAware("home", setPage, currentPage);
+  window.setTimeout(() => scrollPlans("planes"), delayMs);
 }

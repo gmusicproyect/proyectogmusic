@@ -5,6 +5,7 @@ import { MusicPlayer } from "./components/music/MusicPlayer";
 import { GmusicLanding } from "./pages/GmusicLanding";
 import { GmusicWelcome } from "./pages/GmusicWelcome";
 import { GmusicPath } from "./pages/GmusicPath";
+import { StudentZoneGuard } from "./components/gmusic/StudentZoneGuard";
 import { CoursesPage } from "./pages/legacy/AlbumCoursesPages";
 import { AlbumPage } from "./pages/legacy/AlbumCoursesPages";
 import { InstrumentCoursesPage } from "./pages/legacy/InstrumentCoursesPage";
@@ -158,11 +159,15 @@ export default function App() {
       )}
 
       {(currentPage === "welcome" || currentPage === "mi-estudio") && (
-        <GmusicWelcome setPage={handlePageChange} />
+        <StudentZoneGuard setPage={handlePageChange} currentPage={currentPage}>
+          <GmusicWelcome setPage={handlePageChange} />
+        </StudentZoneGuard>
       )}
 
       {currentPage === "mi-camino" && (
-        <GmusicPath setPage={handlePageChange} />
+        <StudentZoneGuard setPage={handlePageChange} currentPage={currentPage}>
+          <GmusicPath setPage={handlePageChange} />
+        </StudentZoneGuard>
       )}
 
       {currentPage === "album" && selectedAlbum && (
