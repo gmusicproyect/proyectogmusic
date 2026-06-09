@@ -12,6 +12,7 @@ const LEVELS = [
     bgImage: "https://images.unsplash.com/photo-1603661850942-3b922be12831?w=900&q=80",
     nextStep: "Ver clase gratuita",
     nextHint: "Guitarra · Sin tarjeta · 7 min",
+    comingSoon: false,
   },
   {
     id: "tecnica",
@@ -21,8 +22,9 @@ const LEVELS = [
     forWho: "Tocas, pero quieres más precisión y fluidez",
     duracion: "Meses 4–8 del programa",
     bgImage: "https://images.unsplash.com/photo-1579797990179-4ca11c8b47fd?w=900&q=80",
-    nextStep: "Ver clase gratuita",
-    nextHint: "Guitarra · Sin tarjeta · 7 min",
+    nextStep: "Próximamente",
+    nextHint: "Disponible en una próxima etapa",
+    comingSoon: true,
   },
   {
     id: "crea",
@@ -32,8 +34,9 @@ const LEVELS = [
     forWho: "Tienes técnica y quieres expresarte",
     duracion: "Meses 9–12 del programa",
     bgImage: "https://images.unsplash.com/photo-1444623151656-030273ddb785?w=900&q=80",
-    nextStep: "Ver clase gratuita",
-    nextHint: "Guitarra · Sin tarjeta · 7 min",
+    nextStep: "Próximamente",
+    nextHint: "Disponible en una próxima etapa",
+    comingSoon: true,
   },
 ];
 
@@ -51,8 +54,9 @@ export function InteractiveLevelSelector({
   const [active, setActive] = useState(0);
 
   const handleSelect = (levelId: string) => {
+    if (levelId !== "fundamento") return;
     setLevel(levelId);
-    setPage("curriculum"); // Funnel: nivel → camino Duolingo → clase → video + ejercicios
+    setPage("fundamento-preview");
   };
 
   return (
@@ -205,22 +209,39 @@ export function InteractiveLevelSelector({
                     </div>
 
                     {/* CTA con hint del siguiente paso */}
-                    <motion.button
-                      whileHover={{ background: "rgba(201,168,76,0.85)", boxShadow: "0 8px 24px rgba(201,168,76,0.25)" }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleSelect(level.id)}
-                      style={{
-                        width: "100%", height: 44, borderRadius: 2,
-                        background: GOLD, color: "#080808",
-                        fontSize: 12, fontWeight: 700, border: "none",
-                        cursor: "pointer", letterSpacing: "1px",
-                        textTransform: "uppercase", fontFamily: "Inter, sans-serif",
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                      }}
-                    >
-                      {level.nextStep}
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                    </motion.button>
+                    {level.comingSoon ? (
+                      <div
+                        aria-disabled="true"
+                        style={{
+                          width: "100%", height: 44, borderRadius: 2,
+                          background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.35)",
+                          fontSize: 12, fontWeight: 700, border: "1px solid rgba(255,255,255,0.08)",
+                          letterSpacing: "1px", textTransform: "uppercase",
+                          fontFamily: "Inter, sans-serif",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "not-allowed",
+                        }}
+                      >
+                        {level.nextStep}
+                      </div>
+                    ) : (
+                      <motion.button
+                        whileHover={{ background: "rgba(201,168,76,0.85)", boxShadow: "0 8px 24px rgba(201,168,76,0.25)" }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleSelect(level.id)}
+                        style={{
+                          width: "100%", height: 44, borderRadius: 2,
+                          background: GOLD, color: "#080808",
+                          fontSize: 12, fontWeight: 700, border: "none",
+                          cursor: "pointer", letterSpacing: "1px",
+                          textTransform: "uppercase", fontFamily: "Inter, sans-serif",
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        }}
+                      >
+                        {level.nextStep}
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                      </motion.button>
+                    )}
                     <div style={{
                       fontSize: 11, color: "rgba(201,168,76,0.45)",
                       fontFamily: "Inter, sans-serif", marginTop: 8,

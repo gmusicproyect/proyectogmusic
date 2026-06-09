@@ -15,6 +15,8 @@ import { ProbarPage } from "./pages/ProbarPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LessonPage } from "./pages/LessonPage";
 import { CurriculumPage } from "./pages/CurriculumPage";
+import { FundamentoPreviewPage } from "./pages/FundamentoPreviewPage";
+import { FreeFundamentoLessonPage } from "./pages/FreeFundamentoLessonPage";
 import { AuthModal } from "./components/music/AuthModal";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
@@ -189,6 +191,14 @@ export default function App() {
 
       {currentPage === "probar" && (
         <ProbarPage setPage={setCurrentPage} />
+      )}
+
+      {currentPage === "fundamento-preview" && (
+        <FundamentoPreviewPage setPage={handlePageChange} />
+      )}
+
+      {currentPage === "fundamento-free-lesson" && (
+        <FreeFundamentoLessonPage setPage={handlePageChange} />
       )}
 
       {DEV_LEGACY && currentPage === "dashboard" && (
