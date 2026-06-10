@@ -19,7 +19,9 @@ import { CurriculumPage } from "./pages/CurriculumPage";
 import { FreeFundamentoLessonPage } from "./pages/FreeFundamentoLessonPage";
 import { AuthModal } from "./components/music/AuthModal";
 import { isPublicFreeLessonPage } from "./utils/academia-track-matrix";
-import { SEMESTRAL_CHECKOUT_COURSE } from "./utils/public-subscription-flow";
+import { SEMESTRAL_CHECKOUT_COURSE, isSemestralCheckoutCourse } from "./utils/public-subscription-flow";
+import { activateSemestralWithAccessVerification } from "./services/gmusic-api/activate-semestral";
+import { GmusicApiError } from "./services/gmusic-api/client";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
   getInitialPageFromPath,
@@ -101,9 +103,30 @@ export default function App() {
     }
   };
 
-  const handleCheckoutSuccess = () => {
+  const handleCheckoutSuccess = async () => {
+    if (!userData) {
+      throw new GmusicApiError(
+        "Debes registrarte antes de completar la compra.",
+        400,
+        "VALIDATION_ERROR"
+      );
+    }
+
+    if (!selectedCourse || !isSemestralCheckoutCourse(selectedCourse)) {
+      throw new GmusicApiError(
+        "Solo el plan Semestral admite activación local en este flujo.",
+        400,
+        "VALIDATION_ERROR"
+      );
+    }
+
+    await activateSemestralWithAccessVerification({
+      name: userData.name,
+      email: userData.email,
+    });
+
     setUserState("premium");
-    setCurrentPage("mi-estudio");
+    handlePageChange("mi-estudio");
   };
 
   const handleCourseClick = (course: Course) => {
@@ -212,7 +235,7 @@ export default function App() {
         <CheckoutPage
           course={selectedCourse}
           user={userData}
-          onClose={() => setCurrentPage(selectedCourse.id === SEMESTRAL_CHECKOUT_COURSE.id ? "home" : "course-detail")}
+          onClose={() => setCurrentPage(isSemestralCheckoutCourse(selectedCourse) ? "home" : "course-detail")}
           onSuccess={handleCheckoutSuccess}
         />
       )}
@@ -257,6 +280,7 @@ export default function App() {
         }}
         onSuccess={handleAuthSuccess}
         defaultTab={authModalTab}
+        registrationOnly={pendingSemestralCheckout}
       />
 
       {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && !isPublicFreeLessonPage(currentPage) && (

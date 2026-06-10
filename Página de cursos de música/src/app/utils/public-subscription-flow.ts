@@ -1,3 +1,5 @@
+import type { Course } from "../types/music-app";
+
 export const SEMESTRAL_PLAN_NAME = "Semestral";
 
 export const SEMESTRAL_CHECKOUT_COURSE = {
@@ -16,4 +18,33 @@ export const SEMESTRAL_CHECKOUT_COURSE = {
   tags: ["Guitarra", "Semestral", "Academia"],
   description: "Acceso semestral al programa de guitarra de Gmusic Estudio.",
   featured: true,
-};
+} satisfies Course;
+
+export interface SemestralCheckoutPlan {
+  name: string;
+  price: number;
+  duration: string;
+  description: string;
+  features: string[];
+}
+
+export function isSemestralCheckoutCourse(
+  course: Pick<Course, "id">
+): course is typeof SEMESTRAL_CHECKOUT_COURSE {
+  return course.id === SEMESTRAL_CHECKOUT_COURSE.id;
+}
+
+export function getSemestralCheckoutPlan(): SemestralCheckoutPlan {
+  return {
+    name: SEMESTRAL_PLAN_NAME,
+    price: SEMESTRAL_CHECKOUT_COURSE.price,
+    duration: SEMESTRAL_CHECKOUT_COURSE.duration,
+    description: "Acceso semestral • 6 meses de programa guiado",
+    features: [
+      "Acceso completo a la zona del alumno",
+      "Programa semestral de guitarra",
+      "Progreso persistido en plataforma",
+      "Soporte de la academia",
+    ],
+  };
+}

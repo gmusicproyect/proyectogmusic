@@ -1,14 +1,21 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "motion/react";
+import {
+  getSemestralCheckoutPlan,
+  isSemestralCheckoutCourse,
+} from "../../utils/public-subscription-flow";
+import { shouldAcceptCheckoutSubmission } from "./checkout-submission";
 
 interface CheckoutPageProps {
   course: any;
   user: any;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: () => void | Promise<void>;
 }
 
 export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageProps) {
+  const isSemestralCheckout = isSemestralCheckoutCourse(course);
+  const semestralPlan = getSemestralCheckoutPlan();
   const [selectedPlan, setSelectedPlan] = useState<"single" | "subscription">("single");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "mercadopago">("card");
   const [cardData, setCardData] = useState({
@@ -20,6 +27,8 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [processing, setProcessing] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
 
   const plans = {
     single: {
@@ -47,25 +56,48 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
     }
   };
 
-  const finalPrice = selectedPlan === "single"
-    ? course.price - discount
-    : plans.subscription.price - discount;
+  const finalPrice = isSemestralCheckout
+    ? semestralPlan.price - discount
+    : selectedPlan === "single"
+      ? course.price - discount
+      : plans.subscription.price - discount;
+
+  const activePlanName = isSemestralCheckout
+    ? semestralPlan.name
+    : plans[selectedPlan].name;
+
+  const activePlanSubtotal = isSemestralCheckout
+    ? semestralPlan.price
+    : selectedPlan === "single"
+      ? course.price
+      : plans.subscription.price;
 
   const handlePromoCode = () => {
     // Simulación de código promocional
     if (promoCode.toUpperCase() === "GMUSIC20") {
-      setDiscount(selectedPlan === "single" ? 15.8 : 5.8);
+      setDiscount(isSemestralCheckout ? 15.8 : selectedPlan === "single" ? 15.8 : 5.8);
     }
   };
 
   const handlePayment = async () => {
-    setProcessing(true);
+    if (!shouldAcceptCheckoutSubmission(processing, submittingRef.current)) return;
 
-    // Simulación de procesamiento de pago
-    setTimeout(() => {
+    submittingRef.current = true;
+    setProcessing(true);
+    setCheckoutError(null);
+
+    try {
+      await onSuccess();
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim().length > 0
+          ? error.message
+          : "No pudimos completar la activación. Intenta de nuevo.";
+      setCheckoutError(message);
+    } finally {
       setProcessing(false);
-      onSuccess();
-    }, 2000);
+      submittingRef.current = false;
+    }
   };
 
   return (
@@ -138,9 +170,73 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
               color: "#fff",
               marginBottom: 20
             }}>
-              Elige tu plan
+              {isSemestralCheckout ? "Tu plan" : "Elige tu plan"}
             </h2>
 
+            {isSemestralCheckout ? (
+              <div
+                style={{
+                  background: "rgba(37,99,235,0.1)",
+                  border: "2px solid rgba(37,99,235,0.5)",
+                  borderRadius: 20,
+                  padding: 24,
+                }}
+              >
+                <div style={{
+                  fontSize: 32,
+                  fontWeight: 700,
+                  color: "#fff",
+                  marginBottom: 8
+                }}>
+                  ${semestralPlan.price}
+                </div>
+
+                <div style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  color: "#fff",
+                  marginBottom: 4
+                }}>
+                  Plan {semestralPlan.name}
+                </div>
+
+                <div style={{
+                  fontSize: 13,
+                  color: "rgba(255,255,255,0.5)",
+                  marginBottom: 8
+                }}>
+                  {semestralPlan.description}
+                </div>
+
+                <div style={{
+                  fontSize: 13,
+                  color: "#2563eb",
+                  fontWeight: 600,
+                  marginBottom: 16
+                }}>
+                  Duración: {semestralPlan.duration}
+                </div>
+
+                {semestralPlan.features.map((feature, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 8,
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.7)"
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            ) : (
             <div style={{ display: "flex", gap: 16 }}>
               {(["single", "subscription"] as const).map((plan) => (
                 <motion.div
@@ -230,6 +326,7 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
                 </motion.div>
               ))}
             </div>
+            )}
           </div>
 
           {/* Método de pago */}
@@ -517,7 +614,7 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
                     color: "#2563eb",
                     fontWeight: 600
                   }}>
-                    {plans[selectedPlan].name}
+                    {activePlanName}
                   </div>
                 </div>
               </div>
@@ -588,7 +685,7 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
                   color: "rgba(255,255,255,0.7)"
                 }}>
                   <span>Subtotal</span>
-                  <span>${selectedPlan === "single" ? course.price : plans.subscription.price}</span>
+                  <span>${activePlanSubtotal}</span>
                 </div>
 
                 {discount > 0 && (
@@ -623,6 +720,24 @@ export function CheckoutPage({ course, user, onClose, onSuccess }: CheckoutPageP
               </div>
 
               {/* Botón de pago */}
+              {checkoutError && (
+                <div
+                  role="alert"
+                  style={{
+                    marginBottom: 12,
+                    padding: "12px 14px",
+                    borderRadius: 12,
+                    background: "rgba(239,68,68,0.12)",
+                    border: "1px solid rgba(239,68,68,0.35)",
+                    color: "#fecaca",
+                    fontSize: 13,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {checkoutError}
+                </div>
+              )}
+
               <button
                 onClick={handlePayment}
                 disabled={processing}

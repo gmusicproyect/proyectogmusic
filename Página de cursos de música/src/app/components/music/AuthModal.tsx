@@ -1,15 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { buildAuthModalSuccessPayload } from "../../utils/auth-modal-success";
+import type { UserData } from "../../types/music-app";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (userData: any) => void;
+  onSuccess: (userData: UserData) => void;
   defaultTab?: "login" | "register";
+  registrationOnly?: boolean;
 }
 
-export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" }: AuthModalProps) {
+export function AuthModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  defaultTab = "register",
+  registrationOnly = false,
+}: AuthModalProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const effectiveTab = registrationOnly ? "register" : activeTab;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,13 +32,25 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
     e.preventDefault();
     setLoading(true);
 
-    // Simulación de registro/login
+    if (registrationOnly) {
+      onSuccess(
+        buildAuthModalSuccessPayload({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        })
+      );
+      setLoading(false);
+      onClose();
+      return;
+    }
+
+    // Simulación de registro/login fuera del funnel Semestral
     setTimeout(() => {
       onSuccess({
         name: formData.name || formData.email.split('@')[0],
         email: formData.email,
         phone: formData.phone,
-        state: "registered"
       });
       setLoading(false);
       onClose();
@@ -126,7 +148,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
             textAlign: "center",
             marginBottom: 12
           }}>
-            {activeTab === "register" ? "Crea tu cuenta" : "Bienvenido de vuelta"}
+            {effectiveTab === "register" ? "Crea tu cuenta" : "Bienvenido de vuelta"}
           </h2>
           <p style={{
             fontSize: 15,
@@ -134,12 +156,13 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
             textAlign: "center",
             marginBottom: 32
           }}>
-            {activeTab === "register"
+            {effectiveTab === "register"
               ? "Comienza tu viaje musical hoy mismo"
               : "Continúa donde lo dejaste"}
           </p>
 
           {/* Tabs */}
+          {!registrationOnly && (
           <div style={{
             display: "flex",
             gap: 8,
@@ -183,10 +206,11 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
               Iniciar sesión
             </button>
           </div>
+          )}
 
           {/* Formulario */}
           <form onSubmit={handleSubmit}>
-            {activeTab === "register" && (
+            {effectiveTab === "register" && (
               <div style={{ marginBottom: 20 }}>
                 <label style={{
                   display: "block",
@@ -305,7 +329,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
               />
             </div>
 
-            {activeTab === "register" && (
+            {effectiveTab === "register" && (
               <div style={{ marginBottom: 28 }}>
                 <label style={{
                   display: "block",
@@ -345,7 +369,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
               </div>
             )}
 
-            {activeTab === "login" && (
+            {effectiveTab === "login" && (
               <div style={{
                 display: "flex",
                 justifyContent: "flex-end",
@@ -402,7 +426,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, defaultTab = "register" 
                 }
               }}
             >
-              {loading ? "Procesando..." : activeTab === "register" ? "Crear cuenta gratis" : "Iniciar sesión"}
+              {loading ? "Procesando..." : effectiveTab === "register" ? "Crear cuenta gratis" : "Iniciar sesión"}
             </button>
 
             {/* Divider */}
