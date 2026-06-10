@@ -182,7 +182,24 @@ Simula registro + compra semestral creando/actualizando un alumno y **exactament
 **Auth:** header `X-Gmusic-Dev-Activation-Key` igual a `GMUSIC_DEV_ACTIVATION_KEY` (solo `.env` local del API; ver `.env.example`).
 La clave debe tener **mínimo 24 caracteres** y no puede ser el placeholder `change-me-in-local-env`.
 Configuración inválida, clave ausente o incorrecta → `404` (no revelar el endpoint).
-La respuesta incluye `Cache-Control: no-store`.
+La respuesta incluye `Cache-Control: no-store` y establece una **cookie HttpOnly firmada** de sesión local (ver abajo). En producción **nunca** emite cookie.
+
+**Sesión local HttpOnly firmada (solo desarrollo)**
+
+Tras activación exitosa, el servidor emite:
+
+```
+Set-Cookie: gmusic_dev_student_email=<email>.<hmac-sha256-hex>;
+HttpOnly; SameSite=Strict; Path=/api/v1; Max-Age=28800
+```
+
+- El valor codifica `email` normalizado (minúsculas) + `.` + firma **HMAC-SHA256** calculada con `GMUSIC_DEV_ACTIVATION_KEY`.
+- `devStudentAuth` valida la firma con comparación segura (`timingSafeEqual`). Cookie manipulada, firma inválida, formato incorrecto o demasiado larga → `401` **sin** usar `GMUSIC_DEV_USER_EMAIL` como fallback.
+- Sin cookie válida, continúa el fallback por `GMUSIC_DEV_USER_EMAIL`.
+- **Eliminar esta mecánica antes de producción** y reemplazarla por autenticación real (JWT/sesión Supabase). Nunca exponer `GMUSIC_DEV_ACTIVATION_KEY` en respuestas, logs, variables `VITE_*` ni bundle frontend.
+- En HTTP local de desarrollo **no** se usa flag `Secure`.
+
+**Cierre de sesión local:** `POST /api/v1/dev/logout` (misma protección `devActivationGate`). Responde `204`, `Cache-Control: no-store`, elimina la cookie (`Max-Age=0`). No borra usuario, suscripción ni progreso.
 
 **Request**
 
@@ -602,6 +619,7 @@ Reporte de actividad de un alumno. **Requiere** `GuardianLink` entre apoderado y
 
 | Fecha | Cambio |
 |-------|--------|
+| 2026-06-10 | Sesión HttpOnly firmada (HMAC) + `POST /dev/logout` para desarrollo local |
 | 2026-06-10 | `POST /dev/activate-semestral` — activación simulada de suscripción (solo desarrollo) |
 | 2026-06-09 | `GET /me/access` — contrato de acceso a zona privada del alumno |
 | 2026-06-08 | Contrato inicial MVP — 6 endpoints alumnos + apoderados |

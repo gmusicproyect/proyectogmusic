@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import type { User } from "@prisma/client";
 import { Role } from "@prisma/client";
 import { config } from "../config.js";
+import { resolveDevStudentEmail } from "../lib/devStudentCookie.js";
 import { ApiError, errorBody } from "../lib/errors.js";
 import { prisma } from "../lib/prisma.js";
 
@@ -15,8 +16,8 @@ declare global {
 
 /**
  * Autenticación exclusiva de desarrollo.
- * Resuelve al alumno por GMUSIC_DEV_USER_EMAIL (default: carlos@gmusic.academy).
- * Reemplazar por JWT/sesión real antes de staging/producción.
+ * Resuelve al alumno por cookie HttpOnly de sesión local o, si no existe,
+ * por GMUSIC_DEV_USER_EMAIL. Reemplazar por JWT/sesión real antes de producción.
  */
 export async function devStudentAuth(req: Request, res: Response, next: NextFunction) {
   try {
@@ -29,22 +30,40 @@ export async function devStudentAuth(req: Request, res: Response, next: NextFunc
       );
     }
 
+    const resolution = resolveDevStudentEmail(req.headers.cookie);
+
+    if (resolution.kind === "invalid_cookie") {
+      return res.status(401).json(
+        errorBody("UNAUTHORIZED", "Sesión de desarrollo inválida.")
+      );
+    }
+
+    const email =
+      resolution.kind === "resolved" ? resolution.email : config.devStudentEmail;
+
     const user = await prisma.user.findUnique({
-      where: { email: config.devStudentEmail },
+      where: { email },
     });
 
     if (!user) {
       return res.status(401).json(
         errorBody(
           "UNAUTHORIZED",
-          `Alumno de desarrollo no encontrado (${config.devStudentEmail}). Ejecuta npm run db:seed.`
+          resolution.kind === "resolved"
+            ? "Alumno de la sesión de desarrollo no encontrado."
+            : `Alumno de desarrollo no encontrado (${config.devStudentEmail}). Ejecuta npm run db:seed.`
         )
       );
     }
 
     if (user.role !== Role.STUDENT) {
       return res.status(403).json(
-        errorBody("FORBIDDEN", "GMUSIC_DEV_USER_EMAIL debe apuntar a un usuario STUDENT.")
+        errorBody(
+          "FORBIDDEN",
+          resolution.kind === "resolved"
+            ? "La sesión de desarrollo solo puede representar un usuario STUDENT."
+            : "GMUSIC_DEV_USER_EMAIL debe apuntar a un usuario STUDENT."
+        )
       );
     }
 
