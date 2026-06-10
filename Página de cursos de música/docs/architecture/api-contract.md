@@ -166,6 +166,80 @@ Si hay varias suscripciones ACTIVE vigentes, el servidor elige **determinística
 
 ---
 
+### `POST /api/v1/dev/activate-semestral` *(temporal — solo desarrollo local)*
+
+Simula registro + compra semestral creando/actualizando un alumno y **exactamente una** suscripción `ACTIVE`.
+**Eliminar este endpoint antes de producción.** En `NODE_ENV=production` responde `404` (como si no existiera).
+
+**Alcance:** exclusivamente desarrollo local en el servidor API. La clave vive en `GMUSIC_DEV_ACTIVATION_KEY` del `.env` del backend.
+
+**Prohibido en frontend:**
+
+- Nunca definir ni leer esta clave en variables `VITE_*`.
+- Nunca incluir la clave en el bundle del cliente ni enviarla desde el navegador en producción.
+- R3.3B u otros flujos públicos deben invocar este endpoint solo desde entorno de desarrollo controlado, sin exponer el secreto al bundle.
+
+**Auth:** header `X-Gmusic-Dev-Activation-Key` igual a `GMUSIC_DEV_ACTIVATION_KEY` (solo `.env` local del API; ver `.env.example`).
+La clave debe tener **mínimo 24 caracteres** y no puede ser el placeholder `change-me-in-local-env`.
+Configuración inválida, clave ausente o incorrecta → `404` (no revelar el endpoint).
+La respuesta incluye `Cache-Control: no-store`.
+
+**Request**
+
+```json
+{
+  "name": "Juan Lizama",
+  "email": "juan@gmusic.academy",
+  "planId": "gmusic-semester-6-months"
+}
+```
+
+| Campo | Reglas |
+|-------|--------|
+| `name` | Requerido, no vacío, máx. 100 caracteres |
+| `email` | Requerido, normalizado a minúsculas, formato válido |
+| `planId` | Solo `gmusic-semester-6-months` |
+
+Campos prohibidos en el body: `role`, `status`, `endsAt`, XP, progreso, IDs, etc.
+
+**Comportamiento**
+
+- Upsert de `User` con `Role.STUDENT`.
+- Rechaza si el email pertenece a `ADMIN` o `GUARDIAN` (`403 FORBIDDEN`).
+- Elimina suscripciones previas del usuario y crea una `ACTIVE` con `endsAt = now + 6 meses calendario`.
+- No crea progreso, XP, racha ni sesiones.
+- Idempotente: primera activación `201`, reactivaciones `200`.
+- Concurrencia serializada por email (advisory lock).
+
+**Response 201 / 200**
+
+```json
+{
+  "user": { "id": "...", "name": "...", "email": "..." },
+  "subscription": {
+    "status": "ACTIVE",
+    "planId": "gmusic-semester-6-months",
+    "endsAt": "2026-12-09T22:01:13.367Z"
+  },
+  "access": {
+    "canAccessStudentZone": true,
+    "reason": "ACTIVE_SUBSCRIPTION"
+  }
+}
+```
+
+**Errores**
+
+| Código HTTP | `error.code` | Cuándo |
+|-------------|--------------|--------|
+| 404 | `INTERNAL_ERROR` | Producción, clave ausente/incorrecta |
+| 400 | `VALIDATION_ERROR` | Body inválido o campos desconocidos |
+| 403 | `FORBIDDEN` | Email de usuario ADMIN o GUARDIAN |
+
+**Nota:** no altera `GET /me/access`; el guardián frontend sigue usando ese endpoint como fuente de verdad.
+
+---
+
 ### `GET /api/v1/me/path`
 
 Camino pedagógico para **Mi Camino**. Módulos y nodos con estado calculado en servidor.
@@ -528,4 +602,6 @@ Reporte de actividad de un alumno. **Requiere** `GuardianLink` entre apoderado y
 
 | Fecha | Cambio |
 |-------|--------|
+| 2026-06-10 | `POST /dev/activate-semestral` — activación simulada de suscripción (solo desarrollo) |
+| 2026-06-09 | `GET /me/access` — contrato de acceso a zona privada del alumno |
 | 2026-06-08 | Contrato inicial MVP — 6 endpoints alumnos + apoderados |

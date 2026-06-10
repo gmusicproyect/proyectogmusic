@@ -25,3 +25,13 @@ export async function acquireSessionCompleteAdvisoryLock(
     Prisma.sql`SELECT pg_advisory_xact_lock(hashtext('lesson-session-complete'), hashtext(${sessionId}))`
   );
 }
+
+/** Serializa activaciones semestrales de desarrollo por email. */
+export async function acquireDevActivationAdvisoryLock(
+  tx: Prisma.TransactionClient,
+  email: string
+): Promise<void> {
+  await tx.$executeRaw(
+    Prisma.sql`SELECT pg_advisory_xact_lock(hashtext('dev-activate-semestral'), hashtext(${email}))`
+  );
+}

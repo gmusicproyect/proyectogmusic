@@ -581,6 +581,137 @@ export function assertUserSubscriptionsSnapshotsEqual(
   }
 }
 
+export interface UserLearningActivityCounts {
+  userProgress: number;
+  lessonSessions: number;
+  exerciseAttempts: number;
+  xpEvents: number;
+  streakEvents: number;
+}
+
+export async function countUserLearningActivity(
+  userId: string
+): Promise<UserLearningActivityCounts> {
+  const [userProgress, lessonSessions, exerciseAttempts, xpEvents, streakEvents] =
+    await Promise.all([
+      prisma.userProgress.count({ where: { userId } }),
+      prisma.lessonSession.count({ where: { userId } }),
+      prisma.exerciseAttempt.count({
+        where: { session: { userId } },
+      }),
+      prisma.xpEvent.count({ where: { userId } }),
+      prisma.streakEvent.count({ where: { userId } }),
+    ]);
+
+  return {
+    userProgress,
+    lessonSessions,
+    exerciseAttempts,
+    xpEvents,
+    streakEvents,
+  };
+}
+
+export interface UserEmailTestSnapshot {
+  existed: boolean;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    role: Role;
+    timezone: string;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+  subscriptions: SubscriptionRowSnapshot[];
+}
+
+export async function captureUserEmailTestSnapshot(
+  email: string
+): Promise<UserEmailTestSnapshot> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return { existed: false, user: null, subscriptions: [] };
+  }
+
+  const subscriptions = await captureUserSubscriptionsSnapshot(user.id);
+
+  return {
+    existed: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      timezone: user.timezone,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
+    subscriptions,
+  };
+}
+
+export async function restoreUserEmailTestSnapshot(
+  email: string,
+  snapshot: UserEmailTestSnapshot
+): Promise<void> {
+  const current = await prisma.user.findUnique({ where: { email } });
+
+  if (current) {
+    await prisma.subscription.deleteMany({ where: { userId: current.id } });
+    await prisma.user.delete({ where: { id: current.id } });
+  }
+
+  if (!snapshot.existed || !snapshot.user) {
+    return;
+  }
+
+  await prisma.user.create({
+    data: {
+      id: snapshot.user.id,
+      email: snapshot.user.email,
+      name: snapshot.user.name,
+      role: snapshot.user.role,
+      timezone: snapshot.user.timezone,
+      createdAt: snapshot.user.createdAt,
+      updatedAt: snapshot.user.updatedAt,
+    },
+  });
+
+  await restoreUserSubscriptionsSnapshot(snapshot.user.id, snapshot.subscriptions);
+}
+
+export function assertUserEmailTestSnapshotsEqual(
+  current: UserEmailTestSnapshot,
+  expected: UserEmailTestSnapshot
+): void {
+  assert.equal(current.existed, expected.existed);
+
+  if (!expected.existed) {
+    assert.equal(current.user, null);
+    assert.equal(current.subscriptions.length, 0);
+    return;
+  }
+
+  assert.notEqual(current.user, null);
+  assert.notEqual(expected.user, null);
+
+  const currentUser = current.user!;
+  const expectedUser = expected.user!;
+
+  assert.equal(currentUser.id, expectedUser.id);
+  assert.equal(currentUser.email, expectedUser.email);
+  assert.equal(currentUser.name, expectedUser.name);
+  assert.equal(currentUser.role, expectedUser.role);
+  assert.equal(currentUser.timezone, expectedUser.timezone);
+  assert.equal(currentUser.createdAt.toISOString(), expectedUser.createdAt.toISOString());
+  assert.equal(currentUser.updatedAt.toISOString(), expectedUser.updatedAt.toISOString());
+  assertUserSubscriptionsSnapshotsEqual(current.subscriptions, expected.subscriptions);
+}
+
 export async function getTodayStreak(userId: string, timezone: string) {
   const today = formatDateInTimezone(new Date(), timezone);
   return prisma.streakEvent.findUnique({
