@@ -85,7 +85,7 @@ describe("InscripcionGatePage — puerta de inscripción", () => {
   });
 });
 
-describe("InscripcionRegistroPage — placeholder Fase 4", () => {
+describe("InscripcionRegistroPage — bridge WhatsApp", () => {
   it("lee el plan guardado en localStorage", () => {
     assert.equal(registroSource.includes("gmusic:selected_plan_v1"), true);
     assert.equal(registroSource.includes("readSelectedPlan"), true);
@@ -97,6 +97,28 @@ describe("InscripcionRegistroPage — placeholder Fase 4", () => {
 
   it("permite volver a inscripcion-gate para cambiar plan", () => {
     assert.equal(registroSource.includes("inscripcion-gate"), true);
+  });
+
+  it("muestra botón de WhatsApp con URL wa.me", () => {
+    assert.equal(registroSource.includes("wa.me"), true);
+  });
+
+  it("no contiene campo de contraseña ni tipo password", () => {
+    assert.equal(registroSource.includes("password"), false);
+    assert.equal(registroSource.includes("contraseña"), false);
+  });
+
+  it("tiene campos de nombre y email en el formulario", () => {
+    assert.equal(registroSource.includes("nombre"), true);
+    assert.equal(registroSource.includes("email"), true);
+  });
+
+  it("mensaje de WhatsApp menciona el nombre del plan seleccionado", () => {
+    assert.equal(registroSource.includes("plan.name"), true);
+  });
+
+  it("muestra texto de reserva de lugar", () => {
+    assert.equal(registroSource.includes("reservado"), true);
   });
 });
 

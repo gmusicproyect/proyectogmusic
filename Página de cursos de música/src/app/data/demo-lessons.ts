@@ -12,8 +12,19 @@ export interface DemoLesson {
   videoTitle: string;
   videoSubtitle: string;
   videoDuration: string;
-  /** Reemplazar por URL real cuando esté el video producido. */
+  /**
+   * URL de embed para el reproductor de video.
+   * Usar formato https://www.youtube.com/embed/VIDEO_ID para YouTube.
+   * TODO: Reemplazar por video propio de Gmusic antes de producción.
+   */
   videoUrl: string;
+  /**
+   * Marca el origen del video. "youtube-example" = video temporal de ejemplo,
+   * no producción oficial de Gmusic. "owned" = video propio final.
+   */
+  videoSource?: "youtube-example" | "owned";
+  /** true mientras el video no sea el contenido oficial definitivo de Gmusic. */
+  isPlaceholderVideo?: true;
   exercise: DemoExerciseKind;
   completionMessage: string;
 }
@@ -27,7 +38,9 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoTitle: "Tu guitarra y postura",
     videoSubtitle: "Partes del instrumento, apoyo y primer contacto",
     videoDuration: "7 min",
-    videoUrl: "https://www.youtube.com/embed/REPLACE_LESSON_1",
+    videoUrl: "https://www.youtube.com/embed/0GImi8l53q0",
+    videoSource: "youtube-example",
+    isPlaceholderVideo: true,
     exercise: {
       kind: "mcq",
       question: "¿Qué parte de la guitarra se apoya sobre tu pierna al sentarte?",
@@ -49,7 +62,9 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoTitle: "Las 6 cuerdas al aire",
     videoSubtitle: "Nombres, orden y sonido de cada cuerda",
     videoDuration: "8 min",
-    videoUrl: "https://www.youtube.com/embed/REPLACE_LESSON_2",
+    videoUrl: "https://www.youtube.com/embed/s-XnaDpYXw4",
+    videoSource: "youtube-example",
+    isPlaceholderVideo: true,
     exercise: { kind: "ex1-cuerdas" },
     completionMessage: "Reconoces las 6 cuerdas de tu guitarra.",
   },
@@ -61,7 +76,9 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoTitle: "Tu vocabulario musical",
     videoSubtitle: "Nota, cuerda, traste, digitación, ritmo, pulso",
     videoDuration: "6 min",
-    videoUrl: "https://www.youtube.com/embed/REPLACE_LESSON_3",
+    videoUrl: "https://www.youtube.com/embed/wsnqgfaqYEE",
+    videoSource: "youtube-example",
+    isPlaceholderVideo: true,
     exercise: {
       kind: "mcq",
       question: "¿Cómo se llaman las barras metálicas verticales que dividen el mástil?",
@@ -83,7 +100,9 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoTitle: "El mástil y las notas",
     videoSubtitle: "Notas naturales, sostenidos y ubicación básica",
     videoDuration: "9 min",
-    videoUrl: "https://www.youtube.com/embed/REPLACE_LESSON_4",
+    videoUrl: "https://www.youtube.com/embed/FRp9OgW2HhI",
+    videoSource: "youtube-example",
+    isPlaceholderVideo: true,
     exercise: { kind: "ex4-calidad-acorde" },
     completionMessage: "Reconoces acordes mayores y menores.",
   },
@@ -95,7 +114,9 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoTitle: "Am y Em — tus primeros acordes",
     videoSubtitle: "Formación, calidad y cambio entre acordes básicos",
     videoDuration: "10 min",
-    videoUrl: "https://www.youtube.com/embed/REPLACE_LESSON_5",
+    videoUrl: "https://www.youtube.com/embed/uZZsSol656w",
+    videoSource: "youtube-example",
+    isPlaceholderVideo: true,
     exercise: { kind: "ex5-secuencia" },
     completionMessage: "Completaste tu primer camino musical.",
   },

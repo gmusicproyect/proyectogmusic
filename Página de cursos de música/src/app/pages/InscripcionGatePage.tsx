@@ -6,10 +6,10 @@ import { SUBSCRIPTION_PLANS, getPlanById } from "../data/subscription-plans";
 import type { PlanId } from "../data/subscription-plans";
 import { GOLD, TEXT_SEC, WHITE_WARM, BORDER } from "../components/marketing/tokens";
 
-// Gamification color tokens — Fase 3
-const EDU_SUCCESS = "#58CC02";
-const EDU_REWARD = "#FF9600";
-const EDU_ACHIEVEMENT = "#CE82FF";
+// Gamification tokens — CSS vars from design-system/tokens.css
+const EDU_SUCCESS = "var(--edu-success)";
+const EDU_REWARD = "var(--edu-reward)";
+const EDU_ACHIEVEMENT = "var(--edu-achievement)";
 
 const SELECTED_PLAN_KEY = "gmusic:selected_plan_v1";
 
@@ -154,7 +154,7 @@ function PlanCard({ plan, selected, onSelect }: PlanCardProps) {
             fontStyle: "italic",
           }}
         >
-          Precio por definir · {plan.intervalLabel}
+          Cupos de apertura · {plan.intervalLabel}
         </span>
       </div>
 
@@ -491,7 +491,7 @@ export function InscripcionGatePage({ setPage }: InscripcionGatePageProps) {
               fontWeight: 500,
             }}
           >
-            Próximamente abriremos inscripciones — precios por definir
+            Cupos de apertura — precio por confirmar vía WhatsApp
           </p>
 
           <div

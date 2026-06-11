@@ -311,6 +311,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
                   subtitle={lesson.videoSubtitle}
                   duration={lesson.videoDuration}
                   lessonLabel={`Clase ${lessonId} · Fundamento`}
+                  videoUrl={lesson.videoUrl}
                   onPlaybackComplete={() => setVideoComplete(true)}
                 />
               </motion.div>
