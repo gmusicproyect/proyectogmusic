@@ -59,9 +59,9 @@ Al 10 Jun 2026 el funnel público principal está implementado: demo de 5 clases
 
 ### 7. Precios y planes
 
-**Decisión:** Tres planes (`monthly`, `semester`, `annual`) con `price: null` hasta definición de Juan.  
-**Razón:** UI lista; Flow IDs placeholder (`GMUSIC_*_V1`).  
-**Consecuencia:** Gate muestra "Cupos de apertura" / confirmación vía WhatsApp.
+**Decisión original (10 Jun 2026):** Tres planes flat (`monthly`, `semester`, `annual`) con `price: null`.  
+**Supersedida por `cf3343c`:** Modelo 3 tiers × 3 períodos con `PRICE_TABLE` CLP y 9 `flowPlanIds`.  
+**Estado:** Precios visibles en gate/registro; conversión vía WhatsApp hasta Fase 4/5.
 
 ### 8. Gap curricular Clase 4 (pendiente decisión PO)
 

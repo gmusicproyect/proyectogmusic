@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 10 Jun 2026 (post-`8ca6228` — Pre-Fase 4 commiteada)
+Última actualización: 10 Jun 2026 (post-`cf3343c` — precios 3×3 en remoto)
 
 ## Fases
 
@@ -10,6 +10,7 @@
 | Fase 2 | Demo 5 clases (PathDemoPage + DemoLessonPage) | ✅ Completo | `2e41d9f` | `path-demo-page.test.ts`, `fundamento-funnel.test.ts` |
 | Fase 3 | InscripcionGatePage gamificada + selector de planes | ✅ Completo | `2e41d9f` | `inscripcion-gate.test.ts` |
 | Pre-Fase 4 | Bridge WhatsApp + videos YouTube en demo | ✅ Completo | `8ca6228` | `inscripcion-gate.test.ts` |
+| Fase Precios | Modelo 3 tiers × 3 períodos + CLP en gate/registro | ✅ Completo | `cf3343c` | `inscripcion-gate.test.ts` (358 tests totales app) |
 | R3 / zona alumno | Acceso, funnel Semestral dev, cofre Fase 6, R3.3E redirect | ✅ Completo (remoto) | `30e310b`…`6088dc5` | `public-session-flow.test.ts`, `map-dashboard.test.ts`, etc. |
 | Fase 4 | Auth real (JWT/bcrypt/Prisma) | ⏸ Pausada | — | — |
 | Fase 5 | Flow + Resend + Webhooks | ⏸ Pausada | — | — |
@@ -23,8 +24,8 @@ Páginas montadas en `App.tsx` que **no** están detrás de `DEV_LEGACY`:
 | `GmusicLanding.tsx` | `home` | ✅ Completo | Compone Hero, Academia, Planes, etc.; recibe `session` para CTA |
 | `PathDemoPage.tsx` | `mi-camino-demo` | ✅ Completo | 5 nodos desde `DEMO_LESSONS`; progreso vía `useDemoProgress` |
 | `DemoLessonPage.tsx` | `demo-clase-1` … `demo-clase-5` | ✅ Completo | Fases video → ejercicio → éxito; YouTube embed si `videoUrl` presente |
-| `InscripcionGatePage.tsx` | `inscripcion-gate` | ✅ Completo | `LockedGate` si demo incompleto; selector 3 planes |
-| `InscripcionRegistroPage.tsx` | `inscripcion-registro` | ✅ Completo | Bridge WhatsApp; `WHATSAPP_NUMBER = "56953429676"` (L8, commit `8ca6228`) |
+| `InscripcionGatePage.tsx` | `inscripcion-gate` | ✅ Completo | Selector período (default `semester`) + 3 tiers (`basico`/`plus`/`familiar`); Plus recomendado (`cf3343c`) |
+| `InscripcionRegistroPage.tsx` | `inscripcion-registro` | ✅ Completo | Bridge WhatsApp; planId `{tier}-{period}`; fallback `plus-semester`; `WHATSAPP_NUMBER = "56953429676"` |
 | `GmusicWelcome.tsx` | `mi-estudio`, `welcome` | ✅ Completo | Tras `StudentZoneGuard`; API dashboard real/mock |
 | `GmusicPath.tsx` | `mi-camino` | ✅ Completo | Tras `StudentZoneGuard`; API path + lesson sessions |
 | `FreeFundamentoLessonPage.tsx` | `fundamento-free-lesson` | 🗂️ Legacy activo | Ruta paralela; Hero/Planes aún apuntan aquí |
@@ -64,31 +65,23 @@ Páginas montadas en `App.tsx` que **no** están detrás de `DEV_LEGACY`:
 
 ## Archivos sin commit (working tree)
 
-Pre-Fase 4 funcional ya commiteada en **`8ca6228`** (`demo-lessons`, `VideoPlayerLesson`, `DemoLessonPage`, `InscripcionGatePage`, `InscripcionRegistroPage`, `inscripcion-gate.test.ts`).
+Según `git status` post-push `cf3343c`: **working tree limpio** en `src/`. Pendiente solo sincronización documental `.agents/` (Paso B).
 
-**WHATSAPP_NUMBER resuelto:** `56953429676` (formato wa.me correcto).
+**Modelo de precios activo** (`subscription-plans.ts`, commit `cf3343c`):
 
-Según `git status` al momento de esta actualización:
+- Tiers: `basico`, `plus` (recomendado), `familiar` (3 perfiles)
+- Períodos: `monthly`, `semester` (default UI), `annual`
+- 9 `planId`: p. ej. `plus-semester`
+- `PRICE_TABLE` CLP completo; ahorro en selector: Semestral 17%, Anual 25% (referencia Plus)
 
-**Modificados (unstaged):**
+**WHATSAPP_NUMBER:** `56953429676` (formato wa.me correcto, commit `8ca6228`).
 
-- `.agents/skills/gmusic-game-progression-architecture/SKILL.md`
-
-**Sin rastrear (pendientes commit documental `.agents/`):**
-
-- `.agents/MEMORY.md`
-- `.agents/skills/gmusic-agent-workflow/SKILL.md`
-- `.agents/skills/gmusic-auth-email-verification/SKILL.md`
-- `.agents/skills/gmusic-funnel-conversion/SKILL.md`
-
-**Absorbidos y eliminados de raíz (Paso 2):** `CURSOR-INSTRUCTIONS.md`, `TODO-fix-ts-errors.md` → contenido en `.agents/CURSOR_CONTEXT.md` § Troubleshooting TS.
-
-**Nota git:** `main` local estaba **4 commits ahead** de `origin/main` (`5ad9517`, `2e41d9f`, `177b402`, `8ca6228`) además de los cambios documentales pendientes anteriores.
+**Nota git:** `main` sincronizado con `origin/main` en `cf3343c`.
 
 ## Pendientes inmediatos
 
-- [ ] Precios reales CLP (Mensual / Semestral / Anual) — `subscription-plans.ts`: todos los `price: null`
 - [ ] Decisión Clase 4: ejercicio curricular (`ex4-calidad-acorde` vs. `Ex2NotasAm` / contenido del video)
 - [ ] Decisión Skills curriculares: ¿repo git o Notion/Drive?
 - [ ] Probar accesible en producción sin DEV_LEGACY guard (bajo impacto — sin links públicos conocidos). Resolver en limpieza post-Fase 4.
-- [ ] Commit documental final `.agents/` + push conjunto (autorizado por Fable, pendiente de completar actualizaciones)
+- [ ] Fase 4 Auth real — pausada hasta autorización explícita de Juan
+- [ ] Integración Flow real (Fase 5) — `flowPlanIds` definidos en código; webhook pendiente

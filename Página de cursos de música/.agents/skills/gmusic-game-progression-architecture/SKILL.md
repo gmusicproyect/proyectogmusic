@@ -43,7 +43,7 @@ GmusicLanding (home)
 ```
 
 Estado del demo: localStorage `gmusic:demo_v1 = { completed: number[] }`.
-Plan elegido: localStorage `gmusic:selected_plan_v1 = { planId: "monthly"|"semester"|"annual" }`.
+Plan elegido: localStorage `gmusic:selected_plan_v1 = { planId: "plus-semester" }` (formato `{tier}-{period}`).
 
 **Ruta legacy paralela (suscripción directa sin demo):**
 ```

@@ -27,17 +27,25 @@ Estrategia actual: **web embudo primero**.
 ### Fase 3 — InscripcionGate videojuego
 
 - Puerta bloqueada si demo incompleto (`LockedGate`)
-- Selector de 3 planes → `inscripcion-registro`
-- Copy gamificado; planes con `price: null` (placeholder CLP)
+- Selector de planes → `inscripcion-registro`
+- Copy gamificado
 - Commit: `2e41d9f`
 
-### Pre-Fase 4 — Bridge WhatsApp (implementado, pendiente commit)
+### Pre-Fase 4 — Bridge WhatsApp
 
 - **Propósito:** validar conversión real antes de invertir en Fase 4
 - `InscripcionRegistroPage`: CTA WhatsApp + formulario nombre/email/teléfono (sin contraseña)
 - Videos YouTube temporales en `demo-lessons.ts` (`isPlaceholderVideo: true`)
 - `VideoPlayerLesson`: prop `videoUrl` para iframe YouTube
-- **Sin backend.** Estado: working tree sin commit al 10 Jun 2026
+- Commit: `8ca6228`
+
+### Fase Precios — Modelo 3×3 CLP
+
+- **Tiers:** Básico, Plus (recomendado), Familiar (3 perfiles)
+- **Períodos:** Mensual, Semestral (default UI), Anual — con etiquetas de ahorro 17% / 25%
+- `subscription-plans.ts`: `PRICE_TABLE`, 9 `flowPlanIds`, helpers `parsePlanId` / `formatCLP`
+- Gate: selector período + tarjetas tier; registro: precios reales + WhatsApp con tier/período
+- Commit: `cf3343c` (en remoto)
 
 ### Trabajo R3 / zona alumno (completado en remoto, commits previos al funnel)
 
@@ -71,7 +79,7 @@ Estrategia actual: **web embudo primero**.
 
 ### Fase 5 — Flow + Resend + Webhooks
 
-**Prerequisito:** Fase 4 completa + precios CLP definidos por Juan.
+**Prerequisito:** Fase 4 completa. Precios CLP definidos en UI (`cf3343c`); integración Flow pendiente.
 
 - Webhook Flow → `Subscription` ACTIVE
 - Resend email bienvenida

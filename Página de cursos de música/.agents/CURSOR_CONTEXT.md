@@ -32,7 +32,7 @@ npm run api:dev         # Express :3001
 npm run build           # build producción
 ```
 
-**Última ejecución auditada:** `npm run app:test` → **356 pass / 0 fail** (128 suites), post-`8ca6228`.
+**Última ejecución auditada:** `npm run app:test` → **358 pass / 0 fail** (128 suites), post-`cf3343c`.
 
 ---
 
@@ -43,8 +43,8 @@ npm run build           # build producción
 | `home` | `GmusicLanding` | ✅ | Landing embudo |
 | `mi-camino-demo` | `PathDemoPage` | ❌ | 5 nodos demo |
 | `demo-clase-1` … `demo-clase-5` | `DemoLessonPage` | ❌ | Regex en App |
-| `inscripcion-gate` | `InscripcionGatePage` | ❌ | Requiere 5 clases completas |
-| `inscripcion-registro` | `InscripcionRegistroPage` | ❌ | Bridge WhatsApp (`56953429676`, commit `8ca6228`) |
+| `inscripcion-gate` | `InscripcionGatePage` | ❌ | Selector período + 3 tiers CLP (`cf3343c`; default `plus`/`semester`) |
+| `inscripcion-registro` | `InscripcionRegistroPage` | ❌ | Bridge WhatsApp; `planId` tier-período; fallback `plus-semester` |
 | `mi-estudio` / `welcome` | `GmusicWelcome` | ❌ | `StudentZoneGuard` + `/alumno` |
 | `mi-camino` | `GmusicPath` | ❌ | `StudentZoneGuard` + `/mi-camino` |
 
@@ -78,7 +78,7 @@ Exclusiones Navbar/MusicPlayer definidas en `App.tsx` (~L229 y ~L380).
 | Clave | Shape | Propietario |
 |-------|-------|-------------|
 | `gmusic:demo_v1` | `{ completed: number[] }` | `useDemoProgress` |
-| `gmusic:selected_plan_v1` | `{ planId: "monthly"\|"semester"\|"annual" }` | `InscripcionGatePage` → leído en `InscripcionRegistroPage` |
+| `gmusic:selected_plan_v1` | `{ planId: "basico-monthly" \| "plus-semester" \| … }` (9 combinaciones) | `InscripcionGatePage` → leído en `InscripcionRegistroPage` |
 
 ---
 
@@ -146,7 +146,7 @@ Ver `.agents/DO_NOT_TOUCH.md`.
 
 ## Troubleshooting TS (falso positivo LSP)
 
-**Estado actual (post-`8ca6228`):** `npm run app:typecheck` está **limpio**. Los archivos raíz `CURSOR-INSTRUCTIONS.md` y `TODO-fix-ts-errors.md` fueron **absorbidos aquí y eliminados** — no buscarlos en la raíz del repo.
+**Estado actual (post-`cf3343c`):** `npm run app:typecheck` está **limpio**. Los archivos raíz `CURSOR-INSTRUCTIONS.md` y `TODO-fix-ts-errors.md` fueron **absorbidos aquí y eliminados** — no buscarlos en la raíz del repo.
 
 ### Síntoma habitual (panel de problemas VS Code / Cursor)
 

@@ -1,7 +1,7 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 10 Jun 2026 (post-`8ca6228`).
+Última actualización: 10 Jun 2026 (post-`cf3343c`, remoto sincronizado).
 
 ---
 
@@ -34,8 +34,19 @@ Cuando Juan escriba **"Retomar Gmusic"**, Fable debe ejecutar exactamente estos 
 | Fase 2 | Demo de 5 clases (PathDemoPage + DemoLessonPage) | `2e41d9f` |
 | Fase 3 | InscripcionGatePage videojuego + selector de planes | `2e41d9f` |
 | Pre-Fase 4 | Bridge WhatsApp + videos YouTube temporales | `8ca6228` |
+| Fase Precios | Modelo 3×3 tiers × períodos + CLP en gate/registro | `cf3343c` |
 
-### Implementado y commiteado en 8ca6228
+### Fase Precios — commiteada y pusheada en `cf3343c`
+
+- **`subscription-plans.ts`:** `PlanTier` (`basico`/`plus`/`familiar`) × `BillingPeriod` (`monthly`/`semester`/`annual`); `PRICE_TABLE` CLP; 9 `flowPlanIds`
+- **Defaults UI gate:** período `semester`, tier `plus` (recomendado)
+- **Familiar:** 3 perfiles (decisión producto)
+- **Selector período:** etiquetas con ahorro — Semestral · Ahorra 17%, Anual · Ahorra 25%
+- **`InscripcionGatePage`:** toggle período + 3 tarjetas tier con precio/mes y total del período
+- **`InscripcionRegistroPage`:** `planId` compuesto (`plus-semester` fallback); WhatsApp incluye tier + período
+- **Tests:** 358 pass / 0 fail
+
+### Pre-Fase 4 — commiteada en `8ca6228`
 
 - **Videos YouTube reales** en las 5 clases demo (marcados `isPlaceholderVideo: true`):
   - Clase 1: `https://www.youtube.com/embed/0GImi8l53q0`
@@ -45,8 +56,16 @@ Cuando Juan escriba **"Retomar Gmusic"**, Fable debe ejecutar exactamente estos 
   - Clase 5: `https://www.youtube.com/embed/uZZsSol656w`
 - **VideoPlayerLesson.tsx** — nueva prop `videoUrl?`: iframe YouTube + botón "He terminado de ver este video →"; modo simulado intacto cuando `videoUrl` está ausente
 - **InscripcionRegistroPage.tsx** — bridge WhatsApp: badge "Tu lugar está reservado", card del plan, CTA verde WhatsApp, formulario nombre/email/WhatsApp. Sin campos de contraseña. `WHATSAPP_NUMBER = "56953429676"` (commit `8ca6228`).
-- **InscripcionGatePage.tsx** — copy actualizado: "Cupos de apertura" reemplaza "Precio por definir"
-- **Tests:** 356 pasando / 0 fallos · TypeScript limpio
+- **InscripcionGatePage.tsx** — puerta gamificada + selector de plan (actualizado en `cf3343c` a tier×período)
+
+### Archivos Fase Precios (commiteados en `cf3343c`)
+
+```
+src/app/data/subscription-plans.ts
+src/app/pages/InscripcionGatePage.tsx
+src/app/pages/InscripcionRegistroPage.tsx
+src/app/pages/inscripcion-gate.test.ts
+```
 
 ### Archivos Pre-Fase 4 (commiteados en `8ca6228`)
 
@@ -59,28 +78,17 @@ src/app/pages/InscripcionRegistroPage.tsx
 src/app/pages/inscripcion-gate.test.ts
 ```
 
-### Skills / docs pendientes de commit documental
-
-```
-.agents/skills/gmusic-game-progression-architecture/SKILL.md  (modificado, unstaged)
-.agents/skills/gmusic-funnel-conversion/SKILL.md              (nuevo, untracked)
-.agents/skills/gmusic-agent-workflow/SKILL.md                 (nuevo, untracked)
-.agents/skills/gmusic-auth-email-verification/SKILL.md        (nuevo, untracked)
-```
-
 ---
 
 ## Pendientes inmediatos
 
-Estos datos los debe proveer Juan antes de avanzar:
-
 | # | Pendiente | Urgencia | Impacto |
 |---|-----------|----------|---------|
-| B | **Precios reales en CLP** (Mensual, Semestral, Anual) | Antes de Fase 4 | `price: null` en `subscription-plans.ts` |
-| C | **Decisión sobre Clase 4 — `Ex2NotasAm`** | Antes de producción | `ex4-calidad-acorde` cubre calidad de acordes pero el video de Clase 4 es sobre notas y sostenidos — posible desconexión curricular |
-| D | **Decisión sobre Skills curriculares** | Antes del próximo commit | ¿Los Skills viven en el repo git o en Notion/Drive? |
-| F | **DEV_LEGACY en producción** | Limpieza post-Fase 4 | Rutas `dashboard`/`lesson`/`curriculum` accesibles solo en dev; verificar que no haya links públicos en build prod |
-| G | **Commit documental `.agents/` + push** | Cuando Fable confirme | 4 commits locales sin push; MEMORY/ROADMAP/Skills pendientes |
+| C | **Decisión sobre Clase 4 — `Ex2NotasAm`** | Antes de producción | `ex4-calidad-acorde` vs. video de notas/sostenidos |
+| D | **Decisión sobre Skills curriculares** | Antes del próximo commit | ¿Skills en repo git o Notion/Drive? |
+| F | **DEV_LEGACY en producción** | Limpieza post-Fase 4 | Verificar links públicos en build prod |
+| H | **Fase 4 Auth real** | Pausada | Requiere autorización explícita de Juan |
+| I | **Fase 5 Flow + webhooks** | Tras Fase 4 | `flowPlanIds` listos en código; integración pendiente |
 
 ---
 
@@ -150,7 +158,7 @@ Landing (home)
 | Clave | Shape | Propietario |
 |-------|-------|-------------|
 | `gmusic:demo_v1` | `{ completed: number[] }` | `useDemoProgress` |
-| `gmusic:selected_plan_v1` | `{ planId: "monthly"\|"semester"\|"annual" }` | `InscripcionGatePage` |
+| `gmusic:selected_plan_v1` | `{ planId: "basico-monthly" \| "plus-semester" \| … }` (9 combinaciones) | `InscripcionGatePage` |
 
 ---
 

@@ -24,7 +24,7 @@ GmusicLanding (home)
               └── demo-clase-1..5 → DemoLessonPage (video → ejercicio → éxito)
                     └── [clase 5 completa] → inscripcion-gate → InscripcionGatePage
                           ├── [demo incompleto] → LockedGate → mi-camino-demo
-                          └── [demo completo] → selector de planes
+                          └── [demo completo] → selector período + tier
                                 └── inscripcion-registro → InscripcionRegistroPage
                                       └── [Fase 4] registro real → mi-estudio
 ```
@@ -43,11 +43,11 @@ PlanesSection → handleSemestralPlanSelect → AuthModal → CheckoutPage → m
 | `src/app/hooks/useDemoUserState.ts` | CTA dinámico según estado del visitante |
 | `src/app/hooks/useDemoProgress.ts` | R/W de progreso demo en localStorage |
 | `src/app/data/demo-lessons.ts` | Configuración de las 5 clases gratuitas |
-| `src/app/data/subscription-plans.ts` | 3 planes con flowPlanId para Flow |
+| `src/app/data/subscription-plans.ts` | 3 tiers × 3 períodos, `PRICE_TABLE` CLP, 9 `flowPlanIds` |
 | `src/app/pages/PathDemoPage.tsx` | Mapa de 5 nodos progresivos |
 | `src/app/pages/DemoLessonPage.tsx` | Runner video→ejercicio→éxito |
-| `src/app/pages/InscripcionGatePage.tsx` | Puerta gamificada + selector de planes |
-| `src/app/pages/InscripcionRegistroPage.tsx` | Placeholder Fase 4 (registro real) |
+| `src/app/pages/InscripcionGatePage.tsx` | Toggle período + selector tier (default `semester`/`plus`) |
+| `src/app/pages/InscripcionRegistroPage.tsx` | Bridge WhatsApp; muestra tier + período + precios |
 | `src/app/components/marketing/sections/AcademiaSection.tsx` | Punto de entrada al demo |
 | `src/app/utils/public-home-navigation.ts` | Navegación hacia secciones del home |
 
@@ -58,7 +58,7 @@ PlanesSection → handleSemestralPlanSelect → AuthModal → CheckoutPage → m
 | Clave | Shape | Propietario | Ciclo de vida |
 |-------|-------|-------------|---------------|
 | `gmusic:demo_v1` | `{ completed: number[] }` | `useDemoProgress` | Antes del registro. Migrar a DB al crear usuario |
-| `gmusic:selected_plan_v1` | `{ planId: "monthly"\|"semester"\|"annual" }` | `InscripcionGatePage` | Durante la sesión. Leer en `InscripcionRegistroPage` |
+| `gmusic:selected_plan_v1` | `{ planId: "basico-monthly" \| "plus-semester" \| … }` (9 combos) | `InscripcionGatePage` | Sesión. Fallback registro: `plus-semester` |
 
 **Regla:** el cliente nunca activa una suscripción directamente. Solo guarda el plan elegido. El backend (Fase 5) activa la suscripción vía webhook de Flow.
 
