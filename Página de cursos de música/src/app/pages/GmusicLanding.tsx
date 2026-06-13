@@ -26,7 +26,7 @@ export function GmusicLanding({ setPage, setLevel, onSelectSemestralPlan, sessio
 
   return (
     <div style={{ background: "#080808" }}>
-      <HeroSection scrollTo={scrollTo} />
+      <HeroSection scrollTo={scrollTo} setPage={setPage} />
       <AcademiaSection setPage={setPage} setLevel={setLevel ?? (() => {})} session={session} />
       <ComunidadSection setPage={setPage} />
       <PlanesSection onSelectSemestralPlan={onSelectSemestralPlan} />

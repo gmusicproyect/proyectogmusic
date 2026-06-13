@@ -124,16 +124,12 @@ describe("academia-track-matrix — modelo 3x3", () => {
   });
 });
 
-describe("HeroSection — funnel público v3 (embudo demo)", () => {
-  it("no muestra 'Ver clase gratuita' — embudo pasa por Academia", () => {
-    assert.equal(heroSource.includes("Ver clase gratuita"), false);
+describe("HeroSection — funnel público v4 (Visual D threshold)", () => {
+  it("CTA principal del hero navega al demo público", () => {
+    assert.equal(heroSource.includes("Ver clase gratuita"), true);
+    assert.equal(heroSource.includes('setPage("mi-camino-demo")'), true);
     assert.equal(heroSource.includes("PUBLIC_FREE_LESSON_PAGE"), false);
     assert.equal(heroSource.includes(`setPage(PUBLIC_FREE_LESSON_PAGE)`), false);
-  });
-
-  it("solo muestra 'Conocer academia' como CTA principal", () => {
-    assert.equal(heroSource.includes("Conocer academia"), true);
-    assert.equal(heroSource.includes('scrollTo("academia")'), true);
   });
 
   it("no usa Probar gratis ni rutas prohibidas", () => {
