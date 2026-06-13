@@ -37,4 +37,15 @@ describe("ThresholdHero — HeroSection Visual D (D0)", () => {
     assert.match(heroSource, /prefers-reduced-motion: reduce/);
     assert.match(heroSource, /pointer: coarse/);
   });
+
+  it("D1 usa canvas zoom centrado en puerta + interior (threshold-assets)", () => {
+    assert.match(heroSource, /THRESHOLD_ASSETS/);
+    // Canvas lee píxeles directamente: doorCX y doorCY definen el centro del zoom
+    assert.match(heroSource, /doorCX.*0\.50|0\.50.*doorCX/);
+    assert.match(heroSource, /doorCY.*0\.62|0\.62.*doorCY/);
+    assert.match(heroSource, /ctx\.drawImage/);
+    const assetsSource = readFileSync(join(root, "threshold-assets.ts"), "utf8");
+    assert.match(assetsSource, /\/hero\/threshold\/facade\.(jpg|png|webp)/);
+    assert.match(assetsSource, /interior/);
+  });
 });
