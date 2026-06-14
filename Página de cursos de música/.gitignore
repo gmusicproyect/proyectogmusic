@@ -18,6 +18,7 @@ build/
 credentials.json
 secrets.json
 .agents/secrets/
+.agents/vendor/
 .cursor/secrets/
 
 # Accidental duplicate repo/folder

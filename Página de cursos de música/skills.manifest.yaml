@@ -50,7 +50,42 @@ skills:
     scope: project
     path: .agents/skills/gmusic-learning-engine
 
-  # ── Externos (no versionados; sync desde Codex global) ──
+  - name: gmusic-opus-architect
+    description: Opus arquitecto — Superpowers brainstorming/plans, specs docs/vision, brief para Cursor
+    tools: [opus, claude]
+    scope: project
+    path: .agents/skills/gmusic-opus-architect
+
+  - name: gmusic-agent-workflow
+    description: Protocolo ejecutor — tests, reportes, no commit sin autorización (Cursor)
+    tools: [cursor, codex]
+    scope: project
+    path: .agents/skills/gmusic-agent-workflow
+
+  # ── Superpowers (vendor → .agents/vendor/superpowers; install: scripts/install-superpowers-opus.sh) ──
+  - name: superpowers-brainstorming
+    description: Superpowers — diseño Socratico antes de implementar (Opus)
+    tools: [opus, claude]
+    scope: vendor
+    path: .agents/skills/superpowers-brainstorming
+
+  - name: superpowers-writing-plans
+    description: Superpowers — planes bite-sized para ejecutor (Opus → Cursor)
+    tools: [opus, claude]
+    scope: vendor
+    path: .agents/skills/superpowers-writing-plans
+
+  - name: superpowers-using-superpowers
+    description: Superpowers — enrutamiento de skills
+    tools: [opus, claude, cursor]
+    scope: vendor
+    path: .agents/skills/superpowers-using-superpowers
+
+  - name: superpowers-verification-before-completion
+    description: Superpowers — verificar spec/plan antes de handoff
+    tools: [opus, claude]
+    scope: vendor
+    path: .agents/skills/superpowers-verification-before-completion
   - name: openai-docs
     description: Documentación oficial OpenAI + manual Codex (MCP developers.openai.com)
     tools: [codex, cursor]

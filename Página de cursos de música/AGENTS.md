@@ -14,8 +14,12 @@ Fuente de verdad: **`.agents/skills/`**
 | `gmusic-game-progression-architecture` | Matriz Academia 3×3, funnel de conversión, estados de bloqueo y progresión de juego |
 | `gmusic-visual-vfx` | LED de progreso, ChunkyButton, sombras de volumen, overlay del cofre y atmósfera CSS |
 | `gmusic-learning-engine` | Backend/motor de aprendizaje, microejercicios, Prisma, XP, rachas y apoderados |
+| `gmusic-opus-architect` | **Opus** — arquitecto: specs, planes, Superpowers brainstorming (no codea) |
+| `gmusic-agent-workflow` | **Cursor** — protocolo ejecutor: tests, reportes, commits con autorización |
 
 Registro completo: `skills.manifest.yaml`
+
+**Opus + Superpowers:** `./scripts/install-superpowers-opus.sh` → luego en Claude Code: `/plugin install superpowers@claude-plugins-official`. Ver `CLAUDE.md`.
 
 Guía visual local: `DESIGN.md`
 
