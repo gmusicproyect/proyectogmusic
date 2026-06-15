@@ -20,6 +20,10 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 **Desbloqueo Fase 4 Auth:** `whatsapp_cta_clicked` con `intent: "inscripcion"` ≥ 1, confirmado manualmente por Juan (contacto real WhatsApp).
 
+**North Star checkout (Fase 4+, no implementar aún):** Mercado Pago · form Chile/Extranjero · RUT genérico extranjero vía servicio interno · ver `docs/vision/handoffs/2026-06-15-track-a-estado-y-fase4-north-star-opus.md` y **D-027**.
+
+**Juan Track A (Jun 2026):** visual ✅ · PostHog key + funnel ✅ · push origin ⬜ · conversión WhatsApp real ⬜
+
 ---
 
 ## Fases
