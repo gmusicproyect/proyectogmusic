@@ -1,6 +1,26 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 12 Jun 2026 (PostHog + Visual C — pendientes de commit)
+Última actualización: 14 Jun 2026 (Landing Visual A — commit Ciclo 1)
+
+## Landing Visual A — One Page (14 Jun 2026)
+
+| Item | Estado |
+|------|--------|
+| Hero simplificado (logo + bienvenida, scroll Apple) | ✅ validado Juan |
+| Fondos PNG por sección (inicio → contacto) | ✅ |
+| BrandLogo SVG inline + Bebas (Typekit) | ✅ |
+| Navbar: Alumno + Regístrate, grid 3 cols | ✅ |
+| CTA demo en Academia (no hero) | ✅ |
+| Visual D Canva/Canvas | ❌ superseded |
+| Tests app | 372/372 |
+| Pipeline futuro assets | Visual E — Illustrator → SVG |
+
+Handoff activo: `docs/vision/handoffs/2026-06-14-hero-simplificado-handoff-opus.md`  
+Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPERSEDED)
+
+**Desbloqueo Fase 4 Auth:** `whatsapp_cta_clicked` con `intent: "inscripcion"` ≥ 1, confirmado manualmente por Juan (contacto real WhatsApp).
+
+---
 
 ## Fases
 

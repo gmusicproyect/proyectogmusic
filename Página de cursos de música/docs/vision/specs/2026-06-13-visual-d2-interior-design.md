@@ -1,3 +1,6 @@
+> ⚠️ **SUPERSEDED 14 Jun 2026.** Visual D Canva/Canvas descartado.
+> Estado actual: **Visual A** (hero simplificado). Pipeline futuro: **Visual E** Illustrator/SVG.
+
 # Visual D2 — Interior del Hero Umbral
 
 **Fecha:** 13 Jun 2026  

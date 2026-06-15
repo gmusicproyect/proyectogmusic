@@ -29,6 +29,7 @@ Enrutamiento rápido para optimizar tokens según el tipo de trabajo:
 
 | Tipo de Tarea | Documentos Obligatorios a Leer | Skill a Activar |
 | :--- | :--- | :--- |
+| **Ciclo cerrado (Cursor)** | `.cursor/rules/loop.mdc` | Siempre — ejecutar, verificar, reintentar, reportar |
 | **Cambios Estructura o Layout** | `AGENTS.md`, `DESIGN.md` | `gmusic-welcome` / `gmusic-path` |
 | **Ajustes de UI, Luces, VFX o CSS** | `AGENTS.md`, `.agents/skills/gmusic-visual-vfx/SKILL.md` | El del módulo activo |
 | **Mecánicas de Juego, XP o Niveles** | `AGENTS.md`, `.agents/skills/gmusic-game-progression-architecture/SKILL.md` | `gmusic-edu-gamified-design` |

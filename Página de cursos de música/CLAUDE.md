@@ -15,65 +15,64 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 
 ---
 
-## Estado actual del repo (13 Jun 2026)
+## Estado actual del repo (14 Jun 2026)
 
 | Item | Estado |
 |------|--------|
-| Último commit | `15e3433` — Visual D1 Canvas hero |
-| Tests | 371/371 |
-| Hero D1 | ✅ commitado — Canvas zoom, facade.jpg, copy exterior/interior, CTA |
-| Hero D2 | ⬜ esperando `public/hero/threshold/interior.jpg` de Juan (diseño Canva) |
-| Infra Opus | ⬜ sin commit — ver Tarea 1 abajo |
+| Último commit | `0f7415a` — Opus infra |
+| Commit previo hero | `15e3433` — Visual D1 Canvas (facade.jpg en repo) |
+| Tests | **372/372** |
+| Hero D1+D2+UX | ✅ **código listo en working tree — sin commit** |
+| Assets Juan | `facade.png` + `interior.png` en `public/hero/threshold/` (untracked) |
+| Validación Juan | ⬜ desktop + móvil scroll completo |
+| Infra Opus | ✅ commitado (`0f7415a`) |
 | Fase 4 Auth / Fase 5 Pagos | ⏸ pausadas hasta conversión WhatsApp (+56953429676) |
+
+**Handoff detallado hero:** `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md`  
+**Protocolo ciclo cerrado Cursor↔Opus:** `docs/vision/handoffs/2026-06-14-ciclo-cerrado-cursor-opus.md` · regla `.cursor/rules/loop.mdc`
+
+---
+
+## Hero Visual D — estado técnico (14 Jun)
+
+| Acto | Qué pasa |
+|------|----------|
+| Exterior | Fachada `facade.png` + copy |
+| Umbral | Canvas zoom puerta → crossfade |
+| Interior | `interior.png` sticky arriba + CTA |
+| Salida | Sticky suelta → Academia |
+
+**Bug resuelto:** `useScroll` no funcionaba con sticky → pantalla negra. Fix: scroll nativo con `getBoundingClientRect()`.
+
+**Pendiente commit (autorización Juan):** `HeroSection.tsx`, `threshold-assets.ts`, assets PNG, `useDemoProgress.ts` restaurado.
 
 ---
 
 ## Para Cursor — próximas tareas
 
-### Tarea 1 — Commit infra Opus (lista para ejecutar, autorizada)
+### Tarea 1 — Commit hero D1+D2+UX (cuando Juan autorice)
 
 ```
-Archivos a commitear:
-  CLAUDE.md
-  AGENTS.md
-  skills.manifest.yaml
-  .gitignore
-  scripts/claude-onboard.sh
-  scripts/claude-intro-completa.sh
-  scripts/claude-sync.sh
-  scripts/claude-think-brief.sh
-  scripts/install-superpowers-opus.sh
-  scripts/opus-team-brief.sh
-  .agents/skills/gmusic-opus-architect/
-  .agents/skills/superpowers-brainstorming
-  .agents/skills/superpowers-using-superpowers
-  .agents/skills/superpowers-verification-before-completion
-  .agents/skills/superpowers-writing-plans
-  docs/vision/
-  docs/plans/   (si tiene contenido)
+Archivos:
+  src/app/components/marketing/sections/HeroSection.tsx
+  src/app/components/marketing/sections/threshold-assets.ts
+  src/app/components/marketing/sections/threshold-hero.test.ts
+  src/app/hooks/useDemoProgress.ts
+  public/hero/threshold/facade.png
+  public/hero/threshold/interior.png
 
-Excluir siempre:
-  public/hero/threshold/facade.png   (7MB — fuente Canva, no va al repo)
-
-Mensaje de commit:
-  chore(agents): Opus infra — skills, scripts, docs/vision, dual-track strategy
+Mensaje sugerido:
+  feat(landing): Visual D1+D2 — hero umbral Canva + scroll UX sticky
 ```
 
-### Tarea 2 — Hero D2 interior (bloqueada — esperando asset Juan)
+### Tarea 2 — Validación visual Juan
 
-Cuando Juan entregue `public/hero/threshold/interior.jpg`:
-1. Cambiar 1 línea en `src/app/components/marketing/sections/threshold-assets.ts`:
-   ```ts
-   // antes:
-   interior: "https://images.unsplash.com/...",
-   // después:
-   interior: "/hero/threshold/interior.jpg",
-   ```
-2. `npm run app:test` → debe pasar 371/371
-3. Commit: `feat(landing): Visual D2 — interior real del estudio`
-4. Reportar resultado a Opus para validación visual
+1. Recarga dura Cmd+Shift+R en `http://localhost:5173/`
+2. Scroll completo: fachada → puerta → interior fijo → Academia
+3. Probar móvil (375px) y desktop
+4. Reportar a Opus si timing necesita ajuste
 
-**NO TOCAR sin autorización Opus + Juan:** auth, pagos, Fase 4, Fase 5, zona alumno, cualquier cosa de Track B.
+**NO TOCAR sin autorización Opus + Juan:** auth, pagos, Fase 4, Fase 5, zona alumno, Track B.
 
 ---
 

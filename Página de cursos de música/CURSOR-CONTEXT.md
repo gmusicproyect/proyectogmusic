@@ -1,6 +1,6 @@
 # CURSOR CONTEXT — Gmusic Estudio v1
 > Leer este archivo al inicio de cada sesión. Es la fuente de contexto compartida entre Figma Make y Cursor.
-> Última actualización: 2026-06-05
+> Última actualización: 2026-06-14
 
 ---
 
@@ -243,3 +243,18 @@ Ver detalle: `docs/etapas/01-publico-deseo/01.4-HOME-VS-01.1.md`
 | Algunos botones | 2px | 999px (pill) en legacy |
 | `landing-premium.css` | debe estar en tokens.css | existe suelto |
 | `.md` en raíz del proyecto | deben estar en docs/ | ATTRIBUTIONS.md, etc. |
+
+---
+
+## 12. Cambios Recientes (Junio 2026)
+
+- **Hero D0 Reordenado y Centrado:** Se posicionó el logotipo de Gmusic arriba y la frase de bienvenida completa abajo en una sola línea horizontal.
+- **Nueva Tipografía y Ajustes en Hero:** Se cambió la fuente de la frase de bienvenida a `"bebas-neue-pro", sans-serif` (`normal`, weight `400`). Se incrementó su tamaño a `clamp(24px, 3.8vw, 38px)` y se le aplicó `transform: "translateX(-8px)"` para ajustar su alineación visual respecto al logo.
+- **Logo Inline y Tipografía de Marca:** Se convirtió `BrandLogo.tsx` en un componente SVG inline para que pueda acceder a fuentes externas del documento. Se configuró la tipografía del texto de marca ("gmusic" y "ESTUDIO") para usar `"bebas-neue-pro", sans-serif`.
+- **Ajustes en BrandLogo y viewBox:** Se redujo el ancho del viewBox del SVG de 176 a 112 en el archivo físico `logo-gmusic.svg` para eliminar espacios en blanco laterales.
+- **Imágenes de Fondo de la Landing:** Se configuró `fondoinicio.png` como fondo del Hero, `fondoacademia.png` como fondo de Academia, `fondocomunidad.png` como fondo de Comunidad, `fondoplanes.png` como fondo de Planes y `fondocontacto.png` como fondo de Contacto usando `backgroundImage`.
+- **Nitidez de Fondos y Contraste de Textos:** Removimos la opacidad general de los divs de fondo (`opacity: 1`) y suavizamos los gradientes de oscurecimiento a un rango de `0.15 - 0.5` para asegurar que las imágenes se visualicen con total nitidez. Para garantizar una lectura impecable, aplicamos `textShadow: "0 2px 10px rgba(0,0,0,0.95)"` a todo el copy y elevamos la luminosidad de los textos de color gris a blanco cálido (`rgba(245,240,232,0.95)`). Se aplicó `position: "relative"` y `zIndex: 2` a los contenedores de Comunidad y Contacto para evitar que la imagen de fondo los tape.
+- **Compensación Visual en Hero:** Se aplicó `transform: "translateX(16%)"` al logotipo en `HeroSection.tsx` para compensar el peso del play button y alinearlo óptimamente.
+- **Apego del texto al símbolo:** Se modificó la coordenada `x` de los textos de la marca `"gmusic"` y `"ESTUDIO"` de `40` a `34` para apegar las palabras al cuadradito amarillo.
+- **Navbar Rediseñado (Marca y Enlaces):** Se incrementó el tamaño de la marca en la barra de navegación a `h-[3.25rem]` (52px), y se agrandaron los enlaces de navegación a `fontSize: 15` con tipografía `Inter, sans-serif` y `gap: 36` para darles mayor presencia y legibilidad.
+- **Punto Indicador Activo:** El punto indicador de la sección activa en la Navbar se incrementó de `3x3` a `5x5`.

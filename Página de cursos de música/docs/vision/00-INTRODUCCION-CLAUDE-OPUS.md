@@ -63,17 +63,20 @@ Leer al abrir el proyecto. Palabra clave de continuidad: **Retomar Gmusic**.
 
 ---
 
-## 4. Estado técnico del repo (confirmar con Cursor si duda)
+## 4. Estado técnico del repo (14 Jun 2026 — confirmar git)
 
-**Último commit en main:** `9247b96` — Visual D0 hero umbral (scroll zoom + parallax).
+**Último commit:** `0f7415a` — Opus infra. Hero D1 anterior: `15e3433`.
 
-**Sin commit (working tree — Cursor/Juan):**
-- Visual D1: assets Canva `public/hero/threshold/facade.png` + `doortransparente.png` (2000×1120)
-- `threshold-assets.ts`, cambios `HeroSection.tsx`, Superpowers/Opus setup, `CLAUDE.md`
-- Pendiente: `interior` Canva (placeholder Unsplash en código)
-- Tests: **371/371** en última verificación Cursor
+**Working tree (sin commit — Cursor 14 Jun):**
+- Hero **D1+D2+UX** funcional en local
+- Assets: `facade.png` (~702 KB) + `interior.png` (~918 KB)
+- Bug scroll crítico resuelto (`useScroll` → tracking nativo sticky)
+- Tests: **372/372**
+- Handoff completo: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md`
 
-**Fases completadas:** Landing, demo 5 clases, gate, precios 3×3 CLP, WhatsApp, PostHog funnel, Visual C demo, Visual D0.
+**Fases completadas:** Landing, demo 5 clases, gate, precios 3×3 CLP, WhatsApp, PostHog, Visual C demo, Visual D0–D2 (código).
+
+**Pendiente cierre hero:** validación Juan desktop/móvil + commit autorizado.
 
 **Fases PAUSADAS (no proponer sin OK explícito Juan):**
 - Fase 4 Auth JWT/bcrypt/Prisma — hasta conversión WhatsApp real
@@ -90,6 +93,7 @@ Leer al abrir el proyecto. Palabra clave de continuidad: **Retomar Gmusic**.
 |---------|----------|
 | Este doc | Sincronización Cursor ↔ Opus |
 | `CLAUDE.md` | Instrucciones sesión Opus |
+| `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` | **Handoff hero D1+D2+UX (14 Jun)** |
 | `.agents/skills/gmusic-opus-architect/SKILL.md` | Rol y plantilla brief |
 | `.agents/ROADMAP.md` | Fases |
 | `.agents/DO_NOT_TOUCH.md` | Zonas prohibidas |
