@@ -17,6 +17,19 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
       position: "relative", background: "#0D0D0D",
       padding: "120px 0", overflow: "hidden",
     }}>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "linear-gradient(180deg, rgba(13, 13, 13, 0.2) 0%, rgba(13, 13, 13, 0.5) 100%), url('/hero/threshold/fondoacademia.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+          pointerEvents: "none",
+        }}
+      />
       <div style={{
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -50%)",
@@ -33,6 +46,7 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
             display: "inline-block", fontSize: 11, fontWeight: 500,
             letterSpacing: "3px", textTransform: "uppercase",
             color: GOLD, fontFamily: "Inter, sans-serif",
+            textShadow: "0 1px 4px rgba(0,0,0,0.9)",
           }}>
             El programa
           </motion.span>
@@ -41,12 +55,14 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
             fontSize: "clamp(32px, 4vw, 52px)",
             fontWeight: 400, letterSpacing: "-1.5px",
             lineHeight: 1.15, color: WHITE_WARM, margin: "16px 0 0",
+            textShadow: "0 2px 10px rgba(0,0,0,0.95)",
           }}>
             Elige tu punto de partida.
           </motion.h2>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.12 }} style={{
-            color: TEXT_SEC, fontSize: 17, lineHeight: 1.7,
+            color: "rgba(245,240,232,0.95)", fontSize: 17, lineHeight: 1.7,
             maxWidth: 520, marginTop: 20, fontFamily: "Inter, sans-serif",
+            textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
             Cada etapa tiene su propio recorrido. Empieza donde estás.
           </motion.p>

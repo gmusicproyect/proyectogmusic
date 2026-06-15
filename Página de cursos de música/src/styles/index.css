@@ -12,7 +12,7 @@
 }
 
 body {
-  background: #080808;
+  background: var(--obsidian, #080808);
   overflow-x: hidden;
 }
 

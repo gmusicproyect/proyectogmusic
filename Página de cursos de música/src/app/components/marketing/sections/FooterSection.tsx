@@ -1,3 +1,4 @@
+import { BrandLogo } from "../../brand/BrandLogo";
 import { GOLD, WHITE_WARM } from "../tokens";
 
 interface FooterSectionProps {
@@ -14,19 +15,8 @@ export function FooterSection({ scrollTo }: FooterSectionProps) {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 48, marginBottom: 48 }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{
-                width: 30, height: 30, borderRadius: 6,
-                background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.25)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round">
-                  <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-                </svg>
-              </div>
-              <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 16, fontWeight: 600, color: WHITE_WARM }}>
-                Gmusic <span style={{ color: GOLD, fontWeight: 400 }}>Estudio</span>
-              </span>
+            <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+              <BrandLogo className="h-7 w-auto" />
             </div>
             <p style={{ color: "#555", fontSize: 13, lineHeight: 1.7, maxWidth: 300, margin: 0, fontFamily: "Inter, sans-serif" }}>
               Academia online de guitarra. Un sistema de práctica diseñado

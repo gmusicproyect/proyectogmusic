@@ -19,10 +19,24 @@ export function ContactoSection({ setPage: _setPage }: ContactoSectionProps) {
   };
 
   return (
-    <section id="contacto" style={{ background: "#080808", padding: "120px 0" }}>
+    <section id="contacto" style={{ position: "relative", background: "#080808", padding: "120px 0", overflow: "hidden" }}>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "linear-gradient(180deg, rgba(8, 8, 8, 0.15) 0%, rgba(8, 8, 8, 0.45) 100%), url('/hero/threshold/fondocontacto.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+          pointerEvents: "none",
+        }}
+      />
       <div style={{
         maxWidth: 560, margin: "0 auto", padding: "0 40px",
         display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center",
+        position: "relative", zIndex: 2,
       }}>
         <motion.div
           initial="hidden" whileInView="show" viewport={vp}
@@ -33,6 +47,7 @@ export function ContactoSection({ setPage: _setPage }: ContactoSectionProps) {
             display: "inline-block", fontSize: 11, fontWeight: 500,
             letterSpacing: "3px", textTransform: "uppercase",
             color: GOLD, fontFamily: "Inter, sans-serif",
+            textShadow: "0 1px 4px rgba(0,0,0,0.9)",
           }}>
             Contacto
           </motion.span>
@@ -41,12 +56,14 @@ export function ContactoSection({ setPage: _setPage }: ContactoSectionProps) {
             fontSize: "clamp(28px, 4vw, 44px)",
             fontWeight: 400, letterSpacing: "-1.2px",
             lineHeight: 1.15, color: WHITE_WARM, margin: "16px 0 16px",
+            textShadow: "0 2px 10px rgba(0,0,0,0.95)",
           }}>
             ¿Tienes preguntas?
           </motion.h2>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.12 }} style={{
-            color: TEXT_SEC, fontSize: 16, lineHeight: 1.7,
+            color: "rgba(245,240,232,0.95)", fontSize: 16, lineHeight: 1.7,
             fontFamily: "Inter, sans-serif", margin: "0 0 40px",
+            textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
             Escríbenos antes de empezar.<br />Respondemos cada mensaje.
           </motion.p>

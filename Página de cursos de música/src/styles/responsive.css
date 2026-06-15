@@ -3,12 +3,41 @@
    Mobile first: ajustes desde 768px hacia abajo
 ═══════════════════════════════════════════════ */
 
-/* Tablet — 768px */
-@media (max-width: 768px) {
-  /* Navbar — nav oculto; CTAs de auth públicos visibles pero deshabilitados hasta A3 */
+/* Mobile — 640px: drawer; escritorio conserva nav inline */
+@media (max-width: 640px) {
   .gmusic-nav { display: none !important; }
+  .gmusic-auth-shell { display: none !important; }
   .gmusic-hamburger { display: flex !important; }
 
+  .gmusic-header-bar {
+    padding: 0 16px !important;
+    grid-template-columns: 1fr auto !important;
+  }
+}
+
+/* Tablet compacto — nav visible con menos aire */
+@media (max-width: 960px) and (min-width: 641px) {
+  .gmusic-header-bar {
+    padding: 0 24px !important;
+    gap: 16px !important;
+  }
+
+  .gmusic-nav {
+    gap: 14px !important;
+  }
+
+  .gmusic-nav-link {
+    font-size: 12px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .gmusic-ctas button {
+    padding: 0 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 768px) {
   .gmusic-profile-trigger {
     padding: 0 8px !important;
     height: 36px !important;
@@ -24,10 +53,6 @@
     right: 16px !important;
     left: auto !important;
     width: min(280px, calc(100vw - 32px)) !important;
-  }
-
-  .gmusic-header-bar {
-    padding: 0 16px !important;
   }
 
   /* Hero */

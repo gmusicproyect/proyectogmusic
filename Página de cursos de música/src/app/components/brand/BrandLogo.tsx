@@ -1,0 +1,38 @@
+import { ComponentProps } from "react";
+
+interface BrandLogoProps extends ComponentProps<"svg"> {
+  /** Alt accesible; por defecto nombre de marca */
+  alt?: string;
+}
+
+export function BrandLogo({
+  className = "h-9 w-auto",
+  alt = "Gmusic Estudio",
+  ...props
+}: BrandLogoProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 112 36"
+      fill="none"
+      role="img"
+      aria-label={alt}
+      className={className}
+      {...props}
+    >
+      <defs>
+        <linearGradient id="gm-gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#C5A059"/>
+          <stop offset="100%" stop-color="#E5C07B"/>
+        </linearGradient>
+      </defs>
+      {/* Play mark original */}
+      <rect x="0" y="4" width="28" height="28" rx="6" fill="url(#gm-gold)"/>
+      <path d="M9 12 L9 24 L21 18 Z" fill="#080808"/>
+      <path d="M11 16.5 Q13 18 11 19.5 M14 15.5 Q16 18 14 20.5 M17 16.5 Q19 18 17 19.5" stroke="#080808" strokeWidth={1.2} strokeLinecap="round" fill="none"/>
+      {/* Wordmark usando bebas-neue-pro */}
+      <text x="34" y="17" fontFamily="bebas-neue-pro, sans-serif" fontSize="17" fontWeight="400" fill="#F5F0E8" letterSpacing="0.02em">gmusic</text>
+      <text x="34" y="29" fontFamily="bebas-neue-pro, sans-serif" fontSize="10" fontWeight="600" letterSpacing="0.16em" fill="url(#gm-gold)">ESTUDIO</text>
+    </svg>
+  );
+}

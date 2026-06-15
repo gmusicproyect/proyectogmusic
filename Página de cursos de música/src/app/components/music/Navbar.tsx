@@ -1,5 +1,6 @@
 import { useState, useEffect, type CSSProperties } from "react";
 import { GM_GOLD } from "../gmusic/tokens";
+import { BrandLogo } from "../brand/BrandLogo";
 import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
 
 const WHITE_WARM = "#F5F0E8";
@@ -81,7 +82,7 @@ export function Navbar({
     ["Inicio", "hero"],
     ["Academia", "academia"],
     ["Comunidad", "comunidad"],
-    ["Ver planes", "planes"],
+    ["Planes", "planes"],
     ["Contacto", "contacto"],
   ];
 
@@ -105,7 +106,6 @@ export function Navbar({
     alignItems: "center",
     flexShrink: 0,
     minHeight: 36,
-    minWidth: 220,
     justifyContent: "flex-end",
   };
 
@@ -152,7 +152,7 @@ export function Navbar({
         onClick={onSignIn}
         style={{ ...authButtonStyle(false), width: stacked ? "100%" : undefined }}
       >
-        Iniciar sesión
+        Alumno
       </button>
       <button
         type="button"
@@ -210,26 +210,8 @@ export function Navbar({
     if (session.status === "loading") return renderLoadingAuth(stacked);
     if (session.status === "authenticated") return renderAuthenticatedAuth(stacked);
     if (session.status === "error") {
-      return (
-        <div
-          style={{
-            ...authShellStyle,
-            flexDirection: stacked ? "column" : "row",
-            width: stacked ? "100%" : undefined,
-          }}
-        >
-          <span style={{ color: "#fca5a5", fontSize: 12, maxWidth: 180 }}>
-            {session.message}
-          </span>
-          <button
-            type="button"
-            onClick={() => void onRetrySession?.()}
-            style={{ ...authButtonStyle(false), width: stacked ? "100%" : undefined }}
-          >
-            Reintentar
-          </button>
-        </div>
-      );
+      // API caída: no bloquear nav ni CTAs públicos
+      return renderAnonymousAuth(stacked);
     }
     return renderAnonymousAuth(stacked);
   };
@@ -245,54 +227,88 @@ export function Navbar({
       }}>
         <div className="gmusic-header-bar" style={{
           width: "100%", height: "100%", padding: "0 48px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
+          display: "grid",
+          gridTemplateColumns: "auto 1fr auto",
+          alignItems: "center",
+          gap: 24,
           maxWidth: 1440, margin: "0 auto", boxSizing: "border-box",
         }}>
-          <div onClick={() => scrollToSection("hero")} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", flexShrink: 0 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(201,168,76,0.12)", border: "1px solid rgba(201,168,76,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={GM_GOLD} strokeWidth="2" strokeLinecap="round">
-                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-              </svg>
-            </div>
-            <span style={{ fontFamily: "'Playfair Display',serif", fontSize: 18, fontWeight: 600, color: WHITE_WARM, letterSpacing: "-0.3px" }}>
-              Gmusic <span style={{ color: GM_GOLD, fontWeight: 400 }}>Estudio</span>
-            </span>
+          <div onClick={() => scrollToSection("hero")} style={{ display: "flex", alignItems: "center", cursor: "pointer", flexShrink: 0 }}>
+            <BrandLogo className="h-[3.25rem] w-auto -translate-y-0.5" />
           </div>
 
-          <nav className="gmusic-nav" style={{ display: "flex", gap: 32, alignItems: "center" }}>
+          <nav className="gmusic-nav" style={{
+            display: "flex",
+            gap: 36,
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+          }}>
             {menuItems.map(([label, id]) => {
               const isActive = activeSection === id;
               return (
-                <span key={label} onClick={() => scrollToSection(id)} style={{
-                  color: isActive ? WHITE_WARM : "#6B6B6B",
-                  fontSize: 13, fontWeight: 500, letterSpacing: "0.2px",
+                <span
+                  key={label}
+                  className="gmusic-nav-link"
+                  onClick={() => scrollToSection(id)}
+                  style={{
+                  color: isActive ? WHITE_WARM : "#9A958C",
+                  fontSize: 15, fontWeight: 500, letterSpacing: "0.4px",
+                  fontFamily: "Inter, sans-serif",
                   cursor: "pointer", transition: "color 0.15s ease", position: "relative",
                 }}
                   onMouseEnter={(e) => e.currentTarget.style.color = WHITE_WARM}
-                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "#6B6B6B"; }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = "#9A958C"; }}
                 >
                   {label}
-                  {isActive && <span style={{ position: "absolute", bottom: -4, left: "50%", transform: "translateX(-50%)", width: 3, height: 3, borderRadius: "50%", background: GM_GOLD, display: "block" }} />}
+                  {isActive && <span style={{ position: "absolute", bottom: -4, left: "50%", transform: "translateX(-50%)", width: 5, height: 5, borderRadius: "50%", background: GM_GOLD, display: "block" }} />}
                 </span>
               );
             })}
           </nav>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-            {renderSessionAuth()}
-            {logoutError && (
-              <span role="alert" style={{ color: "#fca5a5", fontSize: 11, maxWidth: 280, textAlign: "right" }}>
-                {logoutError}
-              </span>
-            )}
-          </div>
+          <div className="gmusic-header-actions" style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            justifySelf: "end",
+          }}>
+            <div className="gmusic-auth-shell" style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 4,
+            }}>
+              {renderSessionAuth()}
+              {logoutError && (
+                <span role="alert" style={{ color: "#fca5a5", fontSize: 11, maxWidth: 280, textAlign: "right" }}>
+                  {logoutError}
+                </span>
+              )}
+            </div>
 
-          <button className="gmusic-hamburger" onClick={() => setMenuOpen(!menuOpen)}
-            style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: 8, color: "#fff" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {menuOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 12h18M3 6h18M3 18h18" />}
-            </svg>
-          </button>
+            <button
+              type="button"
+              className="gmusic-hamburger"
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(!menuOpen)}
+              style={{
+                display: "none",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 8,
+                color: "#fff",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {menuOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 12h18M3 6h18M3 18h18" />}
+              </svg>
+            </button>
+          </div>
         </div>
 
         {menuOpen && (

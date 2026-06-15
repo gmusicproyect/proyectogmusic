@@ -16,9 +16,17 @@ describe("ThresholdHero — HeroSection Visual D (D0)", () => {
     assert.match(heroSource, /id="hero"/);
   });
 
-  it("CTA interior navega al demo con Ver clase gratuita", () => {
-    assert.match(heroSource, /Ver clase gratuita/);
-    assert.match(heroSource, /setPage\("mi-camino-demo"\)/);
+  it("hero marca centrada — sin CTA (embudo en Academia)", () => {
+    assert.doesNotMatch(heroSource, /Ver clase gratuita/);
+    assert.doesNotMatch(heroSource, /mi-camino-demo/);
+  });
+
+  it("bienvenida + logo centrados; sale al scroll hacia Academia", () => {
+    assert.doesNotMatch(heroSource, /heroExitOpacity/);
+    assert.match(heroSource, /160vh/);
+    assert.match(heroSource, /nueva experiencia de academia/);
+    assert.match(heroSource, /BrandLogo/);
+    assert.doesNotMatch(heroSource, /Estás a un paso/);
   });
 
   it("no usa Three.js ni video", () => {
@@ -27,25 +35,23 @@ describe("ThresholdHero — HeroSection Visual D (D0)", () => {
     assert.equal(heroSource.includes("<video"), false);
   });
 
-  it("usa useScroll y useTransform de motion/react", () => {
-    assert.match(heroSource, /useScroll/);
+  it("usa scroll nativo + useTransform (tracking fiable con sticky)", () => {
+    assert.match(heroSource, /readScrollProgress/);
+    assert.match(heroSource, /scrollYProgress\.set/);
     assert.match(heroSource, /useTransform/);
-    assert.match(heroSource, /from "motion\/react"/);
+    assert.doesNotMatch(heroSource, /\buseScroll\s*\(/);
   });
 
-  it("respeta prefers-reduced-motion y touch para parallax", () => {
+  it("respeta prefers-reduced-motion", () => {
     assert.match(heroSource, /prefers-reduced-motion: reduce/);
-    assert.match(heroSource, /pointer: coarse/);
   });
 
-  it("D1 usa canvas zoom centrado en puerta + interior (threshold-assets)", () => {
-    assert.match(heroSource, /THRESHOLD_ASSETS/);
-    // Canvas lee píxeles directamente: doorCX y doorCY definen el centro del zoom
-    assert.match(heroSource, /doorCX.*0\.50|0\.50.*doorCX/);
-    assert.match(heroSource, /doorCY.*0\.62|0\.62.*doorCY/);
-    assert.match(heroSource, /ctx\.drawImage/);
-    const assetsSource = readFileSync(join(root, "threshold-assets.ts"), "utf8");
-    assert.match(assetsSource, /\/hero\/threshold\/facade\.(jpg|png|webp)/);
-    assert.match(assetsSource, /interior/);
+  it("hero sin fotos ni canvas — fondo atmosférico + scroll de marca", () => {
+    assert.doesNotMatch(heroSource, /ctx\.drawImage/);
+    assert.doesNotMatch(heroSource, /facade/);
+    assert.doesNotMatch(heroSource, /interior\.png/);
+    assert.doesNotMatch(heroSource, /<img/);
+    assert.match(heroSource, /HeroAtmosphere/);
+    assert.match(heroSource, /BrandLogo/);
   });
 });

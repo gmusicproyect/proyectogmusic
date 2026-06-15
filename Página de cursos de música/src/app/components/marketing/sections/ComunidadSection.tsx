@@ -8,12 +8,27 @@ interface ComunidadSectionProps {
 export function ComunidadSection({ setPage }: ComunidadSectionProps) {
   return (
     <section id="comunidad" style={{
-      background: "#080808", padding: "120px 0", overflow: "hidden",
+      position: "relative", background: "#080808",
+      padding: "120px 0", overflow: "hidden",
     }}>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "linear-gradient(180deg, rgba(8, 8, 8, 0.2) 0%, rgba(8, 8, 8, 0.45) 100%), url('/hero/threshold/fondocomunidad.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+          pointerEvents: "none",
+        }}
+      />
       <div style={{
         maxWidth: 1100, margin: "0 auto", padding: "0 80px",
         display: "grid", gridTemplateColumns: "40fr 60fr",
         gap: 80, alignItems: "center",
+        position: "relative", zIndex: 2,
       }}>
         {/* Copy */}
         <motion.div initial="hidden" whileInView="show" viewport={vp}
@@ -23,6 +38,7 @@ export function ComunidadSection({ setPage }: ComunidadSectionProps) {
             display: "inline-block", fontSize: 11, fontWeight: 500,
             letterSpacing: "3px", textTransform: "uppercase",
             color: GOLD, fontFamily: "Inter, sans-serif",
+            textShadow: "0 1px 4px rgba(0,0,0,0.9)",
           }}>
             Comunidad
           </motion.span>
@@ -31,19 +47,22 @@ export function ComunidadSection({ setPage }: ComunidadSectionProps) {
             fontSize: "clamp(30px, 3.8vw, 46px)",
             fontWeight: 400, letterSpacing: "-1.2px",
             lineHeight: 1.2, color: WHITE_WARM, margin: "16px 0 20px",
+            textShadow: "0 2px 10px rgba(0,0,0,0.95)",
           }}>
             No practicas solo.
           </motion.h2>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.12 }} style={{
-            color: TEXT_SEC, fontSize: 16, lineHeight: 1.75,
+            color: "rgba(245,240,232,0.95)", fontSize: 16, lineHeight: 1.75,
             fontFamily: "Inter, sans-serif", margin: 0, maxWidth: 360,
+            textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
             Hay alumnos que llevan meses antes que tú. Y otros que empiezan
             justo donde estás. El avance se comparte.
           </motion.p>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.18 }} style={{
-            color: "rgba(138,138,138,0.65)", fontSize: 15, lineHeight: 1.7,
+            color: "rgba(245,240,232,0.7)", fontSize: 15, lineHeight: 1.7,
             fontFamily: "Inter, sans-serif", margin: "16px 0 0", maxWidth: 360,
+            textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
             El profesor acompaña. La comunidad motiva. El ritmo es tuyo.
           </motion.p>

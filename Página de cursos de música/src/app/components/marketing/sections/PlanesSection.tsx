@@ -17,6 +17,19 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
     <section id="planes" style={{
       background: "#0D0D0D", padding: "120px 0", overflow: "hidden", position: "relative",
     }}>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "linear-gradient(180deg, rgba(13, 13, 13, 0.2) 0%, rgba(13, 13, 13, 0.5) 100%), url('/hero/threshold/fondoplanes.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 1,
+          pointerEvents: "none",
+        }}
+      />
       <div style={{
         position: "absolute", width: 600, height: 500,
         background: "radial-gradient(ellipse, rgba(201,168,76,0.04) 0%, transparent 70%)",
@@ -34,6 +47,7 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
             display: "inline-block", fontSize: 11, fontWeight: 500,
             letterSpacing: "3px", textTransform: "uppercase",
             color: GOLD, fontFamily: "Inter, sans-serif",
+            textShadow: "0 1px 4px rgba(0,0,0,0.9)",
           }}>
             Planes
           </motion.span>
@@ -42,13 +56,15 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
             fontSize: "clamp(30px, 4vw, 48px)",
             fontWeight: 400, letterSpacing: "-1.2px",
             lineHeight: 1.2, color: WHITE_WARM, margin: "16px auto 0",
+            textShadow: "0 2px 10px rgba(0,0,0,0.95)",
           }}>
             Los precios se anuncian<br />
-            <span style={{ color: "rgba(245,240,232,0.45)", fontWeight: 300 }}>al abrir inscripciones.</span>
+            <span style={{ color: "rgba(245,240,232,0.7)", fontWeight: 300 }}>al abrir inscripciones.</span>
           </motion.h2>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.12 }} style={{
-            color: TEXT_SEC, fontSize: 16, lineHeight: 1.7,
+            color: "rgba(245,240,232,0.95)", fontSize: 16, lineHeight: 1.7,
             fontFamily: "Inter, sans-serif", maxWidth: 480, margin: "20px auto 0",
+            textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
             Estamos preparando el acceso. Mientras tanto, puedes ver la clase
             gratuita y conocer el método.

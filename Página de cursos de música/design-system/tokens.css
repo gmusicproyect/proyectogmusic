@@ -7,7 +7,8 @@
 
 :root {
   /* ── Fondos ─────────────────────────────────── */
-  --bg-base:        #080808;   /* Fondo global */
+  --bg-base:        #080808;   /* Obsidiana — fondo global */
+  --obsidian:       #080808;   /* Alias marca Obsidian & Gold */
   --bg-surface:     #111111;   /* Cards, nav scrolled */
   --bg-mid:         #0D0D0D;   /* Secciones alternas */
   --bg-elevated:    #1A1A1A;   /* Hover states */
@@ -15,6 +16,8 @@
   /* ── Dorado ─────────────────────────────────── */
   --gold-primary:   #C9A84C;   /* CTAs, acentos principales */
   --gold-soft:      #E8C97A;   /* Hover de CTAs dorados */
+  --gold-obsidian:  #C5A059;   /* Obsidian & Gold — oro oscuro */
+  --gold-bright:    #E5C07B;   /* Obsidian & Gold — oro brillante */
   --gold-border:    rgba(201, 168, 76, 0.18);   /* Bordes de cards */
   --gold-glow:      rgba(201, 168, 76, 0.06);   /* Glows ambientales */
 

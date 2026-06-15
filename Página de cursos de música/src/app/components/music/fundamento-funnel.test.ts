@@ -55,8 +55,8 @@ describe("Navbar — estado público anónimo A2.2", () => {
     assert.equal(navbarSource.includes("gmusic-profile-trigger"), false);
   });
 
-  it("muestra Iniciar sesión y Regístrate como enlaces públicos", () => {
-    assert.equal(navbarSource.includes("Iniciar sesión"), true);
+  it("muestra Alumno y Regístrate como enlaces públicos", () => {
+    assert.equal(navbarSource.includes("Alumno"), true);
     assert.equal(navbarSource.includes("Regístrate"), true);
     assert.equal(navbarSource.includes("onSignIn"), true);
     assert.equal(navbarSource.includes("onRegister"), true);
@@ -125,11 +125,9 @@ describe("academia-track-matrix — modelo 3x3", () => {
 });
 
 describe("HeroSection — funnel público v4 (Visual D threshold)", () => {
-  it("CTA principal del hero navega al demo público", () => {
-    assert.equal(heroSource.includes("Ver clase gratuita"), true);
-    assert.equal(heroSource.includes('setPage("mi-camino-demo")'), true);
-    assert.equal(heroSource.includes("PUBLIC_FREE_LESSON_PAGE"), false);
-    assert.equal(heroSource.includes(`setPage(PUBLIC_FREE_LESSON_PAGE)`), false);
+  it("CTA del demo vive en Academia, no en el hero de marca", () => {
+    assert.equal(heroSource.includes("Ver clase gratuita"), false);
+    assert.equal(heroSource.includes('setPage("mi-camino-demo")'), false);
   });
 
   it("no usa Probar gratis ni rutas prohibidas", () => {

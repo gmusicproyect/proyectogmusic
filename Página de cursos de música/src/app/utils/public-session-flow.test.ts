@@ -17,8 +17,8 @@ describe("R3.3D — sesión pública y logout", () => {
     assert.match(appSource, /postDevLogout[\s\S]*publicSession\.refresh/);
   });
 
-  it("Navbar anónimo muestra Iniciar sesión y Regístrate", () => {
-    assert.equal(navbarSource.includes("Iniciar sesión"), true);
+  it("Navbar anónimo muestra Alumno y Regístrate", () => {
+    assert.equal(navbarSource.includes("Alumno"), true);
     assert.equal(navbarSource.includes("Regístrate"), true);
     assert.equal(navbarSource.includes("renderAnonymousAuth"), true);
   });
