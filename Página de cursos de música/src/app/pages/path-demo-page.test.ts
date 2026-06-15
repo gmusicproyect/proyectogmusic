@@ -76,12 +76,14 @@ describe("PathDemoPage — camino demo público", () => {
     assert.equal(demoPageSource.includes("DemoAcademyNav"), true);
   });
 
-  it("demo completado muestra celebración centrada y carrusel (Visual C)", () => {
+  it("demo completado muestra celebración, intro, carrusel y reinicio (Visual C)", () => {
     assert.equal(demoPageSource.includes("DemoFinishedCelebration"), true);
     assert.equal(demoPageSource.includes("Tu recorrido completado"), true);
-    const finishedBranch = demoPageSource.match(/demoFinished \?\s*\(\s*<>[\s\S]*?\)\s*:\s*\(/);
-    assert.ok(finishedBranch, "debe existir rama demoFinished");
-    assert.equal(finishedBranch[0].includes("PathPageIntro"), false);
-    assert.equal(finishedBranch[0].includes("DemoPathCards"), true);
+    assert.equal(demoPageSource.includes("Ver como primera vez"), true);
+    assert.equal(demoPageSource.includes("previewAsFirstVisit"), true);
+    assert.equal(demoPageSource.includes("Reiniciar y borrar progreso"), true);
+    assert.equal(demoPageSource.includes("resetProgress"), true);
+    assert.equal(demoPageSource.includes("PathPageIntro"), true);
+    assert.equal(demoPageSource.includes("DemoPathCards"), true);
   });
 });

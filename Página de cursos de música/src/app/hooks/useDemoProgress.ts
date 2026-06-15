@@ -59,5 +59,10 @@ export function useDemoProgress() {
   const demoFinished = completedLessons.length >= 5;
   const nextLessonNumber = completedLessons.length + 1;
 
-  return { completedLessons, markComplete, isLessonComplete, demoFinished, nextLessonNumber };
+  const resetProgress = useCallback(() => {
+    writeProgress({ completed: [] });
+    setCompletedLessons([]);
+  }, []);
+
+  return { completedLessons, markComplete, isLessonComplete, demoFinished, nextLessonNumber, resetProgress };
 }

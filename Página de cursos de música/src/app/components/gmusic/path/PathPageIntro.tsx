@@ -7,6 +7,12 @@ export interface PathPageIntroProps {
   completedSteps: number;
   totalSteps: number;
   isLoading?: boolean;
+  /** Override heading (e.g. demo welcome panel) */
+  title?: string;
+  /** Override body copy */
+  description?: string;
+  /** Tighter spacing when nested in a sidebar */
+  compact?: boolean;
 }
 
 export function PathPageIntro({
@@ -14,9 +20,12 @@ export function PathPageIntro({
   completedSteps,
   totalSteps,
   isLoading = false,
+  title = "Mi Camino",
+  description = "Tu ruta de guitarra, paso a paso. Cada módulo construye técnica, oído y continuidad en la práctica.",
+  compact = false,
 }: PathPageIntroProps) {
   return (
-    <div className="mb-6 lg:mb-10">
+    <div className={compact ? "mb-0" : "mb-6 lg:mb-10"}>
       <p
         className="text-[11px] font-medium tracking-[0.2em] uppercase mb-3"
         style={{ color: "rgba(212, 175, 55, 0.55)" }}
@@ -24,13 +33,16 @@ export function PathPageIntro({
         Ruta de guitarra · {badge.level}
       </p>
       <h1
-        className="text-2xl md:text-4xl font-semibold mb-2 tracking-tight"
+        className={`${compact ? "text-xl md:text-2xl" : "text-2xl md:text-4xl"} font-semibold mb-2 tracking-tight`}
         style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
       >
-        Mi Camino
+        {title}
       </h1>
-      <p className="text-base md:text-lg mb-5 max-w-xl leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-        Tu ruta de guitarra, paso a paso. Cada módulo construye técnica, oído y continuidad en la práctica.
+      <p
+        className={`${compact ? "text-sm md:text-base" : "text-base md:text-lg"} mb-5 max-w-xl leading-relaxed`}
+        style={{ color: GM_TEXT_SEC }}
+      >
+        {description}
       </p>
       <div className="flex flex-wrap items-center gap-3">
         <div

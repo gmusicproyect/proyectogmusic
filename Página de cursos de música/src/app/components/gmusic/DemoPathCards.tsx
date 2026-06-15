@@ -1,22 +1,47 @@
 import { useState, useRef, useEffect, type CSSProperties } from "react";
 import { motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
+import { DEMO_LESSONS } from "../../data/demo-lessons";
 
 const WHITE_WARM = "#F5F0E8";
 const GOLD = "#C9A84C";
+const SURFACE_CARD = "#161616";
 
 const CARD_GRADIENTS: Record<number, string> = {
-  1: "linear-gradient(160deg, #7a5810 0%, #C9A84C 100%)",
-  2: "linear-gradient(160deg, #0d2040 0%, #1e4080 100%)",
-  3: "linear-gradient(160deg, #0d2a1a 0%, #1a5030 100%)",
-  4: "linear-gradient(160deg, #1e0d40 0%, #3a1a7a 100%)",
-  5: "linear-gradient(160deg, #9a7010 0%, #e6c060 100%)",
+  1: "linear-gradient(145deg, #3d2a08 0%, #7a5810 45%, #C9A84C 100%)",
+  2: "linear-gradient(145deg, #0a1628 0%, #1a3a6a 55%, #2a5a9a 100%)",
+  3: "linear-gradient(145deg, #0a2018 0%, #1a4a32 55%, #2a7a52 100%)",
+  4: "linear-gradient(145deg, #1a0a32 0%, #3a1a6a 55%, #5a2a9a 100%)",
+  5: "linear-gradient(145deg, #4a3010 0%, #9a7010 50%, #e6c060 100%)",
 };
 
 function getLessonNumber(nodeId: string): number {
   const m = /^demo-node-(\d)$/.exec(nodeId);
   return m && m[1] ? parseInt(m[1], 10) : 1;
+}
+
+function getLessonMeta(lessonNum: number) {
+  return DEMO_LESSONS.find((l) => l.lessonNumber === lessonNum);
+}
+
+function StarRating({ filled, dimmed }: { filled: number; dimmed?: boolean }) {
+  return (
+    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+      {Array.from({ length: 3 }, (_, i) => {
+        const isFilled = i < filled;
+        return (
+          <Star
+            key={i}
+            size={14}
+            fill={isFilled ? GOLD : "transparent"}
+            stroke={isFilled ? GOLD : dimmed ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.28)"}
+            strokeWidth={1.5}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 export interface DemoPathCardsProps {
@@ -32,10 +57,13 @@ export function DemoPathCards({
   onStartLesson,
   onLockedClick,
 }: DemoPathCardsProps) {
-  const initialFocus = Math.max(0, nodes.findIndex((n) => n.status === "active"));
+  const initialFocus = Math.max(
+    0,
+    nodes.findIndex((n) => n.status === "active"),
+    nodes.every((n) => n.status === "completed") ? nodes.length - 1 : -1
+  );
   const [focusedIdx, setFocusedIdx] = useState(initialFocus);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const card = cardRefs.current[focusedIdx];
@@ -46,10 +74,202 @@ export function DemoPathCards({
 
   const goTo = (idx: number) => setFocusedIdx(Math.max(0, Math.min(nodes.length - 1, idx)));
 
+  const carouselItems = nodes.map((node, i) => {
+    const lessonNum = getLessonNumber(node.id);
+    const meta = getLessonMeta(lessonNum);
+    const isFocused = i === focusedIdx;
+    const isCompleted = node.status === "completed";
+    const isActive = node.status === "active";
+    const isLocked = node.status === "locked";
+    const gradient = CARD_GRADIENTS[lessonNum] ?? CARD_GRADIENTS[1];
+    const categoryLabel = meta?.subtitle ?? node.typeLabel ?? "Lección";
+    const starsFilled = isCompleted ? 3 : 0;
+
+    return (
+      <motion.div
+        key={node.id}
+        ref={(el) => {
+          cardRefs.current[i] = el;
+        }}
+        animate={{
+          scale: isFocused ? 1 : 0.88,
+          opacity: isFocused ? 1 : isLocked ? 0.35 : 0.55,
+        }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onClick={() => {
+          if (!isFocused) {
+            goTo(i);
+            return;
+          }
+          if (isLocked) {
+            if (allowLockedSelection) onLockedClick(node.title);
+            return;
+          }
+          onStartLesson(lessonNum);
+        }}
+        style={{
+          flexShrink: 0,
+          width: 240,
+          borderRadius: 14,
+          background: SURFACE_CARD,
+          border: isFocused
+            ? isActive
+              ? `2px solid ${GOLD}`
+              : isCompleted
+              ? `2px solid rgba(201,168,76,0.45)`
+              : `2px solid rgba(255,255,255,0.12)`
+            : "2px solid rgba(255,255,255,0.06)",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          scrollSnapAlign: "center",
+          overflow: "hidden",
+          boxShadow: isFocused && isActive
+            ? "0 0 28px rgba(201,168,76,0.28), 0 16px 40px rgba(0,0,0,0.45)"
+            : isFocused
+            ? "0 16px 40px rgba(0,0,0,0.4)"
+            : "none",
+          transition: "box-shadow 0.3s ease",
+        }}
+      >
+        {/* Thumbnail */}
+        <div
+          style={{
+            height: 120,
+            background: gradient,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.55) 100%)",
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              bottom: 10,
+              left: 12,
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              fontFamily: "Inter, sans-serif",
+              color: "rgba(255,255,255,0.85)",
+              background: "rgba(0,0,0,0.35)",
+              padding: "3px 8px",
+              borderRadius: 4,
+            }}
+          >
+            {categoryLabel}
+          </span>
+          <span
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 12,
+              fontFamily: "'Playfair Display', serif",
+              fontSize: 36,
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.12)",
+              lineHeight: 1,
+            }}
+          >
+            {lessonNum}
+          </span>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: "14px 14px 16px", flex: 1, display: "flex", flexDirection: "column" }}>
+          <h3
+            style={{
+              margin: "0 0 8px",
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 17,
+              fontWeight: 500,
+              lineHeight: 1.25,
+              color: isLocked ? "rgba(255,255,255,0.45)" : WHITE_WARM,
+            }}
+          >
+            {node.title}
+          </h3>
+
+          <StarRating filled={starsFilled} dimmed={isLocked} />
+
+          {meta?.videoDuration && !isLocked && (
+            <p
+              style={{
+                margin: "8px 0 0",
+                fontSize: 11,
+                color: "rgba(255,255,255,0.35)",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              {meta.videoDuration}
+            </p>
+          )}
+
+          {isLocked && (
+            <p
+              style={{
+                margin: "8px 0 0",
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                fontSize: 11,
+                color: "rgba(255,255,255,0.28)",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              <Lock size={11} />
+              Completa la clase anterior
+            </p>
+          )}
+
+          {isFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 }}
+              style={{ marginTop: 14 }}
+            >
+              {isLocked ? (
+                <button
+                  type="button"
+                  disabled
+                  style={ctaButtonStyle(true)}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Lock size={14} style={{ marginRight: 6 }} />
+                  Bloqueada
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStartLesson(lessonNum);
+                  }}
+                  style={ctaButtonStyle(false, isCompleted)}
+                >
+                  {isCompleted ? "Repetir" : "Continuar"}
+                </button>
+              )}
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    );
+  });
+
   return (
-    <div style={{ position: "relative", width: "100%", paddingTop: 8 }}>
+    <div style={{ position: "relative", width: "100%" }}>
       {focusedIdx > 0 && (
         <button
+          type="button"
           onClick={() => goTo(focusedIdx - 1)}
           aria-label="Clase anterior"
           style={arrowButtonStyle("left")}
@@ -59,216 +279,24 @@ export function DemoPathCards({
       )}
 
       <div
-        ref={containerRef}
         className="gmusic-carousel"
         style={{
           display: "flex",
-          gap: 16,
+          gap: 12,
           overflowX: "auto",
           scrollSnapType: "x mandatory",
           scrollbarWidth: "none",
-          padding: "20px 80px",
-          alignItems: "center",
+          padding: "12px 56px 16px",
+          alignItems: "stretch",
         }}
       >
         <style>{`.gmusic-carousel::-webkit-scrollbar { display: none; }`}</style>
-
-        {nodes.map((node, i) => {
-          const lessonNum = getLessonNumber(node.id);
-          const isFocused = i === focusedIdx;
-          const isCompleted = node.status === "completed";
-          const isActive = node.status === "active";
-          const isLocked = node.status === "locked";
-          const gradient = CARD_GRADIENTS[lessonNum] ?? CARD_GRADIENTS[1];
-
-          return (
-            <motion.div
-              key={node.id}
-              ref={(el) => {
-                cardRefs.current[i] = el;
-              }}
-              animate={{
-                scale: isFocused ? 1 : 0.82,
-                opacity: isFocused ? 1 : isLocked ? 0.22 : 0.38,
-              }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              onClick={() => {
-                if (!isFocused) {
-                  goTo(i);
-                  return;
-                }
-                if (isLocked) {
-                  if (allowLockedSelection) onLockedClick(node.title);
-                  return;
-                }
-                onStartLesson(lessonNum);
-              }}
-              style={{
-                flexShrink: 0,
-                width: 260,
-                minHeight: 360,
-                borderRadius: 16,
-                background: gradient,
-                border: isFocused
-                  ? `2px solid ${isCompleted ? "rgba(76,175,80,0.6)" : "rgba(201,168,76,0.5)"}`
-                  : "2px solid transparent",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                padding: "24px 20px 20px",
-                scrollSnapAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: isFocused ? "0 16px 48px rgba(0,0,0,0.5)" : "none",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: -8,
-                  right: 12,
-                  fontSize: 100,
-                  fontFamily: "'Playfair Display',serif",
-                  color: "rgba(255,255,255,0.07)",
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                }}
-              >
-                {lessonNum}
-              </div>
-
-              <div style={{ marginBottom: 24, alignSelf: "flex-start" }}>
-                <span
-                  style={{
-                    fontSize: 9,
-                    letterSpacing: "2px",
-                    textTransform: "uppercase",
-                    fontFamily: "Inter,sans-serif",
-                    color: isCompleted ? "#4CAF50" : isActive ? GOLD : "rgba(255,255,255,0.3)",
-                    border: `1px solid ${isCompleted ? "rgba(76,175,80,0.4)" : isActive ? "rgba(201,168,76,0.4)" : "rgba(255,255,255,0.15)"}`,
-                    borderRadius: 3,
-                    padding: "3px 8px",
-                  }}
-                >
-                  {isCompleted ? "Completada" : isActive ? "Disponible" : "Bloqueada"}
-                </span>
-              </div>
-
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    fontFamily: "'Playfair Display',serif",
-                    fontSize: 20,
-                    color: "rgba(255,255,255,0.95)",
-                    fontWeight: 400,
-                    lineHeight: 1.25,
-                    marginBottom: 10,
-                  }}
-                >
-                  {node.title}
-                </div>
-                {!isLocked && node.description && (
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color: "rgba(255,255,255,0.5)",
-                      fontFamily: "Inter,sans-serif",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {node.description}
-                  </div>
-                )}
-                {isLocked && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      fontSize: 12,
-                      color: "rgba(255,255,255,0.25)",
-                      fontFamily: "Inter,sans-serif",
-                    }}
-                  >
-                    <Lock size={12} />
-                    Completa la clase anterior
-                  </div>
-                )}
-                {node.duration && !isLocked && (
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "rgba(255,255,255,0.3)",
-                      fontFamily: "Inter,sans-serif",
-                      marginTop: 8,
-                      letterSpacing: "0.8px",
-                    }}
-                  >
-                    {node.duration}
-                  </div>
-                )}
-              </div>
-
-              {isFocused && !isLocked && (
-                <motion.button
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartLesson(lessonNum);
-                  }}
-                  style={{
-                    marginTop: 20,
-                    width: "100%",
-                    height: 44,
-                    borderRadius: 8,
-                    background: isCompleted
-                      ? "rgba(76,175,80,0.15)"
-                      : "rgba(255,255,255,0.12)",
-                    border: `1px solid ${isCompleted ? "rgba(76,175,80,0.45)" : "rgba(255,255,255,0.25)"}`,
-                    color: isCompleted ? "#4CAF50" : WHITE_WARM,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    fontFamily: "Inter,sans-serif",
-                    letterSpacing: "1.5px",
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                  }}
-                >
-                  {isCompleted ? "Repetir" : "Entrar"}
-                </motion.button>
-              )}
-
-              <div
-                style={{
-                  marginTop: 16,
-                  height: 3,
-                  background: "rgba(255,255,255,0.08)",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                }}
-              >
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: isCompleted ? "100%" : "0%" }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  style={{
-                    height: "100%",
-                    background: isCompleted ? "#4CAF50" : GOLD,
-                    borderRadius: 2,
-                  }}
-                />
-              </div>
-            </motion.div>
-          );
-        })}
+        {carouselItems}
       </div>
 
       {focusedIdx < nodes.length - 1 && (
         <button
+          type="button"
           onClick={() => goTo(focusedIdx + 1)}
           aria-label="Clase siguiente"
           style={arrowButtonStyle("right")}
@@ -283,13 +311,14 @@ export function DemoPathCards({
           justifyContent: "center",
           gap: 6,
           marginTop: 4,
-          paddingBottom: 8,
         }}
       >
         {nodes.map((_, i) => (
           <button
             key={i}
+            type="button"
             onClick={() => goTo(i)}
+            aria-label={`Ir a clase ${i + 1}`}
             style={{
               width: i === focusedIdx ? 20 : 6,
               height: 6,
@@ -307,19 +336,58 @@ export function DemoPathCards({
   );
 }
 
+function ctaButtonStyle(locked: boolean, completed?: boolean): CSSProperties {
+  if (locked) {
+    return {
+      width: "100%",
+      height: 40,
+      borderRadius: 8,
+      background: "rgba(255,255,255,0.04)",
+      border: "1px solid rgba(255,255,255,0.08)",
+      color: "rgba(255,255,255,0.28)",
+      fontSize: 12,
+      fontWeight: 600,
+      fontFamily: "Inter, sans-serif",
+      letterSpacing: "0.06em",
+      textTransform: "uppercase",
+      cursor: "not-allowed",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    };
+  }
+
+  return {
+    width: "100%",
+    height: 40,
+    borderRadius: 8,
+    background: completed ? "transparent" : GOLD,
+    border: completed ? `1px solid ${GOLD}` : "none",
+    color: completed ? GOLD : "#0A0A0A",
+    fontSize: 12,
+    fontWeight: 700,
+    fontFamily: "Inter, sans-serif",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    cursor: "pointer",
+    boxShadow: completed ? "none" : "0 4px 0 rgba(140,100,20,0.6)",
+    transition: "transform 80ms ease",
+  };
+}
+
 function arrowButtonStyle(side: "left" | "right"): CSSProperties {
   return {
     position: "absolute",
-    [side]: 16,
-    top: "50%",
-    transform: "translateY(-60%)",
+    [side]: 8,
+    top: "42%",
+    transform: "translateY(-50%)",
     zIndex: 10,
     width: 40,
     height: 40,
     borderRadius: "50%",
-    background: "rgba(255,255,255,0.06)",
+    background: "rgba(18,18,18,0.92)",
     border: "1px solid rgba(255,255,255,0.10)",
-    color: "rgba(255,255,255,0.5)",
+    color: "rgba(255,255,255,0.55)",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
