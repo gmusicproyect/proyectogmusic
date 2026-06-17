@@ -28,7 +28,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 |----|----------|-------|-------|
 | D-001 | ExPulsoAire usa TAP manual — sin micrófono, sin tempo estricto | Jun 2026 | El demo es funnel de conversión, no evaluación musical. El objetivo es que el alumno avance, no que demuestre precisión. Micrófono = fricción innecesaria en esta fase. |
 | D-002 | Micrófono y pitch detection son opcionales y futuros — nunca requisito para completar el demo | Jun 2026 | Complejidad técnica alta (getUserMedia, Pitchy, latencia). Reservado para zona alumno premium post-conversión. |
-| D-003 | El demo tiene exactamente 5 clases — no agregar Clase 6 todavía | Jun 2026 | Funnel optimizado: 5 clases completan el arc pedagógico básico (Conoce → Canción) y llevan al gate de inscripción. Más clases = más fricción antes del CTA. |
+| D-003 | El demo tiene exactamente **5 clases jugables gratuitas** — no existe sexta clase gratuita ni arco pedagógico jugable más allá de 5. *(Aclarado Jun 2026, ver D-GOV-06:)* las clases **6–15 visibles en carrusel** son **teaser comercial bloqueado** de adquisición, no expansión del arco gratuito ni contenido reproducible. | Jun 2026 | Funnel optimizado: 5 clases completan el arc pedagógico básico (Conoce → Canción) y llevan al gate de inscripción. Teaser visible ≠ clase gratuita. |
 | D-004 | Arc pedagógico del demo: Conoce → Afina → Cuerdas → Pulso → Canción | Jun 2026 | Reordenado en Fase A (90883a1). Cada clase tiene prerequisito natural de la anterior. |
 
 ---
@@ -93,6 +93,15 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 ---
 
+## Gobernanza y producto — Demo / Funnel
+
+| ID | Decisión | Fecha | Estado | Razón |
+|----|----------|-------|--------|-------|
+| D-GOV-05 | **CTA demo bloqueado — híbrido C (Track A):** **Antes de 5/5:** click en clases bloqueadas **6–15** → panel inline + CTA **“Ver planes”** → sección planes en `home`; click en card **“Más de 60”** → `inscripcion-gate`. **Después de 5/5:** banner de celebración y FAB **“Inscribirse”** → `inscripcion-gate`; clases **6–15** mantienen panel + **“Ver planes”** (no gate). Gate reservado para mayor intención: card +60, banner y FAB. Navegación vía `currentPage` hasta **D-GOV-02/03**. No sustituye D-024 ni D-025. **No autoriza:** sync URL, React Router global, backend, auth, pagos, schema, R-001, R-002. | 16 Jun 2026 | **Aprobada** (Juan) | Separa exploración (planes) de conversión (gate); coherente con funnel Track A. |
+| D-GOV-06 | **Teaser B (Track A):** demo público con **5 clases jugables gratuitas** (1–5), **10 clases bloqueadas visibles** en carrusel (6–15, sin contenido jugable), **1 card final “Más de 60”** (resume 16–75), **catálogo interno de 75** lecciones y **carrusel visible de 15 nodos de lección + 1 nodo academy teaser**. **D-003 se mantiene** en espíritu (ver fila D-003). Títulos 6–15 son placeholder hasta **D-GOV-04**. **No autoriza:** auth real, pagos, backend, schema, routing URL, R-001, R-002 ni contenido pedagógico definitivo 6–75. | 16 Jun 2026 | **Aprobada** (Juan) | Opción B vs 75 candados (Opus). Reduce fricción pre-CTA; formaliza contrato de producto antes de commit del paquete demo-path. |
+
+---
+
 ## Pendientes de decisión
 
 | ID | Pregunta abierta | Quién decide |
@@ -104,5 +113,3 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-GOV-02 | URLs funnel demo: ¿`/mi-camino-demo`, `/demo-clase-*`, `/inscripcion` como destino final? | Juan / Claude |
 | D-GOV-03 | Fase routing URL: ¿fase corta solo funnel demo o esperar routing global? | Juan / Claude |
 | D-GOV-04 | Pedagogía 6–75: ¿skill-graph guitarra (YAML) antes de títulos reales 6–15? | Juan |
-| D-GOV-05 | CTA clases bloqueadas 6–15: ¿home/planes o `inscripcion-gate`? | Juan |
-| D-GOV-06 | ¿Ratificar teaser B (5 + 10 bloqueadas + card +60) vs 75 candados? | Juan |
