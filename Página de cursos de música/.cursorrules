@@ -1,206 +1,136 @@
-# Cursor Rules — Gmusic Academy
+# REGLAS DEL WORKSPACE & ARQUITECTURA - GMUSIC ACADEMY
 
-## Proyecto
-**Gmusic Academy** (gmusic.academy) es una plataforma de educación musical gamificada. Estudiantes aprenden guitarra con ruta pedagógica de 12 meses: microprácticas interactivas, XP, streaks, progreso. Apoderados tienen reportes de actividad.
+## 1. IDENTIDAD, ROLES Y RESTRICCIONES CRÍTICAS
 
-## Stack
-- **Frontend**: React 18 + TypeScript strict, Vite 6, TailwindCSS 4 + shadcn/ui (Radix), React Router en package.json (navegación principal por estado en App.tsx, no routing declarativo global)
-- **Backend**: Node.js + Express + TypeScript strict
-- **DB**: PostgreSQL (Supabase hosted) + Prisma 6
-- **Auth**: Sin Supabase Auth todavía — autenticación dev via `GMUSIC_DEV_USER_EMAIL` + cookies HttpOnly firmadas (HMAC-SHA256). Migrar a JWT real antes de producción.
+Este proyecto se rige por un flujo jerárquico estricto. Las IA deben respetar sus límites operativos sin excepciones:
 
-## Estructura del proyecto
+* **Claude (El Cerebro / Arquitecto):** Diseña la estrategia conceptual, la lógica pesada y la estructura pedagógica de la academia musical de 12 meses. Opera de forma externa. No genera código de producción directo.
+* **Codex (El Supervisor / Contexto):** Mantiene el orden de las tareas, la memoria de avance del proyecto (`AGENTS.md`, `MEMORY.md`, `DECISIONS.md`) y valida que las soluciones cumplan con las especificaciones pedagógicas aprobadas.
+* **Cursos (El Ejecutante / Cursor):** Único encargado técnico y operativo dentro del entorno local de la Mac. Escribe, edita y aplica el código en los archivos. No infiere lógica de negocio ni altera la arquitectura por su cuenta.
 
-### Backend (server/)
-```
-server/
-  index.ts              → entry (puerto 3001, tsx --env-file=.env)
-  app.ts                → montaje Express
-  config.ts
-  lib/
-    prisma.ts           → singleton Prisma
-    devStudentCookie.ts → cookie firmada (student | logged_out)
-    devActivationGate.ts
-    studentAccess.ts
-    ...
-  middleware/
-    devStudentAuth.ts
-  routes/
-    health.ts           → GET /api/v1/health
-    me.ts               → /me/dashboard, /me/path, /me/access
-    lessonSessions.ts   → POST /lesson-sessions, POST .../complete
-    dev.ts              → /dev/activate-semestral, /dev/logout
-  services/
-  tests/
-```
-**No existe** `routes/subscriptions.ts`. Suscripciones se resuelven vía Prisma en servicios (`accessService`, `activateSemestralService`), no como router dedicado.
+### 🚨 PROTOCOLO EXCLUSIVO PARA EL REPOSITORIO REMOTO (GITHUB)
 
-### Frontend (src/)
-```
-src/app/
-  App.tsx                    → navegación por estado (currentPage + handlePageChange). NO usa React Router como eje principal de navegación.
-  components/gmusic/
-    StudentZoneGuard.tsx     → protege zona privada
-  hooks/
-    useStudentAccess.ts
-    usePublicStudentSession.ts
-  services/gmusic-api/       → cliente API (access, dashboard, path, lesson-session, dev-*)
-  utils/
-    student-zone-routing.ts
-    public-subscription-flow.ts
-    public-home-navigation.ts
-    ...
-  pages/
-    legacy/                  → páginas antiguas (CheckoutPage, CourseDetailPage, etc.)
-    marketing/               → GmusicLanding, ProbarPage
-vite/
-  devActivationProxy.ts      → proxy dev; clave GMUSIC_DEV_ACTIVATION_KEY solo en Node, nunca VITE_*
-prisma/
-  schema.prisma
-  seed.ts
-docs/architecture/
-  api-contract.md            → FUENTE DE VERDAD para endpoints REST v1
-  learning-engine.md         → lógica del motor de aprendizaje
-  database-schema.md         → detalle de modelos Prisma
-```
-**Antiguos archivos deprecated** (ya no usar como referencia):
-- `src/app/utils/student-access-guard` → ahora en `components/gmusic/StudentZoneGuard.tsx`
-- `src/app/utils/api-client` → ahora en `services/gmusic-api/`
+* **Exclusividad de Ejecución:** Cursos (Cursor) es el ÚNICO agente autorizado para interactuar con el repositorio remoto (`gmusicproyect/proyectogmusic`). Claude y Codex no intervienen en comandos de Git.
+* **Prohibición de Automatización:** Queda estrictamente PROHIBIDO ejecutar `git push`, `git commit` o subidas automáticas de forma autónoma.
+* **Flujo de Confirmación Obligatorio:**
+    1. **Cursos** escribe el código localmente y valida el build.
+    2. **Codex** actualiza el estado de las tareas y la memoria local.
+    3. **Cursor** frena la terminal e interrumpe el flujo para preguntar explícitamente al Director: *"El código está listo y probado localmente. ¿Autoriza hacer el push a GitHub?"*.
+    4. El envío a GitHub solo se ejecutará cuando el Director (Juan) responda explícitamente **"SÍ"** o **"OK"**.
 
-## Rutas API reales (base: `/api/v1`)
+---
 
-### Alumno
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/health` | Health check utilitario |
-| GET | `/me/dashboard` | Dashboard: racha, XP, progreso módulo, próxima práctica |
-| GET | `/me/path` | Camino pedagógico: módulos + nodos con estado (locked/available/active/completed) |
-| GET | `/me/access` | Validación acceso zona privada (suscripción activa) |
-| POST | `/lesson-sessions` | Iniciar/reutilizar sesión de práctica |
-| POST | `/lesson-sessions/:id/complete` | Cerrar sesión, validar intentos, calcular XP/racha/progreso |
+## 2. STACK TECNOLÓGICO Y ESTRUCTURA
 
-### Apoderado (contrato definido, implementación pendiente)
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/guardian/students` | Lista alumnos vinculados |
-| GET | `/guardian/students/:id/report` | Reporte de actividad de un alumno |
+* **Frontend:** React 18 + Vite, Tailwind CSS + Design Tokens de la marca, rutas demo configuradas (`mi-camino-demo`, teaser 15+60).
+* **Backend:** Express + Prisma ORM + PostgreSQL.
+* **Autenticación:** Desarrollo mediante cookies firmadas con HMAC.
+* **Seguridad:** Puntuaciones y scoring de gamificación (XP, rachas) procesados exclusivamente en el servidor. Nunca enviar `secureAnswer` al cliente. Idempotencia obligatoria en endpoints críticos.
+* **Arquitectura de Carpetas:** `server/` para backend, `src/app/` para frontend, `docs/architecture/` para documentación técnica.
+* **Ecosistema de Agentes Moderno:** Convive y se alinea con `AGENTS.md`, las decisiones en `.agents/DECISIONS.md` y los skills unificados en `.agents/skills/`.
 
-### Dev (solo local, eliminar antes de producción)
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| POST | `/dev/activate-semestral` | Simula registro + suscripción activa (6 meses) |
-| POST | `/dev/logout` | Cierra sesión dev |
+### Referencias técnicas obligatorias (antes de cambiar API o motor)
 
-### Seguridad (no exponer nunca al cliente)
-- El cliente **nunca** recibe `secureAnswer`.
-- El cliente **no** envía `isCorrect` ni `xpEarned`; el servidor los calcula.
-- XP, racha y progreso los decide **solo el servidor**.
-- `POST .../complete` es idempotente (si sesión ya `COMPLETED`, devuelve snapshot sin reprocesar).
-- Apoderado solo accede si existe `GuardianLink`.
-- Ventana máxima de sesión: **3 horas** desde `startedAt`; luego → `ABANDONED`.
-
-## Fases R3 — historial de entregables
-
-| Fase | Commit | Qué se entregó |
-|------|--------|----------------|
-| R3.1 | `4daebeb` | Contrato y cliente GET /me/access — tipos, servicio, tests |
-| R3.2 | `c51a6f0` | StudentZoneGuard + useStudentAccess — zona privada protegida |
-| R3.3A | `b66f238` | POST /dev/activate-semestral — activación dev de suscripción Semestral |
-| R3.3B | `a55e1ba` | Cookie HttpOnly firmada HMAC (`student:<email>.<hmac>`), middleware devStudentAuth, POST /dev/logout |
-| R3.3C | `5616e1c` | Funnel Semestral: registro → checkout → activate → verificar /me/access → navegar a Mi Estudio |
-| R3.3D | `356f175` | Sesión pública Navbar + logout coherente: cookie `logged_out.<hmac>` sin fallback a GMUSIC_DEV_USER_EMAIL |
-
-**R3.3E: pendiente de especificación — no inventar scope.**
-
-## Auth dev — cookie con tres estados
-
-Middleware `devStudentAuth` + `devStudentCookie.ts`:
-
-| Cookie / estado | Comportamiento |
-|-----------------|----------------|
-| `student:<email>.<hmac>` | Solo ese alumno |
-| `logged_out.<hmac>` | 401, sin fallback |
-| Sin cookie válida | Fallback a `GMUSIC_DEV_USER_EMAIL` (solo dev) |
-
-- **Nombre**: `gmusic_dev_student_email`
-- **Path**: `/api/v1`
-- **HttpOnly, SameSite=Strict, max-age 28800 s**
-- **Firma**: HMAC-SHA256 con `GMUSIC_DEV_ACTIVATION_KEY` (mín. 24 chars, solo backend + proxy Vite, **nunca** `VITE_*`)
-- `POST /dev/logout` emite `logged_out` (no borra suscripción ni progreso)
-- Nueva activación Semestral reemplaza `logged_out`
-
-**Nunca** exponer `GMUSIC_DEV_ACTIVATION_KEY` en variables `VITE_*`, logs ni bundle frontend.
-
-## Reglas de desarrollo
-
-### TypeScript
-- Strict mode. No `any` implícito.
-- **NO usar `process` ni `global` en frontend** — son de Node.js. Usar `import.meta.env.VITE_*` para env vars en Vite.
-- Tipos de Node disponibles: `@types/node` instalado.
+1. `docs/architecture/api-contract.md` — contrato REST v1
+2. `docs/architecture/learning-engine.md` — motor de aprendizaje
+3. `docs/architecture/database-schema.md` — modelos Prisma
+4. `DESIGN.md` — UI gamificada premium (Obsidian & Gold)
 
 ### Navegación frontend
-- Navegación principal por **estado en App.tsx** (`currentPage` + `handlePageChange`). No asumir `<Routes>` en toda la app.
-- SEO/URLs: helpers en `utils/` (`student-zone-routing.ts`, `public-home-navigation.ts`) — no routing declarativo global.
 
-### Estilos
-- TailwindCSS 4. shadcn/ui como base. Tokens CSS en `design-system/tokens.css`.
-- No hardcodear colores hex — usar tokens CSS.
+* Eje principal: `currentPage` + `handlePageChange` en `App.tsx` (no asumir React Router global).
+* Zona alumno con pathname real: `/alumno`, `/mi-camino` — ver `AGENTS.md` y `student-zone-routing.ts`.
 
-### Git
-- Commits descriptivos en inglés: `Add student access contract` (no prefijos obligatorios `feat:`/`fix:`).
-- **No hacer push directo a main sin acuerdo explícito.**
-- Ramas para todo: `git checkout -b feat/nombre`.
+---
 
-### Prisma
-- `npm run prisma:generate` después de cambiar el schema.
-- `npm run db:seed` para poblar (idempotente).
-- Prisma client singleton en `server/lib/prisma.ts`.
+## 3. REGLAS DE DESARROLLO Y CONVENIOS
 
-## Validación obligatoria antes de reportar "listo"
-
-Ejecutar en orden, sin atajos:
+* **Código:** TypeScript estricto. Prohibido el uso de `process` en las carpetas de frontend (usar `import.meta.env.VITE_*`).
+* **Estilos:** Tailwind + tokens; no hardcodear hex fuera de tokens de marca.
+* **Mensajes de Commit:** Se autoriza y prefiere el uso de prefijos estándar en español (ej. `feat:`, `fix:`, `refactor:`) para mantener la consistencia actual del repositorio histórico. **Commit solo con autorización explícita del Director.**
+* **Validación antes de Confirmar:** Todo cambio debe superar obligatoriamente el flujo de verificación local:
 
 ```bash
-git diff --check
-npm run api:typecheck && npm run api:test
-npm run app:typecheck && npm run app:test
-npm run build
+git diff --check \
+  && npm run app:typecheck && npm run api:typecheck \
+  && npm run app:test && npm run api:test \
+  && npm run build
 ```
 
-Revisar `dist/` sin secretos antes de cerrar fase. Tests actuales (~316 app / ~105 api) — **no reportar "listo" si alguno falla**.
+*(El proyecto cuenta actualmente con una suite de **376+ tests** activos que deben mantenerse en verde.)*
 
-## Comandos esenciales
+### Errores comunes a evitar
+
+* Exponer `GMUSIC_DEV_ACTIVATION_KEY` en bundle frontend o variables `VITE_*`.
+* Enviar `isCorrect` o `xpEarned` desde el cliente.
+* Inventar scope de fase no especificado en contrato o decisión registrada.
+* Push a `main` o remoto sin respuesta explícita **"SÍ"** / **"OK"** del Director.
+
+### Comandos útiles
+
 ```bash
-npm run dev           # Frontend (puerto 5173)
-npm run api:dev       # Backend Express (puerto 3001)
-npm run app:typecheck # Verificar TS frontend
-npm run api:typecheck # Verificar TS backend
-npm run app:test      # Tests frontend
-npm run api:test      # Tests backend
-npm run build         # Build producción
-npm run prisma:generate # Regenerar Prisma client
-npm run db:seed       # Seed DB
+npm run dev          # Frontend (5173)
+npm run api:dev      # Backend (3001)
+npm run prisma:generate
+npm run db:seed
 ```
 
-## División de roles
+---
 
-| Rol | Responsabilidad |
-|-----|-----------------|
-| **Claude (arquitecto)** | Decide la arquitectura, crea planes, define contratos (`api-contract.md`), revisa decisiones técnicas. No escribe código de producción sin indicación. |
-| **Cursor (ejecutor)** | Implementa los cambios siguiendo el plan del arquitecto. Ejecuta los commands de validación. Hace commits limpios. |
+## 4. SKILLS Y ENRUTAMIENTO RÁPIDO
 
-## Antes de hacer cambios
-1. Leer `docs/architecture/api-contract.md` (fuente de verdad para endpoints).
-2. Consultar `docs/architecture/learning-engine.md` para lógica del motor.
-3. Para decisiones de fase R3+: usar commits + `api-contract.md` (changelog al final). No existe plantilla `DECISIONES.md` por fase; `docs/etapas/` contiene docs puntuales de etapas antiguas (R3.1+ no aplica).
-4. Implementar siguiendo patrones del proyecto.
-5. Validar: `git diff --check && npm run api:typecheck && npm run api:test && npm run app:typecheck && npm run app:test && npm run build`.
-6. Commit descriptivo en inglés.
+Fuente de verdad de skills: `.agents/skills/` (espejo en `.cursor/skills/` vía `./scripts/sync-skills.sh`).
 
-## Errores comunes a evitar
-- `process`/`global` en frontend → errores TS stale. Solución: `Cmd+Shift+P → TypeScript: Restart TS Server`.
-- Usar archivos deprecated (`src/app/utils/student-access-guard`, `src/app/utils/api-client`).
-- Exponer `GMUSIC_DEV_ACTIVATION_KEY` en bundle frontend o `VITE_*`.
-- Enviar `isCorrect` o `xpEarned` desde el cliente en requests.
-- Inventar scope para R3.3E antes de especificación.
-- Hacer push a `main` sin acuerdo explícito del arquitecto.
+| Tarea | Skill |
+|-------|-------|
+| Mi Estudio / dashboard alumno | `gmusic-welcome` |
+| Mi Camino / mapa pedagógico | `gmusic-path` |
+| UI gamificada, XP, racha | `gmusic-edu-gamified-design` |
+| Funnel demo, conversión | `gmusic-funnel-conversion` |
+| Matrices Academia, bloqueos | `gmusic-game-progression-architecture` |
+| VFX, luces, ChunkyButton | `gmusic-visual-vfx` |
+| API, Prisma, microejercicios | `gmusic-learning-engine` |
+| Protocolo ejecutor Cursor | `gmusic-agent-workflow` |
+
+Leer `AGENTS.md` al inicio de cada sesión. No commitear ni pushear sin autorización explícita.
+
+---
+
+## 5. APÉNDICE TÉCNICO COMPACTO
+
+### Arquitectura (D-GOV-01)
+
+Jerarquía: `.agents/DECISIONS.md` → `docs/architecture/gmusic-architecture-working-map.md` → código/tests.
+
+**R-001** (contenido de sesión no versionado) y **R-002** (entitlements no exigidos en API privada): **no tocar** sin decisión aprobada y fase explícita.
+
+Referencias obligatorias antes de cambiar API o motor: `docs/architecture/api-contract.md`, `learning-engine.md`, `database-schema.md`.
+
+### Backend (`server/`)
+
+- Entry: `server/index.ts` (puerto 3001) · montaje: `server/app.ts`
+- Rutas: `health`, `me` (`/dashboard`, `/path`, `/access`), `lesson-sessions`, `dev`
+- Auth dev: `middleware/devStudentAuth.ts` — bloqueado en producción; cookie HMAC + `GMUSIC_DEV_USER_EMAIL`
+- Entitlements: `lib/studentAccess.ts` — UI (`StudentZoneGuard`) sí; endpoints privados aún sin enforcement completo (R-002)
+- **No existe** `routes/subscriptions.ts` — suscripciones vía servicios Prisma (`accessService`, etc.)
+
+### Frontend clave
+
+- `App.tsx`: `currentPage` + `handlePageChange` — no asumir React Router global
+- **Demo:** `PathDemoPage`, `demo-path-catalog.ts`, `useDemoProgress` (`gmusic:demo_v1`) — teaser B D-GOV-06
+- **Suscriptor:** `StudentZoneGuard`, `student-zone-routing.ts` → `/alumno`, `/mi-camino`
+- API client: `src/app/services/gmusic-api/`
+
+### Deprecated (no usar como referencia)
+
+- `src/app/utils/student-access-guard` → usar `components/gmusic/StudentZoneGuard.tsx`
+- `src/app/utils/api-client` → usar `services/gmusic-api/`
+
+### Comandos útiles
+
+```bash
+npm run dev          # Frontend (5173)
+npm run api:dev      # Backend (3001)
+npm run prisma:generate
+npm run db:seed
+```

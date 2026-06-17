@@ -1,6 +1,87 @@
 # Gmusic Estudio — instrucciones para agentes
 
-Academia de guitarra online. Stack: React + Vite. Navegación por `currentPage` en `App.tsx`.
+Academia de guitarra online. Stack: React + Vite. Navegación principal por `currentPage` en `App.tsx`, con sincronización parcial de URL (ver mapa de rutas).
+
+---
+
+## Gobernanza, roles y entorno de agentes
+
+Para garantizar el orden y evitar conflictos en el desarrollo, el ecosistema de IA se divide en **tres roles estrictos**. Las herramientas deben respetar sus límites y el mapa de rutas oficial.
+
+### Matriz de roles y funciones
+
+| Rol | Herramienta | Función | Referencia |
+|-----|-------------|---------|------------|
+| **Claude (El Cerebro / Arquitecto)** | Claude Code / Opus | Diseña estrategia conceptual, lógica de negocio pesada y estructura pedagógica de la academia (12 meses). **No genera código de producción directo.** | `CLAUDE.md`, skill `gmusic-opus-architect` |
+| **Codex (El Supervisor / Contexto)** | Codex | Mantiene orden de tareas, memoria de avance (`AGENTS.md`, `.agents/MEMORY.md`, `.agents/DECISIONS.md`) y valida cumplimiento de specs antes de sincronizar. | — |
+| **Cursos (El Ejecutante / Cursor)** | Cursor | Único encargado técnico operativo en la Mac. Escribe, edita y aplica código local. **No decide diseño ni altera arquitectura de forma autónoma.** | skill `gmusic-agent-workflow` |
+
+### Regla maestra — repositorio remoto (GitHub)
+
+- **Exclusividad:** **Cursos (Cursor)** es el **único** agente autorizado para interactuar con el remoto (`gmusicproyect/proyectogmusic`).
+- **Prohibido:** `git push`, `git commit` o subidas automáticas de forma autónoma.
+- **Flujo obligatorio:** Tras compilar y validar localmente, Cursos detiene la ejecución y pregunta al Director (Juan): *"El código está listo y probado localmente. ¿Autoriza hacer el push a GitHub?"*
+- **Solo proceder** ante respuesta explícita **"SÍ"** o **"OK"**.
+
+---
+
+### Arquitectura y decisiones (D-GOV-01)
+
+Para decisiones de **arquitectura y dominio**, consultar en este orden:
+
+1. `.agents/DECISIONS.md` (aprobadas)
+2. `docs/architecture/gmusic-architecture-working-map.md` (Context Map v1.1 + Auditoría READ-ONLY v1.2)
+3. Código + tests
+
+No autoriza implementación, schema, reorganización de carpetas ni routing por sí solo.
+
+**R-001 / R-002:** no mitigar sin decisión aprobada y fase explícita.
+
+---
+
+## Mapa de rutas de navegación autorizadas
+
+Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetros fuera de esta tabla sin fase de arquitectura global aprobada por **Claude (El Cerebro)**.
+
+| Zona | Página (`currentPage`) | URL real / destino | Propósito |
+|------|------------------------|--------------------|-----------|
+| **Público / Funnel** | `home` (landing) | `/` | Inicio y captación |
+| **Funnel Demo** | `mi-camino-demo` | `/mi-camino-demo` | Teaser B: 5 jugables + 10 bloqueadas + card +60 (D-GOV-06) |
+| **Funnel Demo** | `demo-clase-1` … `demo-clase-5` | `/demo-clase-*` | Clases de prueba habilitadas |
+| **Funnel Demo** | `inscripcion-gate` | `/inscripcion` | Cierre de conversión / pasarela |
+| **Alumno suscriptor** | `mi-estudio` / `welcome` | `/alumno` | Dashboard principal del alumno |
+| **Alumno suscriptor** | `mi-camino` | `/mi-camino` | Ruta de aprendizaje de guitarra |
+
+### Estado de implementación URL (referencia técnica)
+
+| URL autorizada | Sincronizada en código hoy |
+|----------------|----------------------------|
+| `/`, `/alumno`, `/mi-camino` | **Sí** — `student-zone-routing.ts` + `handlePageChange` en `App.tsx` |
+| `/mi-camino-demo`, `/demo-clase-*`, `/inscripcion` | **Pendiente** — navegación vía `currentPage` only; la URL de la tabla es el **objetivo** a implementar en fase routing global |
+
+Las URLs funnel son **destino autorizado**, no implementación vigente. Sync URL = **D-GOV-02/03** pendiente. Hoy: `currentPage` only.
+
+Reglas de navegación (zona suscriptor implementada):
+
+- Entrar o moverse dentro de zona alumno → `pushState` a `/alumno` o `/mi-camino`.
+- Salir de zona alumno hacia páginas públicas/legacy → `replaceState("/")` + `setPage`.
+- `popstate` reconoce `/`, `/alumno` y `/mi-camino`; pathname desconocido → `home`.
+
+Implementación: `src/app/utils/student-zone-routing.ts` + wrapper `handlePageChange` en `App.tsx`.
+
+---
+
+### CTA demo bloqueado (D-GOV-05 — híbrido C)
+
+| Momento | Acción | Destino |
+|---------|--------|---------|
+| Cualquier estado | Clases 6–15 bloqueadas | Panel + “Ver planes” → sección planes en `home` |
+| Cualquier estado | Card “Más de 60” | `inscripcion-gate` |
+| Post 5/5 | Banner + FAB “Inscribirse” | `inscripcion-gate` |
+
+Navegación vía `currentPage`. No sustituye D-024 ni D-025.
+
+---
 
 ## Skills unificados
 
@@ -10,30 +91,32 @@ Fuente de verdad: **`.agents/skills/`**
 |-------|---------------|
 | `gmusic-welcome` | Mi Estudio, `GmusicWelcome.tsx` |
 | `gmusic-path` | Mi Camino, `GmusicPath.tsx` |
+| `gmusic-funnel-conversion` | Landing → demo → gate → registro; `PathDemoPage`, `InscripcionGatePage` |
 | `gmusic-edu-gamified-design` | Diseño gamificado de cursos, progreso, XP, racha y estilo tipo Duolingo adaptado a Gmusic |
 | `gmusic-game-progression-architecture` | Matriz Academia 3×3, funnel de conversión, estados de bloqueo y progresión de juego |
 | `gmusic-visual-vfx` | LED de progreso, ChunkyButton, sombras de volumen, overlay del cofre y atmósfera CSS |
 | `gmusic-learning-engine` | Backend/motor de aprendizaje, microejercicios, Prisma, XP, rachas y apoderados |
-| `gmusic-opus-architect` | **Opus** — arquitecto: specs, planes, Superpowers brainstorming (no codea) |
-| `gmusic-agent-workflow` | **Cursor** — protocolo ejecutor: tests, reportes, commits con autorización |
+| `gmusic-auth-email-verification` | Auth, sesión, cookies, estados anonymous / registered / authenticated |
+| `gmusic-opus-architect` | **Claude / Opus** — specs, planes, Superpowers brainstorming (no codea) |
+| `gmusic-agent-workflow` | **Cursor / Cursos** — protocolo ejecutor: tests, reportes, commits con autorización |
 
 Registro completo: `skills.manifest.yaml`
 
-**Opus + Superpowers:** `./scripts/install-superpowers-opus.sh` → luego en Claude Code: `/plugin install superpowers@claude-plugins-official`. Ver `CLAUDE.md`.
+**Claude + Superpowers:** `./scripts/install-superpowers-opus.sh` → luego en Claude Code: `/plugin install superpowers@claude-plugins-official`. Ver `CLAUDE.md`.
 
 Guía visual local: `DESIGN.md`
 
-## Índice de lectura por tarea
+### Índice de lectura por tarea
 
-Enrutamiento rápido para optimizar tokens según el tipo de trabajo:
-
-| Tipo de Tarea | Documentos Obligatorios a Leer | Skill a Activar |
+| Tipo de Tarea | Documentos obligatorios | Skill a activar |
 | :--- | :--- | :--- |
-| **Ciclo cerrado (Cursor)** | `.cursor/rules/loop.mdc` | Siempre — ejecutar, verificar, reintentar, reportar |
-| **Cambios Estructura o Layout** | `AGENTS.md`, `DESIGN.md` | `gmusic-welcome` / `gmusic-path` |
-| **Ajustes de UI, Luces, VFX o CSS** | `AGENTS.md`, `.agents/skills/gmusic-visual-vfx/SKILL.md` | El del módulo activo |
-| **Mecánicas de Juego, XP o Niveles** | `AGENTS.md`, `.agents/skills/gmusic-game-progression-architecture/SKILL.md` | `gmusic-edu-gamified-design` |
-| **Cambios en API o Base de Datos** | `AGENTS.md`, `docs/architecture/` | `gmusic-learning-engine` |
+| **Ciclo cerrado (Cursor)** | `.cursor/rules/loop.mdc` | `gmusic-agent-workflow` |
+| **Arquitectura / dominio** | `DECISIONS.md`, `gmusic-architecture-working-map.md` | — (D-GOV-01) |
+| **Funnel demo / conversión** | `AGENTS.md`, `.agents/DECISIONS.md` | `gmusic-funnel-conversion` |
+| **Cambios estructura o layout** | `AGENTS.md`, `DESIGN.md` | `gmusic-welcome` / `gmusic-path` |
+| **UI, luces, VFX o CSS** | `AGENTS.md`, `gmusic-visual-vfx/SKILL.md` | El del módulo activo |
+| **Mecánicas de juego, XP o niveles** | `AGENTS.md`, `gmusic-game-progression-architecture/SKILL.md` | `gmusic-edu-gamified-design` |
+| **API o base de datos** | `AGENTS.md`, `docs/architecture/` | `gmusic-learning-engine` |
 
 ### Sincronizar entre Cursor, Codex y Antigravity
 
@@ -44,28 +127,13 @@ Enrutamiento rápido para optimizar tokens según el tipo de trabajo:
 
 Convención de nombre: carpeta = `name:` en frontmatter = kebab-case (`gmusic-welcome`).
 
-## Rutas internas (zona alumno)
-
-Solo estas URLs tienen pathname real por ahora. El resto del sitio sigue en `currentPage` sin sincronizar URL.
-
-| Página | currentPage | URL |
-|--------|-------------|-----|
-| Mi Estudio | `mi-estudio` / `welcome` | `/alumno` |
-| Mi Camino | `mi-camino` | `/mi-camino` |
-
-Implementación: `src/app/utils/student-zone-routing.ts` + wrapper `handlePageChange` en `App.tsx` (Navbar, landing, Mi Estudio, Mi Camino).
-
-Reglas de navegación:
-
-- Entrar o moverse dentro de zona alumno → `pushState` a `/alumno` o `/mi-camino`.
-- Salir de zona alumno hacia páginas públicas/legacy → `replaceState("/")` + `setPage`.
-- `popstate` reconoce solo `/`, `/alumno` y `/mi-camino`; pathname desconocido → `home`.
-- No agregar rutas URL nuevas sin una fase explícita de routing global.
+---
 
 ## Reglas generales
 
-- No commit salvo autorización explícita.
+- No commit ni push salvo autorización explícita del Director.
 - Etapas por scope: no mezclar funcionalidad futura en la etapa activa.
-- Datos mock centralizados en `src/app/data/mock-user.ts`.
-- Para UI gamificada, usar `DESIGN.md` y el skill `gmusic-edu-gamified-design`; inspirarse en patrones tipo Duolingo sin copiar marca, mascota ni assets protegidos.
-- Para backend, progreso, microejercicios, XP, rachas o apoderados, usar `docs/architecture/learning-engine.md`, `docs/architecture/database-schema.md` y el skill `gmusic-learning-engine`.
+- Datos mock centralizados en `src/app/data/mock-user.ts`; progreso demo en `localStorage` (`gmusic:demo_v1`).
+- UI gamificada: `DESIGN.md` + skill `gmusic-edu-gamified-design` (inspiración Duolingo, sin copiar marca ni assets protegidos).
+- Backend, progreso, microejercicios, XP, rachas: `docs/architecture/learning-engine.md`, `database-schema.md` + skill `gmusic-learning-engine`.
+- Decisiones de producto registradas: `.agents/DECISIONS.md`.

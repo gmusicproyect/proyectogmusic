@@ -50,17 +50,29 @@ skills:
     scope: project
     path: .agents/skills/gmusic-learning-engine
 
-  - name: gmusic-opus-architect
-    description: Opus arquitecto — Superpowers brainstorming/plans, specs docs/vision, brief para Cursor
-    tools: [opus, claude]
-    scope: project
-    path: .agents/skills/gmusic-opus-architect
-
   - name: gmusic-agent-workflow
     description: Protocolo ejecutor — tests, reportes, no commit sin autorización (Cursor)
     tools: [cursor, codex]
     scope: project
     path: .agents/skills/gmusic-agent-workflow
+
+  - name: gmusic-funnel-conversion
+    description: Funnel público — landing, demo teaser, inscripcion-gate, CTA y localStorage demo
+    tools: [cursor, codex, antigravity]
+    scope: project
+    path: .agents/skills/gmusic-funnel-conversion
+
+  - name: gmusic-auth-email-verification
+    description: Auth propio — JWT cookie, registro, estados de sesión, Fase 4
+    tools: [cursor, codex, antigravity]
+    scope: project
+    path: .agents/skills/gmusic-auth-email-verification
+
+  - name: gmusic-opus-architect
+    description: Claude arquitecto — Superpowers brainstorming/plans, specs docs/vision, brief para Cursor
+    tools: [opus, claude]
+    scope: project
+    path: .agents/skills/gmusic-opus-architect
 
   # ── Superpowers (vendor → .agents/vendor/superpowers; install: scripts/install-superpowers-opus.sh) ──
   - name: superpowers-brainstorming

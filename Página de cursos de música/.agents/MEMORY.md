@@ -1,32 +1,73 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 10 Jun 2026 (post-`cf3343c`, remoto sincronizado).
+Última actualización: 16 Jun 2026 · `origin/main` = `2bd1bdc`
+
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-05, D-GOV-06 · demo-path en remoto.
+
+**Handoffs gobernanza 15 Jun** (`2026-06-15-gobernanza-*`, `INSTRUCCION-*`): **SUPERSEDED** — numeración D-GOV antigua (D-GOV-01 ≠ URLs). No usar como fuente activa. Renumeración pendiente (fase handoffs).
+
+---
+
+## Gobernanza de agentes (15 Jun 2026)
+
+| Rol | Función | Git remoto |
+|-----|---------|------------|
+| **Claude** (Cerebro) | Specs, pedagogía, arquitectura — no codea prod | ❌ |
+| **Codex** (Supervisor) | MEMORY, DECISIONS, validar specs | ❌ |
+| **Cursos / Cursor** | Código local, tests, build | ✅ solo push con **SÍ/OK** de Juan |
+
+Fuente de verdad: `AGENTS.md` (roles + mapa de rutas). No commit/push autónomo.
+
+---
+
+## Estado remoto y decisiones (16 Jun 2026)
+
+| Item | Valor |
+|------|-------|
+| `origin/main` | `2bd1bdc` — feat(demo-path): teaser B funnel with hybrid CTA |
+| Docs recientes | `b276d80` D-GOV-01 · `9701e4d` working map · `024cc42` D-GOV-05/06 |
+| **Aprobadas** | D-GOV-01 (jerarquía doc + working map), D-GOV-05 (CTA híbrido C), D-GOV-06 (teaser B), D-003 aclarado |
+| **Pendientes** | D-GOV-02 URLs demo · D-GOV-03 fase routing · D-GOV-04 pedagogía 6–75 |
+| Tests app | 376/376 (validar en sesión) |
 
 ---
 
 ## PROTOCOLO "Retomar Gmusic"
 
+### Referencias obligatorias al retomar
+
+1. `.agents/MEMORY.md` (este archivo)
+2. `AGENTS.md` (gobernanza + mapa de rutas + CTA D-GOV-05)
+3. `.agents/DECISIONS.md` + `docs/architecture/gmusic-architecture-working-map.md` (D-GOV-01)
+
 Cuando Juan escriba **"Retomar Gmusic"**, Fable debe ejecutar exactamente estos pasos antes de hacer cualquier otra cosa:
 
 1. Leer `.agents/MEMORY.md` (este archivo)
-2. Leer `.agents/skills/gmusic-agent-workflow/SKILL.md`
-3. Leer `.agents/skills/gmusic-funnel-conversion/SKILL.md`
-4. Ejecutar `git status` y `git log --oneline -5`
-5. Confirmar si hay archivos staged o unstaged sin commit
-6. Confirmar el hash y mensaje del último commit
-7. **No implementar nada automáticamente** — ni un cambio de una línea
-8. Resumir el estado actual en máximo 10 líneas
-9. Recordar los pendientes inmediatos (ver sección "Pendientes inmediatos" más abajo)
-10. Preguntar a Juan cuál paso quiere ejecutar primero
+2. Leer `AGENTS.md` (roles y rutas)
+3. Leer `.agents/skills/gmusic-agent-workflow/SKILL.md`
+4. Leer `.agents/skills/gmusic-funnel-conversion/SKILL.md`
+5. Ejecutar `git status` y `git log --oneline -5`
+6. Confirmar si hay archivos staged o unstaged sin commit
+7. Confirmar el hash y mensaje del último commit
+8. **No implementar nada automáticamente** — ni un cambio de una línea
+9. Resumir el estado actual en máximo 10 líneas
+10. Recordar los pendientes inmediatos (ver sección "Pendientes inmediatos" más abajo)
+11. Preguntar a Juan cuál paso quiere ejecutar primero
 
 **Regla de oro:** Al recibir "Retomar Gmusic", cero código hasta leer memoria + git status + confirmación explícita de Juan.
 
 ---
 
-## Estado del proyecto (10 Jun 2026)
+## Estado del proyecto
 
-### Fases completadas
+### Publicado en remoto (16 Jun 2026)
+
+- Teaser B demo-path (`2bd1bdc`): 5 jugables + 10 bloqueadas + card “Más de 60”, catálogo 75 (D-GOV-06)
+- CTA híbrido (D-GOV-05): clases 6–15 → planes; card +60 / banner / FAB → `inscripcion-gate`
+- Gobernanza doc: D-GOV-01, working map, D-GOV-05/06 en `.agents/DECISIONS.md`
+
+### Fases completadas (histórico)
 
 | Fase | Descripción | Commit |
 |------|-------------|--------|
@@ -84,11 +125,12 @@ src/app/pages/inscripcion-gate.test.ts
 
 | # | Pendiente | Urgencia | Impacto |
 |---|-----------|----------|---------|
-| C | **Decisión sobre Clase 4 — `Ex2NotasAm`** | Antes de producción | `ex4-calidad-acorde` vs. video de notas/sostenidos |
-| D | **Decisión sobre Skills curriculares** | Antes del próximo commit | ¿Skills en repo git o Notion/Drive? |
-| F | **DEV_LEGACY en producción** | Limpieza post-Fase 4 | Verificar links públicos en build prod |
-| H | **Fase 4 Auth real** | Pausada | Requiere autorización explícita de Juan |
-| I | **Fase 5 Flow + webhooks** | Tras Fase 4 | `flowPlanIds` listos en código; integración pendiente |
+| **G1** | **Cerrar D-GOV-02/03/04** (URLs demo, fase routing URL, pedagogía 6–75) | Alta | Juan / Claude |
+| C | **Decisión Clase 4 — `Ex2NotasAm`** | Antes de producción | `ex4-calidad-acorde` vs. video notas |
+| D | **Skills curriculares** | Antes currículum 6–75 | Repo YAML vs. Notion |
+| F | **DEV_LEGACY en producción** | Post-Fase 4 | Links build prod |
+| H | **Fase 4 Auth real** | Pausada | Autorización explícita Juan |
+| I | **Fase 5 Flow + webhooks** | Tras Fase 4 | `flowPlanIds` listos |
 
 ---
 
@@ -140,16 +182,23 @@ Estas reglas nunca cambian sin instrucción explícita de Juan:
 ## Funnel canónico (referencia rápida)
 
 ```
-Landing (home)
-  └── AcademiaSection [CTA dinámico — useDemoUserState]
-        └── mi-camino-demo → PathDemoPage (5 nodos serpentinos)
-              └── demo-clase-1..5 → DemoLessonPage (iframe YouTube → ejercicio → éxito)
-                    └── [clase 5 completa] → inscripcion-gate → InscripcionGatePage
-                          └── selector de planes → inscripcion-registro
-                                └── InscripcionRegistroPage (bridge WhatsApp — temporal)
-                                      └── [Fase 4] formulario real → registered_no_sub
-                                            └── [Fase 5] Flow pago → subscribed_active → mi-estudio
+Landing (home)  →  /
+  └── AcademiaSection [CTA dinámico]
+        └── mi-camino-demo  →  /mi-camino-demo (URL objetivo D-GOV-02/03)
+              PathDemoPage — teaser B: 5 gratis + 10 candado + card +60 (D-GOV-06)
+              · clases 6–15 bloqueadas → panel + “Ver planes” → home/planes (D-GOV-05)
+              · card “Más de 60” → inscripcion-gate (D-GOV-05)
+              └── demo-clase-1..5  →  /demo-clase-* (URL objetivo D-GOV-02/03)
+                    DemoLessonPage (YouTube → ejercicio → éxito)
+                    └── [5/5] banner + FAB → inscripcion-gate  →  /inscripcion (D-GOV-05)
+                          InscripcionGatePage (tier×período)
+                          └── inscripcion-registro → WhatsApp bridge
+                                └── [Fase 4] auth real → [Fase 5] Flow → mi-estudio (/alumno)
 ```
+
+**URL sync hoy:** solo `/`, `/alumno`, `/mi-camino`. Resto vía `currentPage` (D-GOV-02/03 pendiente).
+
+**Progreso demo:** 5/5 gratuitas (D-003); clases 6–15 visibles no jugables — teaser comercial (D-GOV-06).
 
 ---
 
@@ -166,10 +215,11 @@ Landing (home)
 
 | Skill | Cuándo leerlo |
 |-------|--------------|
-| `gmusic-agent-workflow` | Inicio de cada sesión — protocolo de trabajo |
-| `gmusic-funnel-conversion` | Toda tarea que toque rutas públicas, CTA, demo, inscripción |
+| `gmusic-agent-workflow` | Inicio de cada sesión — protocolo ejecutor Cursor |
+| `gmusic-opus-architect` | Claude — specs/planes, no codea |
+| `gmusic-funnel-conversion` | Rutas públicas, CTA, demo teaser, inscripción |
+| `gmusic-auth-email-verification` | Antes de Fase 4 auth |
 | `gmusic-game-progression-architecture` | Mecánicas, progresión, funnel macro, matriz 3×3 |
-| `gmusic-auth-email-verification` | Antes de implementar cualquier cosa de Fase 4 |
 | `gmusic-edu-gamified-design` | Tokens de diseño, gamificación, WCAG |
 | `gmusic-visual-vfx` | Efectos visuales, animaciones, partículas |
 | `gmusic-welcome` | Dashboard Mi Estudio, cofre, XP, racha |
