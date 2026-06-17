@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { DEMO_FREE_LESSON_COUNT } from "../data/demo-path-catalog";
 
 const DEMO_STORAGE_KEY = "gmusic:demo_v1";
 
@@ -56,8 +57,13 @@ export function useDemoProgress() {
     [completedLessons]
   );
 
-  const demoFinished = completedLessons.length >= 5;
-  const nextLessonNumber = completedLessons.length + 1;
+  const demoFinished =
+    completedLessons.filter((n) => n >= 1 && n <= DEMO_FREE_LESSON_COUNT).length >=
+    DEMO_FREE_LESSON_COUNT;
+  const nextLessonNumber = Math.min(
+    completedLessons.filter((n) => n >= 1 && n <= DEMO_FREE_LESSON_COUNT).length + 1,
+    DEMO_FREE_LESSON_COUNT
+  );
 
   const resetProgress = useCallback(() => {
     writeProgress({ completed: [] });
