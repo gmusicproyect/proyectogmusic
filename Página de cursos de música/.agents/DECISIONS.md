@@ -4,7 +4,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 **Protocolo:**
 - Cursor lee este archivo antes de tocar código.
-- Fable registra aquí decisiones importantes de diseño o arquitectura.
+- Codex registra aquí decisiones importantes de diseño o arquitectura aprobadas por Claude / Juan.
 - ChatGPT / Ser Digital usa este archivo como fuente de contexto cuando Juan lo comparte.
 - `.agents/` es la fuente oficial de verdad del proyecto.
 
@@ -14,8 +14,9 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 | Rol | Responsabilidad |
 |-----|----------------|
-| **Fable (Claude)** | Cerebro técnico y pedagógico. Diseña arquitectura, define ejercicios, toma decisiones de producto. |
-| **Cursor** | Ejecutor de código. Implementa instrucciones de Fable. No hace commits sin autorización de Juan. |
+| **Claude (El Cerebro / Arquitecto)** | Diseña estrategia conceptual, lógica de negocio pesada y estructura pedagógica. No genera código de producción directo. |
+| **Codex (El Supervisor / Contexto)** | Mantiene memoria de avance (`AGENTS.md`, `.agents/MEMORY.md`, `.agents/DECISIONS.md`) y valida cumplimiento de specs antes de sincronizar. No interactúa con remoto. |
+| **Cursos (El Ejecutante / Cursor)** | Único encargado técnico operativo en la Mac. Escribe y aplica código local. Puede interactuar con remoto solo con autorización explícita de Juan. |
 | **Juan** | Product Owner. Autoriza commits, push y decisiones de negocio. Valida visualmente. |
 | **ChatGPT / Ser Digital** | Cuestionador de producto y UX. Genera preguntas desde perspectiva de usuario. No decide arquitectura técnica. |
 
@@ -84,6 +85,14 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 ---
 
+## Gobernanza y arquitectura
+
+| ID | Decisión | Fecha | Estado | Razón |
+|----|----------|-------|--------|-------|
+| D-GOV-01 | Para decisiones de **arquitectura y dominio**, la fuente estratégica base es **Context Map v1.1** + **Auditoría READ-ONLY v1.2**, ambos en `docs/architecture/gmusic-architecture-working-map.md`. **Jerarquía documental:** (1) `.agents/DECISIONS.md` aprobado; (2) Context Map v1.1 + Auditoría v1.2; (3) código + tests; (4) `PROJECT_STATUS.md` (operativo, no arquitectura); (5) specs/handoffs vigentes si no contradicen lo anterior; (6) legacy/SUPERSEDED no referencia activa. **Alcance:** gobernanza documental únicamente — no autoriza implementación, reorganización de carpetas, cambios de schema ni nuevas fases. | 15 Jun 2026 | **Aprobada** (Juan) | Unificar criterio entre Claude, Codex, Cursor y Opus antes de evaluar brechas, riesgos y caminos A/B/C. |
+
+---
+
 ## Pendientes de decisión
 
 | ID | Pregunta abierta | Quién decide |
@@ -91,4 +100,9 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | P-002 | ¿Cuál es el video correcto para Clase 3 (cuerdas al aire)? | Juan |
 | P-003 | ¿PostHog analytics como próxima mini-fase después de Fase B validada? | Juan |
 | ~~P-004~~ | ~~Fase 3.5b: ¿Autorizar redirección handleSemestralPlanSelect post-auditoría?~~ | ✅ Cerrado — implementado Jun 2026 (D-025 Opción B) |
-| P-005 | ¿Patch pedagógico ExPulsoAire? Clase 4: cuerdas alternadas 6/5/4 vs solo cuerda 6. Clase 5: 15 beats con silencios vs 10 sin silencios. | Juan (validación visual primero) |
+| P-005 | ¿Patch pedagógico ExPulsoAire? Clase 4: cuerdas alternadas 6/5/4 vs solo cuerda 6. Clase 5: 15 beats con silencios vs 10 sin silencios. | Juan |
+| D-GOV-02 | URLs funnel demo: ¿`/mi-camino-demo`, `/demo-clase-*`, `/inscripcion` como destino final? | Juan / Claude |
+| D-GOV-03 | Fase routing URL: ¿fase corta solo funnel demo o esperar routing global? | Juan / Claude |
+| D-GOV-04 | Pedagogía 6–75: ¿skill-graph guitarra (YAML) antes de títulos reales 6–15? | Juan |
+| D-GOV-05 | CTA clases bloqueadas 6–15: ¿home/planes o `inscripcion-gate`? | Juan |
+| D-GOV-06 | ¿Ratificar teaser B (5 + 10 bloqueadas + card +60) vs 75 candados? | Juan |
