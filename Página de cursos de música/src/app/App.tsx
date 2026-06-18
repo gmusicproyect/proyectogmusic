@@ -77,6 +77,10 @@ export default function App() {
   const publicSession = usePublicStudentSession();
   const hasAppliedAuthenticatedLandingRef = useRef(false);
 
+  const handlePageChange = useCallback((page: string) => {
+    navigateStudentZoneAware(page, setCurrentPage, currentPage);
+  }, [currentPage]);
+
   // Music player functions
   const onPlay = (track: Track) => { setCurrentTrack(track); setPlaying(true); };
   const onPlayAlbum = (album: Album) => {
@@ -99,7 +103,7 @@ export default function App() {
 
   const handleSemestralPlanSelect = () => {
     analytics.semestralCtaClicked();
-    setCurrentPage("inscripcion-gate");
+    handlePageChange("inscripcion-gate");
   };
 
   // Auth handlers
@@ -199,10 +203,6 @@ export default function App() {
     const cleanup = initStudentZoneRouting(setCurrentPage);
     return cleanup;
   }, []);
-
-  const handlePageChange = useCallback((page: string) => {
-    navigateStudentZoneAware(page, setCurrentPage, currentPage);
-  }, [currentPage]);
 
   useEffect(() => {
     if (hasAppliedAuthenticatedLandingRef.current) return;

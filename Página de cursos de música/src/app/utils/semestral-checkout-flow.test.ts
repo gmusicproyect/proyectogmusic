@@ -141,7 +141,11 @@ describe("Registro y checkout Semestral", () => {
     const fnMatch = appSource.match(/const handleSemestralPlanSelect = \(\) => \{([\s\S]*?)\};/);
     assert.ok(fnMatch, "handleSemestralPlanSelect debe existir en App.tsx");
     const body = fnMatch[1];
-    assert.ok(body.includes('setCurrentPage("inscripcion-gate")'), "debe navegar a inscripcion-gate");
+    assert.ok(
+      body.includes('handlePageChange("inscripcion-gate")'),
+      "debe navegar a inscripcion-gate vía handlePageChange"
+    );
+    assert.equal(body.includes('setCurrentPage("inscripcion-gate")'), false);
     assert.equal(body.includes("openAuthModal"), false);
     assert.equal(body.includes("setPendingSemestralCheckout(true)"), false);
   });
