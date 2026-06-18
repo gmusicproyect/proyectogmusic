@@ -29,6 +29,8 @@ const selectorSource = readFileSync(join(root, "InteractiveLevelSelector.tsx"), 
 const heroSource = readFileSync(join(root, "../marketing/sections/HeroSection.tsx"), "utf8");
 const planesSource = readFileSync(join(root, "../marketing/sections/PlanesSection.tsx"), "utf8");
 const academiaSource = readFileSync(join(root, "../marketing/sections/AcademiaSection.tsx"), "utf8");
+const instrumentSelectorSource = readFileSync(join(root, "../marketing/AcademiaInstrumentSelector.tsx"), "utf8");
+const instrumentsDataSource = readFileSync(join(root, "../../data/academia-instruments.ts"), "utf8");
 const appSource = readFileSync(join(root, "../../App.tsx"), "utf8");
 const previewSource = readFileSync(join(root, "../../pages/FundamentoPreviewPage.tsx"), "utf8");
 const lessonSource = readFileSync(join(root, "../../pages/FreeFundamentoLessonPage.tsx"), "utf8");
@@ -155,9 +157,21 @@ describe("PlanesSection — funnel público v3 (embudo demo)", () => {
 });
 
 describe("AcademiaSection — copy y aislamiento legacy", () => {
-  it("no habla de elegir instrumento", () => {
-    assert.equal(academiaSource.includes("instrumento"), false);
-    assert.equal(academiaSource.includes("punto de partida"), true);
+  it("paso 1 habla de elegir instrumento y paso 2 de punto de partida", () => {
+    assert.equal(academiaSource.includes("Elige tu instrumento"), true);
+    assert.equal(academiaSource.includes("Elige tu punto de partida"), true);
+    assert.equal(academiaSource.includes("AcademiaInstrumentSelector"), true);
+    assert.equal(academiaSource.includes("Cambiar instrumento"), true);
+  });
+
+  it("solo guitarra habilitada en catálogo de instrumentos", () => {
+    assert.equal(instrumentsDataSource.includes('"guitarra"'), true);
+    assert.equal(instrumentsDataSource.includes('"teclado"'), true);
+    assert.equal(instrumentsDataSource.includes('"canto"'), true);
+    assert.equal(instrumentsDataSource.includes("available: true"), true);
+    assert.equal(instrumentsDataSource.includes("available: false"), true);
+    assert.equal(instrumentSelectorSource.includes("Próximamente"), true);
+    assert.equal(instrumentSelectorSource.includes("Disponible"), true);
   });
 
   it("tiene CTA dinámico via useDemoUserState", () => {
