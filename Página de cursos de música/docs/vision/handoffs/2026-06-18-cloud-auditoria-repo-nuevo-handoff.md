@@ -10,7 +10,9 @@
 
 ## 1. Resumen ejecutivo
 
-Gmusic Estudio migró de un repo personal legacy a un **repo canónico nuevo**. La gobernanza de agentes, el funnel demo (teaser B), las decisiones D-GOV y el working map arquitectónico están **publicados en remoto**. Queda trabajo **local sin commit** (Academia 2 pasos) y decisiones **pendientes** de routing/pedagogía.
+**Estado:** `origin/main = HEAD = f20e795` (18 Jun 2026, post-push Academia).
+
+Gmusic Estudio migró de un repo personal legacy a un **repo canónico nuevo**. Gobernanza, teaser B demo-path, Academia 2 pasos y decisiones D-GOV están **publicados en remoto**. Pendientes: D-GOV-02/03/04, sync doc operativo, fase visual `logogmusic.png`.
 
 Tu misión: **auditar coherencia** entre docs, decisiones, código publicado y estado local — reportar desfases, no implementar.
 
@@ -23,7 +25,7 @@ Tu misión: **auditar coherencia** entre docs, decisiones, código publicado y e
 | **GitHub** | https://github.com/gmusicproyect/proyectogmusic |
 | **Org / cuenta** | `gmusicproyect` |
 | **Rama** | `main` |
-| **`origin/main` (remoto, 18 Jun 2026)** | `1f04e7e` |
+| **`origin/main` (remoto, 18 Jun 2026)** | **`f20e795`** |
 | **App path** | `Página de cursos de música/` (dentro del monorepo) |
 | **Stack** | React 18 + Vite · Express + Prisma + PostgreSQL |
 
@@ -41,6 +43,7 @@ Tu misión: **auditar coherencia** entre docs, decisiones, código publicado y e
 
 | Hash | Mensaje | Qué incluye |
 |------|---------|-------------|
+| **`f20e795`** | feat(academia): two-step instrument then starting point funnel | Academia 2 pasos + handoffs operativos |
 | `1f04e7e` | docs(governance): align agent ops with D-GOV-01 and published funnel | MEMORY, AGENTS, `.cursorrules`, `skills.manifest.yaml` |
 | `2bd1bdc` | feat(demo-path): teaser B funnel with hybrid CTA | 5 jugables + 10 bloqueadas + card +60, CTA híbrido |
 | `024cc42` | docs(architecture): approve demo teaser and CTA decisions | D-GOV-05, D-GOV-06, D-003 aclarado |
@@ -118,7 +121,9 @@ Implementación suscriptor: `src/app/utils/student-zone-routing.ts` + `handlePag
 
 ```
 GmusicLanding (home)
-  └── AcademiaSection [CTA dinámico — useDemoUserState]
+  └── AcademiaSection [2 pasos — f20e795]
+        · Paso 1: instrumento (Guitarra activa)
+        · Paso 2: punto de partida + CTA dinámico
         └── mi-camino-demo → PathDemoPage (teaser B D-GOV-06)
               └── demo-clase-1..5 → DemoLessonPage
                     └── [5/5] → inscripcion-gate → InscripcionGatePage
@@ -128,19 +133,17 @@ CTA híbrido (D-GOV-05): clases 6–15 → planes en home; card +60 / banner / F
 
 ---
 
-## 9. Working tree local (18 Jun 2026) — NO en GitHub aún
+## 9. Working tree local (18 Jun 2026)
 
 | Estado | Archivo | Notas |
 |--------|---------|-------|
-| Modificado | `AcademiaSection.tsx` | Flujo 2 pasos: instrumento → punto de partida |
-| Nuevo | `AcademiaInstrumentSelector.tsx` | 3 tarjetas: Guitarra, Teclado, Canto |
-| Nuevo | `academia-instruments.ts` | Catálogo instrumentos; solo Guitarra activa |
-| Modificado | `fundamento-funnel.test.ts` | Tests Academia actualizados |
-| Untracked | `public/hero/threshold/logogmusic.png` | Asset visual hero — **fase futura, no commitear ahora** |
+| **Publicado** | Academia 2 pasos (`f20e795`) | En remoto |
+| Untracked | `public/hero/threshold/logogmusic.png` | Asset visual hero — fase futura |
+| **Pendiente commit doc** | MEMORY, CLAUDE, AGENTS, handoffs, PROJECT_STATUS, `.cursorrules`, funnel skill | Sync post-`f20e795` |
 
-**Tests locales (última corrida Cursor):** 377/377 pass · typecheck OK.
+**Tests app:** **377/377** pass · typecheck OK.
 
-**Desfase MEMORY:** `.agents/MEMORY.md` en remoto aún dice `origin/main = 2bd1bdc` en cabecera — el remoto real es `1f04e7e`. Flag para auditoría.
+**Desfase MEMORY (pre-sync doc):** resuelto en commit documental pendiente — target `f20e795`, 377 tests.
 
 ---
 
@@ -161,29 +164,29 @@ CTA híbrido (D-GOV-05): clases 6–15 → planes en home; card +60 / banner / F
 Marca y reporta hallazgos — **sin proponer código** salvo brechas críticas:
 
 ### A. Repositorio y migración
-- [ ] Confirmar que `gmusicproyect/proyectogmusic` es el único remoto activo
-- [ ] Confirmar que no hay referencias activas al repo `estudiosgpt2024-crypto/paginawebgmusic` en docs publicados
-- [ ] Listar commits en `origin/main` vs working tree local
+- [x] Confirmar que `gmusicproyect/proyectogmusic` es el único remoto activo
+- [x] Confirmar que no hay referencias activas al repo legacy en docs publicados (pendiente sync doc local)
+- [x] Listar commits en `origin/main` — HEAD `f20e795`
 
 ### B. Gobernanza documental
-- [ ] DECISIONS vs MEMORY vs AGENTS vs working map — ¿contradicciones?
-- [ ] D-GOV-01/05/06 coherentes con código en `2bd1bdc`?
-- [ ] Pendientes D-GOV-02/03/04 claramente acotados?
+- [ ] DECISIONS vs MEMORY vs AGENTS vs working map — sync doc pendiente post-Academia
+- [x] D-GOV-01/05/06 coherentes con código publicado
+- [x] Pendientes D-GOV-02/03/04 claramente acotados
 
 ### C. Funnel y producto
-- [ ] Teaser B (5+10+card) alineado con D-GOV-06 y D-003
-- [ ] CTA híbrido alineado con D-GOV-05
-- [ ] Academia local (2 pasos instrumento) — ¿coherente con D-007 (solo guitarra activa)?
+- [x] Teaser B (5+10+card) alineado con D-GOV-06 y D-003
+- [x] CTA híbrido alineado con D-GOV-05
+- [x] Academia 2 pasos publicada — coherente con D-007 (solo guitarra activa)
 
 ### D. Riesgos técnicos (solo reportar)
-- [ ] R-001 / R-002 — estado documentado, no mitigados
-- [ ] URL sync parcial — riesgo documentado en AGENTS
-- [ ] Tests count: remoto asumía 376; local 377 post-Academia
+- [x] R-001 / R-002 — documentados, no mitigados
+- [x] URL sync parcial — riesgo documentado en AGENTS
+- [x] Tests: **377/377**
 
 ### E. Limpieza y orden
-- [ ] Handoffs SUPERSEDED eliminados del tree
-- [ ] `logogmusic.png` untracked — confirmar no debe ir en commit gobernanza/funnel
-- [ ] Sugerir próximo commit atómico (si Juan autoriza): solo paquete Academia 2 pasos
+- [x] Handoffs SUPERSEDED 15 Jun eliminados
+- [x] `logogmusic.png` untracked — fuera de commits producto
+- [ ] Commit documental post-`f20e795` — pendiente autorización Juan
 
 ---
 
@@ -208,4 +211,4 @@ Marca y reporta hallazgos — **sin proponer código** salvo brechas críticas:
 
 ---
 
-*Documento vivo. Actualizar tras commit del paquete Academia o cierre D-GOV-02/03/04.*
+*Documento vivo · Auditoría Jun 2026 · Post-push Academia `f20e795` · checklist §11 actualizado.*

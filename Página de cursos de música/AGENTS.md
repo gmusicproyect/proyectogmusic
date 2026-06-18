@@ -83,6 +83,22 @@ Navegación vía `currentPage`. No sustituye D-024 ni D-025.
 
 ---
 
+### Academia — flujo 2 pasos (`f20e795`)
+
+En `#academia` del landing, **mismo `currentPage` (`home`)** — wizard in-place, sin URL nueva (D-GOV-02/03 pendiente):
+
+| Paso | Copy | Comportamiento |
+|------|------|----------------|
+| **1** | “Elige tu instrumento” | 3 tarjetas: **Guitarra** (disponible), **Teclado** y **Canto** (próximamente) |
+| **2** | “Elige tu punto de partida” | `InteractiveLevelSelector` — Fundamento / Técnica / Crea × Nivel 1–3 |
+
+- Solo **Guitarra** avanza al paso 2 — coherente con **D-007** (validar guitarra primero).
+- “← Cambiar instrumento” vuelve al paso 1.
+- CTA dinámico (`useDemoUserState`) permanece en el paso 2.
+- Archivos: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`.
+
+---
+
 ## Skills unificados
 
 Fuente de verdad: **`.agents/skills/`**

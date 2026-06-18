@@ -8,81 +8,91 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 
 | Track | Stack | Estado | Regla |
 |-------|-------|--------|-------|
-| **A (este repo)** | Vite + React + Express + Prisma | ✅ Live — MVP validación | Solo fixes críticos + cerrar hero visual |
+| **A (este repo)** | Vite + React + Express + Prisma | ✅ Live — MVP validación | Fixes acotados + decisiones D-GOV antes de routing/auth |
 | **B (futuro)** | Next.js + Sanity + Railway + Cloudflare Stream | 🗂 Diseño en papel | No iniciar hasta primera conversión WhatsApp |
 
-**Nunca mezclar código de Track B en Track A.** Los 371 tests de Vite son referencia lógica de reglas de negocio para Track B, no migración.
+**Nunca mezclar código de Track B en Track A.** Los **377 tests** de Vite son referencia lógica de reglas de negocio para Track B, no migración.
 
 ---
 
-## Estado actual del repo (14 Jun 2026)
+## Repositorio canónico
+
+| Campo | Valor |
+|-------|-------|
+| **GitHub** | https://github.com/gmusicproyect/proyectogmusic |
+| **Repo anterior** | `estudiosgpt2024-crypto/paginawebgmusic` — **SUPERSEDED** |
+| **Rama** | `main` |
+| **`origin/main`** | **`f20e795`** (18 Jun 2026) |
+| **App path** | `Página de cursos de música/` |
+
+**Handoff operativo:** `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
+
+---
+
+## Estado actual del repo (18 Jun 2026)
 
 | Item | Estado |
 |------|--------|
-| Último commit | `0f7415a` — Opus infra |
-| Commit previo hero | `15e3433` — Visual D1 Canvas (facade.jpg en repo) |
-| Tests | **372/372** |
-| Hero D1+D2+UX | ✅ **código listo en working tree — sin commit** |
-| Assets Juan | `facade.png` + `interior.png` en `public/hero/threshold/` (untracked) |
-| Validación Juan | ⬜ desktop + móvil scroll completo |
-| Infra Opus | ✅ commitado (`0f7415a`) |
-| Fase 4 Auth / Fase 5 Pagos | ⏸ pausadas hasta conversión WhatsApp (+56953429676) |
-
-**Handoff detallado hero:** `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md`  
-**Protocolo ciclo cerrado Cursor↔Opus:** `docs/vision/handoffs/2026-06-14-ciclo-cerrado-cursor-opus.md` · regla `.cursor/rules/loop.mdc`
-
----
-
-## Hero Visual D — estado técnico (14 Jun)
-
-| Acto | Qué pasa |
-|------|----------|
-| Exterior | Fachada `facade.png` + copy |
-| Umbral | Canvas zoom puerta → crossfade |
-| Interior | `interior.png` sticky arriba + CTA |
-| Salida | Sticky suelta → Academia |
-
-**Bug resuelto:** `useScroll` no funcionaba con sticky → pantalla negra. Fix: scroll nativo con `getBoundingClientRect()`.
-
-**Pendiente commit (autorización Juan):** `HeroSection.tsx`, `threshold-assets.ts`, assets PNG, `useDemoProgress.ts` restaurado.
+| **HEAD / origin/main** | `f20e795` — feat(academia): two-step instrument then starting point funnel |
+| Commits recientes | `1f04e7e` gobernanza · `2bd1bdc` teaser B demo-path · `024cc42` D-GOV-05/06 |
+| **Tests app** | **377/377** |
+| **Landing hero** | **Visual A** simplificado — validado Juan (scroll Apple → Academia) |
+| **Visual D** Canva/Canvas | ❌ **SUPERSEDED** — no reabrir |
+| **Academia 2 pasos** | ✅ **publicado** — instrumento → punto de partida (solo Guitarra activa; D-007) |
+| **Teaser B + CTA híbrido** | ✅ publicado (`2bd1bdc`, D-GOV-05/06) |
+| **Gobernanza doc** | ✅ D-GOV-01, working map, MEMORY/AGENTS alineados en `1f04e7e` |
+| **Pendiente doc sync** | Commit documental post-`f20e795` (MEMORY, este archivo, handoffs) |
+| **Asset local sin commit** | `public/hero/threshold/logogmusic.png` — fase visual futura |
+| **Fase 4 Auth / Fase 5 Pagos** | ⏸ pausadas hasta conversión WhatsApp (+56953429676) |
+| **D-GOV pendientes** | D-GOV-02 URLs demo · D-GOV-03 routing · D-GOV-04 pedagogía 6–75 |
+| **R-001 / R-002** | Documentados — **no mitigar** sin decisión explícita |
 
 ---
 
-## Para Cursor — próximas tareas
+## Academia — flujo publicado (`f20e795`)
 
-### Tarea 1 — Commit hero D1+D2+UX (cuando Juan autorice)
+| Paso | UI | Regla |
+|------|-----|-------|
+| **1** | “Elige tu instrumento” — Guitarra, Teclado, Canto | Solo **Guitarra** navega (D-007) |
+| **2** | “Elige tu punto de partida” — Fundamento / Técnica / Crea × niveles | `InteractiveLevelSelector` → `mi-camino-demo` |
 
-```
-Archivos:
-  src/app/components/marketing/sections/HeroSection.tsx
-  src/app/components/marketing/sections/threshold-assets.ts
-  src/app/components/marketing/sections/threshold-hero.test.ts
-  src/app/hooks/useDemoProgress.ts
-  public/hero/threshold/facade.png
-  public/hero/threshold/interior.png
+Mismo landing (`#academia`); botón “← Cambiar instrumento”. Sin nueva URL (D-GOV-02/03 pendiente).
 
-Mensaje sugerido:
-  feat(landing): Visual D1+D2 — hero umbral Canva + scroll UX sticky
-```
+Archivos clave: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`.
 
-### Tarea 2 — Validación visual Juan
+---
 
-1. Recarga dura Cmd+Shift+R en `http://localhost:5173/`
-2. Scroll completo: fachada → puerta → interior fijo → Academia
-3. Probar móvil (375px) y desktop
-4. Reportar a Opus si timing necesita ajuste
+## Landing Visual A — baseline (no Visual D)
 
-**NO TOCAR sin autorización Opus + Juan:** auth, pagos, Fase 4, Fase 5, zona alumno, Track B.
+| Sección | Estado |
+|---------|--------|
+| Hero | Logo + bienvenida, scroll hacia Academia |
+| Academia | 2 pasos instrumento → programa + CTA dinámico |
+| Planes / Comunidad / Contacto | Fondos PNG por sección |
+
+Handoff histórico hero: `docs/vision/handoffs/2026-06-14-hero-simplificado-handoff-opus.md`  
+Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPERSEDED)
+
+---
+
+## Para Cursor — prioridades actuales
+
+1. **Cerrar D-GOV-02/03/04** con Juan/Opus antes de sync URL demo.
+2. **Fase visual hero** — `logogmusic.png` en ciclo aparte (cuando Juan autorice).
+3. **Fase 4 Auth** — pausada hasta conversión WhatsApp real.
+
+**NO TOCAR sin autorización Opus + Juan:** auth, pagos, schema, routing URL global, R-001, R-002, Track B.
 
 ---
 
 ## Al iniciar sesión (Opus)
 
-1. Leer este archivo + `.agents/PROJECT_STATUS.md`
-2. Activar skill **`gmusic-opus-architect`** (`.agents/skills/gmusic-opus-architect/SKILL.md`)
-3. Usar Superpowers: `brainstorming` antes de diseñar, `writing-plans` tras spec aprobada
-4. **No implementar código** — generar spec/plan/brief para Cursor
-5. Juan autoriza fases y commits
+1. Leer este archivo + `.agents/MEMORY.md` + `.agents/DECISIONS.md`
+2. Handoff operativo: `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
+3. Activar skill **`gmusic-opus-architect`**
+4. Usar Superpowers: `brainstorming` antes de diseñar, `writing-plans` tras spec aprobada
+5. **No implementar código** — generar spec/plan/brief para Cursor
+6. Juan autoriza fases y commits
 
 ## Superpowers (plugin)
 
@@ -102,7 +112,7 @@ Brief ≤15 líneas usando plantilla en `.agents/skills/gmusic-opus-architect/SK
 ## Visión producto
 
 - Metodología: **Fundamento → Técnica → Crea** (microciclos)
-- Web Track A = embudo + demo + hero | App futura Track B = micrófono, afinador
+- Web Track A = embudo + demo + landing | App futura Track B = micrófono, afinador
 - Fase 4 Auth / Fase 5 pagos: **pausadas** hasta conversión WhatsApp
 
 ## Más contexto
@@ -110,4 +120,5 @@ Brief ≤15 líneas usando plantilla en `.agents/skills/gmusic-opus-architect/SK
 - Protocolo Cursor: `.agents/skills/gmusic-agent-workflow/SKILL.md`
 - Skills disponibles: `AGENTS.md` + `skills.manifest.yaml`
 - Estado operativo: `.agents/PROJECT_STATUS.md`
+- Arquitectura: `docs/architecture/gmusic-architecture-working-map.md` (D-GOV-01)
 - Specs Track B: `docs/vision/specs/`

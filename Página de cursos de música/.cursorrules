@@ -57,7 +57,7 @@ git diff --check \
   && npm run build
 ```
 
-*(El proyecto cuenta actualmente con una suite de **376+ tests** activos que deben mantenerse en verde.)*
+*(El proyecto cuenta actualmente con una suite de **377+ tests** activos que deben mantenerse en verde.)*
 
 ### Errores comunes a evitar
 

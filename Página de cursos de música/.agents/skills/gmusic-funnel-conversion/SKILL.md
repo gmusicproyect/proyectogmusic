@@ -19,8 +19,10 @@ No es el skill para backend (ver `gmusic-learning-engine`), auth JWT (ver `gmusi
 
 ```
 GmusicLanding (home)
-  └── AcademiaSection [CTA dinámico — useDemoUserState]
-        └── mi-camino-demo → PathDemoPage
+  └── AcademiaSection [2 pasos — instrumento → punto de partida]
+        · Paso 1: Elige tu instrumento (Guitarra activa; Teclado/Canto próximamente — D-007)
+        · Paso 2: Elige tu punto de partida + CTA dinámico — useDemoUserState
+        └── mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
               └── demo-clase-1..5 → DemoLessonPage (video → ejercicio → éxito)
                     └── [clase 5 completa] → inscripcion-gate → InscripcionGatePage
                           ├── [demo incompleto] → LockedGate → mi-camino-demo
@@ -48,7 +50,9 @@ PlanesSection → handleSemestralPlanSelect → AuthModal → CheckoutPage → m
 | `src/app/pages/DemoLessonPage.tsx` | Runner video→ejercicio→éxito |
 | `src/app/pages/InscripcionGatePage.tsx` | Toggle período + selector tier (default `semester`/`plus`) |
 | `src/app/pages/InscripcionRegistroPage.tsx` | Bridge WhatsApp; muestra tier + período + precios |
-| `src/app/components/marketing/sections/AcademiaSection.tsx` | Punto de entrada al demo |
+| `src/app/components/marketing/sections/AcademiaSection.tsx` | Wizard 2 pasos: instrumento → punto de partida + CTA |
+| `src/app/components/marketing/AcademiaInstrumentSelector.tsx` | Grid 3 instrumentos (solo Guitarra activa) |
+| `src/app/data/academia-instruments.ts` | Catálogo Guitarra / Teclado / Canto |
 | `src/app/utils/public-home-navigation.ts` | Navegación hacia secciones del home |
 
 ---
@@ -128,7 +132,7 @@ No hay form ni campos en esta página. Solo selección de plan y navegación.
 ## QA mínima del funnel
 
 1. `npm run app:test` — especialmente `fundamento-funnel.test.ts`, `path-demo-page.test.ts`, `inscripcion-gate.test.ts`
-2. Visitante anónimo: AcademiaSection muestra "Ver clase gratuita" → navega a mi-camino-demo
+2. Visitante anónimo: Academia paso 1 → elige Guitarra → paso 2 → "Ver clase gratuita" o Fundamento Básico → `mi-camino-demo`
 3. Demo completo: AcademiaSection muestra "Inscribirme para continuar" → navega a inscripcion-gate con puerta abierta
 4. Demo incompleto: inscripcion-gate muestra LockedGate con barra de progreso
 5. Alumno autenticado: AcademiaSection muestra "Entrar a mi academia" → no muestra demo CTA

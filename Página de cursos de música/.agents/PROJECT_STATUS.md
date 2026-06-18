@@ -1,8 +1,30 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 14 Jun 2026 (Landing Visual A — commit Ciclo 1)
+Última actualización: 18 Jun 2026 · `origin/main` = `f20e795`
 
-## Landing Visual A — One Page (14 Jun 2026)
+## Estado remoto (18 Jun 2026)
+
+| Item | Estado |
+|------|--------|
+| Repo canónico | `gmusicproyect/proyectogmusic` |
+| **HEAD** | `f20e795` — Academia 2 pasos (instrumento → punto de partida) |
+| Teaser B + CTA híbrido | ✅ `2bd1bdc` (D-GOV-05/06) |
+| Gobernanza operativa | ✅ `1f04e7e` |
+| **Tests app** | **377/377** |
+| Untracked local | `logogmusic.png` — fase visual hero (futuro) |
+
+Handoff operativo: `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
+
+## Academia 2 pasos — publicado (`f20e795`)
+
+| Item | Estado |
+|------|--------|
+| Paso 1: Elige tu instrumento | ✅ Guitarra, Teclado, Canto |
+| Solo Guitarra activa (D-007) | ✅ Teclado/Canto “Próximamente” |
+| Paso 2: Elige tu punto de partida | ✅ InteractiveLevelSelector |
+| CTA dinámico en paso 2 | ✅ useDemoUserState |
+
+## Landing Visual A — One Page
 
 | Item | Estado |
 |------|--------|
@@ -10,9 +32,8 @@
 | Fondos PNG por sección (inicio → contacto) | ✅ |
 | BrandLogo SVG inline + Bebas (Typekit) | ✅ |
 | Navbar: Alumno + Regístrate, grid 3 cols | ✅ |
-| CTA demo en Academia (no hero) | ✅ |
+| CTA demo en Academia paso 2 (no hero) | ✅ |
 | Visual D Canva/Canvas | ❌ superseded |
-| Tests app | 372/372 |
 | Pipeline futuro assets | Visual E — Illustrator → SVG |
 
 Handoff activo: `docs/vision/handoffs/2026-06-14-hero-simplificado-handoff-opus.md`  
@@ -22,7 +43,7 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 **North Star checkout (Fase 4+, no implementar aún):** Mercado Pago · form Chile/Extranjero · RUT genérico extranjero vía servicio interno · ver `docs/vision/handoffs/2026-06-15-track-a-estado-y-fase4-north-star-opus.md` y **D-027**.
 
-**Juan Track A (Jun 2026):** visual ✅ · PostHog key + funnel ✅ · push origin ⬜ · conversión WhatsApp real ⬜
+**Juan Track A (Jun 2026):** visual ✅ · Academia 2 pasos ✅ · PostHog key + funnel ✅ · push origin ✅ (`f20e795`) · conversión WhatsApp real ⬜
 
 ---
 

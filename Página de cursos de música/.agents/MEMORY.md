@@ -1,9 +1,13 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 16 Jun 2026 · `origin/main` = `2bd1bdc`
+Última actualización: 18 Jun 2026 · `origin/main` = `f20e795`
 
-**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-05, D-GOV-06 · demo-path en remoto.
+**Repo canónico:** `gmusicproyect/proyectogmusic` · legacy `estudiosgpt2024-crypto/paginawebgmusic` = **SUPERSEDED**
+
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-05, D-GOV-06 · demo-path + Academia 2 pasos en remoto.
+
+**Handoff operativo:** `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
 
 **Handoffs gobernanza 15 Jun** (`2026-06-15-gobernanza-*`, `INSTRUCCION-*`): **SUPERSEDED** — numeración D-GOV antigua (D-GOV-01 ≠ URLs). No usar como fuente activa. Renumeración pendiente (fase handoffs).
 
@@ -21,15 +25,17 @@ Fuente de verdad: `AGENTS.md` (roles + mapa de rutas). No commit/push autónomo.
 
 ---
 
-## Estado remoto y decisiones (16 Jun 2026)
+## Estado remoto y decisiones (18 Jun 2026)
 
 | Item | Valor |
 |------|-------|
-| `origin/main` | `2bd1bdc` — feat(demo-path): teaser B funnel with hybrid CTA |
-| Docs recientes | `b276d80` D-GOV-01 · `9701e4d` working map · `024cc42` D-GOV-05/06 |
+| `origin/main` | `f20e795` — feat(academia): two-step instrument then starting point funnel |
+| Docs / producto recientes | `1f04e7e` gobernanza · `2bd1bdc` teaser B · `024cc42` D-GOV-05/06 · `b276d80` D-GOV-01 |
 | **Aprobadas** | D-GOV-01 (jerarquía doc + working map), D-GOV-05 (CTA híbrido C), D-GOV-06 (teaser B), D-003 aclarado |
 | **Pendientes** | D-GOV-02 URLs demo · D-GOV-03 fase routing · D-GOV-04 pedagogía 6–75 |
-| Tests app | 376/376 (validar en sesión) |
+| Tests app | **377/377** |
+| **R-001 / R-002** | Documentados — no mitigar sin decisión explícita |
+| Untracked local | `public/hero/threshold/logogmusic.png` — fase visual futura, no commitear en funnel/gobernanza |
 
 ---
 
@@ -61,11 +67,12 @@ Cuando Juan escriba **"Retomar Gmusic"**, Fable debe ejecutar exactamente estos 
 
 ## Estado del proyecto
 
-### Publicado en remoto (16 Jun 2026)
+### Publicado en remoto (18 Jun 2026)
 
+- **Academia 2 pasos** (`f20e795`): instrumento (Guitarra activa; Teclado/Canto próximamente) → punto de partida (D-007)
 - Teaser B demo-path (`2bd1bdc`): 5 jugables + 10 bloqueadas + card “Más de 60”, catálogo 75 (D-GOV-06)
 - CTA híbrido (D-GOV-05): clases 6–15 → planes; card +60 / banner / FAB → `inscripcion-gate`
-- Gobernanza doc: D-GOV-01, working map, D-GOV-05/06 en `.agents/DECISIONS.md`
+- Gobernanza doc: D-GOV-01, working map, D-GOV-05/06 en `.agents/DECISIONS.md`; ops en `1f04e7e`
 
 ### Fases completadas (histórico)
 
@@ -183,7 +190,9 @@ Estas reglas nunca cambian sin instrucción explícita de Juan:
 
 ```
 Landing (home)  →  /
-  └── AcademiaSection [CTA dinámico]
+  └── AcademiaSection [2 pasos — f20e795]
+        · Paso 1: Elige tu instrumento (Guitarra | Teclado | Canto) — solo Guitarra activa (D-007)
+        · Paso 2: Elige tu punto de partida (Fundamento/Técnica/Crea × niveles) + CTA dinámico
         └── mi-camino-demo  →  /mi-camino-demo (URL objetivo D-GOV-02/03)
               PathDemoPage — teaser B: 5 gratis + 10 candado + card +60 (D-GOV-06)
               · clases 6–15 bloqueadas → panel + “Ver planes” → home/planes (D-GOV-05)

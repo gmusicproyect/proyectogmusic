@@ -17,7 +17,7 @@
 | **Repo canónico actual** | **`gmusicproyect/proyectogmusic`** |
 | **URL** | https://github.com/gmusicproyect/proyectogmusic |
 | **Rama** | `main` |
-| **`origin/main`** | **`1f04e7e`** (18 Jun 2026) |
+| **`origin/main`** | **`f20e795`** (18 Jun 2026, post-push Academia) |
 | **App path** | `Página de cursos de música/` |
 | **Stack** | React 18 + Vite · Express + Prisma + PostgreSQL |
 
@@ -89,17 +89,18 @@ Handoffs gobernanza **15 Jun** con numeración D-GOV antigua (D-GOV-01 = URLs): 
 
 ---
 
-## 5. Qué está publicado en GitHub (`origin/main = 1f04e7e`)
+## 5. Qué está publicado en GitHub (`origin/main = f20e795`)
 
 | Hash | Contenido |
 |------|-----------|
+| **`f20e795`** | **Academia 2 pasos** — instrumento → punto de partida + handoffs operativos |
 | `1f04e7e` | Gobernanza operativa: `.agents/MEMORY.md`, `AGENTS.md`, `.cursorrules`, `skills.manifest.yaml` |
 | `2bd1bdc` | **Teaser B publicado** — demo-path: 5+10+card, CTA híbrido en UI |
 | `024cc42` | D-GOV-05/06 + D-003 en `.agents/DECISIONS.md` |
 | `9701e4d` | Working map arquitectónico |
 | `b276d80` | D-GOV-01 aprobada |
 
-**Tests en remoto (pre-Academia local):** 376/376.
+**Tests app:** **377/377**.
 
 ---
 
@@ -107,7 +108,9 @@ Handoffs gobernanza **15 Jun** con numeración D-GOV antigua (D-GOV-01 = URLs): 
 
 ```
 GmusicLanding (home)
-  └── AcademiaSection [CTA dinámico — useDemoUserState]
+  └── AcademiaSection [2 pasos — f20e795]
+        · Paso 1: Elige tu instrumento (Guitarra activa; Teclado/Canto próximamente)
+        · Paso 2: Elige tu punto de partida + CTA dinámico
         └── mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
               └── demo-clase-1..5 → DemoLessonPage
                     └── [5/5] → inscripcion-gate → InscripcionGatePage
@@ -119,33 +122,20 @@ GmusicLanding (home)
 
 ---
 
-## 7. Cambios solo en local (NO en GitHub aún)
+## 7. Solo local / untracked (18 Jun 2026)
 
-### Academia 2 pasos — **solo local**
+| Archivo | Estado | Notas |
+|---------|--------|-------|
+| `public/hero/threshold/logogmusic.png` | **untracked** | Asset visual hero — **fase futura**; no incluir en commits funnel/gobernanza |
 
-Decisión de producto implementada en working tree, **sin commit**:
+### Academia 2 pasos — **publicado** (`f20e795`)
 
 | Paso | Contenido |
 |------|-----------|
-| **1** | “Elige tu instrumento” — 3 tarjetas: Guitarra (activa), Teclado y Canto (próximamente) |
-| **2** | Al pulsar Guitarra → “Elige tu punto de partida” (Fundamento / Técnica / Crea × niveles) |
-| UX | Mismo landing; botón “← Cambiar instrumento”; scroll suave in-place |
+| **1** | “Elige tu instrumento” — Guitarra (activa), Teclado y Canto (próximamente) |
+| **2** | “Elige tu punto de partida” — Fundamento / Técnica / Crea × niveles |
 
-| Archivo | Estado |
-|---------|--------|
-| `src/app/components/marketing/sections/AcademiaSection.tsx` | modificado |
-| `src/app/components/marketing/AcademiaInstrumentSelector.tsx` | nuevo |
-| `src/app/data/academia-instruments.ts` | nuevo |
-| `src/app/components/music/fundamento-funnel.test.ts` | modificado |
-
-**Tests locales (post-Academia):** 377/377 · typecheck OK.
-
-### Otros untracked locales
-
-| Archivo | Notas |
-|---------|-------|
-| `docs/vision/handoffs/2026-06-18-cloud-auditoria-repo-nuevo-handoff.md` | Brief auditoría Cloud — local |
-| `public/hero/threshold/logogmusic.png` | Asset visual hero — **fase futura; no incluir en commits de funnel/gobernanza** |
+Archivos en remoto: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`, `fundamento-funnel.test.ts`. Tests: **377/377**.
 
 ---
 
@@ -177,11 +167,10 @@ Registro: `skills.manifest.yaml` · espejo: `./scripts/sync-skills.sh`
 
 ## 10. Próximos pasos sugeridos (orden)
 
-1. Juan valida visualmente **Academia 2 pasos** en local.
-2. Si autoriza: commit atómico solo paquete Academia (4 archivos código + tests).
-3. Claude/Codex: cerrar **D-GOV-02/03/04** antes de sync URL demo.
-4. Commit opcional: handoffs operativos (`2026-06-18-*`) cuando Juan autorice.
-5. Fase visual hero: `logogmusic.png` en ciclo aparte.
+1. **Commit documental** — sync MEMORY, CLAUDE, AGENTS, handoffs post-`f20e795` (cuando Juan autorice).
+2. Claude/Codex: cerrar **D-GOV-02/03/04** antes de sync URL demo.
+3. Fase visual hero: `logogmusic.png` en ciclo aparte.
+4. Fase 4 Auth — pausada hasta conversión WhatsApp real.
 
 ---
 
@@ -195,4 +184,4 @@ Registro: `skills.manifest.yaml` · espejo: `./scripts/sync-skills.sh`
 
 ---
 
-*Handoff operativo · Actualizar tras commit Academia 2 pasos o push de nuevo hito en `origin/main`.*
+*Handoff operativo · Actualizado post-push Academia `f20e795` (18 Jun 2026).*
