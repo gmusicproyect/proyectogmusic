@@ -54,18 +54,23 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 
 ### Estado de implementación URL (referencia técnica)
 
-| URL autorizada | Sincronizada en código hoy |
-|----------------|----------------------------|
-| `/`, `/alumno`, `/mi-camino` | **Sí** — `student-zone-routing.ts` + `handlePageChange` en `App.tsx` |
-| `/mi-camino-demo`, `/demo-clase-*`, `/inscripcion` | **Pendiente** — navegación vía `currentPage` only; la URL de la tabla es el **objetivo** a implementar en fase routing global |
+| URL autorizada | Sincronizada en código |
+|----------------|------------------------|
+| `/`, `/alumno`, `/mi-camino` | **Sí** — zona suscriptor (sin cambio de contrato) |
+| `/mi-camino-demo` | **Sí** — `e047ac3`, D-GOV-02/03 |
+| `/demo-clase-1` … `/demo-clase-5` | **Sí** — `e047ac3`, D-GOV-02/03 |
+| `/inscripcion` | **Sí** — `inscripcion-gate`; `e047ac3`, D-GOV-02/03 |
+| `inscripcion-registro` | **Sin URL pública** — sub-estado interno; gate → registro mantiene `/inscripcion` |
+| Legacy / resto de `currentPage` | **No** — fuera de alcance D-GOV-03 |
 
-Las URLs funnel son **destino autorizado**, no implementación vigente. Sync URL = **D-GOV-02/03** pendiente. Hoy: `currentPage` only.
-
-Reglas de navegación (zona suscriptor implementada):
+Reglas de navegación (zona suscriptor + funnel demo):
 
 - Entrar o moverse dentro de zona alumno → `pushState` a `/alumno` o `/mi-camino`.
-- Salir de zona alumno hacia páginas públicas/legacy → `replaceState("/")` + `setPage`.
-- `popstate` reconoce `/`, `/alumno` y `/mi-camino`; pathname desconocido → `home`.
+- Entrar o moverse dentro del funnel demo → `pushState` a la ruta D-GOV-02 correspondiente.
+- Salir de zona suscriptor o funnel demo hacia páginas no mapeadas → `replaceState("/")` + `setPage`.
+- `popstate` reconoce `/`, `/alumno`, `/mi-camino` y rutas funnel D-GOV-02; pathname desconocido → `home`.
+
+**Deploy:** las rutas SPA del funnel necesitan rewrite a `index.html` en el host de producción (documentar en deploy; no incluido en el commit de routing).
 
 Implementación: `src/app/utils/student-zone-routing.ts` + wrapper `handlePageChange` en `App.tsx`.
 
@@ -85,7 +90,7 @@ Navegación vía `currentPage`. No sustituye D-024 ni D-025.
 
 ### Academia — flujo 2 pasos (`f20e795`)
 
-En `#academia` del landing, **mismo `currentPage` (`home`)** — wizard in-place, sin URL nueva (D-GOV-02/03 pendiente):
+En `#academia` del landing, **mismo `currentPage` (`home`)** — wizard in-place, sin URL nueva (landing `#academia` fuera de alcance D-GOV-02):
 
 | Paso | Copy | Comportamiento |
 |------|------|----------------|

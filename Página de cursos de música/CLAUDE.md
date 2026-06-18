@@ -11,7 +11,7 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 | **A (este repo)** | Vite + React + Express + Prisma | ✅ Live — MVP validación | Fixes acotados + decisiones D-GOV antes de routing/auth |
 | **B (futuro)** | Next.js + Sanity + Railway + Cloudflare Stream | 🗂 Diseño en papel | No iniciar hasta primera conversión WhatsApp |
 
-**Nunca mezclar código de Track B en Track A.** Los **377 tests** de Vite son referencia lógica de reglas de negocio para Track B, no migración.
+**Nunca mezclar código de Track B en Track A.** Los **389 tests** de Vite son referencia lógica de reglas de negocio para Track B, no migración.
 
 ---
 
@@ -22,7 +22,7 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 | **GitHub** | https://github.com/gmusicproyect/proyectogmusic |
 | **Repo anterior** | `estudiosgpt2024-crypto/paginawebgmusic` — **SUPERSEDED** |
 | **Rama** | `main` |
-| **`origin/main`** | **`f20e795`** (18 Jun 2026) |
+| **`origin/main`** | **`e047ac3`** (18 Jun 2026) |
 | **App path** | `Página de cursos de música/` |
 
 **Handoff operativo:** `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
@@ -33,18 +33,19 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 
 | Item | Estado |
 |------|--------|
-| **HEAD / origin/main** | `f20e795` — feat(academia): two-step instrument then starting point funnel |
-| Commits recientes | `1f04e7e` gobernanza · `2bd1bdc` teaser B demo-path · `024cc42` D-GOV-05/06 |
-| **Tests app** | **377/377** |
+| **HEAD / origin/main** | `e047ac3` — feat(routing): sync demo funnel URLs |
+| Commits recientes | `4cdc911` D-GOV-02/03 aprobadas · `1bd2867` doc sync · `f20e795` Academia 2 pasos |
+| **Tests app** | **389/389** |
 | **Landing hero** | **Visual A** simplificado — validado Juan (scroll Apple → Academia) |
 | **Visual D** Canva/Canvas | ❌ **SUPERSEDED** — no reabrir |
 | **Academia 2 pasos** | ✅ **publicado** — instrumento → punto de partida (solo Guitarra activa; D-007) |
+| **Routing demo URL** | ✅ **publicado** — D-GOV-02/03 implementadas (`e047ac3`) |
 | **Teaser B + CTA híbrido** | ✅ publicado (`2bd1bdc`, D-GOV-05/06) |
-| **Gobernanza doc** | ✅ D-GOV-01, working map, MEMORY/AGENTS alineados en `1f04e7e` |
-| **Pendiente doc sync** | Commit documental post-`f20e795` (MEMORY, este archivo, handoffs) |
+| **Gobernanza doc** | ✅ D-GOV-01, working map, D-GOV-02/03 en `4cdc911` |
 | **Asset local sin commit** | `public/hero/threshold/logogmusic.png` — fase visual futura |
 | **Fase 4 Auth / Fase 5 Pagos** | ⏸ pausadas hasta conversión WhatsApp (+56953429676) |
-| **D-GOV pendientes** | D-GOV-02 URLs demo · D-GOV-03 routing · D-GOV-04 pedagogía 6–75 |
+| **D-GOV pendiente** | D-GOV-04 pedagogía 6–75 |
+| **Deploy pendiente** | Rewrites SPA funnel → `index.html` |
 | **R-001 / R-002** | Documentados — **no mitigar** sin decisión explícita |
 
 ---
@@ -56,7 +57,7 @@ Proyecto: academia online de guitarra gamificada. **Opus = arquitecto. Cursor = 
 | **1** | “Elige tu instrumento” — Guitarra, Teclado, Canto | Solo **Guitarra** navega (D-007) |
 | **2** | “Elige tu punto de partida” — Fundamento / Técnica / Crea × niveles | `InteractiveLevelSelector` → `mi-camino-demo` |
 
-Mismo landing (`#academia`); botón “← Cambiar instrumento”. Sin nueva URL (D-GOV-02/03 pendiente).
+Mismo landing (`#academia`); botón “← Cambiar instrumento”. Landing `#academia` sin URL propia (fuera de D-GOV-02). Navegación al demo → `/mi-camino-demo`.
 
 Archivos clave: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`.
 
@@ -77,11 +78,12 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 ## Para Cursor — prioridades actuales
 
-1. **Cerrar D-GOV-02/03/04** con Juan/Opus antes de sync URL demo.
-2. **Fase visual hero** — `logogmusic.png` en ciclo aparte (cuando Juan autorice).
-3. **Fase 4 Auth** — pausada hasta conversión WhatsApp real.
+1. **Cerrar D-GOV-04** (pedagogía 6–75) con Juan/Opus.
+2. **Deploy rewrites SPA** — rutas funnel en hosting.
+3. **Fase visual hero** — `logogmusic.png` en ciclo aparte (cuando Juan autorice).
+4. **Fase 4 Auth** — pausada hasta conversión WhatsApp real.
 
-**NO TOCAR sin autorización Opus + Juan:** auth, pagos, schema, routing URL global, R-001, R-002, Track B.
+**NO TOCAR sin autorización Opus + Juan:** auth, pagos, schema, routing URL global (legacy), R-001, R-002, Track B.
 
 ---
 

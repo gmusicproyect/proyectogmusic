@@ -17,7 +17,7 @@
 | **Repo canónico actual** | **`gmusicproyect/proyectogmusic`** |
 | **URL** | https://github.com/gmusicproyect/proyectogmusic |
 | **Rama** | `main` |
-| **`origin/main`** | **`f20e795`** (18 Jun 2026, post-push Academia) |
+| **`origin/main`** | **`e047ac3`** (18 Jun 2026, post-routing demo) |
 | **App path** | `Página de cursos de música/` |
 | **Stack** | React 18 + Vite · Express + Prisma + PostgreSQL |
 
@@ -65,11 +65,13 @@ Handoffs gobernanza **15 Jun** con numeración D-GOV antigua (D-GOV-01 = URLs): 
 
 ## 4. Decisiones publicadas vs pendientes
 
-### Publicadas en remoto
+### Publicadas e implementadas en remoto
 
 | ID | Tema | Commit / nota |
 |----|------|---------------|
 | **D-GOV-01** | Jerarquía documental; working map = base arquitectónica (**≠ URLs demo**) | `b276d80`, `9701e4d` |
+| **D-GOV-02** | URLs funnel demo canónicas | Aprobada `4cdc911` · implementada `e047ac3` |
+| **D-GOV-03** | Fase routing URL corta — solo funnel demo | Aprobada `4cdc911` · implementada `e047ac3` |
 | **D-GOV-05** | CTA híbrido C: 6–15 → planes; +60 / banner / FAB → `inscripcion-gate` | `024cc42` |
 | **D-GOV-06** | Teaser B: 5 jugables + 10 bloqueadas + card +60; catálogo 75 | `024cc42`, código `2bd1bdc` |
 | **D-003** | Solo 5 clases gratuitas jugables; 6–15 = teaser comercial | aclarado en `024cc42` |
@@ -78,47 +80,47 @@ Handoffs gobernanza **15 Jun** con numeración D-GOV antigua (D-GOV-01 = URLs): 
 
 | ID | Tema |
 |----|------|
-| **D-GOV-02** | URLs funnel demo como destino final |
-| **D-GOV-03** | Fase routing URL (corta demo vs global) |
 | **D-GOV-04** | Pedagogía lecciones 6–75 / skill-graph guitarra |
 
 ### Restricciones explícitas
 
 - **R-001** y **R-002**: **no se tocan** sin decisión aprobada y fase explícita.
-- No expandir routing URL, backend, schema, auth ni pagos desde este handoff.
+- No expandir routing URL global (legacy), backend, schema, auth ni pagos desde este handoff.
 
 ---
 
-## 5. Qué está publicado en GitHub (`origin/main = f20e795`)
+## 5. Qué está publicado en GitHub (`origin/main = e047ac3`)
 
 | Hash | Contenido |
 |------|-----------|
-| **`f20e795`** | **Academia 2 pasos** — instrumento → punto de partida + handoffs operativos |
+| **`e047ac3`** | **Routing demo URL sync** — D-GOV-02/03 implementadas |
+| **`4cdc911`** | D-GOV-02/03 aprobadas en `.agents/DECISIONS.md` |
+| **`f20e795`** | **Academia 2 pasos** — instrumento → punto de partida |
 | `1f04e7e` | Gobernanza operativa: `.agents/MEMORY.md`, `AGENTS.md`, `.cursorrules`, `skills.manifest.yaml` |
 | `2bd1bdc` | **Teaser B publicado** — demo-path: 5+10+card, CTA híbrido en UI |
-| `024cc42` | D-GOV-05/06 + D-003 en `.agents/DECISIONS.md` |
-| `9701e4d` | Working map arquitectónico |
-| `b276d80` | D-GOV-01 aprobada |
 
-**Tests app:** **377/377**.
+**Tests app:** **389/389**.
 
 ---
 
 ## 6. Funnel público (canónico)
 
 ```
-GmusicLanding (home)
-  └── AcademiaSection [2 pasos — f20e795]
+GmusicLanding (home)  →  /
+  └── AcademiaSection [2 pasos — f20e795, wizard in-place sin URL propia]
         · Paso 1: Elige tu instrumento (Guitarra activa; Teclado/Canto próximamente)
         · Paso 2: Elige tu punto de partida + CTA dinámico
-        └── mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
-              └── demo-clase-1..5 → DemoLessonPage
-                    └── [5/5] → inscripcion-gate → InscripcionGatePage
+        └── mi-camino-demo  →  /mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
+              └── demo-clase-1..5  →  /demo-clase-* → DemoLessonPage
+                    └── [5/5] → inscripcion-gate  →  /inscripcion → InscripcionGatePage
+                          └── inscripcion-registro (sin URL pública) → WhatsApp bridge
 ```
 
-**CTA híbrido (D-GOV-05):** clases 6–15 → sección planes en `home`; card “Más de 60”, banner y FAB → `inscripcion-gate`.
+**CTA híbrido (D-GOV-05):** clases 6–15 → sección planes en `home`; card “Más de 60”, banner y FAB → `inscripcion-gate` → `/inscripcion`.
 
-**URL sync hoy:** solo `/`, `/alumno`, `/mi-camino`. Funnel demo navega por `currentPage` — URLs objetivo pendientes **D-GOV-02/03**.
+**URL sync implementado (`e047ac3`):** `/`, `/alumno`, `/mi-camino`, `/mi-camino-demo`, `/demo-clase-1..5`, `/inscripcion`. **`inscripcion-registro` sin pathname.** Implementación: `student-zone-routing.ts` + `handlePageChange`.
+
+**Deploy:** rutas SPA del funnel requieren rewrite a `index.html` en el host de producción.
 
 ---
 
@@ -135,7 +137,7 @@ GmusicLanding (home)
 | **1** | “Elige tu instrumento” — Guitarra (activa), Teclado y Canto (próximamente) |
 | **2** | “Elige tu punto de partida” — Fundamento / Técnica / Crea × niveles |
 
-Archivos en remoto: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`, `fundamento-funnel.test.ts`. Tests: **377/377**.
+Archivos en remoto: `AcademiaSection.tsx`, `AcademiaInstrumentSelector.tsx`, `academia-instruments.ts`, `fundamento-funnel.test.ts`.
 
 ---
 
@@ -167,10 +169,11 @@ Registro: `skills.manifest.yaml` · espejo: `./scripts/sync-skills.sh`
 
 ## 10. Próximos pasos sugeridos (orden)
 
-1. **Commit documental** — sync MEMORY, CLAUDE, AGENTS, handoffs post-`f20e795` (cuando Juan autorice).
-2. Claude/Codex: cerrar **D-GOV-02/03/04** antes de sync URL demo.
-3. Fase visual hero: `logogmusic.png` en ciclo aparte.
-4. Fase 4 Auth — pausada hasta conversión WhatsApp real.
+1. **Commit documental** — sync MEMORY, CLAUDE, AGENTS, handoffs post-routing (cuando Juan autorice).
+2. Claude/Codex: cerrar **D-GOV-04** (pedagogía 6–75).
+3. **Deploy rewrites SPA** — funnel demo URLs en hosting.
+4. Fase visual hero: `logogmusic.png` en ciclo aparte.
+5. Fase 4 Auth — pausada hasta conversión WhatsApp real.
 
 ---
 
@@ -184,4 +187,4 @@ Registro: `skills.manifest.yaml` · espejo: `./scripts/sync-skills.sh`
 
 ---
 
-*Handoff operativo · Actualizado post-push Academia `f20e795` (18 Jun 2026).*
+*Handoff operativo · Actualizado post-routing demo `e047ac3` (18 Jun 2026).*

@@ -1,11 +1,11 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 18 Jun 2026 · `origin/main` = `f20e795`
+Última actualización: 18 Jun 2026 · `origin/main` = `e047ac3`
 
 **Repo canónico:** `gmusicproyect/proyectogmusic` · legacy `estudiosgpt2024-crypto/paginawebgmusic` = **SUPERSEDED**
 
-**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-05, D-GOV-06 · demo-path + Academia 2 pasos en remoto.
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-02, D-GOV-03, D-GOV-05, D-GOV-06 · routing demo en remoto (`e047ac3`).
 
 **Handoff operativo:** `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
 
@@ -29,13 +29,14 @@ Fuente de verdad: `AGENTS.md` (roles + mapa de rutas). No commit/push autónomo.
 
 | Item | Valor |
 |------|-------|
-| `origin/main` | `f20e795` — feat(academia): two-step instrument then starting point funnel |
-| Docs / producto recientes | `1f04e7e` gobernanza · `2bd1bdc` teaser B · `024cc42` D-GOV-05/06 · `b276d80` D-GOV-01 |
-| **Aprobadas** | D-GOV-01 (jerarquía doc + working map), D-GOV-05 (CTA híbrido C), D-GOV-06 (teaser B), D-003 aclarado |
-| **Pendientes** | D-GOV-02 URLs demo · D-GOV-03 fase routing · D-GOV-04 pedagogía 6–75 |
-| Tests app | **377/377** |
+| `origin/main` | `e047ac3` — feat(routing): sync demo funnel URLs |
+| Docs / producto recientes | `4cdc911` D-GOV-02/03 aprobadas · `1bd2867` doc sync Academia · `f20e795` Academia 2 pasos |
+| **Aprobadas e implementadas** | D-GOV-02 (URLs demo), D-GOV-03 (routing corto funnel), D-GOV-01, D-GOV-05, D-GOV-06, D-003 aclarado |
+| **Pendientes** | D-GOV-04 pedagogía 6–75 |
+| Tests app | **389/389** |
 | **R-001 / R-002** | Documentados — no mitigar sin decisión explícita |
 | Untracked local | `public/hero/threshold/logogmusic.png` — fase visual futura, no commitear en funnel/gobernanza |
+| **Deploy** | Rutas SPA funnel (`/mi-camino-demo`, `/demo-clase-*`, `/inscripcion`) requieren rewrite a `index.html` en hosting |
 
 ---
 
@@ -69,10 +70,11 @@ Cuando Juan escriba **"Retomar Gmusic"**, Fable debe ejecutar exactamente estos 
 
 ### Publicado en remoto (18 Jun 2026)
 
+- **Routing demo URL sync** (`e047ac3`): D-GOV-02/03 implementadas — `/mi-camino-demo`, `/demo-clase-1..5`, `/inscripcion`; `inscripcion-registro` sin URL pública
 - **Academia 2 pasos** (`f20e795`): instrumento (Guitarra activa; Teclado/Canto próximamente) → punto de partida (D-007)
 - Teaser B demo-path (`2bd1bdc`): 5 jugables + 10 bloqueadas + card “Más de 60”, catálogo 75 (D-GOV-06)
 - CTA híbrido (D-GOV-05): clases 6–15 → planes; card +60 / banner / FAB → `inscripcion-gate`
-- Gobernanza doc: D-GOV-01, working map, D-GOV-05/06 en `.agents/DECISIONS.md`; ops en `1f04e7e`
+- Gobernanza doc: D-GOV-02/03 aprobadas en `4cdc911`; ops en `1f04e7e`
 
 ### Fases completadas (histórico)
 
@@ -132,7 +134,8 @@ src/app/pages/inscripcion-gate.test.ts
 
 | # | Pendiente | Urgencia | Impacto |
 |---|-----------|----------|---------|
-| **G1** | **Cerrar D-GOV-02/03/04** (URLs demo, fase routing URL, pedagogía 6–75) | Alta | Juan / Claude |
+| **G1** | **Cerrar D-GOV-04** (pedagogía 6–75 / skill-graph guitarra) | Alta | Juan / Claude |
+| **G2** | **Deploy rewrites SPA** — funnel demo URLs → `index.html` | Media | Juan / hosting |
 | C | **Decisión Clase 4 — `Ex2NotasAm`** | Antes de producción | `ex4-calidad-acorde` vs. video notas |
 | D | **Skills curriculares** | Antes currículum 6–75 | Repo YAML vs. Notion |
 | F | **DEV_LEGACY en producción** | Post-Fase 4 | Links build prod |
@@ -193,19 +196,21 @@ Landing (home)  →  /
   └── AcademiaSection [2 pasos — f20e795]
         · Paso 1: Elige tu instrumento (Guitarra | Teclado | Canto) — solo Guitarra activa (D-007)
         · Paso 2: Elige tu punto de partida (Fundamento/Técnica/Crea × niveles) + CTA dinámico
-        └── mi-camino-demo  →  /mi-camino-demo (URL objetivo D-GOV-02/03)
+        └── mi-camino-demo  →  /mi-camino-demo
               PathDemoPage — teaser B: 5 gratis + 10 candado + card +60 (D-GOV-06)
               · clases 6–15 bloqueadas → panel + “Ver planes” → home/planes (D-GOV-05)
               · card “Más de 60” → inscripcion-gate (D-GOV-05)
-              └── demo-clase-1..5  →  /demo-clase-* (URL objetivo D-GOV-02/03)
+              └── demo-clase-1..5  →  /demo-clase-1..5
                     DemoLessonPage (YouTube → ejercicio → éxito)
                     └── [5/5] banner + FAB → inscripcion-gate  →  /inscripcion (D-GOV-05)
                           InscripcionGatePage (tier×período)
-                          └── inscripcion-registro → WhatsApp bridge
+                          └── inscripcion-registro (sin URL pública) → WhatsApp bridge
                                 └── [Fase 4] auth real → [Fase 5] Flow → mi-estudio (/alumno)
 ```
 
-**URL sync hoy:** solo `/`, `/alumno`, `/mi-camino`. Resto vía `currentPage` (D-GOV-02/03 pendiente).
+**URL sync implementado (`e047ac3`, D-GOV-02/03):** `/`, `/alumno`, `/mi-camino`, `/mi-camino-demo`, `/demo-clase-1..5`, `/inscripcion`. Implementación: `student-zone-routing.ts` + `handlePageChange` en `App.tsx`. **`inscripcion-registro` sin pathname.** Legacy y resto de `currentPage` siguen sin sync URL global.
+
+**Deploy:** refresh directo en rutas funnel requiere rewrite SPA en el host (fuera del código).
 
 **Progreso demo:** 5/5 gratuitas (D-003); clases 6–15 visibles no jugables — teaser comercial (D-GOV-06).
 

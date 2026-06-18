@@ -1,17 +1,20 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 18 Jun 2026 · `origin/main` = `f20e795`
+Última actualización: 18 Jun 2026 · `origin/main` = `e047ac3`
 
 ## Estado remoto (18 Jun 2026)
 
 | Item | Estado |
 |------|--------|
 | Repo canónico | `gmusicproyect/proyectogmusic` |
-| **HEAD** | `f20e795` — Academia 2 pasos (instrumento → punto de partida) |
+| **HEAD** | `e047ac3` — feat(routing): sync demo funnel URLs |
+| Routing demo D-GOV-02/03 | ✅ `e047ac3` (código) · aprobadas en `4cdc911` |
+| Academia 2 pasos | ✅ `f20e795` |
 | Teaser B + CTA híbrido | ✅ `2bd1bdc` (D-GOV-05/06) |
 | Gobernanza operativa | ✅ `1f04e7e` |
-| **Tests app** | **377/377** |
-| Untracked local | `logogmusic.png` — fase visual hero (futuro) |
+| **Tests app** | **389/389** |
+| Untracked local | `logogmusic.png` — fase visual hero (futuro; fuera del repo) |
+| **Deploy pendiente** | Rewrites SPA funnel → `index.html` |
 
 Handoff operativo: `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
 
@@ -43,7 +46,24 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 **North Star checkout (Fase 4+, no implementar aún):** Mercado Pago · form Chile/Extranjero · RUT genérico extranjero vía servicio interno · ver `docs/vision/handoffs/2026-06-15-track-a-estado-y-fase4-north-star-opus.md` y **D-027**.
 
-**Juan Track A (Jun 2026):** visual ✅ · Academia 2 pasos ✅ · PostHog key + funnel ✅ · push origin ✅ (`f20e795`) · conversión WhatsApp real ⬜
+**Juan Track A (Jun 2026):** visual ✅ · Academia 2 pasos ✅ · routing demo URL ✅ (`e047ac3`) · PostHog key + funnel ✅ · push origin ✅ · conversión WhatsApp real ⬜
+
+---
+
+## Routing demo — publicado (`e047ac3`)
+
+| Ruta | `currentPage` | Estado |
+|------|---------------|--------|
+| `/mi-camino-demo` | `mi-camino-demo` | ✅ sync URL |
+| `/demo-clase-1` … `/demo-clase-5` | `demo-clase-*` | ✅ sync URL |
+| `/inscripcion` | `inscripcion-gate` | ✅ sync URL |
+| — | `inscripcion-registro` | ✅ sin URL pública (mantiene `/inscripcion`) |
+| `/alumno` | `mi-estudio` / `welcome` | ✅ sin cambio |
+| `/mi-camino` | `mi-camino` | ✅ sin cambio |
+
+Implementación: `student-zone-routing.ts` + `handlePageChange`. Tests: `student-zone-routing.test.ts` (389/389 app).
+
+**Deploy:** rewrite SPA en hosting para refresh directo en rutas funnel.
 
 ---
 

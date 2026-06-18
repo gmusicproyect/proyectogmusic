@@ -22,19 +22,36 @@ GmusicLanding (home)
   └── AcademiaSection [2 pasos — instrumento → punto de partida]
         · Paso 1: Elige tu instrumento (Guitarra activa; Teclado/Canto próximamente — D-007)
         · Paso 2: Elige tu punto de partida + CTA dinámico — useDemoUserState
-        └── mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
-              └── demo-clase-1..5 → DemoLessonPage (video → ejercicio → éxito)
-                    └── [clase 5 completa] → inscripcion-gate → InscripcionGatePage
+        └── mi-camino-demo → /mi-camino-demo → PathDemoPage (teaser B, D-GOV-06)
+              └── demo-clase-1..5 → /demo-clase-* → DemoLessonPage (video → ejercicio → éxito)
+                    └── [clase 5 completa] → inscripcion-gate → /inscripcion → InscripcionGatePage
                           ├── [demo incompleto] → LockedGate → mi-camino-demo
                           └── [demo completo] → selector período + tier
-                                └── inscripcion-registro → InscripcionRegistroPage
-                                      └── [Fase 4] registro real → mi-estudio
+                                └── inscripcion-registro (sin URL pública) → InscripcionRegistroPage
+                                      └── [Fase 4] registro real → mi-estudio (/alumno)
 ```
 
 Flujo alternativo — suscripción directa desde Planes:
 ```
-PlanesSection → handleSemestralPlanSelect → AuthModal → CheckoutPage → mi-estudio
+PlanesSection → handleSemestralPlanSelect → handlePageChange("inscripcion-gate") → /inscripcion
 ```
+
+---
+
+## Sync URL del funnel (D-GOV-02/03 — implementado `e047ac3`)
+
+| `currentPage` | Pathname | Notas |
+|---------------|----------|-------|
+| `mi-camino-demo` | `/mi-camino-demo` | ✅ |
+| `demo-clase-1` … `demo-clase-5` | `/demo-clase-1` … `/demo-clase-5` | ✅ |
+| `inscripcion-gate` | `/inscripcion` | ✅ |
+| `inscripcion-registro` | *(ninguno)* | Sin URL pública; gate → registro mantiene `/inscripcion` |
+
+Implementación: `src/app/utils/student-zone-routing.ts` + `handlePageChange` en `App.tsx`. Tests: `student-zone-routing.test.ts` (**389/389** app).
+
+**Deploy:** refresh directo en rutas funnel requiere rewrite SPA → `index.html` en el host (fuera del código).
+
+**Fuera de alcance:** landing `#academia` (wizard in-place en `home`), legacy, routing global de todo `currentPage`. Zona suscriptor: `/alumno`, `/mi-camino` — sin cambio de contrato.
 
 ---
 
@@ -53,6 +70,7 @@ PlanesSection → handleSemestralPlanSelect → AuthModal → CheckoutPage → m
 | `src/app/components/marketing/sections/AcademiaSection.tsx` | Wizard 2 pasos: instrumento → punto de partida + CTA |
 | `src/app/components/marketing/AcademiaInstrumentSelector.tsx` | Grid 3 instrumentos (solo Guitarra activa) |
 | `src/app/data/academia-instruments.ts` | Catálogo Guitarra / Teclado / Canto |
+| `src/app/utils/student-zone-routing.ts` | Sync URL funnel demo + zona suscriptor (D-GOV-02/03) |
 | `src/app/utils/public-home-navigation.ts` | Navegación hacia secciones del home |
 
 ---
@@ -131,8 +149,8 @@ No hay form ni campos en esta página. Solo selección de plan y navegación.
 
 ## QA mínima del funnel
 
-1. `npm run app:test` — especialmente `fundamento-funnel.test.ts`, `path-demo-page.test.ts`, `inscripcion-gate.test.ts`
-2. Visitante anónimo: Academia paso 1 → elige Guitarra → paso 2 → "Ver clase gratuita" o Fundamento Básico → `mi-camino-demo`
+1. `npm run app:test` — especialmente `student-zone-routing.test.ts`, `fundamento-funnel.test.ts`, `path-demo-page.test.ts`, `inscripcion-gate.test.ts`
+2. Visitante anónimo: Academia paso 1 → elige Guitarra → paso 2 → "Ver clase gratuita" → `/mi-camino-demo`
 3. Demo completo: AcademiaSection muestra "Inscribirme para continuar" → navega a inscripcion-gate con puerta abierta
 4. Demo incompleto: inscripcion-gate muestra LockedGate con barra de progreso
 5. Alumno autenticado: AcademiaSection muestra "Entrar a mi academia" → no muestra demo CTA
