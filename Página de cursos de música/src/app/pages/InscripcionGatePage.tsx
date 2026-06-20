@@ -649,6 +649,21 @@ export function InscripcionGatePage({ setPage }: InscripcionGatePageProps) {
             </motion.button>
           </AnimatePresence>
 
+          <p
+            style={{
+              margin: "8px 0 0",
+              fontSize: 13,
+              lineHeight: 1.5,
+              textAlign: "center",
+              color: "rgba(245,240,232,0.45)",
+              fontFamily: "Inter, sans-serif",
+              maxWidth: 400,
+            }}
+          >
+            Al continuar abriremos WhatsApp con tu selección lista para confirmar. Sin pagos
+            automáticos.
+          </p>
+
           <button
             type="button"
             onClick={() => setPage("mi-camino-demo")}
