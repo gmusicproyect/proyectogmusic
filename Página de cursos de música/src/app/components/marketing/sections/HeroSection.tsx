@@ -61,9 +61,9 @@ export function HeroSection(_props: HeroSectionProps) {
 
   /** Scroll Apple: zoom lento → fade en último 14% → Academia ya visible abajo */
   const taglineOpacity = useTransform(scrollYProgress, [0, 0.18, 0.28], [1, 1, 0]);
-  const logoScaleDesktop = useTransform(scrollYProgress, [0.06, 0.82], [1, 2.75]);
-  const logoScaleMobile  = useTransform(scrollYProgress, [0.06, 0.82], [1, 1.6]);
-  const logoScale = isMobile ? logoScaleMobile : logoScaleDesktop;
+  const logoScaleStatic = useMotionValue(1);
+  const logoScaleAnimated = useTransform(scrollYProgress, [0.06, 0.82], [1, 2.75]);
+  const logoScale = isMobile ? logoScaleStatic : logoScaleAnimated;
   const logoOpacity    = useTransform(scrollYProgress, [0.82, 0.96], [1, 0]);
   const logoGlow       = useTransform(scrollYProgress, [0.06, 0.82, 0.96], [0.12, 0.38, 0]);
   const backdropDim    = useTransform(scrollYProgress, [0.35, 0.82, 0.96], [0, 0.38, 0]);
