@@ -18,7 +18,7 @@ export function AcademiaInstrumentSelector({ onSelect }: AcademiaInstrumentSelec
       variants={{ show: { transition: { staggerChildren: 0.08 } } }}
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
         gap: 16,
         marginTop: 56,
       }}
@@ -44,6 +44,7 @@ export function AcademiaInstrumentSelector({ onSelect }: AcademiaInstrumentSelec
             style={{
               position: "relative",
               minHeight: 320,
+              maxHeight: "min(320px, 55vw)",
               borderRadius: 4,
               overflow: "hidden",
               border: `1px solid ${isAvailable ? GOLD_BORDER : "rgba(255,255,255,0.08)"}`,
