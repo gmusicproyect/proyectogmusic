@@ -18,7 +18,7 @@ export function AcademiaInstrumentSelector({ onSelect }: AcademiaInstrumentSelec
       variants={{ show: { transition: { staggerChildren: 0.08 } } }}
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
         gap: 16,
         marginTop: 56,
       }}

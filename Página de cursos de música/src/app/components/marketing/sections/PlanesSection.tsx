@@ -37,7 +37,7 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
         top: "50%", left: "50%", transform: "translate(-50%, -50%)",
       }} />
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 80px", position: "relative", zIndex: 2 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 clamp(20px, 5vw, 80px)", position: "relative", zIndex: 2 }}>
         <motion.div
           initial="hidden" whileInView="show" viewport={vp}
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
@@ -72,7 +72,7 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
         </motion.div>
 
         <div style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
           gap: 16, maxWidth: 900, margin: "0 auto",
         }}>
           {planes.map((plan, i) => {

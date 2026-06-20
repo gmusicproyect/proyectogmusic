@@ -88,7 +88,7 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
 
       <div
         ref={contentRef}
-        style={{ maxWidth: 1100, margin: "0 auto", padding: "0 80px", position: "relative", zIndex: 2 }}
+        style={{ maxWidth: 1100, margin: "0 auto", padding: "0 clamp(20px, 5vw, 80px)", position: "relative", zIndex: 2 }}
       >
         <AnimatePresence mode="wait">
           {isInstrumentStep ? (

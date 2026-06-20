@@ -25,8 +25,8 @@ export function ComunidadSection({ setPage }: ComunidadSectionProps) {
         }}
       />
       <div style={{
-        maxWidth: 1100, margin: "0 auto", padding: "0 80px",
-        display: "grid", gridTemplateColumns: "40fr 60fr",
+        maxWidth: 1100, margin: "0 auto", padding: "0 clamp(20px, 5vw, 80px)",
+        display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
         gap: 80, alignItems: "center",
         position: "relative", zIndex: 2,
       }}>

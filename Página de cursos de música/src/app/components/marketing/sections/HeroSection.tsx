@@ -55,12 +55,15 @@ function HeroAtmosphere() {
 export function HeroSection(_props: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const scrollYProgress = useMotionValue(0);
 
   /** Scroll Apple: zoom lento → fade en último 14% → Academia ya visible abajo */
   const taglineOpacity = useTransform(scrollYProgress, [0, 0.18, 0.28], [1, 1, 0]);
-  const logoScale      = useTransform(scrollYProgress, [0.06, 0.82], [1, 2.75]);
+  const logoScaleDesktop = useTransform(scrollYProgress, [0.06, 0.82], [1, 2.75]);
+  const logoScaleMobile  = useTransform(scrollYProgress, [0.06, 0.82], [1, 1.6]);
+  const logoScale = isMobile ? logoScaleMobile : logoScaleDesktop;
   const logoOpacity    = useTransform(scrollYProgress, [0.82, 0.96], [1, 0]);
   const logoGlow       = useTransform(scrollYProgress, [0.06, 0.82, 0.96], [0.12, 0.38, 0]);
   const backdropDim    = useTransform(scrollYProgress, [0.35, 0.82, 0.96], [0, 0.38, 0]);
@@ -94,6 +97,13 @@ export function HeroSection(_props: HeroSectionProps) {
     sync();
     motionMq.addEventListener("change", sync);
     return () => motionMq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const sync = () => setIsMobile(window.innerWidth < 768);
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
   }, []);
 
   return (
