@@ -125,6 +125,8 @@ export function HeroSection(_props: HeroSectionProps) {
           height: "100vh",
           display: "flex",
           flexDirection: "column",
+          transform: "translateZ(0)",
+          WebkitTransform: "translateZ(0)",
         }}
       >
         <HeroAtmosphere />
