@@ -115,7 +115,7 @@ export function HeroSection(_props: HeroSectionProps) {
       aria-label="Gmusic Estudio"
     >
       <h1 className="sr-only">
-        Gmusic Estudio — Bienvenidos a esta nueva experiencia de academia
+        Gmusic — Aprende música con una ruta clara
       </h1>
       <div
         className="relative overflow-hidden bg-obsidian"
@@ -201,7 +201,7 @@ export function HeroSection(_props: HeroSectionProps) {
               pointerEvents: "none",
             }}
           >
-            Bienvenidos a esta nueva experiencia de academia
+            Una academia online donde puedes aprender un instrumento paso a paso, con clases estructuradas y un camino que te muestra hasta dónde puedes llegar.
           </motion.p>
         </div>
 
