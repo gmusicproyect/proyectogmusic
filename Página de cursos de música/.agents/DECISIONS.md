@@ -112,6 +112,14 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 ---
 
+## Gobernanza — UX / Landing
+
+| ID | Decisión | Fecha | Estado | Razón |
+|----|----------|-------|--------|-------|
+| D-GOV-08 | **Landing condicional según estado del alumno:** la landing (`GmusicLanding.tsx` + `PlanesSection.tsx`) muestra contenido distinto según sesión **sin redirección automática** — URL sigue siendo `/`. **Sin sesión:** landing completa (Hero, Academia, Comunidad, Planes, Contacto). **Demo (registro, sin pago):** landing completa; PlanesSection con plan actual + CTA continuar inscripción. **Pagante:** Hero personalizado (“Bienvenido de vuelta, [nombre]”); Academia + Comunidad + Contacto; PlanesSection oculta → CTA “Ir a Mi Camino →”. **Dependencias:** `session.status`, `StudentZoneGuard`; estado pagante requiere **R-002** resuelto. **Doc completo:** `docs/architecture/D-GOV-08-landing-condicional.md`. **No autoriza:** implementación hasta R-002 + ≥1 alumno pagante + diseño Hero aprobado. **No afecta:** server/, prisma/, auth, pagos. | 20 Jun 2026 | **Propuesta — pendiente aprobación** | Registrar UX futura para alumnos reales pagantes sin redirección forzada. |
+
+---
+
 ## Pendientes de decisión
 
 | ID | Pregunta abierta | Quién decide |
