@@ -57,17 +57,16 @@ export function PlanesSection({ onSelectSemestralPlan }: PlanesSectionProps) {
             fontWeight: 400, letterSpacing: "-1.2px",
             lineHeight: 1.2, color: WHITE_WARM, margin: "16px auto 0",
             textShadow: "0 2px 10px rgba(0,0,0,0.95)",
-          }}>
-            Los precios se anuncian<br />
-            <span style={{ color: "rgba(245,240,232,0.7)", fontWeight: 300 }}>al abrir inscripciones.</span>
+          }}          >
+            Elige el plan que más te acomode.
           </motion.h2>
           <motion.p variants={fadeUp} transition={{ duration: 0.5, delay: 0.12 }} style={{
             color: "rgba(245,240,232,0.95)", fontSize: 16, lineHeight: 1.7,
             fontFamily: "Inter, sans-serif", maxWidth: 480, margin: "20px auto 0",
             textShadow: "0 2px 8px rgba(0,0,0,0.95)",
           }}>
-            Estamos preparando el acceso. Mientras tanto, puedes ver la clase
-            gratuita y conocer el método.
+            No pagarás aquí todavía — te contactamos por WhatsApp para confirmar tu
+            inscripción y resolver cualquier duda antes de comenzar.
           </motion.p>
         </motion.div>
 
