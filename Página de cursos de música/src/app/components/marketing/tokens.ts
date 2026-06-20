@@ -6,5 +6,5 @@ export const TEXT_SEC = "#8A8A8A";
 export const BG_SURFACE = "#111111";
 export const BORDER = "rgba(255,255,255,0.06)";
 
-export const fadeUp = { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } };
-export const vp = { once: true, margin: "-60px" };
+export const fadeUp = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
+export const vp = { once: true, margin: "-20px" };
