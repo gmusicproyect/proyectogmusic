@@ -201,7 +201,7 @@ export function HeroSection(_props: HeroSectionProps) {
               pointerEvents: "none",
             }}
           >
-            Una academia online donde puedes aprender un instrumento paso a paso, con clases estructuradas y un camino que te muestra hasta dónde puedes llegar.
+            Una academia online para aprender música paso a paso, con clases estructuradas, progreso guiado y un camino inicial en guitarra para comenzar desde hoy.
           </motion.p>
         </div>
 
