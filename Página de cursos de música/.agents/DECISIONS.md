@@ -104,6 +104,14 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 ---
 
+## Gobernanza — Stack técnico / Lecciones
+
+| ID | Decisión | Fecha | Estado | Razón |
+|----|----------|-------|--------|-------|
+| D-GOV-07 | **Integración alphaTab para lecciones interactivas:** renderizar archivos Guitar Pro (.gp/.gpx) en browser vía `@coderline/alphatab` (tablatura animada + alphaSynth). Flujo: JP exporta desde Guitar Pro 8 → sube a Sanity → alphaTab en lección. **Scope:** nivel intermedio únicamente (módulos 7, 9, 10). **No autoriza:** audio recognition, MIDI físico, nivel básico, implementación antes de alumnos en intermedio. Ejercicios básicos interactivos (diagramas, quiz, mástil) = React + Tone.js, sin D-GOV extra. **Doc completo:** `docs/architecture/D-GOV-07-alphatab.md`. **No afecta:** server/, prisma/, auth, pagos, R-001, R-002. | 20 Jun 2026 | **Propuesta — pendiente aprobación** | Registrar evaluación técnica sin implementar. Criterios de aprobación: D-GOV-04 resuelta, ≥1 alumno real en básico, bundle 500KB optimizado, prueba aislada de alphaTab. |
+
+---
+
 ## Pendientes de decisión
 
 | ID | Pregunta abierta | Quién decide |
