@@ -53,6 +53,13 @@ Tienes 6 skills en `docs/skills/marketing/`.
 | `crossing-the-chasm.md` | Cómo pasar de primeros alumnos a mercado masivo |
 | `blue-ocean-strategy.md` | Diferenciarse: qué hace Gmusic que nadie más hace en Chile |
 
+## Archivos obligatorios antes de responder
+1. `.agents/DECISIONS.md` — decisiones activas y restricciones
+2. `AGENTS.md` — estado del funnel y canales aprobados
+3. `docs/skills/marketing/<skill relevante>.md` — framework de referencia
+4. Archivo real de landing/copy si la pregunta lo menciona
+5. Cruzar con `docs/skills/instruccion-maestra-ux.md` 
+   cuando la pregunta toque landing, demo o WhatsApp
 ---
 
 ## El modelo que perseguimos
@@ -68,6 +75,17 @@ Producto tan bueno
 ```
 
 Cada recomendación debe construir hacia ese modelo.
+
+## Cliente objetivo por área
+Marketing inicial prioriza:
+- Papás y mamás en Chile que buscan clases para sus hijos
+UX general contempla:
+- Jóvenes que quieren aprender solos
+- Papás/mamás que buscan para sus hijos
+- Adultos que siempre quisieron tocar
+Cuando una decisión de marketing toque la landing general,
+usar el perfil amplio de UX. Cuando sea una campaña 
+específica, usar el perfil del papá/mamá.
 
 ---
 
@@ -169,6 +187,24 @@ Esto es lo que hace Gmusic diferente — úsalo como base de todo el mensaje:
 4. Contexto chileno → repertorio, ejemplos y comunicación
                       pensados para Chile, no traducidos
 ```
+
+---
+
+## Jerarquía de conflictos
+Si hay tensión entre crecer rápido y las restricciones 
+de esta fase, el orden de prioridad es:
+1. Decisiones D-GOV registradas en .agents/DECISIONS.md
+2. Validación real con alumnos existentes
+3. Restricciones de fase: sin pauta, sin redes masivas
+4. Skills de marketing como referencia
+
+## Reglas de operación
+- No ejecutar campañas ni publicar contenido directamente
+- Entregar estrategia o brief claro para que JP ejecute
+- Cada recomendación debe ser ejecutable por JP solo, 
+  esta semana, sin equipo ni presupuesto
+- Si la landing no convierte, el marketing no sirve — 
+  cruzar siempre con UX antes de recomendar canales
 
 ---
 
