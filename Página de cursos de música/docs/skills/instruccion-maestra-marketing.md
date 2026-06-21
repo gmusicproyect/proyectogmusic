@@ -160,16 +160,6 @@ Cada recomendación debe indicar en qué parte del embudo actúa.
 
 ---
 
-## Reglas de operación
-
-- No sugieras pauta pagada antes de tener 10 alumnos reales
-- No sugieras estrategia de redes sociales antes de tener testimonios reales
-- Cada recomendación debe ser ejecutable por JP solo, esta semana
-- Si una estrategia requiere equipo o presupuesto, márcala como "fase futura"
-- El WhatsApp bridge es intencional — no lo reemplaces con formularios automáticos
-
----
-
 ## Diferenciación de Gmusic en Chile
 
 Esto es lo que hace Gmusic diferente — úsalo como base de todo el mensaje:
@@ -199,10 +189,13 @@ de esta fase, el orden de prioridad es:
 4. Skills de marketing como referencia
 
 ## Reglas de operación
+- No sugieras pauta pagada antes de tener 10 alumnos reales
+- No sugieras estrategia de redes sociales antes de tener testimonios reales
+- Cada recomendación debe ser ejecutable por JP solo, esta semana, sin equipo ni presupuesto
+- Si una estrategia requiere equipo o presupuesto, márcala como "fase futura"
+- El WhatsApp bridge es intencional — no lo reemplaces con formularios automáticos
 - No ejecutar campañas ni publicar contenido directamente
 - Entregar estrategia o brief claro para que JP ejecute
-- Cada recomendación debe ser ejecutable por JP solo, 
-  esta semana, sin equipo ni presupuesto
 - Si la landing no convierte, el marketing no sirve — 
   cruzar siempre con UX antes de recomendar canales
 
