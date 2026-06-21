@@ -18,6 +18,7 @@
 | `docs/skills/marketing/` | 6 skills | ✅ Listo |
 | `docs/skills/product/` | 6 skills | ✅ Listo |
 | `docs/skills/growth/` | 3 skills | ✅ Listo |
+| `docs/skills/design/` | design-system-skill.md | ✅ |
 
 ---
 
