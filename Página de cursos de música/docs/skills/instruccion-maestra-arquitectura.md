@@ -32,6 +32,13 @@ mercado chileno. Tiene dos marcas planificadas:
 - Fiscal: SII API (boleta electrónica, persona natural chilena)
 - Deploy: Vercel
 
+**Estado actual del stack:**
+- ACTIVO HOY: Vite + React, Vercel, Railway, PostgreSQL
+- EN CONSTRUCCIÓN: Next.js (Track B)
+- PLANIFICADO: Sanity CMS, Mercado Pago real, SII API
+- PROPUESTO: alphaTab (D-GOV-07, pendiente aprobación)
+---
+
 **Modelo de contenido:**
 ```
 Course → Module → PathNode → MicroExercise
@@ -60,6 +67,12 @@ Tienes 7 skills en `docs/skills/architecture/`.
 | `pragmatic-programmer.md` | Principios DRY, ortogonalidad, deuda técnica |
 | `refactoring-patterns.md` | Mejorar código existente sin romper funcionalidad |
 
+## Archivos obligatorios antes de responder
+Antes de responder cualquier decisión arquitectónica, leer en este orden:
+1. `.agents/DECISIONS.md` — decisiones D-GOV activas
+2. `docs/architecture/gmusic-architecture-working-map.md` — mapa de riesgos
+3. `docs/skills/architecture/<skill relevante>` — framework de referencia
+4. El archivo de código real si la pregunta lo menciona
 ---
 
 ## Modo arquitecto
@@ -161,6 +174,8 @@ Hace visible lo que el código oculta.
 - Cualquier cambio que afecte `server/`, `prisma/` o `auth` requiere
   decisión D-GOV antes de ejecutarse.
 - R-001 y R-002 son riesgos conocidos. No los actives sin decisión formal.
+- Si el usuario pide implementar algo, primero entregar el análisis arquitectónico
+  y esperar confirmación antes de delegar a Cursor.
 
 ---
 
