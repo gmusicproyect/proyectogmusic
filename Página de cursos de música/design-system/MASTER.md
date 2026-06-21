@@ -47,3 +47,71 @@ Inicio · Academia · Comunidad · Ver planes · Contacto · Iniciar sesión
 
 ## Animación
 Solo `fade-in` + `translateY(20px)` en viewport. Sin parallax ni autoplay.
+
+---
+
+## Tokens de gamificación — solo dashboard
+| Token | Uso |
+|---|---|
+| `--edu-success` | Logros, clases completadas |
+| `--edu-error` | Errores, intentos fallidos |
+| `--edu-warning` | Advertencias, tiempo límite |
+| `--edu-reward` | Recompensas, XP ganado |
+| `--edu-achievement` | Badges, logros especiales |
+| `--edu-locked` | Contenido bloqueado |
+
+**Regla:** estos tokens son exclusivos del dashboard y sistema de progreso. Nunca usar en landing pública.
+
+---
+
+## Botón premium completo
+```css
+background:     var(--btn-premium-bg)
+color:          var(--btn-premium-text)
+box-shadow:     var(--btn-premium-shadow-rest)
+border-radius:  var(--radius-sm)
+font-family:    var(--font-body)
+font-size:      13px
+font-weight:    700
+text-transform: uppercase
+letter-spacing: 1px
+height:         50px
+padding:        0 36px
+```
+
+Hover: background `var(--btn-premium-bg-hover)`
+
+---
+
+## Transiciones
+| Token | Valor | Uso |
+|---|---|---|
+| `--transition-fast` | 150ms ease | Hover de iconos |
+| `--transition-normal` | 200ms ease | Hover de botones |
+| `--transition-slow` | 300ms ease | Modales, animaciones |
+
+---
+
+## Reglas para agentes
+1. Nunca crear colores nuevos sin agregarlos a tokens.css
+2. Nunca usar hex directamente — siempre var(--token)
+3. Nunca usar #fff ni #000 puros
+4. El dorado es acento, no fondo
+5. Playfair Display solo para títulos de impacto
+6. Inter para todo lo demás
+7. Botones CTA: uppercase, 13px, weight 700, radius 2px
+8. En móvil: padding clamp(20px, 5vw, 80px)
+9. Colores edu-* solo en dashboard y gamificación
+10. Antes de crear componente: verificar si el token existe
+
+---
+
+## Archivos del sistema
+| Archivo | Contenido |
+|---|---|
+| `design-system/tokens.css` | Variables CSS — fuente de verdad |
+| `design-system/MASTER.md` | Este documento |
+| `src/app/components/marketing/tokens.ts` | Tokens JS para Framer Motion |
+| `src/styles/theme.css` | Integración Tailwind v4 + shadcn |
+| `src/styles/responsive.css` | Breakpoints |
+| `docs/skills/design/design-system-skill.md` | Skill compacto para agentes |
