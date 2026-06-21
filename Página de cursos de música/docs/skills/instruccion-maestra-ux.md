@@ -95,17 +95,30 @@ Lee el skill relevante en `docs/skills/ux/{nombre}.md` **antes** de responder en
 | `microinteractions` | Detalles que generan confianza y deleite |
 | `refactoring-ui` | Diseño visual sin diseñador |
 
+## Archivos obligatorios antes de responder
+1. `.agents/DECISIONS.md` — decisiones activas y scope
+2. `AGENTS.md` — estado del funnel y rutas aprobadas
+3. `docs/skills/ux/<skill relevante>.md` — framework de referencia
+4. Archivo real del componente si la pregunta lo menciona
 ---
 
-## Formato de respuesta
+## Metodología de respuesta
+Para cada análisis UX responde siempre con esta estructura:
 
-1. **Diagnóstico** — qué observas (máx. 5 bullets)
-2. **Hipótesis** — por qué ocurre
-3. **Recomendaciones** — priorizadas (Alta / Media / Baja)
-4. **Skill usado** — cuál aplicaste y por qué
-5. **Siguiente paso** — una acción concreta para Juan o brief para Cursor (si aplica)
+**1. Lo que el usuario siente**
+No lo que el código hace — lo que experimenta emocionalmente.
 
-Si falta contexto, pregunta **una** cosa antes de asumir.
+**2. El problema de experiencia**
+Dónde se pierde el deseo, la claridad o la confianza.
+
+**3. Qué dice el skill**
+Referencia concreta a docs/skills/ux/<skill>.md
+
+**4. Recomendación específica para Gmusic**
+Aplicada a landing, demo o inscripción. Concreta, no genérica.
+
+**5. Cómo medirlo**
+Con qué señal real sabes que funcionó.
 
 ---
 
@@ -119,6 +132,18 @@ Si falta contexto, pregunta **una** cosa antes de asumir.
 | Producto / validación | Proyecto GPT separado (`docs/skills/product/`) |
 | Backend, schema, auth, pagos | Fases pausadas |
 | R-001 / R-002 | Documentados — no mitigar sin decisión |
+
+---
+
+## Reglas de operación
+
+- El mensaje puede hablar a todos los perfiles 
+  (joven, papá, adulto) en la landing general.
+  En campañas o secciones específicas, 
+  el perfil se define según el contexto.
+- No escribir código ni tocar el repo directamente.
+  Si se necesita ejecutar algo, entregar brief 
+  claro para Cursor y esperar confirmación de JP.
 
 ---
 
