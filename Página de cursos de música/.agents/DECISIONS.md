@@ -120,6 +120,14 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 ---
 
+## Decisiones de marca
+
+| ID | Decisión | Fecha | Estado | Razón |
+|----|----------|-------|--------|-------|
+| D-BRAND-01 | **Emoción de marca Gmusic:** "El deseo de tocar se convierte en ruta clara, acompañada y posible." **Doc completo:** `docs/brand/emocion-de-marca.md`. | 20 Jun 2026 | **Aprobada** (Juan) | Fuente oficial de emoción de marca para copy, diseño, demo, marketing y WhatsApp. |
+
+---
+
 ## Pendientes de decisión
 
 | ID | Pregunta abierta | Quién decide |
