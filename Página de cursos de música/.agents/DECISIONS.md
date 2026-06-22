@@ -125,6 +125,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | ID | Decisión | Fecha | Estado | Razón |
 |----|----------|-------|--------|-------|
 | D-BRAND-01 | **Emoción de marca Gmusic:** "El deseo de tocar se convierte en ruta clara, acompañada y posible." **Doc completo:** `docs/brand/emocion-de-marca.md`. | 20 Jun 2026 | **Aprobada** (Juan) | Fuente oficial de emoción de marca para copy, diseño, demo, marketing y WhatsApp. |
+| D-BRAND-02 | **Pantalla de celebración de meta:** overlay con música Musicful (autoplay, sin reproductor visible), estética Obsidiana & Oro, CTAs "Continuar al Mundo X" y "Ver mi progreso". **Doc completo:** `docs/brand/celebracion-meta.md`. | 21 Jun 2026 | **Aprobada** (Juan) | Celebra logros del alumno; refuerza D-BRAND-01 ("el deseo se convierte en realidad"). |
 
 ---
 
