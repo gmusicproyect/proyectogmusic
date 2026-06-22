@@ -30,6 +30,7 @@ import { postDevLogout, shouldAcceptLogoutSubmission } from "./services/gmusic-a
 import { GmusicApiError } from "./services/gmusic-api/client";
 import { usePublicStudentSession } from "./hooks/usePublicStudentSession";
 import { analytics } from "./utils/analytics";
+import { flushPendingTemperamentQuizSync } from "./utils/temperament-quiz-storage";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
   getInitialPageFromPath,
@@ -198,6 +199,10 @@ export default function App() {
     if (criticalImages.length > 0) {
       preloadCriticalImages(criticalImages);
     }
+  }, []);
+
+  useEffect(() => {
+    void flushPendingTemperamentQuizSync();
   }, []);
 
   useEffect(() => {

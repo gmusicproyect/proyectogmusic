@@ -92,8 +92,15 @@ export function TemperamentQuizPage({
       instrumentSlug,
     });
 
-    saveTemperamentQuizResult(result);
-    analytics.temperamentQuizCompleted(result);
+    void saveTemperamentQuizResult(result, {
+      referrerPath: window.location.pathname,
+    }).then(({ persistedToDatabase }) => {
+      analytics.temperamentQuizCompleted(result);
+      if (!persistedToDatabase) {
+        analytics.temperamentQuizSyncFailed(result.session_id);
+      }
+    });
+
     goToDemo();
   };
 

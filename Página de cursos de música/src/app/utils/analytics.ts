@@ -52,4 +52,7 @@ export const analytics = {
 
   temperamentQuizSkipped: () =>
     enabled && posthog.capture("temperament_quiz_skipped"),
+
+  temperamentQuizSyncFailed: (sessionId: string) =>
+    enabled && posthog.capture("temperament_quiz_sync_failed", { session_id: sessionId }),
 };

@@ -42,6 +42,13 @@ enum SubscriptionStatus {
   CANCELED
 }
 
+enum TemperamentType {
+  sanguine
+  choleric
+  melancholic
+  phlegmatic
+}
+
 model User {
   id            String          @id @default(uuid())
   email         String          @unique
@@ -58,6 +65,7 @@ model User {
   xpEvents      XpEvent[]
   streakEvents  StreakEvent[]
   subscriptions Subscription[]
+  onboardingAnalytics OnboardingAnalytics[]
 }
 
 model GuardianLink {
@@ -235,4 +243,27 @@ model StreakEvent {
 
   @@unique([userId, eventDate])
   @@index([userId])
+}
+
+model OnboardingAnalytics {
+  id                    String           @id @default(uuid())
+  sessionId             String           @unique @map("session_id")
+  userId                String?          @map("user_id")
+  calculatedTemperament TemperamentType  @map("calculated_temperament")
+  scores                Json
+  isTie                 Boolean          @default(false) @map("is_tie")
+  totalDurationMs       Int              @map("total_duration_ms")
+  totalAnswerChanges    Int              @default(0) @map("total_answer_changes")
+  questionsAnswered     Int              @default(6) @map("questions_answered") @db.SmallInt
+  questionEvents        Json             @map("question_events")
+  instrumentSlug        String?          @map("instrument_slug")
+  referrerPath          String?          @map("referrer_path")
+  completedAt           DateTime         @map("completed_at")
+  createdAt             DateTime         @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([calculatedTemperament])
+  @@index([completedAt(sort: Desc)])
+  @@map("onboarding_analytics")
 }

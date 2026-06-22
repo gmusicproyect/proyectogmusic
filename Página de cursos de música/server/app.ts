@@ -5,6 +5,7 @@ import { devRouter } from "./routes/dev.js";
 import { healthRouter } from "./routes/health.js";
 import { lessonSessionsRouter } from "./routes/lessonSessions.js";
 import { meRouter } from "./routes/me.js";
+import { onboardingRouter } from "./routes/onboarding.js";
 
 export function createApp() {
   const app = express();
@@ -23,6 +24,7 @@ export function createApp() {
 
   app.use("/api/v1/health", healthRouter);
   app.use("/api/v1/me", meRouter);
+  app.use("/api/v1/onboarding", onboardingRouter);
   app.use("/api/v1/lesson-sessions", lessonSessionsRouter);
   app.use("/api/v1/dev", devRouter);
 
