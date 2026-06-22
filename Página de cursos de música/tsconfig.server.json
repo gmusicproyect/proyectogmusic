@@ -13,5 +13,5 @@
     "rootDir": ".",
     "types": ["node"]
   },
-  "include": ["server/**/*.ts", "prisma/add-calendar-months.ts"]
+  "include": ["server/**/*.ts", "prisma/add-calendar-months.ts", "sentry.server.config.ts", "sentry.server.instrument.ts"]
 }

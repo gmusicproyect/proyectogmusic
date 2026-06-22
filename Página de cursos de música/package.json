@@ -9,7 +9,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:new-student": "tsx prisma/seed-new-student.ts",
     "prisma:generate": "prisma generate",
-    "api:dev": "tsx --env-file=.env server/index.ts",
+    "api:dev": "tsx --env-file=.env --import ./sentry.server.instrument.ts server/index.ts",
     "app:typecheck": "tsc -p tsconfig.app.json --noEmit",
     "api:typecheck": "tsc -p tsconfig.server.json --noEmit",
     "api:test": "node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
@@ -48,6 +48,8 @@
     "@radix-ui/react-toggle": "1.1.2",
     "@radix-ui/react-toggle-group": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.8",
+    "@sentry/node": "^10.59.0",
+    "@sentry/react": "^10.59.0",
     "canvas-confetti": "1.9.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -77,6 +79,7 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@sentry/vite-plugin": "^5.3.0",
     "@tailwindcss/vite": "4.1.12",
     "@types/express": "^4.17.21",
     "@types/node": "^22.19.20",

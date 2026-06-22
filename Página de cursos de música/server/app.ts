@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import express from "express";
 import { ApiError, errorBody } from "./lib/errors.js";
 import { devRouter } from "./routes/dev.js";
@@ -29,6 +30,10 @@ export function createApp() {
     res.status(404).json(errorBody("INTERNAL_ERROR", "Ruta no encontrada."));
   });
 
+  if (process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    Sentry.setupExpressErrorHandler(app);
+  }
+
   app.use(
     (
       err: unknown,
@@ -41,6 +46,9 @@ export function createApp() {
       }
 
       console.error("[api]", err);
+      if (process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN) {
+        Sentry.captureException(err);
+      }
       return res.status(500).json(errorBody("INTERNAL_ERROR", "Error interno del servidor."));
     }
   );
