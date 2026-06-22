@@ -72,8 +72,10 @@ describe("PathDemoPage — camino demo público", () => {
     assert.equal(appSource.includes("InscripcionGatePage"), true);
   });
 
-  it("InteractiveLevelSelector navega al camino demo", () => {
-    assert.equal(selectorSource.includes('setPage("mi-camino-demo")'), true);
+  it("InteractiveLevelSelector navega al quiz o al camino demo", () => {
+    assert.equal(selectorSource.includes("shouldShowTemperamentQuiz"), true);
+    assert.equal(selectorSource.includes('"onboarding-quiz"'), true);
+    assert.equal(selectorSource.includes('"mi-camino-demo"'), true);
   });
 
   it("PathDemoPage conecta clases demo y CTA de planes", () => {

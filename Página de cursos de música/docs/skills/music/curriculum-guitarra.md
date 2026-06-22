@@ -23,7 +23,7 @@ AVANZADO (en desarrollo — fase futura)
 ---
 
 ## NIVEL 1 — Básico
-> Objetivo: el alumno toca su primera canción completa con acordes reales,
+> Objetivo: el alumno toca su primera progresión completa con acordes reales,
 > entiende las 12 notas y puede leer diagramas de acordes y tablaturas.
 
 ### Módulo 1 — El instrumento
@@ -57,10 +57,10 @@ AVANZADO (en desarrollo — fase futura)
 - Relación entre escala mayor y menor relativa
 - Ejercicios de dedo: coordinación mano izquierda y derecha
 
-### Módulo 6 — Primera canción completa
-- Canción con 3–4 acordes del módulo 3
+### Módulo 6 — Primera progresión completa
+- Progresión I–IV–V con 3–4 acordes del módulo 3 en estilo pop/rock
 - Aplicación del ritmo del módulo 4
-- Resultado medible: el alumno toca la canción de principio a fin
+- Resultado medible: el alumno toca la progresión de principio a fin
 
 ### Resultado al terminar el básico
 ```
@@ -68,7 +68,7 @@ AVANZADO (en desarrollo — fase futura)
 ✅ Toca acordes mayores y menores básicos
 ✅ Entiende el compás de 4/4
 ✅ Conoce escala mayor y menor
-✅ Tocó su primera canción completa
+✅ Tocó su primera progresión completa en estilo
 ✅ Puede leer diagramas de acordes y tablaturas simples
 ```
 
@@ -103,21 +103,21 @@ AVANZADO (en desarrollo — fase futura)
 - Mayor = alegría, energía, resolución
 - Menor = melancolía, profundidad, tensión
 - Progresiones que generan cada emoción:
-  - Canción alegre: I–IV–V–I en mayor
-  - Canción triste: Im–VIb–IIIb–VII
-  - Canción de júbilo: I–V–VI–IV
+  - Estilo alegre: I–IV–V–I en mayor
+  - Estilo melancólico: Im–VIb–IIIb–VII
+  - Estilo de júbilo: I–V–VI–IV
   - Tensión dramática: acorde disminuido como puente
 - Ejercicio: el alumno elige una emoción y construye una progresión
 
 ### Módulo 11 — Armonía aplicada
-- Cómo analizar una canción conocida con grados
-- Transportar una canción a otra tonalidad
+- Cómo analizar una progresión típica de un estilo usando grados
+- Transportar una progresión a otra tonalidad
 - Crear un acompañamiento propio para una melodía dada
 - Introducción al cifrado americano (Am, G, F, C)
 
-### Módulo 12 — Repertorio intermedio
-- 2–3 canciones que usen acordes partidos y extendidos
-- 1 canción compuesta por el alumno usando los grados
+### Módulo 12 — Repertorio por estilos
+- 2–3 progresiones en estilos pop, rock y balada con acordes partidos y extendidos
+- 1 progresión compuesta por el alumno usando los grados
 - Resultado medible: el alumno explica por qué eligió cada acorde
 
 ### Resultado al terminar el intermedio
@@ -126,7 +126,7 @@ AVANZADO (en desarrollo — fase futura)
 ✅ Conoce y usa sus4, sus2, 7ma, 9na, aumentados, disminuidos
 ✅ Entiende los grados y la progresión I–IV–V–I
 ✅ Puede crear música según la emoción que quiere transmitir
-✅ Analiza canciones conocidas por sus grados
+✅ Analiza progresiones por estilo y grados
 ✅ Compuso su primera progresión propia
 ```
 
@@ -147,7 +147,7 @@ Cada módulo sigue este patrón:
 1. Concepto    → qué es y por qué importa (video corto)
 2. Demostración → el profesor lo toca (video)
 3. Ejercicio   → el alumno practica con guía
-4. Canción     → aplica el concepto en música real
+4. Aplicación  → aplica el concepto en un estilo o progresión
 5. Verificación → el alumno demuestra que lo logró
 ```
 
@@ -163,7 +163,7 @@ Eso es lo que crea la sensación de progreso real.
 | Las 12 notas | ✅ | ✅ | ✅ |
 | Acordes mayores/menores | ✅ | ✅ | ✅ |
 | Escala mayor/menor | ✅ | ✅ | ✅ |
-| Primera canción | ✅ | ✅ | ✅ |
+| Primera progresión completa | ✅ | ✅ | ✅ |
 | Acordes partidos | — | ✅ | ✅ |
 | Acordes extendidos | — | ✅ | ✅ |
 | Grados y armonía | — | ✅ | ✅ |
@@ -188,8 +188,8 @@ Eso es lo que crea la sensación de progreso real.
 
 > "Con disciplina de lunes a viernes, en 6 meses un alumno puede conocer
 > las 12 notas, tocar acordes mayores y menores, entender escala mayor
-> y menor, y tocar una canción completa. Con eso ya tiene un mundo de
-> ejercicios y canciones por delante."
+> y menor, y tocar una progresión completa en estilo. Con eso ya tiene un mundo de
+> ejercicios y estilos por delante."
 >
 > El avanzado se construye cuando tengamos alumnos reales en intermedio.
 > Ellos nos dirán qué necesitan después.

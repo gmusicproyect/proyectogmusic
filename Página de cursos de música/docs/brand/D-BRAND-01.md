@@ -51,4 +51,3 @@ sintiendo que puede hacer algo que ayer no podía.
 **Marketing:** No vender clases. 
 Despertar el deseo dormido.
 **WhatsApp:** Acompañamiento humano, no cierre de venta.
----

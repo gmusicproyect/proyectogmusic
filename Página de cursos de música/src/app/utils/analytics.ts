@@ -1,4 +1,5 @@
 import posthog from "posthog-js";
+import type { TemperamentQuizResult } from "../data/temperament-quiz";
 
 const enabled = Boolean(import.meta.env?.VITE_POSTHOG_KEY);
 
@@ -37,4 +38,18 @@ export const analytics = {
   whatsappCtaClicked: (intent: "inscripcion" | "dudas", planId: string) =>
     enabled &&
     posthog.capture("whatsapp_cta_clicked", { intent, plan_id: planId }),
+
+  temperamentQuizCompleted: (result: TemperamentQuizResult) =>
+    enabled &&
+    posthog.capture("temperament_quiz_completed", {
+      calculated_temperament: result.calculated_temperament,
+      is_tie: result.is_tie,
+      total_duration_ms: result.total_duration_ms,
+      total_answer_changes: result.total_answer_changes,
+      scores: result.scores,
+      session_id: result.session_id,
+    }),
+
+  temperamentQuizSkipped: () =>
+    enabled && posthog.capture("temperament_quiz_skipped"),
 };

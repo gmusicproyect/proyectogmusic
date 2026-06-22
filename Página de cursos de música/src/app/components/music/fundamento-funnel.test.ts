@@ -198,8 +198,10 @@ describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
     assert.equal(selectorSource.includes("focusTitle"), true);
   });
 
-  it("Fundamento Básico abre el camino demo público", () => {
-    assert.equal(selectorSource.includes('setPage("mi-camino-demo")'), true);
+  it("Fundamento Básico abre el quiz de onboarding o el camino demo", () => {
+    assert.equal(selectorSource.includes("shouldShowTemperamentQuiz"), true);
+    assert.equal(selectorSource.includes('"onboarding-quiz"'), true);
+    assert.equal(selectorSource.includes('"mi-camino-demo"'), true);
     assert.equal(selectorSource.includes("isFreeClassTrack"), true);
     assertNoForbiddenNavigation(selectorSource, "InteractiveLevelSelector");
   });
