@@ -185,3 +185,14 @@ El demo estructurado de forma tradicional (Introducción → Anatomía → Ejerc
 ### Dependencias
 - D-PROD-01 (quiz de temperamento debe estar implementado primero)
 - D-BRAND-02 (pantalla de celebración)
+---
+## D-PROD-03 — Gobernanza del Comportamiento y Reengagement
+- **Fecha:** 2026-06-22
+- **Estado:** Aprobado
+- **Área:** Producto / Retención
+### Contexto
+Necesitamos monitorear el comportamiento del usuario y su riesgo de abandono (basado en el temperamento calculado) sin sobreingeniería inicial.
+### Decisión
+Implementar un modelo de gobernanza híbrido (Humano-Agente) con una ruta de maduración en dos fases.
+* **Fase 1 (Manual - Primeros 100 usuarios):** Un script en Node.js detecta desviaciones en PostgreSQL (abandono temprano). El sistema alerta al fundador. La acción de reengagement se realiza enviando manualmente plantillas de WhatsApp personalizadas por temperamento.
+* **Fase 2 (Automatizada - Escala):** Un webhook conectado a la API de WhatsApp Business inyectará mensajes de reengagement asíncronos directamente cuando los eventos del backend detecten riesgo.
