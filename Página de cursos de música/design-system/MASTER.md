@@ -106,6 +106,35 @@ Hover: background `var(--btn-premium-bg-hover)`
 
 ---
 
+## Excepciones aprobadas
+
+### Hero cinematográfico (HeroSection.tsx)
+El Hero es una zona de excepción oficial al sistema 
+estándar. Tiene sus propias reglas que NO aplican 
+al resto de la landing:
+- Tipografía: usa bebas-neue-pro para el texto 
+  principal visible. Intencional — impacto de marca 
+  en el primer pantallazo.
+- Animación: scroll progress, zoom de logo 
+  (scale 1→2.75 desktop, 1→1.6 móvil), opacity 
+  transforms, glow dorado y sticky de 160vh.
+  Va contra la regla "solo fade-in" pero está 
+  aprobado como experiencia cinematográfica de entrada.
+- Overlay y fondos: gradientes y rgba inline propios.
+  No requiere tokens CSS para estos efectos.
+
+Regla para agentes: no corregir HeroSection.tsx 
+para alinearlo al sistema estándar. Es una excepción 
+documentada y aprobada. Cualquier cambio al Hero 
+requiere aprobación explícita de JP.
+
+### Pantalla de celebración de meta (D-BRAND-02)
+Diseño aprobado en docs/brand/celebracion-meta.md.
+No modificar sin aprobación de JP.
+Audio generado en Musicful — ver docs/brand/musicful-uso.md
+
+---
+
 ## Archivos del sistema
 | Archivo | Contenido |
 |---|---|
