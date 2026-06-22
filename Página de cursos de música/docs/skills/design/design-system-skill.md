@@ -60,3 +60,18 @@ design-system/MASTER.md     → guía completa de uso
 src/styles/responsive.css   → breakpoints
 src/styles/theme.css        → integración Tailwind
 ```
+---
+## Conexión con marca
+Antes de construir cualquier componente nuevo, leer:
+- docs/brand/emocion-de-marca.md → D-BRAND-01
+  "El deseo de tocar se convierte en realidad"
+  Todo componente debe servir a esa emoción.
+- docs/brand/celebracion-meta.md → D-BRAND-02
+  Diseño oficial de pantalla de celebración.
+  No modificar sin aprobación de JP.
+- docs/brand/musicful-uso.md
+  Cómo se integra el audio en Gmusic.
+## Hero — excepción aprobada
+HeroSection.tsx tiene reglas propias documentadas
+en design-system/MASTER.md bajo ## Excepciones aprobadas.
+No "corregir" el Hero para alinearlo al sistema estándar.
