@@ -138,3 +138,50 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | ~~P-004~~ | ~~Fase 3.5b: ¿Autorizar redirección handleSemestralPlanSelect post-auditoría?~~ | ✅ Cerrado — implementado Jun 2026 (D-025 Opción B) |
 | P-005 | ¿Patch pedagógico ExPulsoAire? Clase 4: cuerdas alternadas 6/5/4 vs solo cuerda 6. Clase 5: 15 beats con silencios vs 10 sin silencios. | Juan |
 | D-GOV-04 | Pedagogía 6–75: ¿skill-graph guitarra (YAML) antes de títulos reales 6–15? | Juan |
+
+---
+
+## D-PROD-01 — Onboarding con detección de temperamento
+- **Fecha:** 2026-06-22
+- **Estado:** Aprobado
+- **Área:** Producto / Onboarding
+### Decisión
+Implementar un quiz de 6 preguntas situacionales antes del demo de 5 clases gratuitas para detectar el temperamento predominante del alumno (sanguíneo, colérico, melancólico, flemático).
+### Propósito
+Recolección de datos para segmentación conductual. No se usa para personalización inmediata — los datos se correlacionan con comportamiento real a 6-12 meses para predecir abandono y adaptar mensajes.
+### Implementación
+- 6 preguntas situacionales en español chileno
+- Telemetría: tiempo por pregunta, cambios de respuesta, duración total
+- Algoritmo simple: temperamento con más respuestas = tag asignado
+- Tabla PostgreSQL: `onboarding_analytics`
+- Ver spec completo: `docs/product/quiz-temperamento.md`
+- Ver schema: `docs/architecture/onboarding-analytics.sql`
+- Ver queries: `docs/product/query-validacion-temperamento.sql`
+### Hipótesis principal
+Sanguíneo será el temperamento dominante (mayor volumen de registros, mayor riesgo de abandono semana 1-2). Flemático será el segundo con mayor retención y LTV.
+### Plan de validación
+- Correr query de validación al llegar a 100 usuarios
+- Ver `docs/product/query-validacion-temperamento.sql`
+---
+## D-PROD-02 — Rediseño del demo priorizando perfil Sanguíneo
+- **Fecha:** 2026-06-22
+- **Estado:** Aprobado
+- **Área:** Producto / Demo
+### Decisión
+Rediseñar el orden y estructura de las 5 clases gratis para entregar una victoria musical en los primeros 7 minutos, optimizado para el temperamento Sanguíneo que será el perfil dominante.
+### Problema detectado
+El demo estructurado de forma tradicional (Introducción → Anatomía → Ejercicios → Melodía) es un repelente de Sanguíneos. Para la clase 3 su cerebro asocia la plataforma con "tarea escolar" y abandona.
+### Cambios requeridos
+**1. Orden inverso del demo:**
+- Antes: Clase 1 = "Postura y partes de la guitarra"
+- Ahora: Clase 1 = "Toca tu primer clásico del rock en 5 minutos" (usando 2 dedos o 1 acorde simplificado)
+**2. Micro-progreso visual al terminar Clase 1:**
+- Modal de celebración usando tokens CSS del design system (dorado sobre oscuro)
+- Copy: "¡Nivel 1 Desbloqueado! Ya manejas el 20% del tema. Estás a 4 clases de tocarlo completo."
+- Ver D-BRAND-02 para referencia de pantalla de celebración
+**3. CTA diferenciado para Sanguíneo detectado:**
+- Al terminar Clase 2, si `calculated_temperament = 'sanguine'`:
+- CTA directo a WhatsApp: "¡Buena! Te salió increíble. Escríbenos aquí para mandarte la pista de fondo oficial y tocar con una banda real de fondo hoy mismo."
+### Dependencias
+- D-PROD-01 (quiz de temperamento debe estar implementado primero)
+- D-BRAND-02 (pantalla de celebración)
