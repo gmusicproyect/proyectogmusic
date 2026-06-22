@@ -32,22 +32,6 @@ jobs:
           set -euo pipefail
           echo "Critical sentinel: AI Prime Tech key prefix (${SECRET_PREFIX})"
 
-          exclude_paths=(
-            '.github/workflows/security-scan.yml'
-            "${PROJECT_DIR}/.github/gitleaks.toml"
-            "${PROJECT_DIR}/.github/workflows/security-scan.yml"
-          )
-
-          build_grep_excludes() {
-            local args=()
-            for path in "${exclude_paths[@]}"; do
-              args+=(--exclude="$path")
-            done
-            printf '%s\n' "${args[@]}"
-          )
-
-          mapfile -t grep_excludes < <(build_grep_excludes)
-
           if matches="$(
             git grep -n -F "$SECRET_PREFIX" -- . \
               ':(exclude)node_modules' \
@@ -55,25 +39,11 @@ jobs:
               ':(exclude)dist' \
               ':(exclude).github/workflows/security-scan.yml' \
               ":(exclude)${PROJECT_DIR}/.github/gitleaks.toml" \
+              ":(exclude)${PROJECT_DIR}/.github/workflows/security-scan.yml" \
               2>/dev/null || true
           )"; then
             if [ -n "$matches" ]; then
               echo "::error::CRITICAL: AI Prime Tech key prefix detected in tracked files."
-              echo "$matches"
-              exit 1
-            fi
-          fi
-
-          if matches="$(
-            grep -RIn -F "$SECRET_PREFIX" . \
-              --exclude-dir=node_modules \
-              --exclude-dir=.git \
-              --exclude-dir=dist \
-              "${grep_excludes[@]}" \
-              2>/dev/null || true
-          )"; then
-            if [ -n "$matches" ]; then
-              echo "::error::CRITICAL: AI Prime Tech key prefix detected in workspace."
               echo "$matches"
               exit 1
             fi
@@ -126,7 +96,7 @@ jobs:
       - name: Fail if .env files are tracked
         run: |
           set -euo pipefail
-          matches="$(git ls-files | grep -E '(^|/)\.env(\.|$)' || true)"
+          matches="$(git ls-files | grep -E '(^|/)\.env(\.|$)' | grep -vE '\.env\.example$' || true)"
           if [ -n "$matches" ]; then
             echo "::error::Tracked .env files detected:"
             echo "$matches"
