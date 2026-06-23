@@ -133,6 +133,12 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
     assert.equal(registroSource.includes("email"), true);
   });
 
+  it("vincula session_id del quiz con email vía API antes de WhatsApp", () => {
+    assert.equal(registroSource.includes("getOrCreateOnboardingSessionId"), true);
+    assert.equal(registroSource.includes("linkOnboardingLead"), true);
+    assert.match(registroSource, /onboarding\/link-lead|link-onboarding-lead/);
+  });
+
   it("mensaje de WhatsApp menciona el nombre del tier y período seleccionados", () => {
     assert.equal(registroSource.includes("tier.name"), true);
     assert.equal(registroSource.includes("period.label"), true);

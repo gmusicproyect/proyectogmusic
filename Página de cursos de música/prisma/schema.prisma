@@ -258,6 +258,9 @@ model OnboardingAnalytics {
   questionEvents        Json             @map("question_events")
   instrumentSlug        String?          @map("instrument_slug")
   referrerPath          String?          @map("referrer_path")
+  email                 String?          @map("email")
+  leadCapturedAt        DateTime?        @map("lead_captured_at")
+  selectedPlanId        String?          @map("selected_plan_id")
   completedAt           DateTime         @map("completed_at")
   createdAt             DateTime         @default(now()) @map("created_at")
 
@@ -265,5 +268,6 @@ model OnboardingAnalytics {
 
   @@index([calculatedTemperament])
   @@index([completedAt(sort: Desc)])
+  @@index([email])
   @@map("onboarding_analytics")
 }

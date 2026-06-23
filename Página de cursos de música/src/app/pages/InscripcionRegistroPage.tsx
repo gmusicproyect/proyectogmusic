@@ -11,6 +11,8 @@ import {
 import type { PlanId } from "../data/subscription-plans";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
 import { analytics } from "../utils/analytics";
+import { getOrCreateOnboardingSessionId } from "../utils/temperament-quiz-storage";
+import { linkOnboardingLead } from "../services/gmusic-api/link-onboarding-lead";
 
 // Formato wa.me: código país + número, sin "+" ni espacios (ej. "56912345678")
 const WHATSAPP_NUMBER = "56953429676";
@@ -152,6 +154,16 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     analytics.whatsappCtaClicked("inscripcion", planId);
+
+    const sessionId = getOrCreateOnboardingSessionId();
+    void linkOnboardingLead({
+      sessionId,
+      email,
+      planId,
+    }).catch(() => {
+      // El puente WhatsApp sigue aunque falle la persistencia del lead.
+    });
+
     window.open(
       buildWhatsappUrl(
         tier.name,

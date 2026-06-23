@@ -33,6 +33,9 @@ CREATE TABLE onboarding_analytics (
   -- Contexto funnel
   instrument_slug       TEXT NULL,
   referrer_path         TEXT NULL,
+  email                 TEXT NULL,
+  lead_captured_at      TIMESTAMPTZ NULL,
+  selected_plan_id      TEXT NULL,
 
   completed_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -52,4 +55,9 @@ CREATE INDEX idx_onboarding_analytics_completed_at
   ON onboarding_analytics (completed_at DESC);
 
 COMMENT ON TABLE onboarding_analytics IS
-  'Quiz de temperamento pre-demo (D-PROD-01). Segmentación conductual; no personalización inmediata.';
+  'Quiz de temperamento pre-demo (D-PROD-01). Segmentación conductual; email vinculado en gate (T3).';
+
+-- Trazabilidad lead (T3):
+-- SELECT email, calculated_temperament, session_id, lead_captured_at
+-- FROM onboarding_analytics
+-- WHERE email = 'alumno@example.com';
