@@ -55,7 +55,8 @@ npm run build
 | Variable | Producción | Notas |
 |----------|------------|-------|
 | `DATABASE_URL` | Postgres gestionado (Supabase/Neon/Railway) | **Obligatorio** para quiz en BD |
-| `API_PORT` | Puerto del proceso | Según host |
+| `API_PORT` | Puerto del proceso | Según host; Render usa `PORT` (10000) o `API_PORT` |
+| `CORS_ALLOWED_ORIGINS` | Orígenes del frontend separados por coma | **Obligatorio** si API y web están en dominios distintos |
 | `SENTRY_DSN` | DSN backend | Opcional |
 | `SENTRY_ENVIRONMENT` | `production` | |
 
@@ -152,7 +153,13 @@ npm run build
 - [ ] `GET /api/v1/health` responde 200
 - [ ] `POST /api/v1/onboarding/temperament-quiz` acepta payload válido (ver `server/tests/onboarding-analytics.test.ts`)
 
-Si frontend y API están en dominios distintos, configurar CORS en el API antes del go-live (fuera de scope de este ticket si ya comparten origen vía proxy).
+Si frontend y API están en dominios distintos, configurar **CORS** en Render:
+
+| Variable | Valor ejemplo |
+|----------|----------------|
+| `CORS_ALLOWED_ORIGINS` | `https://proyectogmusic.vercel.app,http://localhost:5173` |
+
+Verificar: `npm run deploy:verify-production` (preflight quiz debe reflejar el origen Vercel).
 
 ---
 
@@ -212,6 +219,64 @@ LIMIT 5;
 | `docs/product/quiz-temperamento.md` | Quiz D-PROD-01 |
 | `docs/architecture/backend-provider-options.md` | Proveedores Postgres |
 | `.agents/DECISIONS.md` | D-GOV-02, D-GOV-03, D-PROD-01 |
+
+---
+
+## 8. Cierre T1 — producción Gmusic (Jun 2026)
+
+### URLs
+
+| Pieza | URL |
+|-------|-----|
+| Frontend | https://proyectogmusic.vercel.app |
+| API | https://gmusic-api.onrender.com |
+| Health | https://gmusic-api.onrender.com/api/v1/health |
+| BD | Supabase → `onboarding_analytics` |
+
+### Render — Environment (API)
+
+| Variable | Valor |
+|----------|--------|
+| `DATABASE_URL` | Supabase pooler (`aws-1-us-east-1`) |
+| `NODE_ENV` | `production` |
+| `CORS_ALLOWED_ORIGINS` | `https://proyectogmusic.vercel.app,http://localhost:5173` |
+
+Build / Start (Root Directory vacío):
+
+```bash
+cd "Página de cursos de música" && npm install && npm run prisma:generate
+cd "Página de cursos de música" && npx tsx --import ./sentry.server.instrument.ts server/index.ts
+```
+
+### Vercel — Environment (frontend)
+
+| Variable | Valor |
+|----------|--------|
+| `VITE_API_BASE_URL` | `https://gmusic-api.onrender.com/api/v1` |
+| `VITE_POSTHOG_KEY` | Key proyecto US |
+| `VITE_POSTHOG_HOST` | `https://us.i.posthog.com` |
+
+Tras cambiar variables → **Redeploy** obligatorio.
+
+### Verificación automatizada
+
+```bash
+npm run deploy:verify-config      # repo local
+npm run deploy:verify-production  # smoke prod (rutas + health + CORS)
+```
+
+### Estado cierre
+
+- [x] API live + `database: connected`
+- [x] Rutas SPA Vercel (200 en `/`, `/mi-camino-demo`, `/inscripcion`, etc.)
+- [x] Quiz → fila en `onboarding_analytics`
+- [ ] `CORS_ALLOWED_ORIGINS` en Render + redeploy API (código CORS en repo)
+- [ ] `VITE_POSTHOG_KEY` en Vercel + redeploy frontend
+- [ ] `npm run deploy:verify-production` en verde tras CORS
+
+### Futuro (fuera T1)
+
+Migración a **DonWeb Cloud 2 vCPU + Coolify** cuando haya alumnos de pago (~$7.123 CLP/mes anual).
 
 ---
 

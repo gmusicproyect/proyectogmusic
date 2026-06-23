@@ -13,6 +13,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:status": "prisma migrate status",
     "deploy:verify-config": "node scripts/verify-deploy-track-a.mjs",
+    "deploy:verify-production": "node scripts/verify-production-t1.mjs",
+    "db:test-connection": "node --env-file=.env scripts/test-db-connection.mjs",
     "api:dev": "tsx --env-file=.env --import ./sentry.server.instrument.ts server/index.ts",
     "app:typecheck": "tsc -p tsconfig.app.json --noEmit",
     "api:typecheck": "tsc -p tsconfig.server.json --noEmit",

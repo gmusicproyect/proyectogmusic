@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import express from "express";
+import { createCorsMiddleware } from "./lib/cors.js";
 import { ApiError, errorBody } from "./lib/errors.js";
 import { devRouter } from "./routes/dev.js";
 import { healthRouter } from "./routes/health.js";
@@ -11,6 +12,7 @@ export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
+  app.use(createCorsMiddleware());
   app.use(express.json());
 
   app.get("/", (_req, res) => {
