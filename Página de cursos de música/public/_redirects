@@ -1,0 +1,5 @@
+# SPA fallback — funnel demo (D-GOV-02/03) + zona alumno
+# Netlify / Cloudflare Pages leen este archivo desde dist/ tras `vite build`.
+# Vercel usa vercel.json en la raíz del repo.
+
+/*    /index.html   200
