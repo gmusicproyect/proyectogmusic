@@ -3,7 +3,25 @@ import type { TemperamentQuizResult } from "../data/temperament-quiz";
 
 const enabled = Boolean(import.meta.env?.VITE_POSTHOG_KEY);
 
+function capturePagePath(pathname: string): string {
+  if (pathname.startsWith("http://") || pathname.startsWith("https://")) {
+    return pathname;
+  }
+  const path = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  if (typeof window === "undefined") return path;
+  return `${window.location.origin}${path}`;
+}
+
 export const analytics = {
+  /** SPA: registrar vista cuando cambia currentPage / pathname público. */
+  pageViewed: (pathname: string, pageId?: string) => {
+    if (!enabled) return;
+    posthog.capture("$pageview", {
+      $current_url: capturePagePath(pathname),
+      ...(pageId ? { gmusic_page: pageId } : {}),
+    });
+  },
+
   demoCtaClicked: () =>
     enabled && posthog.capture("demo_cta_clicked"),
 

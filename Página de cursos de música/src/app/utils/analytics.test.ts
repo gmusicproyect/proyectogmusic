@@ -26,8 +26,9 @@ function collectSourceFiles(dir: string, acc: string[] = []): string[] {
 }
 
 describe("analytics — PostHog funnel", () => {
-  it("exporta las 11 funciones del funnel", () => {
+  it("exporta las 12 funciones del funnel", () => {
     const fnNames = [
+      "pageViewed",
       "demoCtaClicked",
       "semestralCtaClicked",
       "demoLessonCompleted",
@@ -43,6 +44,7 @@ describe("analytics — PostHog funnel", () => {
     for (const name of fnNames) {
       assert.ok(analyticsSource.includes(`${name}:`), `analytics debe exportar ${name}`);
     }
+    assert.ok(analyticsSource.includes('posthog.capture("$pageview"'));
   });
 
   it("cada página del funnel importa analytics", () => {

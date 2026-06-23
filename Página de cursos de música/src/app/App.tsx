@@ -36,6 +36,7 @@ import {
   getInitialPageFromPath,
   initStudentZoneRouting,
   navigateStudentZoneAware,
+  pathnameForPage,
 } from "./utils/student-zone-routing";
 import type { Album, Course, Track, UserData } from "./types/music-app";
 import "../styles/animations.css";
@@ -209,6 +210,13 @@ export default function App() {
     const cleanup = initStudentZoneRouting(setCurrentPage);
     return cleanup;
   }, []);
+
+  useEffect(() => {
+    const pathname =
+      pathnameForPage(currentPage) ??
+      (currentPage === "home" ? "/" : window.location.pathname);
+    analytics.pageViewed(pathname, currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     if (hasAppliedAuthenticatedLandingRef.current) return;
