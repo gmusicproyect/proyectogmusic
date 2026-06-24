@@ -2,6 +2,7 @@
 
 **Tickets:** T3 captura de leads · T3.5 reset embudo anónimo  
 **Gobernanza:** D-GOV-10, R-OPS-01  
+**Fix submit aprobado:** `900f1f4` — FormData + `await linkOnboardingLead` + reset al final  
 **Prerequisito:** push a `main` + redeploy Vercel + API Render activa
 
 > **No declarar T3/T3.5 cerrados** hasta completar todas las casillas.  
@@ -20,7 +21,7 @@
 
 ## 1. Flujo manual (incógnito)
 
-Usar email único: `test-t3-YYYYMMDD@gmusic.cl`
+Usar email único: `test-t3-YYYYMMDD@gmusic.cl` (esta corrida: `test-t3-20260624@gmusic.cl`)
 
 | Paso | Acción | OK si… |
 |------|--------|--------|
@@ -28,7 +29,7 @@ Usar email único: `test-t3-YYYYMMDD@gmusic.cl`
 | 2 | Completar quiz (6 preguntas) | Llega a `/mi-camino-demo` |
 | 3 | Completar **5 clases** demo | Banner 5/5 + gate desbloqueado |
 | 4 | `/inscripcion` → elegir plan → registro | Formulario visible |
-| 5 | Enviar formulario | WhatsApp se abre; mensaje éxito |
+| 5 | Enviar formulario con email de prueba | WhatsApp se abre; **mensaje usa el mismo email visible del formulario** (no email autofill viejo); mensaje éxito en página |
 | 6 | Pulsar **「Repetir quiz y clases gratis」** | Vuelve a quiz o camino en 0/5 |
 | 7 | DevTools → `localStorage` | `gmusic:demo_v1` = null tras envío |
 
@@ -90,8 +91,9 @@ Marcar cuando todo esté verde:
 
 ```
 T3  — CERRADO · fecha · responsable · email prueba usado
-T3.5 — CERRADO · fecha · commit SHA en main
+T3.5 — CERRADO · fecha · commit SHA 900f1f4 en main
 T4  — NO INICIADO (bloqueado hasta arriba)
+D-GOV-11 — Evaluar antes de T4 o como T3.6 (acceso gratis pre-demo)
 ```
 
 Registrar en handoff o `.agents/DECISIONS.md` si aplica.
