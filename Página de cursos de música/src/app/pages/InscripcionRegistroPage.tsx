@@ -11,7 +11,10 @@ import {
 import type { PlanId } from "../data/subscription-plans";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
 import { analytics } from "../utils/analytics";
-import { getOrCreateOnboardingSessionId } from "../utils/temperament-quiz-storage";
+import {
+  getOrCreateOnboardingSessionId,
+  readTemperamentQuizResult,
+} from "../utils/temperament-quiz-storage";
 import { linkOnboardingLead } from "../services/gmusic-api/link-onboarding-lead";
 import { resetAnonymousFunnelAfterLeadCapture, anonymousFunnelRestartPage } from "../utils/anonymous-funnel-storage";
 
@@ -19,6 +22,36 @@ import { resetAnonymousFunnelAfterLeadCapture, anonymousFunnelRestartPage } from
 const WHATSAPP_NUMBER = "56953429676";
 
 const SELECTED_PLAN_KEY = "gmusic:selected_plan_v1";
+
+interface InscripcionLeadFormValues {
+  nombre: string;
+  email: string;
+  whatsapp: string;
+  tipoDoc: "boleta" | "factura";
+  rut: string;
+  razonSocial: string;
+  direccion: string;
+}
+
+function readLeadFromForm(form: HTMLFormElement): InscripcionLeadFormValues {
+  const fd = new FormData(form);
+  const tipoDocRaw = fd.get("tipoDoc");
+  return {
+    nombre: String(fd.get("nombre") ?? "").trim(),
+    email: String(fd.get("email") ?? "").trim().toLowerCase(),
+    whatsapp: String(fd.get("whatsapp") ?? "").trim(),
+    tipoDoc: tipoDocRaw === "factura" ? "factura" : "boleta",
+    rut: String(fd.get("rut") ?? "").trim(),
+    razonSocial: String(fd.get("razonSocial") ?? "").trim(),
+    direccion: String(fd.get("direccion") ?? "").trim(),
+  };
+}
+
+function resolveOnboardingSessionIdForLead(): string {
+  const quizSessionId = readTemperamentQuizResult()?.session_id?.trim();
+  if (quizSessionId && quizSessionId.length >= 8) return quizSessionId;
+  return getOrCreateOnboardingSessionId();
+}
 
 function readSelectedPlan(): PlanId {
   try {
@@ -143,6 +176,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
   const [rut, setRut] = useState("");
   const [razonSocial, setRazonSocial] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -152,38 +186,49 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
     analytics.registroViewed(planId);
   }, [planId]);
 
-  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    analytics.whatsappCtaClicked("inscripcion", planId);
+    if (isSubmitting) return;
 
-    const sessionId = getOrCreateOnboardingSessionId();
-    void linkOnboardingLead({
-      sessionId,
-      email,
-      planId,
-    }).catch(() => {
+    const form = e.currentTarget;
+    const currentLead = readLeadFromForm(form);
+    const currentPlanId = readSelectedPlan();
+    const sessionId = resolveOnboardingSessionIdForLead();
+    const currentTier = getPlanTier(parsePlanId(currentPlanId).tier);
+    const currentPeriod = getBillingPeriod(parsePlanId(currentPlanId).period);
+
+    setIsSubmitting(true);
+    analytics.whatsappCtaClicked("inscripcion", currentPlanId);
+
+    try {
+      await linkOnboardingLead({
+        sessionId,
+        email: currentLead.email,
+        planId: currentPlanId,
+      });
+    } catch {
       // El puente WhatsApp sigue aunque falle la persistencia del lead.
-    });
-
-    // Reset síncrono: evita carrera si el usuario vuelve al home antes del finally.
-    resetAnonymousFunnelAfterLeadCapture();
+    }
 
     window.open(
       buildWhatsappUrl(
-        tier.name,
-        period.label,
-        nombre,
-        email,
-        whatsapp,
-        tipoDoc,
-        rut,
-        razonSocial,
-        direccion
+        currentTier.name,
+        currentPeriod.label,
+        currentLead.nombre,
+        currentLead.email,
+        currentLead.whatsapp,
+        currentLead.tipoDoc,
+        currentLead.rut,
+        currentLead.razonSocial,
+        currentLead.direccion
       ),
       "_blank",
       "noopener,noreferrer"
     );
+
+    resetAnonymousFunnelAfterLeadCapture();
     setFormSent(true);
+    setIsSubmitting(false);
   };
 
   return (
@@ -339,6 +384,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
               animate={{ opacity: 1 }}
               transition={{ delay: 0.32, duration: 0.4 }}
               onSubmit={handleFormSubmit}
+              autoComplete="off"
               style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}
             >
               <div>
@@ -347,6 +393,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                 </label>
                 <input
                   id="nombre"
+                  name="nombre"
                   type="text"
                   required
                   value={nombre}
@@ -364,6 +411,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
                   value={email}
@@ -381,6 +429,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                 </label>
                 <input
                   id="whatsapp"
+                  name="whatsapp"
                   type="tel"
                   required
                   value={whatsapp}
@@ -425,7 +474,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                 >
                   <div>
                     <label htmlFor="rut" style={LABEL_BASE}>RUT empresa</label>
-                    <input id="rut" type="text" value={rut}
+                    <input id="rut" name="rut" type="text" value={rut}
                       onChange={e => setRut(e.target.value)}
                       placeholder="76.123.456-7"
                       style={FIELD_BASE}
@@ -435,7 +484,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   </div>
                   <div>
                     <label htmlFor="razonSocial" style={LABEL_BASE}>Razón social</label>
-                    <input id="razonSocial" type="text" value={razonSocial}
+                    <input id="razonSocial" name="razonSocial" type="text" value={razonSocial}
                       onChange={e => setRazonSocial(e.target.value)}
                       placeholder="Empresa SpA"
                       style={FIELD_BASE}
@@ -445,7 +494,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   </div>
                   <div>
                     <label htmlFor="direccion" style={LABEL_BASE}>Dirección</label>
-                    <input id="direccion" type="text" value={direccion}
+                    <input id="direccion" name="direccion" type="text" value={direccion}
                       onChange={e => setDireccion(e.target.value)}
                       placeholder="Av. Ejemplo 123, Santiago"
                       style={FIELD_BASE}
@@ -458,6 +507,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
 
               <motion.button
                 type="submit"
+                disabled={isSubmitting}
                 whileHover={{ background: "rgba(201,168,76,0.82)" }}
                 whileTap={{ scale: 0.985 }}
                 style={{
@@ -466,7 +516,8 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   background: GOLD,
                   color: "#080808",
                   fontSize: 11, fontWeight: 700,
-                  border: "none", cursor: "pointer",
+                  border: "none", cursor: isSubmitting ? "wait" : "pointer",
+                  opacity: isSubmitting ? 0.72 : 1,
                   letterSpacing: "1px",
                   textTransform: "uppercase",
                   fontFamily: "Inter, sans-serif",

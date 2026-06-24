@@ -134,10 +134,21 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
   });
 
   it("vincula session_id del quiz con email vía API antes de WhatsApp", () => {
-    assert.equal(registroSource.includes("getOrCreateOnboardingSessionId"), true);
-    assert.equal(registroSource.includes("linkOnboardingLead"), true);
+    assert.equal(registroSource.includes("resolveOnboardingSessionIdForLead"), true);
+    assert.equal(registroSource.includes("readLeadFromForm"), true);
+    assert.equal(registroSource.includes("await linkOnboardingLead"), true);
     assert.match(registroSource, /onboarding\/link-lead|link-onboarding-lead/);
     assert.equal(registroSource.includes("resetAnonymousFunnelAfterLeadCapture"), true);
+
+    const submitStart = registroSource.indexOf("const handleFormSubmit");
+    assert.ok(submitStart > -1);
+    const submitBlock = registroSource.slice(submitStart, submitStart + 2500);
+
+    const linkIdx = submitBlock.indexOf("await linkOnboardingLead");
+    const openIdx = submitBlock.indexOf("window.open");
+    const resetIdx = submitBlock.indexOf("resetAnonymousFunnelAfterLeadCapture");
+    assert.ok(linkIdx > -1 && openIdx > linkIdx, "WhatsApp debe abrirse después de link-lead");
+    assert.ok(resetIdx > openIdx, "reset del funnel debe ocurrir después de WhatsApp");
   });
 
   it("mensaje de WhatsApp menciona el nombre del tier y período seleccionados", () => {
