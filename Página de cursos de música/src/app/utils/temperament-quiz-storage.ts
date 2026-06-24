@@ -104,6 +104,28 @@ export async function flushPendingTemperamentQuizSync(): Promise<boolean> {
   }
 }
 
+/** Reintenta persistir el quiz antes de link-lead (p. ej. API fría al completar el quiz). */
+export async function ensureOnboardingQuizPersisted(
+  referrerPath?: string | null
+): Promise<boolean> {
+  if (await flushPendingTemperamentQuizSync()) {
+    return true;
+  }
+
+  const result = readTemperamentQuizResult();
+  if (!result) {
+    return false;
+  }
+
+  try {
+    await submitTemperamentQuiz(result, { referrerPath: referrerPath ?? null });
+    clearPendingSyncPayload();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function readTemperamentQuizResult(): TemperamentQuizResult | null {
   if (!canUseStorage()) return null;
   const raw = localStorage.getItem(RESULT_KEY);

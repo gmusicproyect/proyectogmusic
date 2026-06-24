@@ -138,6 +138,7 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
     assert.equal(registroSource.includes("readLeadFromForm"), true);
     assert.equal(registroSource.includes("inscripcion-registro-lead"), true);
     assert.equal(registroSource.includes("await linkOnboardingLead"), true);
+    assert.equal(registroSource.includes("ensureOnboardingQuizPersisted"), true);
     assert.match(registroSource, /onboarding\/link-lead|link-onboarding-lead/);
     assert.equal(registroSource.includes("resetAnonymousFunnelAfterLeadCapture"), true);
     assert.equal(registroSource.includes("value={email}"), false);
@@ -151,6 +152,8 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
     const linkIdx = submitBlock.indexOf("await linkOnboardingLead");
     const openIdx = submitBlock.indexOf("window.open");
     const resetIdx = submitBlock.indexOf("resetAnonymousFunnelAfterLeadCapture");
+    const ensureIdx = submitBlock.indexOf("ensureOnboardingQuizPersisted");
+    assert.ok(ensureIdx > -1 && linkIdx > ensureIdx, "link-lead debe ir después de sync del quiz");
     assert.ok(linkIdx > -1 && openIdx > linkIdx, "WhatsApp debe abrirse después de link-lead");
     assert.ok(resetIdx > openIdx, "reset del funnel debe ocurrir después de WhatsApp");
   });

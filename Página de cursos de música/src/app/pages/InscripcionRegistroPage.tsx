@@ -14,6 +14,7 @@ import { analytics } from "../utils/analytics";
 import {
   getOrCreateOnboardingSessionId,
   readTemperamentQuizResult,
+  ensureOnboardingQuizPersisted,
 } from "../utils/temperament-quiz-storage";
 import { linkOnboardingLead } from "../services/gmusic-api/link-onboarding-lead";
 import { resetAnonymousFunnelAfterLeadCapture, anonymousFunnelRestartPage } from "../utils/anonymous-funnel-storage";
@@ -146,6 +147,8 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
 
     setIsSubmitting(true);
     analytics.whatsappCtaClicked("inscripcion", currentPlanId);
+
+    await ensureOnboardingQuizPersisted(window.location.pathname);
 
     try {
       await linkOnboardingLead({
