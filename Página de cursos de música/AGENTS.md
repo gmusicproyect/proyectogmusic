@@ -120,8 +120,15 @@ Fuente de verdad: **`.agents/skills/`**
 | `gmusic-auth-email-verification` | Auth, sesión, cookies, estados anonymous / registered / authenticated |
 | `gmusic-opus-architect` | **Claude / Opus** — specs, planes, Superpowers brainstorming (no codea) |
 | `gmusic-agent-workflow` | **Cursor / Cursos** — protocolo ejecutor: tests, reportes, commits con autorización |
+| `gmusic-verification` | Antes de declarar “listo” — `npm run verify`, checklist por área |
+| `gmusic-ci-deploy` | Push/deploy, smoke producción, checklist T3 E2E |
+| `gmusic-session-handoff` | Inicio/fin de sesión, `agent-status.sh`, handoff explícito |
 
 Registro completo: `skills.manifest.yaml`
+
+**Adopción ECC (curada):** ver `docs/agents/ecc-adoption.md` — D-GOV-12. No instalar plugin ECC completo.
+
+**Inspiración freeCodeCamp (pedagogía/escala):** ver `docs/agents/fcc-inspiration.md` — D-GOV-13. No fork FCC; no implementar FCC-A2+ hasta T3/T3.5 cerrados.
 
 **Claude + Superpowers:** `./scripts/install-superpowers-opus.sh` → luego en Claude Code: `/plugin install superpowers@claude-plugins-official`. Ver `CLAUDE.md`.
 
@@ -131,7 +138,10 @@ Guía visual local: `DESIGN.md`
 
 | Tipo de Tarea | Documentos obligatorios | Skill a activar |
 | :--- | :--- | :--- |
-| **Ciclo cerrado (Cursor)** | `.cursor/rules/loop.mdc` | `gmusic-agent-workflow` |
+| **Ciclo cerrado (Cursor)** | `.agents/cursor-rules/loop.mdc` | `gmusic-agent-workflow` + `gmusic-verification` |
+| **Deploy / E2E producción** | `docs/deploy/checklist-track-a-t3-e2e.md` | `gmusic-ci-deploy` |
+| **Retomar sesión / handoff** | `.agents/MEMORY.md`, `DECISIONS.md` | `gmusic-session-handoff` |
+| **Currículo 6–75 / motor path largo** | `docs/agents/fcc-inspiration.md`, `learning-engine.md`, D-GOV-04 | `gmusic-learning-engine` |
 | **Arquitectura / dominio** | `DECISIONS.md`, `gmusic-architecture-working-map.md` | — (D-GOV-01) |
 | **Funnel demo / conversión** | `AGENTS.md`, `.agents/DECISIONS.md` | `gmusic-funnel-conversion` |
 | **Cambios estructura o layout** | `AGENTS.md`, `DESIGN.md` | `gmusic-welcome` / `gmusic-path` |
@@ -144,6 +154,8 @@ Guía visual local: `DESIGN.md`
 ```bash
 ./scripts/sync-skills.sh           # espejo → .cursor/skills/
 ./scripts/sync-skills.sh --global  # además → ~/.codex/skills y ~/.gemini/skills
+./scripts/sync-cursor-rules.sh     # .agents/cursor-rules/ → .cursor/rules/
+./scripts/agent-status.sh          # estado real al iniciar sesión
 ```
 
 Convención de nombre: carpeta = `name:` en frontmatter = kebab-case (`gmusic-welcome`).

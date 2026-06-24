@@ -19,6 +19,9 @@
     "api:dev": "tsx --env-file=.env --import ./sentry.server.instrument.ts server/index.ts",
     "app:typecheck": "tsc -p tsconfig.app.json --noEmit",
     "api:typecheck": "tsc -p tsconfig.server.json --noEmit",
+    "typecheck": "npm run app:typecheck && npm run api:typecheck",
+    "test": "npm run app:test && npm run api:test",
+    "verify": "npm run typecheck && npm run test && npm run build",
     "api:test": "node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
     "app:test": "node --import tsx --test 'src/**/*.test.ts'"
   },

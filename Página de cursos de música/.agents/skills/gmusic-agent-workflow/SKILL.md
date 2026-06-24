@@ -31,8 +31,8 @@ Leer este Skill **al inicio de cada sesión de trabajo** en el repositorio Gmusi
 
 ### 2. Después de cada fase
 
-1. **Correr tests**: `npm run app:test` (o el comando de test del repo). Reportar resultado exacto.
-2. **Verificar TypeScript**: cero errores antes de reportar éxito.
+1. **Correr verificación**: `npm run verify` (o `npm run test` + typecheck si el scope es parcial). Ver skill `gmusic-verification`.
+2. **Reportar resultado exacto** — no asumir conteos de tests de MEMORY.
 3. **Reportar archivos tocados** — lista de archivos creados/modificados.
 4. **Entregar reporte en formato estándar** (ver sección Formato de reporte).
 5. **No commitear** sin autorización explícita del usuario.
@@ -40,8 +40,8 @@ Leer este Skill **al inicio de cada sesión de trabajo** en el repositorio Gmusi
 
 ### 3. Antes de un compactado de contexto
 
-- Hacer handoff explícito: estado actual, archivos en progreso, próximo paso pendiente.
-- Guardar en memoria cualquier información que no esté en el código o git.
+- Seguir skill `gmusic-session-handoff`: handoff explícito con SHA, ticket activo, verificación.
+- Guardar en memoria cualquier información que no esté en el código o git (solo Fable edita MEMORY).
 
 ---
 
@@ -69,6 +69,9 @@ Si la tarea toca más de un dominio, declarar todos los Skills relevantes. Si no
 | `gmusic-visual-vfx` | Efectos visuales, animaciones, partículas, atmosfera |
 | `gmusic-learning-engine` | Backend: ejercicios, XP, racha, evaluación — SOLO zona alumno |
 | `gmusic-funnel-conversion` | Funnel público: demo 5 clases, inscripcion-gate, planes, CTA dinámico |
+| `gmusic-verification` | Verificación antes de cerrar: `npm run verify`, regresión funnel |
+| `gmusic-ci-deploy` | CI, deploy, smoke `verify-*`, checklist E2E |
+| `gmusic-session-handoff` | Handoff inicio/fin de sesión, `agent-status.sh` |
 | `gmusic-agent-workflow` | Este Skill — protocolo de trabajo |
 
 ---

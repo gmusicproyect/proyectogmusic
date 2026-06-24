@@ -56,6 +56,24 @@ skills:
     scope: project
     path: .agents/skills/gmusic-agent-workflow
 
+  - name: gmusic-verification
+    description: Verificación antes de cerrar — typecheck, tests, build, criterios Track A
+    tools: [cursor, codex, antigravity]
+    scope: project
+    path: .agents/skills/gmusic-verification
+
+  - name: gmusic-ci-deploy
+    description: CI, deploy Vercel/Render, smoke verify-* y checklist E2E Track A
+    tools: [cursor, codex]
+    scope: project
+    path: .agents/skills/gmusic-ci-deploy
+
+  - name: gmusic-session-handoff
+    description: Handoff entre sesiones — estado real, tickets abiertos, qué no tocar
+    tools: [cursor, codex, opus, claude]
+    scope: project
+    path: .agents/skills/gmusic-session-handoff
+
   - name: gmusic-funnel-conversion
     description: Funnel público — landing, demo teaser, inscripcion-gate, CTA y localStorage demo
     tools: [cursor, codex, antigravity]
@@ -98,6 +116,22 @@ skills:
     tools: [opus, claude]
     scope: vendor
     path: .agents/skills/superpowers-verification-before-completion
+
+  # Opcionales — install-superpowers-opus.sh --executor
+  - name: superpowers-systematic-debugging
+    description: Superpowers — debugging sistemático (Cursor ejecutor)
+    tools: [cursor]
+    scope: vendor
+    path: .agents/skills/superpowers-systematic-debugging
+    optional: true
+
+  - name: superpowers-executing-plans
+    description: Superpowers — ejecutar planes bite-sized (Cursor)
+    tools: [cursor]
+    scope: vendor
+    path: .agents/skills/superpowers-executing-plans
+    optional: true
+
   - name: openai-docs
     description: Documentación oficial OpenAI + manual Codex (MCP developers.openai.com)
     tools: [codex, cursor]
