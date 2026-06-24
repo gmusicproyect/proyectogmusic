@@ -9,6 +9,8 @@ import {
 } from "../../utils/academia-track-matrix";
 import { analytics } from "../../utils/analytics";
 import { shouldShowTemperamentQuiz } from "../../utils/temperament-quiz-storage";
+import { resolveDemoEntryPage } from "../../utils/demo-auth-gate";
+import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
 
 const GOLD = "#C9A84C";
 const GOLD_BORDER = "rgba(201,168,76,0.3)";
@@ -18,10 +20,12 @@ export function InteractiveLevelSelector({
   setPage,
   setLevel,
   isSubscribedStudent = false,
+  sessionStatus = "anonymous",
 }: {
   setPage: (page: string) => void;
   setLevel: (level: string) => void;
   isSubscribedStudent?: boolean;
+  sessionStatus?: PublicStudentSessionState["status"];
 }) {
   const [activeTierId, setActiveTierId] = useState<AcademiaTierId>("basico");
   const [activeFocusIndex, setActiveFocusIndex] = useState(0);
@@ -32,7 +36,10 @@ export function InteractiveLevelSelector({
     if (!isFreeClassTrack(track)) return;
     analytics.demoCtaClicked();
     setLevel(track.focusId);
-    setPage(shouldShowTemperamentQuiz({ isSubscribedStudent }) ? "onboarding-quiz" : "mi-camino-demo");
+    const targetPage = shouldShowTemperamentQuiz({ isSubscribedStudent })
+      ? "onboarding-quiz"
+      : "mi-camino-demo";
+    setPage(resolveDemoEntryPage(sessionStatus, targetPage));
   };
 
   return (

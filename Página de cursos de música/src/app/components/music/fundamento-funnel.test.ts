@@ -185,6 +185,7 @@ describe("AcademiaSection — copy y aislamiento legacy", () => {
     assert.equal(academiaSource.includes("isSubscribedStudent"), true);
     assert.equal(academiaSource.includes('"onboarding-quiz"'), true);
     assert.equal(academiaSource.includes("handleAcademiaCta"), true);
+    assert.equal(academiaSource.includes("resolveDemoEntryPage"), true);
   });
 
   it("no navega a páginas legacy ni preview", () => {
@@ -210,6 +211,7 @@ describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
     assert.equal(selectorSource.includes('"onboarding-quiz"'), true);
     assert.equal(selectorSource.includes('"mi-camino-demo"'), true);
     assert.equal(selectorSource.includes("isFreeClassTrack"), true);
+    assert.equal(selectorSource.includes("resolveDemoEntryPage"), true);
     assertNoForbiddenNavigation(selectorSource, "InteractiveLevelSelector");
   });
 

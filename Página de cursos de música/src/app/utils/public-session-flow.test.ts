@@ -7,6 +7,7 @@ import { describe, it } from "node:test";
 const root = dirname(fileURLToPath(import.meta.url));
 const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
 const navbarSource = readFileSync(join(root, "../components/music/Navbar.tsx"), "utf8");
+const registroSource = readFileSync(join(root, "../pages/RegistroCuentaPage.tsx"), "utf8");
 
 describe("R3.3D — sesión pública y logout", () => {
   it("App comparte useAuth con Navbar y refresca tras checkout", () => {
@@ -69,5 +70,28 @@ describe("R3.3E — redirección suave home → Mi Estudio", () => {
   it("no usa localStorage ni sessionStorage para el flag de redirección", () => {
     assert.equal(appSource.includes("localStorage"), false);
     assert.equal(appSource.includes("sessionStorage"), false);
+  });
+});
+
+describe("PR2 — funnel demo requiere cuenta", () => {
+  it("onboarding-quiz y demo-clase usan DemoAuthGuard", () => {
+    assert.match(appSource, /currentPage === "onboarding-quiz"[\s\S]*DemoAuthGuard/);
+    assert.match(appSource, /currentPage === "mi-camino-demo"[\s\S]*DemoAuthGuard/);
+    assert.match(appSource, /demoLessonId !== null[\s\S]*DemoAuthGuard/);
+  });
+
+  it("páginas de auth quedan fuera de Navbar y MusicPlayer", () => {
+    assert.equal(appSource.includes('"registro-cuenta"'), true);
+    assert.equal(appSource.includes('"login-cuenta"'), true);
+    assert.equal(appSource.includes('"registro-exito"'), true);
+  });
+
+  it("registro-exito muestra mensaje de regalo y redirige al demo", () => {
+    assert.match(
+      registroSource,
+      /Gracias por inscribirte, te regalamos las primeras 5 clases/
+    );
+    assert.match(registroSource, /setPage\("mi-camino-demo"\)/);
+    assert.match(registroSource, /setTimeout/);
   });
 });

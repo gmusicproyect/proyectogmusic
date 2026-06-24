@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { GmusicApiError } from "../services/gmusic-api/client";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -188,14 +188,24 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
   );
 }
 
+const REGISTRO_EXITO_REDIRECT_MS = 2500;
+
 export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void }) {
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPage("mi-camino-demo"), REGISTRO_EXITO_REDIRECT_MS);
+    return () => window.clearTimeout(timer);
+  }, [setPage]);
+
   return (
     <AuthFormShell
       title="¡Gracias por inscribirte!"
-      subtitle="Te regalamos las primeras 5 clases. Empieza cuando quieras."
+      subtitle="Gracias por inscribirte, te regalamos las primeras 5 clases."
     >
+      <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 8px" }}>
+        Redirigiendo a tus clases gratis…
+      </p>
       <button type="button" style={authPrimaryButtonStyle} onClick={() => setPage("mi-camino-demo")}>
-        Ir a mis clases gratis
+        Ir ahora
       </button>
     </AuthFormShell>
   );

@@ -7,6 +7,7 @@ import { useDemoUserState } from "../../../hooks/useDemoUserState";
 import type { PublicStudentSessionState } from "../../../hooks/usePublicStudentSession";
 import type { AcademiaInstrumentId } from "../../../data/academia-instruments";
 import { shouldShowTemperamentQuiz } from "../../../utils/temperament-quiz-storage";
+import { resolveDemoEntryPage } from "../../../utils/demo-auth-gate";
 
 type AcademiaStep = "instrument" | "program";
 
@@ -52,11 +53,11 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
   const isSubscribedStudent = session.status === "authenticated";
 
   const handleAcademiaCta = () => {
-    const destination =
+    const rawDestination =
       cta.destination === "mi-camino-demo" && shouldShowTemperamentQuiz({ isSubscribedStudent })
         ? "onboarding-quiz"
         : cta.destination;
-    setPage(destination);
+    setPage(resolveDemoEntryPage(session.status, rawDestination));
   };
 
   return (
@@ -267,6 +268,7 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
                   setPage={setPage}
                   setLevel={setLevel}
                   isSubscribedStudent={isSubscribedStudent}
+                  sessionStatus={session.status}
                 />
               </motion.div>
 
