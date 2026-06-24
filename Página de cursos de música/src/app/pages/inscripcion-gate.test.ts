@@ -136,9 +136,13 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
   it("vincula session_id del quiz con email vía API antes de WhatsApp", () => {
     assert.equal(registroSource.includes("resolveOnboardingSessionIdForLead"), true);
     assert.equal(registroSource.includes("readLeadFromForm"), true);
+    assert.equal(registroSource.includes("inscripcion-registro-lead"), true);
     assert.equal(registroSource.includes("await linkOnboardingLead"), true);
     assert.match(registroSource, /onboarding\/link-lead|link-onboarding-lead/);
     assert.equal(registroSource.includes("resetAnonymousFunnelAfterLeadCapture"), true);
+    assert.equal(registroSource.includes("value={email}"), false);
+    assert.equal(registroSource.includes("value={nombre}"), false);
+    assert.equal(registroSource.includes("value={whatsapp}"), false);
 
     const submitStart = registroSource.indexOf("const handleFormSubmit");
     assert.ok(submitStart > -1);
@@ -158,6 +162,34 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
 
   it("muestra texto de solicitud de inscripción sin promesa de reserva", () => {
     assert.equal(registroSource.includes("Aún no pagas aquí"), true);
+  });
+});
+
+describe("InscripcionRegistroPage — lead capture", () => {
+  it("parseLeadFromFormData alimenta WhatsApp con el email del formulario", async () => {
+    const { parseLeadFromFormData, buildWhatsappUrl } = await import("./inscripcion-registro-lead.ts");
+
+    const values = new Map<string, string>([
+      ["nombre", "Test T3"],
+      ["email", "test-t3-20260624@gmusic.cl"],
+      ["whatsapp", "+56912345678"],
+      ["tipoDoc", "boleta"],
+    ]);
+
+    const lead = parseLeadFromFormData((name) => values.get(name) ?? null);
+    assert.equal(lead.email, "test-t3-20260624@gmusic.cl");
+
+    const url = buildWhatsappUrl(
+      "56953429676",
+      "Plus",
+      "Semestral",
+      lead.nombre,
+      lead.email,
+      lead.whatsapp
+    );
+    const decoded = decodeURIComponent(url);
+    assert.match(decoded, /test-t3-20260624@gmusic\.cl/);
+    assert.doesNotMatch(decoded, /juanlizamahernandez@gmail\.com/);
   });
 });
 

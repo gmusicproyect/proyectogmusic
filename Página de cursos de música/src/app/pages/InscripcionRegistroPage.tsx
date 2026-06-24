@@ -17,34 +17,39 @@ import {
 } from "../utils/temperament-quiz-storage";
 import { linkOnboardingLead } from "../services/gmusic-api/link-onboarding-lead";
 import { resetAnonymousFunnelAfterLeadCapture, anonymousFunnelRestartPage } from "../utils/anonymous-funnel-storage";
+import {
+  buildWhatsappUrl as buildLeadWhatsappUrl,
+  readLeadFromForm,
+} from "./inscripcion-registro-lead";
 
 // Formato wa.me: código país + número, sin "+" ni espacios (ej. "56912345678")
 const WHATSAPP_NUMBER = "56953429676";
 
 const SELECTED_PLAN_KEY = "gmusic:selected_plan_v1";
 
-interface InscripcionLeadFormValues {
-  nombre: string;
-  email: string;
-  whatsapp: string;
-  tipoDoc: "boleta" | "factura";
-  rut: string;
-  razonSocial: string;
-  direccion: string;
-}
-
-function readLeadFromForm(form: HTMLFormElement): InscripcionLeadFormValues {
-  const fd = new FormData(form);
-  const tipoDocRaw = fd.get("tipoDoc");
-  return {
-    nombre: String(fd.get("nombre") ?? "").trim(),
-    email: String(fd.get("email") ?? "").trim().toLowerCase(),
-    whatsapp: String(fd.get("whatsapp") ?? "").trim(),
-    tipoDoc: tipoDocRaw === "factura" ? "factura" : "boleta",
-    rut: String(fd.get("rut") ?? "").trim(),
-    razonSocial: String(fd.get("razonSocial") ?? "").trim(),
-    direccion: String(fd.get("direccion") ?? "").trim(),
-  };
+function buildWhatsappUrl(
+  tierName: string,
+  periodLabel: string,
+  nombre = "",
+  email = "",
+  wsp = "",
+  tipoDoc: "boleta" | "factura" = "boleta",
+  rut = "",
+  razonSocial = "",
+  direccion = ""
+): string {
+  return buildLeadWhatsappUrl(
+    WHATSAPP_NUMBER,
+    tierName,
+    periodLabel,
+    nombre,
+    email,
+    wsp,
+    tipoDoc,
+    rut,
+    razonSocial,
+    direccion
+  );
 }
 
 function resolveOnboardingSessionIdForLead(): string {
@@ -72,64 +77,9 @@ function readSelectedPlan(): PlanId {
   }
 }
 
-function buildWhatsappMessage(
-  tierName: string,
-  periodLabel: string,
-  nombre: string,
-  email: string,
-  wsp: string,
-  tipoDoc: "boleta" | "factura",
-  rut?: string,
-  razonSocial?: string,
-  direccion?: string
-): string {
-  let msg = `Hola, quiero inscribirme en Gmusic Estudio.`;
-  msg += `\nCompleté las 5 clases gratuitas y quiero el camino completo.`;
-  msg += `\nPlan elegido: ${tierName} (${periodLabel.toLowerCase()})`;
-  msg += `\n\nMis datos:`;
-  if (nombre.trim()) msg += `\nNombre: ${nombre.trim()}`;
-  if (email.trim()) msg += `\nEmail: ${email.trim()}`;
-  if (wsp.trim()) msg += `\nWhatsApp: ${wsp.trim()}`;
-  if (tipoDoc === "boleta") {
-    msg += `\nDocumento: Boleta`;
-  } else {
-    msg += `\nDocumento: Factura`;
-    if (rut?.trim()) msg += `\nRUT: ${rut.trim()}`;
-    if (razonSocial?.trim()) msg += `\nRazón social: ${razonSocial.trim()}`;
-    if (direccion?.trim()) msg += `\nDirección: ${direccion.trim()}`;
-  }
-  return msg;
-}
-
 function buildDudasUrl(tierName: string, periodLabel: string): string {
   const msg = `Hola, completé el camino gratuito de Gmusic Estudio.\nTengo dudas sobre el plan ${tierName} (${periodLabel.toLowerCase()}).\n¿Me pueden orientar?`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-}
-
-function buildWhatsappUrl(
-  tierName: string,
-  periodLabel: string,
-  nombre = "",
-  email = "",
-  wsp = "",
-  tipoDoc: "boleta" | "factura" = "boleta",
-  rut = "",
-  razonSocial = "",
-  direccion = ""
-): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    buildWhatsappMessage(
-      tierName,
-      periodLabel,
-      nombre,
-      email,
-      wsp,
-      tipoDoc,
-      rut,
-      razonSocial,
-      direccion
-    )
-  )}`;
 }
 
 const FIELD_BASE: React.CSSProperties = {
@@ -168,9 +118,6 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
   const period = getBillingPeriod(periodId);
   const price = getPlanPrice(tierId, periodId);
 
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
   const [formSent, setFormSent] = useState(false);
   const [tipoDoc, setTipoDoc] = useState<"boleta" | "factura">("boleta");
   const [rut, setRut] = useState("");
@@ -396,8 +343,7 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   name="nombre"
                   type="text"
                   required
-                  value={nombre}
-                  onChange={e => setNombre(e.target.value)}
+                  autoComplete="off"
                   placeholder="Tu nombre"
                   style={FIELD_BASE}
                   onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,76,0.35)"; }}
@@ -414,8 +360,8 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   name="email"
                   type="email"
                   required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  autoComplete="off"
+                  inputMode="email"
                   placeholder="tu@email.com"
                   style={FIELD_BASE}
                   onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,76,0.35)"; }}
@@ -432,8 +378,8 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
                   name="whatsapp"
                   type="tel"
                   required
-                  value={whatsapp}
-                  onChange={e => setWhatsapp(e.target.value)}
+                  autoComplete="off"
+                  inputMode="tel"
                   placeholder="+56 9 XXXX XXXX"
                   style={FIELD_BASE}
                   onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,76,0.35)"; }}
