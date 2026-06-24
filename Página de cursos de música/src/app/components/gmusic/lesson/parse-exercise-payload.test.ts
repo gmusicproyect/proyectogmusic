@@ -6,6 +6,7 @@ import {
   MAX_LABEL_OR_BEAT_LENGTH,
   MAX_OPTION_TEXT_LENGTH,
   MAX_PATTERN_BEATS,
+  MAX_TAP_SEQUENCE,
   parsePublicExercise,
 } from "./parse-exercise-payload";
 
@@ -96,6 +97,35 @@ describe("parsePublicExercise — payloads del seed", () => {
   it("RHYTHM_TAP con patternBeats", () => {
     const parsed = assertSupported(SEED_RHYTHM_TAP);
     assert.deepEqual(parsed?.media.patternBeats, ["1", "2", "3", "4"]);
+    assert.deepEqual(parsed?.interaction, { mode: "mcq" });
+  });
+
+  it("RHYTHM_TAP con tapSequence alineado a demo clase 4", () => {
+    const parsed = assertSupported({
+      id: "550e8400-e29b-41d4-a716-446655440105",
+      type: "RHYTHM_TAP",
+      difficulty: 1,
+      instruction: "Marca el pulso tocando la cuerda 6 al aire, a tu ritmo.",
+      contentPayload: {
+        tapHeadline: "Pulso en cuerda 6",
+        tapDescription:
+          "Toca la cuerda 6 al aire en cada TAP. Ve a tu ritmo — no hay metrónomo.",
+        tapSequence: Array.from({ length: 8 }, () => ({
+          stringNumber: 6,
+          label: "6",
+          stringName: "Mi grave",
+        })),
+        submissionOptionId: "tap-complete",
+      },
+    });
+
+    assert.equal(parsed?.interaction.mode, "tap");
+    if (parsed?.interaction.mode !== "tap") return;
+
+    assert.equal(parsed.interaction.submissionOptionId, "tap-complete");
+    assert.equal(parsed.interaction.tapSequence.length, 8);
+    assert.equal(parsed.options.length, 0);
+    assert.equal(parsed.interaction.tapHeadline, "Pulso en cuerda 6");
   });
 });
 
@@ -303,6 +333,24 @@ describe("parsePublicExercise — límites máximos", () => {
       contentPayload: {
         diagramLabel: "x".repeat(MAX_LABEL_OR_BEAT_LENGTH + 1),
         options: (SEED_CHORD_SHAPE.contentPayload as { options: unknown[] }).options,
+      },
+    });
+    assert.equal(result.kind, "incompatible");
+  });
+
+  it("rechaza demasiados beats en tapSequence", () => {
+    const result = parsePublicExercise({
+      id: "tap-limit",
+      type: "RHYTHM_TAP",
+      difficulty: 1,
+      instruction: "TAP.",
+      contentPayload: {
+        tapSequence: Array.from({ length: MAX_TAP_SEQUENCE + 1 }, () => ({
+          stringNumber: 6,
+          label: "6",
+          stringName: "Mi grave",
+        })),
+        submissionOptionId: "tap-complete",
       },
     });
     assert.equal(result.kind, "incompatible");

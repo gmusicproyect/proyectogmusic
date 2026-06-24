@@ -118,16 +118,19 @@ const MODULES = [
             order: 1,
             type: ExerciseType.RHYTHM_TAP,
             difficulty: 1,
-            instruction: "Identifica el pulso en 4/4 según el patrón de taps mostrado.",
+            instruction: "Marca el pulso tocando la cuerda 6 al aire, a tu ritmo.",
             contentPayload: {
-              patternBeats: ["1", "2", "3", "4"],
-              options: [
-                { id: "a", text: "Pulso en negras (4 golpes iguales)" },
-                { id: "b", text: "Pulso en corcheas continuas" },
-                { id: "c", text: "Pulso en tresillos" },
-              ],
+              tapHeadline: "Pulso en cuerda 6",
+              tapDescription:
+                "Toca la cuerda 6 al aire en cada TAP. Ve a tu ritmo — no hay metrónomo.",
+              tapSequence: Array.from({ length: 8 }, () => ({
+                stringNumber: 6,
+                label: "6",
+                stringName: "Mi grave",
+              })),
+              submissionOptionId: "tap-complete",
             },
-            secureAnswer: { correctOptionId: "a" },
+            secureAnswer: { correctOptionId: "tap-complete" },
           },
           {
             order: 2,

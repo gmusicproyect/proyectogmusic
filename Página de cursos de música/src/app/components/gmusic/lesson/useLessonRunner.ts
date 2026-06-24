@@ -182,6 +182,10 @@ export function useLessonRunner({
     dispatch({ type: "NEXT_EXERCISE", nowMs: nowRef.current() });
   }, []);
 
+  const completeTap = useCallback(() => {
+    dispatch({ type: "COMPLETE_TAP", nowMs: nowRef.current() });
+  }, []);
+
   const reset = useCallback(() => {
     dispatch({
       type: "REINIT",
@@ -198,6 +202,7 @@ export function useLessonRunner({
     currentExercise,
     selectOption,
     nextExercise,
+    completeTap,
     reset,
   };
 }

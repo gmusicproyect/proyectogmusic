@@ -22,6 +22,7 @@ export interface LessonRunnerState {
 export type LessonRunnerAction =
   | { type: "SELECT_OPTION"; optionId: string }
   | { type: "NEXT_EXERCISE"; nowMs: number }
+  | { type: "COMPLETE_TAP"; nowMs: number }
   | { type: "MARK_EXPIRED" }
   | { type: "RESET"; exercises: ParsedExerciseView[]; startedAtMs: number };
 
@@ -105,6 +106,32 @@ function selectOption(
   };
 }
 
+function advanceAfterAttempt(
+  state: LessonRunnerState,
+  attempt: RunnerAttemptDraft,
+  normalizedNowMs: number
+): LessonRunnerState {
+  const attemptsDraft = [...state.attemptsDraft, attempt];
+  const isLastExercise = state.currentIndex >= state.exercises.length - 1;
+
+  if (isLastExercise) {
+    return {
+      ...state,
+      selectedOptionId: null,
+      attemptsDraft,
+      status: "finished",
+    };
+  }
+
+  return {
+    ...state,
+    currentIndex: state.currentIndex + 1,
+    selectedOptionId: null,
+    exerciseStartedAtMs: normalizedNowMs,
+    attemptsDraft,
+  };
+}
+
 function nextExercise(
   state: LessonRunnerState,
   nowMs: number
@@ -129,25 +156,34 @@ function nextExercise(
     responseTimeMs: computeResponseTimeMs(state.exerciseStartedAtMs, normalizedNowMs),
   };
 
-  const attemptsDraft = [...state.attemptsDraft, attempt];
-  const isLastExercise = state.currentIndex >= state.exercises.length - 1;
+  return advanceAfterAttempt(state, attempt, normalizedNowMs);
+}
 
-  if (isLastExercise) {
-    return {
-      ...state,
-      selectedOptionId: null,
-      attemptsDraft,
-      status: "finished",
-    };
+function completeTap(
+  state: LessonRunnerState,
+  nowMs: number
+): LessonRunnerState {
+  if (state.status !== "ready") {
+    return state;
   }
 
-  return {
-    ...state,
-    currentIndex: state.currentIndex + 1,
-    selectedOptionId: null,
-    exerciseStartedAtMs: normalizedNowMs,
-    attemptsDraft,
+  const currentExercise = getCurrentExercise(state);
+  if (!currentExercise || currentExercise.interaction.mode !== "tap") {
+    return state;
+  }
+
+  if (hasAttemptForExercise(state, currentExercise.id)) {
+    return state;
+  }
+
+  const normalizedNowMs = normalizeTimestampMs(nowMs);
+  const attempt: RunnerAttemptDraft = {
+    microExerciseId: currentExercise.id,
+    selectedAnswer: currentExercise.interaction.submissionOptionId,
+    responseTimeMs: computeResponseTimeMs(state.exerciseStartedAtMs, normalizedNowMs),
   };
+
+  return advanceAfterAttempt(state, attempt, normalizedNowMs);
 }
 
 function markExpired(state: LessonRunnerState): LessonRunnerState {
@@ -171,6 +207,8 @@ export function lessonRunnerReducer(
       return selectOption(state, action.optionId);
     case "NEXT_EXERCISE":
       return nextExercise(state, action.nowMs);
+    case "COMPLETE_TAP":
+      return completeTap(state, action.nowMs);
     case "MARK_EXPIRED":
       return markExpired(state);
     case "RESET":

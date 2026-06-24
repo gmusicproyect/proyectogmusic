@@ -50,6 +50,7 @@ const SAMPLE_EXERCISE: ParsedExerciseView = {
     { id: "b", text: "La" },
   ],
   media: {},
+  interaction: { mode: "mcq" },
 };
 
 describe("normalizeStepperValues", () => {

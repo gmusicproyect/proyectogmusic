@@ -16,6 +16,7 @@ import {
 import { ExerciseMediaBlock } from "./ExerciseMediaBlock";
 import { LessonExerciseStepper } from "./LessonExerciseStepper";
 import { MultipleChoiceExercise } from "./MultipleChoiceExercise";
+import { RhythmTapExercise } from "./RhythmTapExercise";
 import { prepareLessonRunner } from "./prepare-lesson-runner";
 import type { ParsedExerciseView } from "./lesson-runner-types";
 import { UnsupportedExercisePanel } from "./UnsupportedExercisePanel";
@@ -305,7 +306,7 @@ function LessonRunnerActive({
   onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
   submission?: LessonRunnerSubmissionView;
 }) {
-  const { state, currentExercise, selectOption, nextExercise } = useLessonRunner({
+  const { state, currentExercise, selectOption, nextExercise, completeTap } = useLessonRunner({
     exercises,
     expiresAt,
   });
@@ -333,7 +334,9 @@ function LessonRunnerActive({
   const interactionDisabled = isLessonRunnerInteractionDisabled(state.status);
   const isLastExercise =
     state.exercises.length > 0 && state.currentIndex === state.exercises.length - 1;
-  const canAdvance = canAdvanceLessonRunner(state.status, state.selectedOptionId);
+  const isTapExercise = currentExercise?.interaction.mode === "tap";
+  const canAdvance =
+    !isTapExercise && canAdvanceLessonRunner(state.status, state.selectedOptionId);
 
   return (
     <div className="space-y-6">
@@ -345,27 +348,37 @@ function LessonRunnerActive({
       />
 
       {currentExercise ? (
-        <>
-          <ExerciseMediaBlock media={currentExercise.media} />
-          <MultipleChoiceExercise
+        isTapExercise ? (
+          <RhythmTapExercise
             exercise={currentExercise}
-            selectedOptionId={state.selectedOptionId}
             disabled={interactionDisabled}
-            onSelect={selectOption}
+            onComplete={completeTap}
           />
-        </>
+        ) : (
+          <>
+            <ExerciseMediaBlock media={currentExercise.media} />
+            <MultipleChoiceExercise
+              exercise={currentExercise}
+              selectedOptionId={state.selectedOptionId}
+              disabled={interactionDisabled}
+              onSelect={selectOption}
+            />
+          </>
+        )
       ) : null}
 
       <div className="flex flex-col gap-3 pt-2">
-        <Button
-          type="button"
-          onClick={nextExercise}
-          disabled={!canAdvance}
-          className="w-full font-medium min-h-[44px] tracking-wide"
-          style={{ background: GM_GOLD, color: "#0A0A0A" }}
-        >
-          {isLastExercise ? "Finalizar práctica" : "Siguiente"}
-        </Button>
+        {!isTapExercise ? (
+          <Button
+            type="button"
+            onClick={nextExercise}
+            disabled={!canAdvance}
+            className="w-full font-medium min-h-[44px] tracking-wide"
+            style={{ background: GM_GOLD, color: "#0A0A0A" }}
+          >
+            {isLastExercise ? "Finalizar práctica" : "Siguiente"}
+          </Button>
+        ) : null}
         <Button
           type="button"
           variant="outline"

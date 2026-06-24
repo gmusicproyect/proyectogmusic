@@ -189,6 +189,28 @@ Commits: `2e7358c` (Fase A implementación).
 
 **Fase B — DESBLOQUEADA:** `ExPulsoAire` + `tapSequence` para `RHYTHM_TAP` con payload extendido.
 
+### Cierre D-GOV-14 Fase B (24 Jun 2026)
+
+**D-GOV-14 FASE B CERRADA · 24 Jun 2026 · OK TAP · OK complete · OK XP**
+
+| Check | Resultado |
+|-------|-----------|
+| Parser | `RHYTHM_TAP` + `tapSequence` + `submissionOptionId` → `interaction.mode: tap` |
+| UI | `RhythmTapExercise` → `ExPulsoAire` en `LessonRunnerShell` (sin botón Siguiente en TAP) |
+| Reducer | `COMPLETE_TAP` → `selectedAnswer` = `submissionOptionId` |
+| Seed | Nodo **Escucha el pulso** ej.1 = 8× cuerda 6 (demo clase 4) · `secureAnswer: tap-complete` |
+| Tests app | **414/414** verdes (`npm run app:test`) |
+| QA T1 TAP | `lesson-sessions` → payload público con `tapSequence` (sin `secureAnswer`) → `complete` con `tap-complete` → **+100 XP · racha 1** |
+
+| Área | Entrega |
+|------|---------|
+| Tipos | `ParsedExerciseInteraction` (`mcq` \| `tap`) en `lesson-runner-types.ts` |
+| Parser | `parseTapSequence` / `parseTapInteraction` en `parse-exercise-payload.ts` |
+| Runner | `RhythmTapExercise.tsx` + wiring `LessonRunnerShell` + `completeTap()` en hook |
+| Seed | `prisma/seed.ts` nodo pulso alineado demo clase 4 |
+
+**D-GOV-14 COMPLETO** — Fase A (MCQ loop) + Fase B (TAP manual D-001) cerrados.
+
 ---
 
 ## D-PROD-01 — Onboarding con detección de temperamento

@@ -12,6 +12,22 @@ export interface SafeExerciseMedia {
   patternBeats?: string[];
 }
 
+export interface TapSequenceBeat {
+  stringNumber: number;
+  label: string;
+  stringName: string;
+}
+
+export type ParsedExerciseInteraction =
+  | { mode: "mcq" }
+  | {
+      mode: "tap";
+      submissionOptionId: string;
+      tapSequence: TapSequenceBeat[];
+      tapHeadline: string;
+      tapDescription: string;
+    };
+
 export interface ParsedExerciseView {
   id: string;
   type: ExerciseType;
@@ -19,6 +35,7 @@ export interface ParsedExerciseView {
   instruction: string;
   options: SafeExerciseOption[];
   media: SafeExerciseMedia;
+  interaction: ParsedExerciseInteraction;
 }
 
 export type ExerciseParseResult =

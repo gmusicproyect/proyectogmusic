@@ -20,6 +20,7 @@ const EXERCISE_A: ParsedExerciseView = {
     { id: "b", text: "La" },
   ],
   media: {},
+  interaction: { mode: "mcq" },
 };
 
 const EXERCISE_B: ParsedExerciseView = {
@@ -32,6 +33,7 @@ const EXERCISE_B: ParsedExerciseView = {
     { id: "y", text: "Opción Y" },
   ],
   media: { diagramLabel: "Am abierto" },
+  interaction: { mode: "mcq" },
 };
 
 const EXERCISE_C: ParsedExerciseView = {
@@ -44,6 +46,26 @@ const EXERCISE_C: ParsedExerciseView = {
     { id: "2", text: "No" },
   ],
   media: { audioUrl: "https://cdn.example.com/chord.mp3" },
+  interaction: { mode: "mcq" },
+};
+
+const EXERCISE_TAP: ParsedExerciseView = {
+  id: "ex-tap",
+  type: "RHYTHM_TAP",
+  difficulty: 1,
+  instruction: "Marca el pulso.",
+  options: [],
+  media: {},
+  interaction: {
+    mode: "tap",
+    submissionOptionId: "tap-complete",
+    tapHeadline: "Pulso en cuerda 6",
+    tapDescription: "Toca la cuerda 6 al aire en cada TAP.",
+    tapSequence: [
+      { stringNumber: 6, label: "6", stringName: "Mi grave" },
+      { stringNumber: 6, label: "6", stringName: "Mi grave" },
+    ],
+  },
 };
 
 const STARTED_AT_MS = 1_000_000;
@@ -266,6 +288,61 @@ describe("NEXT_EXERCISE", () => {
 
     assert.equal(blocked, expired);
     assert.deepEqual(blocked.attemptsDraft, []);
+  });
+});
+
+describe("COMPLETE_TAP", () => {
+  it("registra attempt con submissionOptionId y avanza", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_TAP, EXERCISE_A], STARTED_AT_MS);
+    const advanced = lessonRunnerReducer(initial, {
+      type: "COMPLETE_TAP",
+      nowMs: STARTED_AT_MS + 3_000,
+    });
+
+    assert.equal(advanced.status, "ready");
+    assert.equal(advanced.currentIndex, 1);
+    assert.deepEqual(advanced.attemptsDraft, [
+      {
+        microExerciseId: "ex-tap",
+        selectedAnswer: "tap-complete",
+        responseTimeMs: 3_000,
+      },
+    ]);
+  });
+
+  it("último ejercicio TAP cambia status a finished", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_TAP], STARTED_AT_MS);
+    const finished = lessonRunnerReducer(initial, {
+      type: "COMPLETE_TAP",
+      nowMs: STARTED_AT_MS + 500,
+    });
+
+    assert.equal(finished.status, "finished");
+    assert.equal(finished.attemptsDraft[0]?.selectedAnswer, "tap-complete");
+  });
+
+  it("ignora COMPLETE_TAP en ejercicio MCQ", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_A], STARTED_AT_MS);
+    const unchanged = lessonRunnerReducer(initial, {
+      type: "COMPLETE_TAP",
+      nowMs: STARTED_AT_MS + 100,
+    });
+
+    assert.equal(unchanged, initial);
+  });
+
+  it("no duplica attempt TAP para el mismo ejercicio", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_TAP], STARTED_AT_MS);
+    const finished = lessonRunnerReducer(initial, {
+      type: "COMPLETE_TAP",
+      nowMs: STARTED_AT_MS + 100,
+    });
+    const duplicate = lessonRunnerReducer(finished, {
+      type: "COMPLETE_TAP",
+      nowMs: STARTED_AT_MS + 200,
+    });
+
+    assert.equal(duplicate.attemptsDraft.length, 1);
   });
 });
 
