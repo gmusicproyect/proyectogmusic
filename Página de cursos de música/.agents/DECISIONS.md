@@ -154,7 +154,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-GOV-04 | Pedagogía 6–75: ¿skill-graph guitarra (YAML) antes de títulos reales 6–15? | Juan |
 | D-GOV-11 | ¿Acceso gratis obligatorio (nombre/email/WhatsApp) antes de quiz + demo 5 clases? ¿Ticket 3.6 o prerequisito de T4? | Juan |
 | D-GOV-13 | ¿Aprobar referencia FCC-inspiration y calendario FCC-A2…A6 post-T3? | Juan |
-| ~~D-GOV-14~~ | ~~¿Aprobar ticket LessonRunner → GmusicPath (Fase A + Fase B TAP)?~~ | ✅ Aprobado 24 Jun 2026 (Juan) — **Fase A en implementación** post T3 |
+| ~~D-GOV-14~~ | ~~¿Aprobar ticket LessonRunner → GmusicPath (Fase A + Fase B TAP)?~~ | ✅ Aprobado 24 Jun 2026 (Juan) — **Fase A CERRADA** · **Fase B desbloqueada** |
 
 ---
 
@@ -164,22 +164,30 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 |--------|--------|-------|-----------|
 | **T3** | **CERRADO** | 24 Jun 2026 | Email `test-t3-20260624c@gmusic.com` · WhatsApp OK · Supabase OK (`session_id` `da224c05-5c73-4467-a7d4-5188831afafd`, `plus-semester`) · PostHog OK (eventos cableados desde `900f1f4`) · fixes `410cf00`, `fb92675` |
 | **T3.5** | **CERRADO** | 24 Jun 2026 | Reset funnel post-lead · commit base `900f1f4` |
-| **T4** | **NO INICIADO** | — | Bloqueado hasta Fase A D-GOV-14 verde |
+| **T4** | **NO INICIADO** | — | Gate Fase A levantado (24 Jun 2026) · pendiente ticket explícito |
 
 Commits T3 relevantes: `900f1f4` (FormData + link-lead), `410cf00` (autofill WhatsApp), `fb92675` (API Vercel→Render + quiz sync).
 
-### Kickoff D-GOV-14 Fase A (24 Jun 2026)
+### Cierre D-GOV-14 Fase A (24 Jun 2026)
+
+**D-GOV-14 FASE A CERRADA · 24 Jun 2026 · OK XP · OK racha · OK path refresh**
+
+| Check | Resultado |
+|-------|-----------|
+| Deploy prod | `2e7358c` — bundle Vercel incluye `Práctica completada` |
+| QA T1 loop | Suscriptor dev → `POST /lesson-sessions` → MCQ → `POST /complete` → **+100 XP · racha 1 · 100% precisión** → path `completed` 0→1, nodo activo `Primer acorde Am` |
+| Prod `/mi-camino` | Redirige sin sesión suscriptor real (esperado: D-017 `devStudentAuth` off en prod) |
+
+Commits: `2e7358c` (Fase A implementación).
 
 | Área | Entrega |
 |------|---------|
 | Cliente API | `completeLessonSession` → `POST /lesson-sessions/:id/complete` |
-| Mi Camino | `GmusicPath` abre `PathLessonRunner` tras sesión creada (reemplaza modal placeholder) |
-| Loop MCQ | `LessonRunnerShell` → `onPracticeFinished` → complete → pantalla XP/racha/precisión |
+| Mi Camino | `GmusicPath` → `PathLessonRunner` fullscreen tras sesión creada |
+| Loop MCQ | `LessonRunnerShell` → complete → pantalla XP/racha/precisión |
 | Refresco | `path.retry()` al cerrar runner y tras complete exitoso |
 
-**Estado:** implementación local · pendiente commit + QA manual suscriptor T1.
-
-**Fase B (pendiente):** `ExPulsoAire` + `tapSequence` para `RHYTHM_TAP` con payload extendido.
+**Fase B — DESBLOQUEADA:** `ExPulsoAire` + `tapSequence` para `RHYTHM_TAP` con payload extendido.
 
 ---
 
