@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GmusicInternalHeader, isLockedNav, LOCKED_NAV_MODAL } from "../components/gmusic/GmusicInternalHeader";
 import { GmusicPlaceholderModal } from "../components/gmusic/GmusicPlaceholderModal";
 import { DashboardErrorBanner } from "../components/gmusic/dashboard";
@@ -6,22 +6,26 @@ import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
 import { SerpentinePathMap } from "../components/gmusic/path/SerpentinePathMap";
 import { ActiveNodePanel } from "../components/gmusic/path/ActiveNodePanel";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
-import { LessonSessionReadyModal } from "../components/gmusic/path/LessonSessionReadyModal";
+import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
 import {
-  buildSessionReadyModalContent,
   canStartLessonFromNode,
 } from "../components/gmusic/path/path-lesson-start";
 import {
   resolveLessonSessionForPanel,
-  resolveMatchingSuccessKey,
-  resolveSessionModalVisibility,
 } from "../components/gmusic/path/path-lesson-panel-session";
 import { GM_BG, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { usePath } from "../hooks/usePath";
 import { useStartLessonSession } from "../hooks/useStartLessonSession";
 import { findPathNodeById } from "../services/gmusic-api/map-path";
 import type { PathNodeData } from "../data/gmusic-path-types";
+import type { LessonSessionResponse } from "../services/gmusic-api/types";
 import { derivePathHeaderIdentity } from "../utils/student-zone-identity";
+
+interface ActivePathRunner {
+  session: LessonSessionResponse;
+  nodeTitle: string;
+  nodeId: string;
+}
 
 interface GmusicPathProps {
   setPage: (page: string) => void;
@@ -37,7 +41,7 @@ function panelEyebrow(node: PathNodeData | null): string {
 
 export function GmusicPath({ setPage }: GmusicPathProps) {
   const [modal, setModal] = useState<ModalKind>(null);
-  const [dismissedSuccessKey, setDismissedSuccessKey] = useState<string | null>(null);
+  const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const path = usePath();
   const lessonSession = useStartLessonSession();
@@ -84,13 +88,17 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
   const panelNode = viewModel ? findPathNodeById(viewModel.modules, selectedNodeId) : null;
   const canStartLesson = canStartLessonFromNode(panelNode);
   const panelSession = resolveLessonSessionForPanel(lessonSession, panelNode?.id);
-  const matchingSuccessKey = resolveMatchingSuccessKey(lessonSession, panelNode?.id);
-  const sessionModalOpen = resolveSessionModalVisibility(matchingSuccessKey, dismissedSuccessKey);
 
-  const sessionModalContent = useMemo(() => {
-    if (!panelSession.sessionSuccess) return null;
-    return buildSessionReadyModalContent(panelSession.sessionSuccess);
-  }, [panelSession.sessionSuccess]);
+  useEffect(() => {
+    if (lessonSession.status !== "success" || !panelNode) return;
+    if (lessonSession.nodeId !== panelNode.id) return;
+
+    setActiveRunner({
+      session: lessonSession.result.session,
+      nodeTitle: panelNode.title,
+      nodeId: panelNode.id,
+    });
+  }, [lessonSession.status, lessonSession.nodeId, lessonSession.result, panelNode]);
 
   const handleStartLesson = useCallback(() => {
     if (!panelNode || !canStartLessonFromNode(panelNode)) return;
@@ -102,9 +110,10 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     lessonSession.retry();
   }, [panelSession.showRetry, lessonSession]);
 
-  const handleCloseSessionModal = useCallback(() => {
-    if (matchingSuccessKey) setDismissedSuccessKey(matchingSuccessKey);
-  }, [matchingSuccessKey]);
+  const handleCloseRunner = useCallback(() => {
+    setActiveRunner(null);
+    path.retry();
+  }, [path]);
 
   const sharedPanelProps = {
     onStartLesson: handleStartLesson,
@@ -232,11 +241,13 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         footer={mp.footer}
       />
 
-      {sessionModalContent && sessionModalOpen && (
-        <LessonSessionReadyModal
-          open={sessionModalOpen}
-          onClose={handleCloseSessionModal}
-          content={sessionModalContent}
+      {activeRunner && (
+        <PathLessonRunner
+          key={activeRunner.session.sessionId}
+          session={activeRunner.session}
+          nodeTitle={activeRunner.nodeTitle}
+          onExit={handleCloseRunner}
+          onSessionCompleted={path.retry}
         />
       )}
     </div>

@@ -109,6 +109,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | ID | Decisión | Fecha | Estado | Razón |
 |----|----------|-------|--------|-------|
 | D-GOV-07 | **Integración alphaTab para lecciones interactivas:** renderizar archivos Guitar Pro (.gp/.gpx) en browser vía `@coderline/alphatab` (tablatura animada + alphaSynth). Flujo: JP exporta desde Guitar Pro 8 → sube a Sanity → alphaTab en lección. **Scope:** nivel intermedio únicamente (módulos 7, 9, 10). **No autoriza:** audio recognition, MIDI físico, nivel básico, implementación antes de alumnos en intermedio. Ejercicios básicos interactivos (diagramas, quiz, mástil) = React + Tone.js, sin D-GOV extra. **Doc completo:** `docs/architecture/D-GOV-07-alphatab.md`. **No afecta:** server/, prisma/, auth, pagos, R-001, R-002. | 20 Jun 2026 | **Propuesta — pendiente aprobación** | Registrar evaluación técnica sin implementar. Criterios de aprobación: D-GOV-04 resuelta, ≥1 alumno real en básico, bundle 500KB optimizado, prueba aislada de alphaTab. |
+| D-GOV-14 | **Cablear práctica real en Mi Camino (LessonRunner → GmusicPath):** cerrar el loop alumno suscriptor: iniciar sesión → practicar → `POST /complete` → XP/racha visibles. **Gate:** T3/T3.5 E2E cerrado (Juan). **Fase A (obligatoria):** tras `POST /lesson-sessions` success, `GmusicPath` renderiza `LessonRunnerShell` (fullscreen o overlay); cliente `completeLessonSession` + hook que al `status === finished` envía `attemptsDraft`; pantalla éxito con `xpEarned` / `currentStreak`; refresco `usePath` / dashboard. MCQ para tipos ya parseados (`IDENTIFY_NOTE`, `EAR_TRAINING`, `CHORD_SHAPE`, `RHYTHM_TAP` seed actual = MCQ + `patternBeats`). **Fase B (mismo ticket, scope acotado):** `RHYTHM_TAP` con `tapSequence` en `contentPayload` → componente `ExPulsoAire` adaptado; al completar secuencia enviar `selectedAnswer` = `submissionOptionId` (sin `secureAnswer` en cliente); seed nodo pulso alineado a demo clase 4 (D-001: TAP manual, sin micrófono). P-005 no bloquea Fase B. **No autoriza:** alphaTab, Tone.js, micrófono, `CHORD_SHAPE` mástil, T4, D-GOV-11, cambios funnel demo. **QA Fase A:** alumno T1 → nodo disponible → sesión → MCQ → complete → XP en UI. **QA Fase B:** mismo flujo con TAP en nodo pulso. Estimación: Fase A 1–2 días; Fase B +2–3 días post-T3. | 24 Jun 2026 | **Aprobada** (Juan) | Implementar post cierre T3/T3.5 E2E. Fase A primero (loop MCQ + `/complete`); Fase B extiende payload TAP. |
 
 ---
 
@@ -120,6 +121,8 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-GOV-09 | **Energía Géminis — principios UX (sin cambio de stack):** adoptar dinamismo, adaptabilidad y fluidez como estándar de experiencia. **UX camaleónica:** microinteracciones y ritmo visual según `calculated_temperament` (ej. recompensas rápidas Sanguíneo; estructura clara Melancólico). **Velocidad percibida:** optimizar SPA actual (routing cliente, View Transitions API donde aplique, carga diferida) — no SSR masivo ni migración a Next.js/SvelteKit en Track A. **Wasm (futuro):** cálculos pesados (audio, partituras) vía WebAssembly en Web Workers, sin bloquear React. **A11y:** WCAG 2.2+ — teclado, contraste obsidiana/oro, ARIA en componentes interactivos. **No autoriza:** rewrite a Next.js, PWA offline completa, Wasm en producción, ni cambios de schema. **Stack vigente:** Vite + React SPA + Express + Prisma (D-018). | Jun 2026 | **Aprobada** (Juan + Tech Lead) | North star UX 2026 alineado a momentum actual; descartar migración de framework por costo vs valor inmediato. |
 | D-GOV-10 | **Ruta pública `/quiz-temperamento` y gating del quiz anónimo (extensión D-GOV-02/03):** `onboarding-quiz` → `/quiz-temperamento`; refresh SPA vía rewrite Vercel; CTAs Academia e `InteractiveLevelSelector` enrutan al quiz si `shouldShowTemperamentQuiz({ isSubscribedStudent: false })`; alumno autenticado redirige a `mi-estudio`. **No autoriza:** UI adaptativa completa por temperamento (Ticket 4), cambios de pricing, auth, pagos, rediseño del funnel, schema ni nuevas rutas fuera del mapa D-GOV-02. | Jun 2026 | **Aprobada** (Juan) | Acceso directo al quiz en producción; alinea embudo anónimo con captura T3 sin ampliar scope a Ticket 4. |
 | D-GOV-11 | **Acceso gratis obligatorio antes de quiz + demo (propuesta T3.6 / pre-T4):** el visitante 100% anónimo solo ve landing/preview. Para iniciar quiz + 5 clases debe crear **acceso gratuito simple** (nombre, email, WhatsApp). Flujo propuesto: Landing → Crear acceso gratis → Quiz temperamento → Mi Camino demo 5 clases → Gate inscripción/WhatsApp. Copy guía: *«Crea tu acceso gratis y guarda tu avance.»* Prohibido antes del demo: «Paga», «Compra», «Inscríbete al plan». **Reglas:** lead gratuito guarda avance en Postgres/backend; `localStorage` solo estado temporal; alumno pagante mantiene progreso real; no mezclar `resetAnonymousFunnelAfterLeadCapture` con progreso de alumno registrado. **No autoriza:** implementación en fix `900f1f4` ni Ticket 4. Evaluar como Ticket 3.6 o prerequisito de T4. **Doc:** `docs/architecture/D-GOV-11-acceso-gratis-pre-demo.md`. | Jun 2026 | **Propuesta — pendiente aprobación** (Juan) | Separar preview anónima de embudo con identidad mínima; persistencia real antes del demo sin forzar pago. |
+| D-GOV-12 | **Adopción ECC curada (no plugin completo):** integrar solo patrones ECC que complementan Gmusic — verificación (`gmusic-verification`), CI/deploy (`gmusic-ci-deploy`), handoff (`gmusic-session-handoff`), `npm run verify`, workflow CI, `agent-status.sh`. **No autoriza:** instalar `ecc@ecc` / `ecc-universal` entero, catálogo 260+ skills, Hermes, ecc2 daemon, skills ajenos al dominio, ni reglas ECC que contradigan DECISIONS. **Doc:** `docs/agents/ecc-adoption.md`. | Jun 2026 | **Aprobada** (Juan) | Mejorar harness de agentes sin diluir gobernanza Gmusic ni tickets T3/T3.5/T4. |
+| D-GOV-13 | **Inspiración freeCodeCamp (referencia pedagógica, no fork):** FCC aporta patrones de currículo versionado, validación de contenido, seeds e2e y separación contenido/runtime/API. **Responsabilidad:** escalar lecciones 6–75 y motor de ejercicios post-gates; **no** funnel T3, stack, auth, pagos ni Track B app. **No autoriza:** implementación hasta T3/T3.5 E2E cerrado + ticket explícito (FCC-A2…A6). **Doc:** `docs/agents/fcc-inspiration.md`. | Jun 2026 | **Propuesta — pendiente aprobación** (Juan) | Referencia clara sin scope creep; calendario de cuándo FCC aporta vs cuándo está bloqueado. |
 
 ---
 
@@ -150,6 +153,33 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | P-005 | ¿Patch pedagógico ExPulsoAire? Clase 4: cuerdas alternadas 6/5/4 vs solo cuerda 6. Clase 5: 15 beats con silencios vs 10 sin silencios. | Juan |
 | D-GOV-04 | Pedagogía 6–75: ¿skill-graph guitarra (YAML) antes de títulos reales 6–15? | Juan |
 | D-GOV-11 | ¿Acceso gratis obligatorio (nombre/email/WhatsApp) antes de quiz + demo 5 clases? ¿Ticket 3.6 o prerequisito de T4? | Juan |
+| D-GOV-13 | ¿Aprobar referencia FCC-inspiration y calendario FCC-A2…A6 post-T3? | Juan |
+| ~~D-GOV-14~~ | ~~¿Aprobar ticket LessonRunner → GmusicPath (Fase A + Fase B TAP)?~~ | ✅ Aprobado 24 Jun 2026 (Juan) — **Fase A en implementación** post T3 |
+
+---
+
+## Cierre operativo — T3 / T3.5 (Track A)
+
+| Ticket | Estado | Fecha | Evidencia |
+|--------|--------|-------|-----------|
+| **T3** | **CERRADO** | 24 Jun 2026 | Email `test-t3-20260624c@gmusic.com` · WhatsApp OK · Supabase OK (`session_id` `da224c05-5c73-4467-a7d4-5188831afafd`, `plus-semester`) · PostHog OK (eventos cableados desde `900f1f4`) · fixes `410cf00`, `fb92675` |
+| **T3.5** | **CERRADO** | 24 Jun 2026 | Reset funnel post-lead · commit base `900f1f4` |
+| **T4** | **NO INICIADO** | — | Bloqueado hasta Fase A D-GOV-14 verde |
+
+Commits T3 relevantes: `900f1f4` (FormData + link-lead), `410cf00` (autofill WhatsApp), `fb92675` (API Vercel→Render + quiz sync).
+
+### Kickoff D-GOV-14 Fase A (24 Jun 2026)
+
+| Área | Entrega |
+|------|---------|
+| Cliente API | `completeLessonSession` → `POST /lesson-sessions/:id/complete` |
+| Mi Camino | `GmusicPath` abre `PathLessonRunner` tras sesión creada (reemplaza modal placeholder) |
+| Loop MCQ | `LessonRunnerShell` → `onPracticeFinished` → complete → pantalla XP/racha/precisión |
+| Refresco | `path.retry()` al cerrar runner y tras complete exitoso |
+
+**Estado:** implementación local · pendiente commit + QA manual suscriptor T1.
+
+**Fase B (pendiente):** `ExPulsoAire` + `tapSequence` para `RHYTHM_TAP` con payload extendido.
 
 ---
 

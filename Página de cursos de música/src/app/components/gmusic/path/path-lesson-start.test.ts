@@ -91,16 +91,14 @@ describe("abbreviateSessionId", () => {
 });
 
 describe("GmusicPath conectado a sesión", () => {
-  it("usa useStartLessonSession y elimina placeholder de lección", () => {
+  it("usa useStartLessonSession y abre PathLessonRunner (D-GOV-14 Fase A)", () => {
     assert.match(gmusicPathSource, /useStartLessonSession/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
-    assert.match(gmusicPathSource, /LessonSessionReadyModal/);
+    assert.match(gmusicPathSource, /PathLessonRunner/);
+    assert.match(gmusicPathSource, /activeRunner/);
     assert.match(gmusicPathSource, /resolveLessonSessionForPanel/);
-    assert.match(gmusicPathSource, /resolveMatchingSuccessKey/);
-    assert.match(gmusicPathSource, /resolveSessionModalVisibility/);
-    assert.match(gmusicPathSource, /dismissedSuccessKey/);
-    assert.equal(gmusicPathSource.includes("setSessionModalOpen"), false);
-    assert.equal(gmusicPathSource.includes("shouldOpenSessionReadyModal"), false);
+    assert.equal(gmusicPathSource.includes("LessonSessionReadyModal"), false);
+    assert.equal(gmusicPathSource.includes("resolveMatchingSuccessKey"), false);
     assert.equal(gmusicPathSource.includes('case "lesson"'), false);
     assert.equal(gmusicPathSource.includes("Próximamente — lección interactiva"), false);
     assert.equal(gmusicPathSource.includes('setModal("lesson")'), false);

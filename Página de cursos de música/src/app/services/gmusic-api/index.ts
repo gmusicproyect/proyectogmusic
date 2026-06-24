@@ -1,6 +1,7 @@
 export { fetchDashboard } from "./dashboard";
 export { fetchPath } from "./path";
 export { createLessonSession } from "./lesson-session";
+export { completeLessonSession } from "./complete-lesson-session";
 export { loadLessonSessionOnce } from "./lesson-session-load";
 export { GmusicApiError, apiGet, apiPost, isAbortError } from "./client";
 export { getApiBaseUrl, isDashboardMockEnabled, isPathMockEnabled } from "./config";

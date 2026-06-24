@@ -422,7 +422,7 @@ describe("LessonRunnerShell — seguridad", () => {
     }
   });
 
-  it("full-view aislado sin overlay conectado", () => {
+  it("full-view aislado sin overlay conectado en shell", () => {
     assert.equal(shellSource.includes("GmusicPath"), false);
     assert.equal(shellSource.includes("activeRunner"), false);
     assert.equal(shellSource.includes("fixed inset-0"), false);

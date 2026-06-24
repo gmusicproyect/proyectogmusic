@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 import { Button } from "../../ui/button";
 import { GmusicApiError } from "../../../services/gmusic-api/client";
@@ -21,11 +21,27 @@ import type { ParsedExerciseView } from "./lesson-runner-types";
 import { UnsupportedExercisePanel } from "./UnsupportedExercisePanel";
 import { useLessonRunner } from "./useLessonRunner";
 import type { LessonRunnerStatus } from "./lesson-runner-state";
+import type { RunnerAttemptDraft } from "./lesson-runner-state";
+
+export type LessonRunnerCompletionSummary = {
+  points: number;
+  streakDays: number;
+  precisionPercent: number;
+  stepCompleted: boolean;
+};
+
+export type LessonRunnerSubmissionView =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; summary: LessonRunnerCompletionSummary }
+  | { status: "error"; message: string };
 
 export interface LessonRunnerShellProps {
   session: LessonSessionResponse;
   nodeTitle: string;
   onExit: () => void;
+  onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
+  submission?: LessonRunnerSubmissionView;
 }
 
 type ShellPreparation =
@@ -177,11 +193,87 @@ function LessonRunnerExpiredBanner() {
 
 function LessonRunnerFinishedState({
   responseCount,
+  submission = { status: "idle" },
   onExit,
 }: {
   responseCount: number;
+  submission?: LessonRunnerSubmissionView;
   onExit: () => void;
 }) {
+  if (submission.status === "loading") {
+    return (
+      <div
+        className="rounded-lg border p-8 text-center"
+        style={{ background: GM_SURFACE, borderColor: GM_BORDER }}
+      >
+        <h2 className="text-xl font-medium mb-2" style={{ color: GM_GOLD }}>
+          Guardando tu práctica…
+        </h2>
+        <p className="text-sm" style={{ color: GM_TEXT_SEC }}>
+          Estamos registrando tus respuestas y sumando XP.
+        </p>
+      </div>
+    );
+  }
+
+  if (submission.status === "error") {
+    return (
+      <div
+        className="rounded-lg border p-8 text-center"
+        style={{ background: GM_SURFACE, borderColor: GM_BORDER }}
+      >
+        <h2 className="text-xl font-medium mb-2" style={{ color: GM_GOLD }}>
+          No se pudo guardar
+        </h2>
+        <p className="text-sm mb-6" style={{ color: GM_TEXT_SEC }}>
+          {submission.message}
+        </p>
+        <Button
+          type="button"
+          onClick={onExit}
+          className="w-full font-medium min-h-[44px] tracking-wide"
+          style={{ background: GM_GOLD, color: "#0A0A0A" }}
+        >
+          Volver al camino
+        </Button>
+      </div>
+    );
+  }
+
+  if (submission.status === "success") {
+    const { summary } = submission;
+    return (
+      <div
+        className="rounded-lg border p-8 text-center"
+        style={{ background: GM_SURFACE, borderColor: GM_BORDER }}
+      >
+        <h2 className="text-2xl font-medium mb-2" style={{ color: GM_GOLD }}>
+          ¡Práctica completada!
+        </h2>
+        <p className="text-sm mb-4" style={{ color: GM_TEXT_SEC }}>
+          +{summary.points} XP · Racha {summary.streakDays} días · {summary.precisionPercent}% precisión
+        </p>
+        {summary.stepCompleted ? (
+          <p className="text-xs mb-6" style={{ color: GM_TEXT_SEC }}>
+            Paso del camino marcado como completado.
+          </p>
+        ) : (
+          <p className="text-xs mb-6" style={{ color: GM_TEXT_SEC }}>
+            Sigue avanzando en tu camino.
+          </p>
+        )}
+        <Button
+          type="button"
+          onClick={onExit}
+          className="w-full font-medium min-h-[44px] tracking-wide"
+          style={{ background: GM_GOLD, color: "#0A0A0A" }}
+        >
+          Volver al camino
+        </Button>
+      </div>
+    );
+  }
+
   const countLabel =
     responseCount === 1 ? "1 respuesta registrada" : `${responseCount} respuestas registradas`;
 
@@ -191,19 +283,11 @@ function LessonRunnerFinishedState({
       style={{ background: GM_SURFACE, borderColor: GM_BORDER }}
     >
       <h2 className="text-xl font-medium mb-2" style={{ color: GM_GOLD }}>
-        Práctica preparada para enviar
+        Práctica lista
       </h2>
       <p className="text-sm mb-2" style={{ color: GM_TEXT_SEC }}>
-        {countLabel} localmente. El envío al servidor estará disponible en una fase posterior.
+        {countLabel}. Enviando al servidor…
       </p>
-      <Button
-        type="button"
-        onClick={onExit}
-        className="w-full font-medium min-h-[44px] tracking-wide mt-6"
-        style={{ background: GM_GOLD, color: "#0A0A0A" }}
-      >
-        Volver al camino
-      </Button>
     </div>
   );
 }
@@ -212,20 +296,35 @@ function LessonRunnerActive({
   exercises,
   expiresAt,
   onExit,
+  onPracticeFinished,
+  submission,
 }: {
   exercises: ParsedExerciseView[];
   expiresAt: string;
   onExit: () => void;
+  onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
+  submission?: LessonRunnerSubmissionView;
 }) {
   const { state, currentExercise, selectOption, nextExercise } = useLessonRunner({
     exercises,
     expiresAt,
   });
 
+  const finishedSentRef = useRef(false);
+
+  useEffect(() => {
+    if (state.status !== "finished" || !onPracticeFinished || finishedSentRef.current) {
+      return;
+    }
+    finishedSentRef.current = true;
+    onPracticeFinished(state.attemptsDraft);
+  }, [state.status, state.attemptsDraft, onPracticeFinished]);
+
   if (state.status === "finished") {
     return (
       <LessonRunnerFinishedState
         responseCount={state.attemptsDraft.length}
+        submission={submission}
         onExit={onExit}
       />
     );
@@ -284,6 +383,8 @@ export function LessonRunnerShell({
   session,
   nodeTitle,
   onExit,
+  onPracticeFinished,
+  submission,
 }: LessonRunnerShellProps) {
   const preparation = useMemo(() => prepareShellSession(session), [session]);
   const sessionIdLabel = abbreviateSessionId(session.sessionId);
@@ -341,6 +442,8 @@ export function LessonRunnerShell({
         exercises={preparation.exercises}
         expiresAt={session.expiresAt}
         onExit={onExit}
+        onPracticeFinished={onPracticeFinished}
+        submission={submission}
       />
     </LessonRunnerShellFrame>
   );

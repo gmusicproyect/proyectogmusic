@@ -120,6 +120,28 @@ export interface LessonSessionStartResult {
   kind: LessonSessionStartKind;
 }
 
+export interface CompleteLessonAttemptInput {
+  microExerciseId: string;
+  selectedAnswer: string;
+  responseTimeMs: number;
+}
+
+export interface CompleteLessonSessionRequest {
+  attempts: CompleteLessonAttemptInput[];
+}
+
+export interface CompleteLessonSessionResponse {
+  sessionId: string;
+  status: "COMPLETED";
+  alreadyProcessed: boolean;
+  accuracy: number;
+  xpEarned: number;
+  streakUpdated: boolean;
+  currentStreak: number;
+  nodeCompleted: boolean;
+  completedAt: string;
+}
+
 export type AccessReason = "ACTIVE_SUBSCRIPTION" | "NO_ACTIVE_SUBSCRIPTION";
 
 export interface AccessUser {
