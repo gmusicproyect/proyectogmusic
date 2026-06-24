@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { DEMO_FREE_LESSON_COUNT } from "../data/demo-path-catalog";
+import { ANONYMOUS_FUNNEL_RESET_EVENT } from "../utils/anonymous-funnel-storage";
 
 const DEMO_STORAGE_KEY = "gmusic:demo_v1";
 
@@ -68,6 +69,14 @@ export function useDemoProgress() {
   const resetProgress = useCallback(() => {
     writeProgress({ completed: [] });
     setCompletedLessons([]);
+  }, []);
+
+  useEffect(() => {
+    const syncFromStorage = () => {
+      setCompletedLessons(readProgress().completed);
+    };
+    window.addEventListener(ANONYMOUS_FUNNEL_RESET_EVENT, syncFromStorage);
+    return () => window.removeEventListener(ANONYMOUS_FUNNEL_RESET_EVENT, syncFromStorage);
   }, []);
 
   return { completedLessons, markComplete, isLessonComplete, demoFinished, nextLessonNumber, resetProgress };

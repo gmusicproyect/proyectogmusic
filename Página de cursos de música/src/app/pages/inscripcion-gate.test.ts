@@ -137,6 +137,7 @@ describe("InscripcionRegistroPage — bridge WhatsApp", () => {
     assert.equal(registroSource.includes("getOrCreateOnboardingSessionId"), true);
     assert.equal(registroSource.includes("linkOnboardingLead"), true);
     assert.match(registroSource, /onboarding\/link-lead|link-onboarding-lead/);
+    assert.equal(registroSource.includes("resetAnonymousFunnelAfterLeadCapture"), true);
   });
 
   it("mensaje de WhatsApp menciona el nombre del tier y período seleccionados", () => {

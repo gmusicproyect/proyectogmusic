@@ -38,8 +38,17 @@ export function wasTemperamentQuizSkipped(): boolean {
   return localStorage.getItem(SKIPPED_KEY) === "true";
 }
 
-export function shouldShowTemperamentQuiz(): boolean {
+export function shouldShowTemperamentQuiz(options?: { isSubscribedStudent?: boolean }): boolean {
+  if (options?.isSubscribedStudent) return false;
   return !isTemperamentQuizCompleted() && !wasTemperamentQuizSkipped();
+}
+
+export function clearTemperamentQuizLocalStorage(): void {
+  if (!canUseStorage()) return;
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(RESULT_KEY);
+  localStorage.removeItem(SKIPPED_KEY);
+  localStorage.removeItem(PENDING_SYNC_KEY);
 }
 
 function writeLocalQuizResult(result: TemperamentQuizResult): void {

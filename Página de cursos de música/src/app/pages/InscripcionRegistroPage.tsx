@@ -13,6 +13,7 @@ import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
 import { analytics } from "../utils/analytics";
 import { getOrCreateOnboardingSessionId } from "../utils/temperament-quiz-storage";
 import { linkOnboardingLead } from "../services/gmusic-api/link-onboarding-lead";
+import { resetAnonymousFunnelAfterLeadCapture, anonymousFunnelRestartPage } from "../utils/anonymous-funnel-storage";
 
 // Formato wa.me: código país + número, sin "+" ni espacios (ej. "56912345678")
 const WHATSAPP_NUMBER = "56953429676";
@@ -163,6 +164,9 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
     }).catch(() => {
       // El puente WhatsApp sigue aunque falle la persistencia del lead.
     });
+
+    // Reset síncrono: evita carrera si el usuario vuelve al home antes del finally.
+    resetAnonymousFunnelAfterLeadCapture();
 
     window.open(
       buildWhatsappUrl(
@@ -531,24 +535,45 @@ export function InscripcionRegistroPage({ setPage }: InscripcionRegistroPageProp
 
         {/* Secondary nav */}
         <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <button
-            type="button"
-            onClick={() => setPage("inscripcion-gate")}
-            style={{
-              height: 44, padding: "0 22px",
-              borderRadius: 2,
-              background: "transparent",
-              color: TEXT_SEC,
-              fontSize: 11, fontWeight: 600,
-              border: "1px solid rgba(255,255,255,0.1)",
-              cursor: "pointer",
-              letterSpacing: "1px",
-              textTransform: "uppercase",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
-            ← Cambiar plan
-          </button>
+          {formSent ? (
+            <button
+              type="button"
+              onClick={() => setPage(anonymousFunnelRestartPage())}
+              style={{
+                height: 44, padding: "0 22px",
+                borderRadius: 2,
+                background: GOLD,
+                color: "#080808",
+                fontSize: 11, fontWeight: 700,
+                border: "none",
+                cursor: "pointer",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              Repetir quiz y clases gratis
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setPage("inscripcion-gate")}
+              style={{
+                height: 44, padding: "0 22px",
+                borderRadius: 2,
+                background: "transparent",
+                color: TEXT_SEC,
+                fontSize: 11, fontWeight: 600,
+                border: "1px solid rgba(255,255,255,0.1)",
+                cursor: "pointer",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                fontFamily: "Inter, sans-serif",
+              }}
+            >
+              ← Cambiar plan
+            </button>
+          )}
 
           <button
             type="button"

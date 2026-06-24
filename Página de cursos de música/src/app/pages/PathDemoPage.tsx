@@ -15,6 +15,7 @@ import {
 import { useDemoProgress } from "../hooks/useDemoProgress";
 import { GM_BG, GM_BORDER, GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { navigateToHomeSection } from "../utils/public-home-navigation";
+import { ANONYMOUS_FUNNEL_RESET_EVENT } from "../utils/anonymous-funnel-storage";
 import { buildDemoModules, countFreeDemoCompleted } from "./demo-path-build";
 
 export { buildDemoModules } from "./demo-path-build";
@@ -182,8 +183,19 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
   }, [setPage]);
 
   const handleInscripcion = useCallback(() => {
-    setPage("inscripcion-gate");
-  }, [setPage]);
+    if (demoFinished) {
+      setPage("inscripcion-gate");
+    }
+  }, [demoFinished, setPage]);
+
+  const handleAcademyTeaser = useCallback(() => {
+    if (demoFinished) {
+      setPage("inscripcion-gate");
+      return;
+    }
+    const nextFree = Math.min(freeCompleted + 1, DEMO_FREE_LESSON_COUNT);
+    setPage(`demo-clase-${nextFree}`);
+  }, [demoFinished, freeCompleted, setPage]);
 
   const handleTabChange = useCallback(
     (tab: "inicio" | "mi-camino" | "mi-estudio" | "mi-progreso") => {
@@ -213,6 +225,15 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
     });
     return () => cancelAnimationFrame(frame);
   }, [lockedSelection]);
+
+  useEffect(() => {
+    const onFunnelReset = () => {
+      setLockedSelection(null);
+      setPreviewAsFirstVisit(false);
+    };
+    window.addEventListener(ANONYMOUS_FUNNEL_RESET_EVENT, onFunnelReset);
+    return () => window.removeEventListener(ANONYMOUS_FUNNEL_RESET_EVENT, onFunnelReset);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: GM_BG, color: GM_TEXT }}>
@@ -336,7 +357,7 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
             allowLockedSelection
             onStartLesson={handleStartLesson}
             onLockedClick={handleLockedClick}
-            onAcademyTeaserClick={handleInscripcion}
+            onAcademyTeaserClick={handleAcademyTeaser}
             hintText={
               showCompletedState
                 ? "Desliza — 5 gratuitas completadas · preview del camino"

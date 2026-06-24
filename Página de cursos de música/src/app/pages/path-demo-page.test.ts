@@ -85,6 +85,8 @@ describe("PathDemoPage — camino demo público", () => {
     assert.equal(demoPageSource.includes("LockedDemoNodePanel"), true);
     assert.equal(demoPageSource.includes("subscriptionLock"), true);
     assert.equal(demoPageSource.includes("onAcademyTeaserClick"), true);
+    assert.equal(demoPageSource.includes("handleAcademyTeaser"), true);
+    assert.equal(demoPageSource.includes("demoFinished"), true);
   });
 
   it("PathDemoPage usa solo DemoAcademyNav (Visual C — sin GmusicInternalHeader)", () => {
