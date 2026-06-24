@@ -20,6 +20,7 @@ import {
   setSessionStartedAt,
   type UserProgressSnapshot,
 } from "./helpers/db.js";
+import { buildSessionCookieHeader } from "./helpers/authSession.js";
 
 describe("sanitizeContentPayload", () => {
   it("elimina secretos anidados en objetos y arrays sin mutar el original", () => {
@@ -84,9 +85,12 @@ integration("POST /api/v1/lesson-sessions", () => {
   let studentId = "";
   let originalUserProgress: UserProgressSnapshot | null = null;
 
+  let studentCookie = "";
+
   before(async () => {
     const student = await getDevStudent();
     studentId = student.id;
+    studentCookie = await buildSessionCookieHeader(studentId);
     const nodes = await getNodeIdsByStatus(studentId);
     activeNodeId = nodes.active ?? "";
     lockedNodeId = nodes.locked ?? "";
@@ -110,6 +114,7 @@ integration("POST /api/v1/lesson-sessions", () => {
   it("rechaza nodo locked", async () => {
     const response = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: lockedNodeId });
 
     assert.equal(response.status, 400);
@@ -123,6 +128,7 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const response = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(response.status, 400);
@@ -136,6 +142,7 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const response = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(response.status, 201);
@@ -155,12 +162,14 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const first = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(first.status, 201);
 
     const second = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(second.status, 200);
@@ -175,6 +184,7 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const first = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(first.status, 201);
@@ -183,6 +193,7 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const second = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(second.status, 201);
@@ -197,6 +208,7 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const response = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId: activeNodeId });
 
     assert.equal(response.status, 201);
@@ -208,7 +220,10 @@ integration("POST /api/v1/lesson-sessions", () => {
 
     const responses = await Promise.all(
       Array.from({ length: 10 }, () =>
-        request(app).post("/api/v1/lesson-sessions").send({ nodeId: activeNodeId })
+        request(app)
+          .post("/api/v1/lesson-sessions")
+          .set("Cookie", studentCookie)
+          .send({ nodeId: activeNodeId })
       )
     );
 

@@ -24,6 +24,7 @@ export async function apiGet<T>(
     headers: {
       Accept: "application/json",
     },
+    credentials: "include",
     signal: options?.signal,
   });
 
@@ -56,6 +57,7 @@ export async function apiPost<T>(
       Accept: "application/json",
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(body),
     signal: options?.signal,
   });

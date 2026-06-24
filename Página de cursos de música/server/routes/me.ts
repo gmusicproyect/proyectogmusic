@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { config } from "../config.js";
-import { assertStudent, devStudentAuth } from "../middleware/devStudentAuth.js";
+import { assertStudent, realStudentAuth } from "../middleware/realStudentAuth.js";
 import { buildAccessResponse } from "../services/accessService.js";
 import { buildDashboardResponse, buildPathResponse } from "../services/meService.js";
 
 export const meRouter = Router();
 
-meRouter.use(devStudentAuth);
+meRouter.use(realStudentAuth);
 
 meRouter.get("/access", async (req, res, next) => {
   try {

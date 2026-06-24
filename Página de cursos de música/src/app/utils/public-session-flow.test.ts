@@ -9,12 +9,12 @@ const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
 const navbarSource = readFileSync(join(root, "../components/music/Navbar.tsx"), "utf8");
 
 describe("R3.3D — sesión pública y logout", () => {
-  it("App comparte usePublicStudentSession con Navbar y refresca tras checkout", () => {
-    assert.equal(appSource.includes("usePublicStudentSession"), true);
+  it("App comparte useAuth con Navbar y refresca tras checkout", () => {
+    assert.equal(appSource.includes("useAuth"), true);
     assert.equal(appSource.includes("session={publicSession}"), true);
-    assert.match(appSource, /activateSemestralWithAccessVerification[\s\S]*publicSession\.refresh/);
+    assert.match(appSource, /activateSemestralWithAccessVerification[\s\S]*refreshPublicSession/);
     assert.equal(appSource.includes("postDevLogout"), true);
-    assert.match(appSource, /postDevLogout[\s\S]*publicSession\.refresh/);
+    assert.match(appSource, /postDevLogout[\s\S]*refreshPublicSession/);
   });
 
   it("Navbar anónimo muestra Alumno y Regístrate", () => {
@@ -55,7 +55,7 @@ describe("R3.3E — redirección suave home → Mi Estudio", () => {
     assert.match(appSource, /useRef\(false\)/);
   });
 
-  it("useEffect de redirección depende de publicSession.status y currentPage", () => {
+  it("useEffect de redirección depende de session status y currentPage", () => {
     assert.match(
       appSource,
       /hasAppliedAuthenticatedLandingRef[\s\S]*publicSession\.status[\s\S]*mi-estudio/

@@ -10,6 +10,12 @@ import { DemoLessonPage } from "./pages/DemoLessonPage";
 import { InscripcionGatePage } from "./pages/InscripcionGatePage";
 import { InscripcionRegistroPage } from "./pages/InscripcionRegistroPage";
 import { StudentZoneGuard } from "./components/gmusic/StudentZoneGuard";
+import { DemoAuthGuard } from "./components/gmusic/DemoAuthGuard";
+import {
+  LoginCuentaPage,
+  RegistroCuentaPage,
+  RegistroExitoPage,
+} from "./pages/RegistroCuentaPage";
 import { CoursesPage } from "./pages/legacy/AlbumCoursesPages";
 import { AlbumPage } from "./pages/legacy/AlbumCoursesPages";
 import { InstrumentCoursesPage } from "./pages/legacy/InstrumentCoursesPage";
@@ -28,7 +34,7 @@ import { SEMESTRAL_CHECKOUT_COURSE, isSemestralCheckoutCourse } from "./utils/pu
 import { activateSemestralWithAccessVerification } from "./services/gmusic-api/activate-semestral";
 import { postDevLogout, shouldAcceptLogoutSubmission } from "./services/gmusic-api/dev-logout";
 import { GmusicApiError } from "./services/gmusic-api/client";
-import { usePublicStudentSession } from "./hooks/usePublicStudentSession";
+import { useAuth } from "./hooks/useAuth";
 import { analytics } from "./utils/analytics";
 import { flushPendingTemperamentQuizSync } from "./utils/temperament-quiz-storage";
 import { clearAnonymousFunnelLocalStorage } from "./utils/anonymous-funnel-storage";
@@ -78,7 +84,7 @@ export default function App() {
   const [pendingSemestralCheckout, setPendingSemestralCheckout] = useState(false);
   const [logoutProcessing, setLogoutProcessing] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
-  const publicSession = usePublicStudentSession();
+  const { session: publicSession, refresh: refreshPublicSession } = useAuth();
   const hasAppliedAuthenticatedLandingRef = useRef(false);
 
   const handlePageChange = useCallback((page: string) => {
@@ -144,7 +150,7 @@ export default function App() {
     });
 
     setUserState("premium");
-    const sessionOutcome = await publicSession.refresh();
+    const sessionOutcome = await refreshPublicSession();
     if (sessionOutcome.type !== "authenticated") {
       throw new GmusicApiError(
         "La activación no actualizó la sesión pública.",
@@ -163,7 +169,7 @@ export default function App() {
 
     try {
       await postDevLogout();
-      const sessionOutcome = await publicSession.refresh();
+      const sessionOutcome = await refreshPublicSession();
       if (sessionOutcome.type !== "anonymous") {
         throw new GmusicApiError(
           "No se pudo confirmar el cierre de sesión.",
@@ -259,7 +265,7 @@ export default function App() {
           onGoToStudio={() => handlePageChange("mi-estudio")}
           onLogout={handlePublicLogout}
           onRetrySession={async () => {
-            await publicSession.refresh();
+            await refreshPublicSession();
           }}
           logoutError={logoutError}
           logoutProcessing={logoutProcessing}
@@ -301,11 +307,27 @@ export default function App() {
       )}
 
       {currentPage === "mi-camino-demo" && (
-        <PathDemoPage setPage={handlePageChange} />
+        <DemoAuthGuard setPage={handlePageChange}>
+          <PathDemoPage setPage={handlePageChange} />
+        </DemoAuthGuard>
       )}
 
       {demoLessonId !== null && (
-        <DemoLessonPage lessonId={demoLessonId} setPage={handlePageChange} />
+        <DemoAuthGuard setPage={handlePageChange}>
+          <DemoLessonPage lessonId={demoLessonId} setPage={handlePageChange} />
+        </DemoAuthGuard>
+      )}
+
+      {currentPage === "registro-cuenta" && (
+        <RegistroCuentaPage setPage={handlePageChange} />
+      )}
+
+      {currentPage === "login-cuenta" && (
+        <LoginCuentaPage setPage={handlePageChange} />
+      )}
+
+      {currentPage === "registro-exito" && (
+        <RegistroExitoPage setPage={handlePageChange} />
       )}
 
       {currentPage === "inscripcion-gate" && (

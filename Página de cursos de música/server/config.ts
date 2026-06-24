@@ -3,6 +3,16 @@ import { getCorsAllowedOriginsFromEnv } from "./lib/cors.js";
 const DEFAULT_API_PORT = 3001;
 const DEFAULT_DEV_STUDENT_EMAIL = "carlos@gmusic.academy";
 const DEFAULT_COURSE_SLUG = "ruta-guitarra-12-meses";
+const DEV_JWT_SECRET = "gmusic-dev-jwt-secret-change-in-production";
+
+function resolveJwtSecret(): string | undefined {
+  const secret = process.env.JWT_SECRET?.trim();
+  if (secret) return secret;
+  if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+    return DEV_JWT_SECRET;
+  }
+  return undefined;
+}
 
 export const config = {
   /** Render inyecta PORT; local usa API_PORT. */
@@ -10,6 +20,17 @@ export const config = {
   /** Orígenes del frontend (Vercel, local). Vacío = sin CORS cross-origin. */
   corsAllowedOrigins: getCorsAllowedOriginsFromEnv(),
   /** Solo desarrollo: resuelve al alumno sin JWT. No usar en producción. */
-  devStudentEmail: process.env.GMUSIC_DEV_USER_EMAIL ?? DEFAULT_DEV_STUDENT_EMAIL,
+  get devStudentEmail(): string {
+    return process.env.GMUSIC_DEV_USER_EMAIL ?? DEFAULT_DEV_STUDENT_EMAIL;
+  },
   defaultCourseSlug: DEFAULT_COURSE_SLUG,
-} as const;
+  get jwtSecret(): string | undefined {
+    return resolveJwtSecret();
+  },
+};
+
+export function assertJwtSecretConfigured(): void {
+  if (!config.jwtSecret) {
+    throw new Error("JWT_SECRET no configurada.");
+  }
+}

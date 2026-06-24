@@ -17,6 +17,11 @@ enum Role {
   ADMIN
 }
 
+enum AccountTier {
+  DEMO
+  SUBSCRIBER
+}
+
 enum ExerciseType {
   IDENTIFY_NOTE
   RHYTHM_TAP
@@ -54,6 +59,9 @@ model User {
   email         String          @unique
   name          String
   role          Role            @default(STUDENT)
+  accountTier   AccountTier     @default(DEMO)
+  passwordHash  String?
+  phone         String?
   timezone      String          @default("America/Santiago")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -66,6 +74,19 @@ model User {
   streakEvents  StreakEvent[]
   subscriptions Subscription[]
   onboardingAnalytics OnboardingAnalytics[]
+  demoProgress  DemoProgress[]
+}
+
+model DemoProgress {
+  id           String   @id @default(uuid())
+  userId       String
+  lessonNumber Int
+  completedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonNumber])
+  @@index([userId])
 }
 
 model GuardianLink {

@@ -17,6 +17,7 @@ import {
   restoreUserSubscriptionsSnapshot,
   type SubscriptionRowSnapshot,
 } from "./helpers/db.js";
+import { buildSessionCookieHeader } from "./helpers/authSession.js";
 
 const FORBIDDEN_ACCESS_RESPONSE_KEYS = [
   "paymentMethod",
@@ -187,7 +188,7 @@ describe("resolveStudentAccess", () => {
   });
 });
 
-describe("devStudentAuth in production (access)", () => {
+describe("realStudentAuth in production (access)", () => {
   const previousNodeEnv = process.env.NODE_ENV;
 
   before(() => {
@@ -209,11 +210,17 @@ const integration = hasDatabase ? describe : describe.skip;
 
 integration("GET /api/v1/me/access", () => {
   let baseline: SubscriptionRowSnapshot[];
+  let studentCookie: string;
 
   before(async () => {
     const student = await getDevStudent();
+    studentCookie = await buildSessionCookieHeader(student.id);
     baseline = await captureUserSubscriptionsSnapshot(student.id);
   });
+
+  function authedGet(path: string) {
+    return request(createApp()).get(path).set("Cookie", studentCookie);
+  }
 
   after(async () => {
     const student = await getDevStudent();
@@ -223,13 +230,13 @@ integration("GET /api/v1/me/access", () => {
   });
 
   it("expone Cache-Control: no-store", async () => {
-    const response = await request(createApp()).get("/api/v1/me/access");
+    const response = await authedGet("/api/v1/me/access");
     assert.equal(response.status, 200);
     assert.equal(response.headers["cache-control"], "no-store");
   });
 
   it("Juan ACTIVE y vigente → acceso permitido", async () => {
-    const response = await request(createApp()).get("/api/v1/me/access");
+    const response = await authedGet("/api/v1/me/access");
 
     assert.equal(response.status, 200);
     assert.equal(response.body.access.canAccessStudentZone, true);
@@ -256,7 +263,7 @@ integration("GET /api/v1/me/access", () => {
         },
       ]);
 
-      const response = await request(createApp()).get("/api/v1/me/access");
+      const response = await authedGet("/api/v1/me/access");
       assert.equal(response.status, 200);
       assert.equal(response.body.access.canAccessStudentZone, true);
       assert.equal(response.body.subscription.endsAt, null);
@@ -282,7 +289,7 @@ integration("GET /api/v1/me/access", () => {
         },
       ]);
 
-      const response = await request(createApp()).get("/api/v1/me/access");
+      const response = await authedGet("/api/v1/me/access");
       assert.equal(response.status, 200);
       assert.equal(response.body.access.canAccessStudentZone, false);
       assert.equal(response.body.access.reason, "NO_ACTIVE_SUBSCRIPTION");
@@ -311,7 +318,7 @@ integration("GET /api/v1/me/access", () => {
           },
         ]);
 
-        const response = await request(createApp()).get("/api/v1/me/access");
+        const response = await authedGet("/api/v1/me/access");
         assert.equal(response.status, 200);
         assert.equal(response.body.access.canAccessStudentZone, false);
         assert.equal(response.body.access.reason, "NO_ACTIVE_SUBSCRIPTION");
@@ -357,7 +364,7 @@ integration("GET /api/v1/me/access", () => {
         },
       ]);
 
-      const response = await request(createApp()).get("/api/v1/me/access");
+      const response = await authedGet("/api/v1/me/access");
       assert.equal(response.status, 200);
       assert.equal(response.body.access.canAccessStudentZone, true);
       assert.equal(response.body.subscription.planId, "plan-latest");
@@ -373,7 +380,7 @@ integration("GET /api/v1/me/access", () => {
     try {
       await restoreUserSubscriptionsSnapshot(student.id, []);
 
-      const response = await request(createApp()).get("/api/v1/me/access");
+      const response = await authedGet("/api/v1/me/access");
       assert.equal(response.status, 200);
       assert.equal(response.body.access.canAccessStudentZone, false);
       assert.equal(response.body.access.reason, "NO_ACTIVE_SUBSCRIPTION");

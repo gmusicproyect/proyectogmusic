@@ -8,6 +8,9 @@ export type ApiErrorCode =
   | "SESSION_NOT_FOUND"
   | "SESSION_EXPIRED"
   | "SESSION_NOT_STARTABLE"
+  | "EMAIL_TAKEN"
+  | "INVALID_CREDENTIALS"
+  | "WEAK_PASSWORD"
   | "INTERNAL_ERROR";
 
 export class ApiError extends Error {

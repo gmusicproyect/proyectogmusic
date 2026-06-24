@@ -27,6 +27,7 @@ import {
   SESSION_TTL_MS,
   type CompleteTestDbSnapshot,
 } from "./helpers/db.js";
+import { buildSessionCookieHeader } from "./helpers/authSession.js";
 
 const integration = hasDatabase ? describe : describe.skip;
 
@@ -175,9 +176,12 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
   let lockedNodeId = "";
   let originalDb: CompleteTestDbSnapshot | null = null;
 
+  let studentCookie = "";
+
   before(async () => {
     const student = await getDevStudent();
     studentId = student.id;
+    studentCookie = await buildSessionCookieHeader(studentId);
     studentTimezone = student.timezone;
     const nodes = await getNodeIdsByStatus(studentId);
     activeNodeId = nodes.active ?? "";
@@ -201,14 +205,20 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     await deleteStudentSessionsForNode(studentId, nodeId);
     const response = await request(app)
       .post("/api/v1/lesson-sessions")
+      .set("Cookie", studentCookie)
       .send({ nodeId });
     assert.equal(response.status, 201);
     return response.body.sessionId as string;
   }
 
+  function completePost(sessionId: string) {
+    return request(app)
+      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+      .set("Cookie", studentCookie);
+  }
+
   it("rechaza sesión inexistente", async () => {
-    const response = await request(app)
-      .post("/api/v1/lesson-sessions/550e8400-e29b-41d4-a716-446655440099/complete")
+    const response = await completePost("550e8400-e29b-41d4-a716-446655440099")
       .send({
         attempts: [
           {
@@ -231,8 +241,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const exercises = await getNodeExercises(activeNodeId);
     const attempts = buildAttemptsPayload(exercises, "all-correct");
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${foreignSession.id}/complete`)
+    const response = await completePost(foreignSession.id)
       .send({ attempts });
 
     assert.equal(response.status, 403);
@@ -248,8 +257,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     await setSessionStartedAt(sessionId, new Date(Date.now() - SESSION_TTL_MS - 60_000));
 
     const exercises = await getNodeExercises(activeNodeId);
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({ attempts: buildAttemptsPayload(exercises, "all-correct") });
 
     assert.equal(response.status, 410);
@@ -263,8 +271,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const foreignExercises = await getNodeExercises(lockedNodeId);
     assert.ok(foreignExercises[0], "Se requiere ejercicio en nodo locked");
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({
         attempts: [
           {
@@ -286,8 +293,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const sessionId = await startSession();
     const exercises = await getNodeExercises(activeNodeId);
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({ attempts: buildAttemptsPayload(exercises, "partial-pass") });
 
     assert.equal(response.status, 200);
@@ -305,8 +311,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const sessionId = await startSession();
     const exercises = await getNodeExercises(activeNodeId);
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({ attempts: buildAttemptsPayload(exercises, "all-correct") });
 
     assert.equal(response.status, 200);
@@ -325,8 +330,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const sessionId = await startSession();
     const exercises = await getNodeExercises(activeNodeId);
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({ attempts: buildAttemptsPayload(exercises, "all-wrong") });
 
     assert.equal(response.status, 200);
@@ -354,8 +358,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const sessionId = await startSession();
     const exercises = await getNodeExercises(activeNodeId);
 
-    const response = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const response = await completePost(sessionId)
       .send({ attempts: buildAttemptsPayload(exercises, "all-correct") });
 
     assert.equal(response.status, 200);
@@ -371,12 +374,10 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
     const exercises = await getNodeExercises(activeNodeId);
     const payload = { attempts: buildAttemptsPayload(exercises, "all-correct") };
 
-    const first = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const first = await completePost(sessionId)
       .send(payload);
 
-    const second = await request(app)
-      .post(`/api/v1/lesson-sessions/${sessionId}/complete`)
+    const second = await completePost(sessionId)
       .send(payload);
 
     assert.equal(first.status, 200);
@@ -401,7 +402,7 @@ integration("POST /api/v1/lesson-sessions/:id/complete", () => {
 
     const responses = await Promise.all(
       Array.from({ length: 10 }, () =>
-        request(app).post(`/api/v1/lesson-sessions/${sessionId}/complete`).send(payload)
+        completePost(sessionId).send(payload)
       )
     );
 

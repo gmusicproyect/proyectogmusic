@@ -1,6 +1,8 @@
-import { config } from "./config.js";
+import { config, assertJwtSecretConfigured } from "./config.js";
 import { createApp } from "./app.js";
 import { prisma } from "./lib/prisma.js";
+
+assertJwtSecretConfigured();
 
 const app = createApp();
 

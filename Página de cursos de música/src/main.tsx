@@ -2,6 +2,7 @@ import { initSentryClient, Sentry } from "../sentry.client.config";
 import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
 import App from "./app/App.tsx";
+import { AuthProvider } from "./app/hooks/useAuth.tsx";
 import "./styles/index.css";
 
 initSentryClient();
@@ -18,6 +19,8 @@ if (import.meta.env.VITE_POSTHOG_KEY) {
 
 createRoot(document.getElementById("root")!).render(
   <Sentry.ErrorBoundary fallback={<p>Algo salió mal. Intenta recargar la página.</p>}>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </Sentry.ErrorBoundary>
 );

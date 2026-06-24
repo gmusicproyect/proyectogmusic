@@ -34,13 +34,26 @@ function readCompletedLessons(): number[] {
 }
 
 export function useDemoUserState(
-  sessionStatus: "loading" | "authenticated" | "anonymous" | "error"
+  sessionStatus:
+    | "loading"
+    | "authenticated"
+    | "registered_no_sub"
+    | "anonymous"
+    | "error"
 ): DemoCtaConfig {
   if (sessionStatus === "authenticated") {
     return {
       state: "subscribed",
       label: "Entrar a mi academia",
       destination: "mi-estudio",
+    };
+  }
+
+  if (sessionStatus === "registered_no_sub") {
+    return {
+      state: "subscribed",
+      label: "Completar mi suscripción",
+      destination: "inscripcion-pendiente",
     };
   }
 

@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { assertStudent, devStudentAuth } from "../middleware/devStudentAuth.js";
+import { assertStudent, realStudentAuth } from "../middleware/realStudentAuth.js";
 import { completeLessonSession } from "../services/completeLessonSessionService.js";
 import { createOrReuseLessonSession } from "../services/lessonSessionService.js";
 
 export const lessonSessionsRouter = Router();
 
-lessonSessionsRouter.use(devStudentAuth);
+lessonSessionsRouter.use(realStudentAuth);
 
 lessonSessionsRouter.post("/", async (req, res, next) => {
   try {

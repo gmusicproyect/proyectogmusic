@@ -22,7 +22,7 @@
     "typecheck": "npm run app:typecheck && npm run api:typecheck",
     "test": "npm run app:test && npm run api:test",
     "verify": "npm run typecheck && npm run test && npm run build",
-    "api:test": "node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
+    "api:test": "NODE_ENV=test node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
     "app:test": "node --import tsx --test 'src/**/*.test.ts'"
   },
   "dependencies": {
@@ -60,6 +60,7 @@
     "@radix-ui/react-tooltip": "1.1.8",
     "@sentry/node": "^10.59.0",
     "@sentry/react": "^10.59.0",
+    "bcrypt": "^6.0.0",
     "canvas-confetti": "1.9.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -68,6 +69,7 @@
     "embla-carousel-react": "8.6.0",
     "express": "4.21.2",
     "input-otp": "1.4.2",
+    "jose": "^6.2.3",
     "lucide-react": "0.487.0",
     "motion": "12.23.24",
     "next-themes": "0.4.6",
@@ -91,6 +93,7 @@
   "devDependencies": {
     "@sentry/vite-plugin": "^5.3.0",
     "@tailwindcss/vite": "4.1.12",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^4.17.21",
     "@types/node": "^22.19.20",
     "@types/supertest": "^6.0.3",

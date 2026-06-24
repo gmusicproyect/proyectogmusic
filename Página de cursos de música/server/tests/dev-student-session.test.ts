@@ -29,6 +29,9 @@ import {
   restoreUserEmailTestSnapshot,
   type UserEmailTestSnapshot,
 } from "./helpers/db.js";
+import { buildSessionCookieHeader } from "./helpers/authSession.js";
+import { prisma } from "../lib/prisma.js";
+import { SESSION_COOKIE_NAME } from "../lib/jwtSession.js";
 
 const DEV_ACTIVATION_HEADER = "X-Gmusic-Dev-Activation-Key";
 const TEST_DEV_KEY = "test-dev-activation-key-valid-long";
@@ -48,10 +51,6 @@ const ACTIVATE_BODY_B = {
   email: SESSION_TEST_EMAIL_B,
   planId: SEMESTRAL_PLAN_ID,
 } as const;
-
-function signedCookie(email: string, signingKey = TEST_DEV_KEY): string {
-  return `${DEV_STUDENT_COOKIE_NAME}=${buildDevStudentCookieHeaderValue(email, signingKey)}`;
-}
 
 function signedLoggedOutCookie(signingKey = TEST_DEV_KEY): string {
   return `${DEV_STUDENT_COOKIE_NAME}=${buildDevStudentLoggedOutCookieHeaderValue(signingKey)}`;
@@ -284,17 +283,24 @@ integration("dev student session — integración", () => {
     assert.equal(response.status, 201);
     const setCookie = response.headers["set-cookie"];
     assert.ok(setCookie);
-    const cookieHeader = Array.isArray(setCookie) ? setCookie[0] : setCookie;
-    assert.match(cookieHeader, /HttpOnly/);
-    assert.match(cookieHeader, /SameSite=Strict/);
-    assert.match(cookieHeader, new RegExp(`Path=${DEV_STUDENT_COOKIE_PATH}`));
-    assert.equal(cookieHeader.includes(TEST_DEV_KEY), false);
+    const cookieHeaders = Array.isArray(setCookie) ? setCookie : [setCookie];
+    const devCookieHeader = cookieHeaders.find((value) => value.startsWith(`${DEV_STUDENT_COOKIE_NAME}=`));
+    assert.ok(devCookieHeader);
+    assert.match(devCookieHeader, /HttpOnly/);
+    assert.match(devCookieHeader, /SameSite=Strict/);
+    assert.match(devCookieHeader, new RegExp(`Path=${DEV_STUDENT_COOKIE_PATH}`));
+    assert.equal(devCookieHeader.includes(TEST_DEV_KEY), false);
 
-    const rawValue = parseCookieHeader(cookieHeader).get(DEV_STUDENT_COOKIE_NAME);
+    const rawValue = parseCookieHeader(devCookieHeader).get(DEV_STUDENT_COOKIE_NAME);
     assert.ok(rawValue);
     const payload = decodeURIComponent(rawValue!);
     const verified = verifyDevStudentSessionPayload(payload, TEST_DEV_KEY);
     assert.deepEqual(verified, { kind: "student", email: SESSION_TEST_EMAIL });
+
+    assert.ok(
+      cookieHeaders.some((value) => value.startsWith(`${SESSION_COOKIE_NAME}=`)),
+      "activación también emite gmusic_session JWT"
+    );
   });
 
   it("cookie firmada válida permite /me/access", async () => {
@@ -349,13 +355,13 @@ integration("dev student session — integración", () => {
     assert.equal(accessB.body.user.email, SESSION_TEST_EMAIL_B);
   });
 
-  it("sin cookie conserva fallback GMUSIC_DEV_USER_EMAIL", async () => {
+  it("sin cookie responde 401 (realStudentAuth sin fallback dev)", async () => {
     const response = await request(createApp()).get("/api/v1/me/access");
-    assert.equal(response.status, 200);
-    assert.equal(response.body.user.email, process.env.GMUSIC_DEV_USER_EMAIL);
+    assert.equal(response.status, 401);
+    assert.equal(response.body.error.code, "UNAUTHORIZED");
   });
 
-  it("cookie manipulada responde 401 sin fallback", async () => {
+  it("cookie dev manipulada responde 401 (ignorada por realStudentAuth)", async () => {
     const payload = signDevStudentCookiePayload(SESSION_TEST_EMAIL, TEST_DEV_KEY);
     const tampered = payload.replace("session-test", "session-hack");
 
@@ -367,7 +373,7 @@ integration("dev student session — integración", () => {
     assert.equal(response.body.error.code, "UNAUTHORIZED");
   });
 
-  it("cookie sin firma responde 401 sin fallback", async () => {
+  it("cookie dev sin firma responde 401 (ignorada por realStudentAuth)", async () => {
     const response = await request(createApp())
       .get("/api/v1/me/access")
       .set("Cookie", `${DEV_STUDENT_COOKIE_NAME}=${encodeURIComponent(SESSION_TEST_EMAIL)}`);
@@ -376,19 +382,25 @@ integration("dev student session — integración", () => {
     assert.equal(response.body.error.code, "UNAUTHORIZED");
   });
 
-  it("cookie firmada de ADMIN responde 403", async () => {
+  it("JWT de ADMIN responde 403", async () => {
+    const admin = await prisma.user.findUniqueOrThrow({ where: { email: ADMIN_EMAIL } });
+    const cookie = await buildSessionCookieHeader(admin.id);
+
     const response = await request(createApp())
       .get("/api/v1/me/access")
-      .set("Cookie", signedCookie(ADMIN_EMAIL));
+      .set("Cookie", cookie);
 
     assert.equal(response.status, 403);
     assert.equal(response.body.error.code, "FORBIDDEN");
   });
 
-  it("cookie firmada de GUARDIAN responde 403", async () => {
+  it("JWT de GUARDIAN responde 403", async () => {
+    const guardian = await prisma.user.findUniqueOrThrow({ where: { email: GUARDIAN_EMAIL } });
+    const cookie = await buildSessionCookieHeader(guardian.id);
+
     const response = await request(createApp())
       .get("/api/v1/me/access")
-      .set("Cookie", signedCookie(GUARDIAN_EMAIL));
+      .set("Cookie", cookie);
 
     assert.equal(response.status, 403);
     assert.equal(response.body.error.code, "FORBIDDEN");
@@ -480,14 +492,14 @@ integration("dev student session — integración", () => {
     assert.equal(restored.body.access.canAccessStudentZone, true);
   });
 
-  it("cookie logged_out responde 401 sin fallback", async () => {
+  it("cookie dev logged_out responde 401 sin fallback", async () => {
     const response = await request(createApp())
       .get("/api/v1/me/access")
       .set("Cookie", signedLoggedOutCookie());
 
     assert.equal(response.status, 401);
     assert.equal(response.body.error.code, "UNAUTHORIZED");
-    assert.notEqual(response.body.user?.email, process.env.GMUSIC_DEV_USER_EMAIL);
+    assert.equal(response.body.user, undefined);
   });
 });
 

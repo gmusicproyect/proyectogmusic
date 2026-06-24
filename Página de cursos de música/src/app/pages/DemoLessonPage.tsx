@@ -141,6 +141,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       instruction: ex.question,
       options: ex.options.map((o) => ({ id: o.id, text: o.text })),
       media: {},
+      interaction: { mode: "mcq" },
     };
   }, [lesson, lessonId]);
 

@@ -65,6 +65,7 @@ export function buildFreeFundamentoChallengeExercise(): ParsedExerciseView {
       text: option.label,
     })),
     media: {},
+    interaction: { mode: "mcq" },
   };
 }
 

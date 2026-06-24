@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import { createCorsMiddleware } from "./lib/cors.js";
 import { ApiError, errorBody } from "./lib/errors.js";
+import { authRouter } from "./routes/auth.js";
 import { devRouter } from "./routes/dev.js";
 import { healthRouter } from "./routes/health.js";
 import { lessonSessionsRouter } from "./routes/lessonSessions.js";
@@ -20,11 +21,12 @@ export function createApp() {
       service: "gmusic-learning-engine",
       version: "v1",
       docs: "/api/v1/health",
-      auth: "development-only via GMUSIC_DEV_USER_EMAIL",
+      auth: "JWT httpOnly cookie (gmusic_session)",
     });
   });
 
   app.use("/api/v1/health", healthRouter);
+  app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/me", meRouter);
   app.use("/api/v1/onboarding", onboardingRouter);
   app.use("/api/v1/lesson-sessions", lessonSessionsRouter);

@@ -6,11 +6,13 @@ import type { AccessSubscription, AccessUser } from "./types";
 export type PublicStudentSessionState =
   | { status: "loading" }
   | { status: "anonymous" }
+  | { status: "registered_no_sub"; user: AccessUser }
   | { status: "authenticated"; user: AccessUser; subscription: AccessSubscription }
   | { status: "error"; message: string };
 
 export type PublicStudentSessionOutcome =
   | { type: "anonymous" }
+  | { type: "registered_no_sub"; user: AccessUser }
   | { type: "authenticated"; user: AccessUser; subscription: AccessSubscription }
   | { type: "error"; message: string }
   | { type: "aborted" };
@@ -20,6 +22,9 @@ export function mapPublicStudentSessionOutcome(
 ): PublicStudentSessionState | null {
   if (outcome.type === "aborted") return null;
   if (outcome.type === "anonymous") return { status: "anonymous" };
+  if (outcome.type === "registered_no_sub") {
+    return { status: "registered_no_sub", user: outcome.user };
+  }
   if (outcome.type === "error") return { status: "error", message: outcome.message };
   return {
     status: "authenticated",
@@ -39,6 +44,7 @@ export async function loadPublicStudentSessionOnce(
       headers: {
         Accept: "application/json",
       },
+      credentials: "include",
       signal,
     });
 
@@ -68,7 +74,10 @@ export async function loadPublicStudentSessionOnce(
 
     const data = assertValidAccessResponse(raw);
     if (!data.access.canAccessStudentZone || !data.subscription) {
-      return { type: "anonymous" };
+      return {
+        type: "registered_no_sub",
+        user: data.user,
+      };
     }
 
     return {

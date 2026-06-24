@@ -98,7 +98,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
       nodeTitle: panelNode.title,
       nodeId: panelNode.id,
     });
-  }, [lessonSession.status, lessonSession.nodeId, lessonSession.result, panelNode]);
+  }, [lessonSession, panelNode]);
 
   const handleStartLesson = useCallback(() => {
     if (!panelNode || !canStartLessonFromNode(panelNode)) return;

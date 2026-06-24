@@ -64,7 +64,7 @@ describe("loadPublicStudentSessionOnce", () => {
     }
   });
 
-  it("interpreta 200 denegado como anonymous", async () => {
+  it("interpreta 200 denegado como registered_no_sub", async () => {
     globalThis.fetch = (async () =>
       new Response(
         JSON.stringify({
@@ -79,7 +79,8 @@ describe("loadPublicStudentSessionOnce", () => {
       )) as typeof fetch;
 
     const outcome = await loadPublicStudentSessionOnce(new AbortController().signal);
-    assert.equal(outcome.type, "anonymous");
+    assert.equal(outcome.type, "registered_no_sub");
+    assert.equal(mapPublicStudentSessionOutcome(outcome)?.status, "registered_no_sub");
   });
 
   it("interpreta errores distintos de 401 como error recuperable", async () => {
