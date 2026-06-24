@@ -31,7 +31,7 @@ export function AcademiaInstrumentSelector({ onSelect }: AcademiaInstrumentSelec
           <CardTag
             key={instrument.id}
             type={isAvailable ? "button" : undefined}
-            variants={fadeUp}
+            variants={{ hidden: { opacity: 1, y: 8 }, show: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.55 }}
             onClick={isAvailable ? () => onSelect(instrument.id) : undefined}
             whileHover={

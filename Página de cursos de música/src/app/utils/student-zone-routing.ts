@@ -4,6 +4,7 @@ const STUDENT_ZONE_PAGES = new Set(["mi-estudio", "welcome", "mi-camino"]);
 
 /** D-GOV-02 — mapa canónico funnel demo (sin inscripcion-registro). */
 const DEMO_FUNNEL_PAGE_TO_PATH: Record<string, string> = {
+  "onboarding-quiz": "/quiz-temperamento",
   "mi-camino-demo": "/mi-camino-demo",
   "demo-clase-1": "/demo-clase-1",
   "demo-clase-2": "/demo-clase-2",
@@ -28,6 +29,7 @@ const PAGE_TITLES: Record<string, string> = {
   welcome: "Gmusic Estudio · Panel del alumno",
   "mi-camino": "Gmusic Estudio · Mi Camino",
   "mi-camino-demo": "Gmusic Estudio · Camino demo",
+  "onboarding-quiz": "Gmusic Estudio · Quiz de temperamento",
   "inscripcion-gate": "Gmusic Estudio · Inscripción",
 };
 

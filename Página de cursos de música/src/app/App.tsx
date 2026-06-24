@@ -31,6 +31,7 @@ import { GmusicApiError } from "./services/gmusic-api/client";
 import { usePublicStudentSession } from "./hooks/usePublicStudentSession";
 import { analytics } from "./utils/analytics";
 import { flushPendingTemperamentQuizSync } from "./utils/temperament-quiz-storage";
+import { clearAnonymousFunnelLocalStorage } from "./utils/anonymous-funnel-storage";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
   getInitialPageFromPath,
@@ -203,6 +204,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (publicSession.status === "authenticated") {
+      clearAnonymousFunnelLocalStorage();
+    }
+  }, [publicSession.status]);
+
+  useEffect(() => {
     void flushPendingTemperamentQuizSync();
   }, []);
 
@@ -289,6 +296,7 @@ export default function App() {
         <TemperamentQuizPage
           setPage={handlePageChange}
           instrumentSlug={selectedInstrument}
+          isSubscribedStudent={publicSession.status === "authenticated"}
         />
       )}
 

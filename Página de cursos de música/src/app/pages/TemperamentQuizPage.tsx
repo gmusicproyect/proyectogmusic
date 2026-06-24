@@ -10,6 +10,7 @@ import {
   getOrCreateOnboardingSessionId,
   markTemperamentQuizSkipped,
   saveTemperamentQuizResult,
+  shouldShowTemperamentQuiz,
 } from "../utils/temperament-quiz-storage";
 
 const GOLD = "#C9A84C";
@@ -19,11 +20,13 @@ const TEXT = "#F5F0E8";
 interface TemperamentQuizPageProps {
   setPage: (page: string) => void;
   instrumentSlug?: string | null;
+  isSubscribedStudent?: boolean;
 }
 
 export function TemperamentQuizPage({
   setPage,
   instrumentSlug = "guitarra",
+  isSubscribedStudent = false,
 }: TemperamentQuizPageProps) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<QuizOptionId | null>(null);
@@ -40,6 +43,16 @@ export function TemperamentQuizPage({
     setSelectedOption(null);
     setAnswerChanges(0);
   }, [questionIndex]);
+
+  useEffect(() => {
+    if (isSubscribedStudent) {
+      setPage("mi-estudio");
+      return;
+    }
+    if (!shouldShowTemperamentQuiz({ isSubscribedStudent })) {
+      setPage("mi-camino-demo");
+    }
+  }, [setPage, isSubscribedStudent]);
 
   const progressLabel = useMemo(
     () => `Pregunta ${questionIndex + 1} de ${TEMPERAMENT_QUIZ_QUESTIONS.length}`,

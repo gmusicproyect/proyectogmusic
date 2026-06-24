@@ -14,6 +14,7 @@ const root = dirname(fileURLToPath(import.meta.url));
 const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
 
 const DEMO_PAGES = [
+  ["onboarding-quiz", "/quiz-temperamento"],
   ["mi-camino-demo", "/mi-camino-demo"],
   ["demo-clase-1", "/demo-clase-1"],
   ["demo-clase-2", "/demo-clase-2"],
@@ -112,6 +113,12 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
   it("pathname desconocido → home", () => {
     assert.equal(pageFromPathname("/checkout"), "home");
     assert.equal(pageFromPathname("/legacy-courses"), "home");
+  });
+
+  it("carga directa /quiz-temperamento → onboarding-quiz", () => {
+    withMockLocation("/quiz-temperamento", () => {
+      assert.equal(getInitialPageFromPath(), "onboarding-quiz");
+    });
   });
 
   it("carga directa /demo-clase-3 → demo-clase-3", () => {

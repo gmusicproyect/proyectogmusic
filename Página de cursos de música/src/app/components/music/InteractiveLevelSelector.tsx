@@ -17,9 +17,11 @@ const WHITE_WARM = "#F5F0E8";
 export function InteractiveLevelSelector({
   setPage,
   setLevel,
+  isSubscribedStudent = false,
 }: {
   setPage: (page: string) => void;
   setLevel: (level: string) => void;
+  isSubscribedStudent?: boolean;
 }) {
   const [activeTierId, setActiveTierId] = useState<AcademiaTierId>("basico");
   const [activeFocusIndex, setActiveFocusIndex] = useState(0);
@@ -30,7 +32,7 @@ export function InteractiveLevelSelector({
     if (!isFreeClassTrack(track)) return;
     analytics.demoCtaClicked();
     setLevel(track.focusId);
-    setPage(shouldShowTemperamentQuiz() ? "onboarding-quiz" : "mi-camino-demo");
+    setPage(shouldShowTemperamentQuiz({ isSubscribedStudent }) ? "onboarding-quiz" : "mi-camino-demo");
   };
 
   return (

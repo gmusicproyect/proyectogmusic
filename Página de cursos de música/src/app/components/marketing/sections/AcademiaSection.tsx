@@ -6,6 +6,7 @@ import { GOLD, GOLD_SOFT, WHITE_WARM, fadeUp, vp } from "../tokens";
 import { useDemoUserState } from "../../../hooks/useDemoUserState";
 import type { PublicStudentSessionState } from "../../../hooks/usePublicStudentSession";
 import type { AcademiaInstrumentId } from "../../../data/academia-instruments";
+import { shouldShowTemperamentQuiz } from "../../../utils/temperament-quiz-storage";
 
 type AcademiaStep = "instrument" | "program";
 
@@ -47,6 +48,16 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
   };
 
   const isInstrumentStep = step === "instrument";
+
+  const isSubscribedStudent = session.status === "authenticated";
+
+  const handleAcademiaCta = () => {
+    const destination =
+      cta.destination === "mi-camino-demo" && shouldShowTemperamentQuiz({ isSubscribedStudent })
+        ? "onboarding-quiz"
+        : cta.destination;
+    setPage(destination);
+  };
 
   return (
     <section
@@ -252,7 +263,11 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
                 transition={{ duration: 0.7, delay: 0.1 }}
                 style={{ marginTop: 56 }}
               >
-                <InteractiveLevelSelector setPage={setPage} setLevel={setLevel} />
+                <InteractiveLevelSelector
+                  setPage={setPage}
+                  setLevel={setLevel}
+                  isSubscribedStudent={isSubscribedStudent}
+                />
               </motion.div>
 
               <motion.div
@@ -268,7 +283,7 @@ export function AcademiaSection({ setPage, setLevel, session }: AcademiaSectionP
                   }}
                   whileTap={{ scale: 0.97 }}
                   transition={{ duration: 0.15 }}
-                  onClick={() => setPage(cta.destination)}
+                  onClick={handleAcademiaCta}
                   style={{
                     height: 50,
                     padding: "0 36px",

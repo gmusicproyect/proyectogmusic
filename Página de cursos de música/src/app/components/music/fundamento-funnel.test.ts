@@ -180,6 +180,13 @@ describe("AcademiaSection — copy y aislamiento legacy", () => {
     assert.equal(academiaSource.includes("cta.destination"), true);
   });
 
+  it("CTA inferior pasa por onboarding-quiz si el quiz no se completó", () => {
+    assert.equal(academiaSource.includes("shouldShowTemperamentQuiz"), true);
+    assert.equal(academiaSource.includes("isSubscribedStudent"), true);
+    assert.equal(academiaSource.includes('"onboarding-quiz"'), true);
+    assert.equal(academiaSource.includes("handleAcademiaCta"), true);
+  });
+
   it("no navega a páginas legacy ni preview", () => {
     assertNoForbiddenNavigation(academiaSource, "AcademiaSection");
   });
