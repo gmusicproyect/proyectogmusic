@@ -30,7 +30,7 @@ Requiere validación pedagógica antes de activar.
 ---
 ## Lo que NO se hace
 - No llamar la API directo desde el browser (CORS)
-- No automatizar la generación sin D-GOV-09 aprobada
+- No automatizar la generación sin decisión de producto explícita (ver D-BRAND-02 para celebración)
 - No usar para reemplazar el aprendizaje del alumno
 - La música celebra el logro — no lo reemplaza
 ---
