@@ -9,7 +9,7 @@ const MAX_PHONE_LENGTH = 32;
 export interface RegisterInput {
   name: string;
   email: string;
-  phone: string;
+  phone: string | null;
   password: string;
 }
 
@@ -34,7 +34,8 @@ export function parseRegisterBody(body: unknown): RegisterInput {
   const record = body as Record<string, unknown>;
   const name = typeof record.name === "string" ? record.name.trim() : "";
   const email = typeof record.email === "string" ? normalizeEmail(record.email) : "";
-  const phone = typeof record.phone === "string" ? normalizePhone(record.phone) : "";
+  const phoneRaw = typeof record.phone === "string" ? normalizePhone(record.phone) : "";
+  const phone = phoneRaw.length > 0 ? phoneRaw : null;
   const password = typeof record.password === "string" ? record.password : "";
 
   if (!name || name.length > MAX_NAME_LENGTH) {
@@ -43,7 +44,7 @@ export function parseRegisterBody(body: unknown): RegisterInput {
   if (!email || email.length > MAX_EMAIL_LENGTH || !EMAIL_RE.test(email)) {
     throw new ApiError(400, "VALIDATION_ERROR", "Correo inválido.");
   }
-  if (!phone || phone.length > MAX_PHONE_LENGTH) {
+  if (phone !== null && phone.length > MAX_PHONE_LENGTH) {
     throw new ApiError(400, "VALIDATION_ERROR", "Celular inválido.");
   }
   if (password.length < MIN_PASSWORD_LENGTH) {

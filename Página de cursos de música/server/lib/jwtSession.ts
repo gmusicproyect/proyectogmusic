@@ -39,12 +39,18 @@ export async function verifySessionToken(token: string): Promise<{ userId: strin
   }
 }
 
+/** Prod: Vercel SPA + Render API (cross-origin) → SameSite=None; Secure. Dev: proxy same-site → Lax. */
+export function resolveSessionCookieSameSite(isProduction: boolean): "None" | "Lax" {
+  return isProduction ? "None" : "Lax";
+}
+
 function buildCookieValue(token: string | null, maxAge: number, isProduction: boolean): string {
   const value = token ? encodeURIComponent(token) : "";
+  const sameSite = resolveSessionCookieSameSite(isProduction);
   const parts = [
     `${SESSION_COOKIE_NAME}=${value}`,
     "HttpOnly",
-    "SameSite=Strict",
+    `SameSite=${sameSite}`,
     `Path=${SESSION_COOKIE_PATH}`,
     `Max-Age=${maxAge}`,
   ];

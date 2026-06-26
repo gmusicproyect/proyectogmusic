@@ -40,6 +40,18 @@ integration("POST /api/v1/auth/register + login", () => {
     assert.ok(cookies.some((value: string) => value.startsWith(`${SESSION_COOKIE_NAME}=`)));
   });
 
+  it("register sin celular → 201", async () => {
+    const email = `no-phone-${Date.now()}@gmusic.test`;
+    const response = await request(app).post("/api/v1/auth/register").send({
+      name: "Sin Celular",
+      email,
+      password: "demo-pass-123",
+    });
+
+    assert.equal(response.status, 201);
+    assert.equal(response.body.user.email, email);
+  });
+
   it("register duplicado → 409 EMAIL_TAKEN", async () => {
     const response = await request(app).post("/api/v1/auth/register").send({
       name: "Otro",

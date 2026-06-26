@@ -10,7 +10,7 @@ export interface AuthUser {
 export interface RegisterInput {
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   password: string;
 }
 
@@ -22,7 +22,12 @@ export interface LoginInput {
 export async function registerAccount(input: RegisterInput): Promise<AuthUser> {
   const { data } = await apiPost<{ user: AuthUser }>(
     `${getApiBaseUrl()}/auth/register`,
-    input
+    {
+      name: input.name,
+      email: input.email,
+      password: input.password,
+      ...(input.phone?.trim() ? { phone: input.phone.trim() } : {}),
+    }
   );
   return data.user;
 }

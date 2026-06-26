@@ -55,6 +55,7 @@ npm run build
 | Variable | Producción | Notas |
 |----------|------------|-------|
 | `DATABASE_URL` | Postgres gestionado (Supabase/Neon/Railway) | **Obligatorio** para quiz en BD |
+| `JWT_SECRET` | Secreto largo aleatorio (≥32 chars) | **Obligatorio** para `POST /auth/register` y cookie `gmusic_session` |
 | `API_PORT` | Puerto del proceso | Según host; Render usa `PORT` (10000) o `API_PORT` |
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend separados por coma | **Obligatorio** si API y web están en dominios distintos |
 | `SENTRY_DSN` | DSN backend | Opcional |
@@ -238,8 +239,24 @@ LIMIT 5;
 | Variable | Valor |
 |----------|--------|
 | `DATABASE_URL` | Supabase pooler (`aws-1-us-east-1`) |
+| `JWT_SECRET` | Secreto producción (Render env) — **requerido** para auth |
 | `NODE_ENV` | `production` |
 | `CORS_ALLOWED_ORIGINS` | `https://proyectogmusic.vercel.app,http://localhost:5173` |
+
+Cookie `gmusic_session` en prod (SPA Vercel + API Render cross-origin): `HttpOnly; Secure; SameSite=None; Path=/api/v1`.
+
+Smoke auth post-deploy:
+
+```bash
+curl -sS -D - -o /dev/null -X POST "https://gmusic-api.onrender.com/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -H "Origin: https://proyectogmusic.vercel.app" \
+  -d '{"name":"Smoke","email":"smoke-'$(date +%s)'@gmusic.test","password":"testpass12"}' | grep -iE 'HTTP/|set-cookie|SameSite'
+```
+
+Esperado: **201** (no 404), `Set-Cookie` con `gmusic_session`, `SameSite=None`, `Secure`.
+
+Pendiente producto (sin migración): campo **username / nombre artístico** aparte de `User.name`.
 
 Build / Start (Root Directory vacío):
 

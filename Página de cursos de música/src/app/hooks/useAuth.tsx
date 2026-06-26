@@ -13,6 +13,7 @@ import {
   type LoginInput,
   type RegisterInput,
 } from "../services/gmusic-api/auth";
+import { assertAuthSessionEstablished } from "../services/gmusic-api/assert-auth-session";
 import {
   usePublicStudentSession,
   type PublicStudentSessionState,
@@ -39,13 +40,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(async (input: RegisterInput) => {
     const user = await registerAccount(input);
-    await publicSession.refresh();
+    const outcome = await publicSession.refresh();
+    assertAuthSessionEstablished(outcome);
     return user;
   }, [publicSession]);
 
   const login = useCallback(async (input: LoginInput) => {
     const user = await loginAccount(input);
-    await publicSession.refresh();
+    const outcome = await publicSession.refresh();
+    assertAuthSessionEstablished(outcome);
     return user;
   }, [publicSession]);
 

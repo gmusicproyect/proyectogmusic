@@ -86,12 +86,12 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.equal(appSource.includes('"registro-exito"'), true);
   });
 
-  it("registro-exito muestra mensaje de regalo y redirige al demo", () => {
+  it("registro-exito muestra mensaje de regalo y redirige al onboarding", () => {
     assert.match(
       registroSource,
       /Gracias por inscribirte, te regalamos las primeras 5 clases/
     );
-    assert.match(registroSource, /setPage\("mi-camino-demo"\)/);
+    assert.match(registroSource, /setPage\("onboarding-quiz"\)/);
     assert.match(registroSource, /setTimeout/);
   });
 });

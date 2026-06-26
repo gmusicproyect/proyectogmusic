@@ -11,22 +11,36 @@ interface RegistroCuentaPageProps {
   setPage: (page: string) => void;
 }
 
+// PENDIENTE (requiere migración Prisma): campo username / artistName aparte de `name`.
+
 export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+
+    if (password !== passwordConfirm) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await register({ name, email, phone, password });
+      await register({
+        name,
+        email,
+        phone: phone.trim() || undefined,
+        password,
+      });
       setPage("registro-exito");
     } catch (err) {
       const message =
@@ -66,17 +80,6 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
           autoComplete="email"
         />
 
-        <label htmlFor="registro-phone">Celular</label>
-        <input
-          id="registro-phone"
-          type="tel"
-          style={authInputStyle}
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          required
-          autoComplete="tel"
-        />
-
         <label htmlFor="registro-password">Contraseña</label>
         <input
           id="registro-password"
@@ -87,6 +90,28 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
           required
           minLength={8}
           autoComplete="new-password"
+        />
+
+        <label htmlFor="registro-password-confirm">Confirmar contraseña</label>
+        <input
+          id="registro-password-confirm"
+          type="password"
+          style={authInputStyle}
+          value={passwordConfirm}
+          onChange={(event) => setPasswordConfirm(event.target.value)}
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
+
+        <label htmlFor="registro-phone">Celular / WhatsApp (opcional)</label>
+        <input
+          id="registro-phone"
+          type="tel"
+          style={authInputStyle}
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          autoComplete="tel"
         />
 
         {error ? (
@@ -192,7 +217,7 @@ const REGISTRO_EXITO_REDIRECT_MS = 2500;
 
 export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void }) {
   useEffect(() => {
-    const timer = window.setTimeout(() => setPage("mi-camino-demo"), REGISTRO_EXITO_REDIRECT_MS);
+    const timer = window.setTimeout(() => setPage("onboarding-quiz"), REGISTRO_EXITO_REDIRECT_MS);
     return () => window.clearTimeout(timer);
   }, [setPage]);
 
@@ -202,10 +227,10 @@ export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void
       subtitle="Gracias por inscribirte, te regalamos las primeras 5 clases."
     >
       <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 8px" }}>
-        Redirigiendo a tus clases gratis…
+        Redirigiendo al quiz de temperamento…
       </p>
-      <button type="button" style={authPrimaryButtonStyle} onClick={() => setPage("mi-camino-demo")}>
-        Ir ahora
+      <button type="button" style={authPrimaryButtonStyle} onClick={() => setPage("onboarding-quiz")}>
+        Continuar
       </button>
     </AuthFormShell>
   );
