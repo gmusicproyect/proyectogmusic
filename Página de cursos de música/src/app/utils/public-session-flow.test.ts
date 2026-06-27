@@ -18,14 +18,22 @@ describe("R3.3D — sesión pública y logout", () => {
     assert.match(appSource, /postDevLogout[\s\S]*refreshPublicSession/);
   });
 
-  it("Navbar anónimo muestra Alumno y Regístrate", () => {
-    assert.equal(navbarSource.includes("Alumno"), true);
+  it("Navbar anónimo muestra Iniciar sesión y Regístrate", () => {
+    assert.equal(navbarSource.includes("Iniciar sesión"), true);
     assert.equal(navbarSource.includes("Regístrate"), true);
     assert.equal(navbarSource.includes("renderAnonymousAuth"), true);
+    assert.equal(navbarSource.includes(">Alumno<"), false);
   });
 
-  it("Navbar autenticado muestra nombre, Mi Estudio y Cerrar sesión", () => {
-    assert.equal(navbarSource.includes("Mi Estudio"), true);
+  it("Navbar registered_no_sub muestra bienvenida y CTA de camino", () => {
+    assert.equal(navbarSource.includes("renderRegisteredAuth"), true);
+    assert.equal(navbarSource.includes('session.status === "registered_no_sub"'), true);
+    assert.equal(navbarSource.includes("Bienvenido,"), true);
+    assert.equal(navbarSource.includes("resolveAcademiaPublicCta"), true);
+  });
+
+  it("Navbar autenticado muestra nombre, Mi academia y Cerrar sesión", () => {
+    assert.equal(navbarSource.includes("Mi academia"), true);
     assert.equal(navbarSource.includes("Cerrar sesión"), true);
     assert.equal(navbarSource.includes('session.status === "authenticated"'), true);
     assert.equal(navbarSource.includes("Carlos"), false);
@@ -78,6 +86,25 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.match(appSource, /currentPage === "onboarding-quiz"[\s\S]*DemoAuthGuard/);
     assert.match(appSource, /currentPage === "mi-camino-demo"[\s\S]*DemoAuthGuard/);
     assert.match(appSource, /demoLessonId !== null[\s\S]*DemoAuthGuard/);
+  });
+
+  it("FreeFundamentoLessonPage usa DemoAuthGuard", () => {
+    assert.match(
+      appSource,
+      /isPublicFreeLessonPage\(currentPage\)[\s\S]*DemoAuthGuard[\s\S]*FreeFundamentoLessonPage/
+    );
+  });
+
+  it("handlePageChange y sesión anónima redirigen páginas protegidas", () => {
+    assert.equal(appSource.includes("resolveDemoEntryPage"), true);
+    assert.equal(appSource.includes("requiresAccountForPage"), true);
+    assert.equal(appSource.includes("isAnonymousSession"), true);
+    assert.match(appSource, /navigateStudentZoneAware\("registro-cuenta"/);
+  });
+
+  it("Navbar auth anónimo usa login-cuenta y registro-cuenta", () => {
+    assert.match(appSource, /onSignIn=\{\(\) => handlePageChange\("login-cuenta"\)/);
+    assert.match(appSource, /onRegister=\{\(\) => handlePageChange\("registro-cuenta"\)/);
   });
 
   it("páginas de auth quedan fuera de Navbar y MusicPlayer", () => {

@@ -41,6 +41,11 @@ import { flushPendingTemperamentQuizSync } from "./utils/temperament-quiz-storag
 import { clearAnonymousFunnelLocalStorage } from "./utils/anonymous-funnel-storage";
 import { preloadCriticalImages } from "./utils/image-config";
 import {
+  isAnonymousSession,
+  requiresAccountForPage,
+  resolveDemoEntryPage,
+} from "./utils/demo-auth-gate";
+import {
   getInitialPageFromPath,
   initStudentZoneRouting,
   navigateStudentZoneAware,
@@ -89,8 +94,9 @@ export default function App() {
   const hasAppliedAuthenticatedLandingRef = useRef(false);
 
   const handlePageChange = useCallback((page: string) => {
-    navigateStudentZoneAware(page, setCurrentPage, currentPage);
-  }, [currentPage]);
+    const gated = resolveDemoEntryPage(publicSession.status, page);
+    navigateStudentZoneAware(gated, setCurrentPage, currentPage);
+  }, [currentPage, publicSession.status]);
 
   // Music player functions
   const onPlay = (track: Track) => { setCurrentTrack(track); setPlaying(true); };
@@ -226,6 +232,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (publicSession.status === "loading") return;
+    if (!requiresAccountForPage(currentPage)) return;
+    if (!isAnonymousSession(publicSession.status)) return;
+    navigateStudentZoneAware("registro-cuenta", setCurrentPage, currentPage);
+  }, [publicSession.status, currentPage]);
+
+  useEffect(() => {
     const pathname =
       pathnameForPage(currentPage) ??
       (currentPage === "home" ? "/" : window.location.pathname);
@@ -260,8 +273,8 @@ export default function App() {
         <Navbar
           currentPage={currentPage}
           setPage={handlePageChange}
-          onSignIn={() => openAuthModal("login")}
-          onRegister={() => openAuthModal("register")}
+          onSignIn={() => handlePageChange("login-cuenta")}
+          onRegister={() => handlePageChange("registro-cuenta")}
           session={publicSession}
           onGoToStudio={() => handlePageChange("mi-estudio")}
           onLogout={handlePublicLogout}
@@ -407,7 +420,9 @@ export default function App() {
       )}
 
       {isPublicFreeLessonPage(currentPage) && (
-        <FreeFundamentoLessonPage setPage={handlePageChange} />
+        <DemoAuthGuard setPage={handlePageChange}>
+          <FreeFundamentoLessonPage setPage={handlePageChange} />
+        </DemoAuthGuard>
       )}
 
       {DEV_LEGACY && currentPage === "dashboard" && (

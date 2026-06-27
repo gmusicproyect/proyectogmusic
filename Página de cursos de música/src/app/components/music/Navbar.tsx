@@ -6,6 +6,8 @@ import {
   ACTIVE_HOME_SECTION_EVENT,
   notifyActiveHomeSection,
 } from "../../utils/public-home-navigation";
+import { resolveAcademiaPublicCta } from "../../utils/academia-public-cta";
+import { resolveDemoEntryPage } from "../../utils/demo-auth-gate";
 
 const HOME_NAV_SECTIONS = ["hero", "academia", "comunidad", "planes", "contacto"] as const;
 const NAV_ACTIVE_OFFSET = 150;
@@ -24,6 +26,14 @@ function detectActiveHomeSection(): (typeof HOME_NAV_SECTIONS)[number] {
 
 const WHITE_WARM = "#F5F0E8";
 const BORDER = "rgba(255,255,255,0.06)";
+
+function sessionFirstName(session: PublicStudentSessionState): string {
+  if (session.status !== "registered_no_sub" && session.status !== "authenticated") {
+    return "";
+  }
+  const first = session.user.name.trim().split(/\s+/)[0];
+  return first || session.user.name;
+}
 
 interface NavbarProps {
   currentPage?: string;
@@ -174,7 +184,7 @@ export function Navbar({
         onClick={onSignIn}
         style={{ ...authButtonStyle(false), width: stacked ? "100%" : undefined }}
       >
-        Alumno
+        Iniciar sesión
       </button>
       <button
         type="button"
@@ -185,6 +195,56 @@ export function Navbar({
       </button>
     </div>
   );
+
+  const renderRegisteredAuth = (stacked = false) => {
+    if (session.status !== "registered_no_sub") return null;
+    const cta = resolveAcademiaPublicCta("registered_no_sub");
+    const firstName = sessionFirstName(session);
+
+    return (
+      <div
+        className="gmusic-ctas"
+        style={{
+          ...authShellStyle,
+          flexDirection: stacked ? "column" : "row",
+          alignItems: stacked ? "stretch" : "center",
+          width: stacked ? "100%" : undefined,
+        }}
+      >
+        <span
+          style={{
+            color: WHITE_WARM,
+            fontSize: 13,
+            fontWeight: 500,
+            maxWidth: stacked ? "100%" : 180,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Bienvenido, {firstName}
+        </span>
+        <button
+          type="button"
+          onClick={() =>
+            setPage?.(resolveDemoEntryPage("registered_no_sub", cta.destination))
+          }
+          disabled={logoutProcessing}
+          style={{ ...authButtonStyle(true), width: stacked ? "100%" : undefined }}
+        >
+          {cta.label}
+        </button>
+        <button
+          type="button"
+          onClick={() => void onLogout?.()}
+          disabled={logoutProcessing}
+          style={{ ...authButtonStyle(false), width: stacked ? "100%" : undefined }}
+        >
+          {logoutProcessing ? "Cerrando…" : "Cerrar sesión"}
+        </button>
+      </div>
+    );
+  };
 
   const renderAuthenticatedAuth = (stacked = false) => (
     <div
@@ -207,7 +267,7 @@ export function Navbar({
           whiteSpace: "nowrap",
         }}
       >
-        {session.status === "authenticated" ? session.user.name : ""}
+        {sessionFirstName(session)}
       </span>
       <button
         type="button"
@@ -215,7 +275,7 @@ export function Navbar({
         disabled={logoutProcessing}
         style={{ ...authButtonStyle(true), width: stacked ? "100%" : undefined }}
       >
-        Mi Estudio
+        Mi academia
       </button>
       <button
         type="button"
@@ -231,6 +291,7 @@ export function Navbar({
   const renderSessionAuth = (stacked = false) => {
     if (session.status === "loading") return renderLoadingAuth(stacked);
     if (session.status === "authenticated") return renderAuthenticatedAuth(stacked);
+    if (session.status === "registered_no_sub") return renderRegisteredAuth(stacked);
     if (session.status === "error") {
       // API caída: no bloquear nav ni CTAs públicos
       return renderAnonymousAuth(stacked);

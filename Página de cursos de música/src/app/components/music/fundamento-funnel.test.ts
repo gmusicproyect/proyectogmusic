@@ -61,11 +61,12 @@ describe("Navbar — estado público anónimo A2.2", () => {
     assert.equal(navbarSource.includes("gmusic-profile-trigger"), false);
   });
 
-  it("muestra Alumno y Regístrate como enlaces públicos", () => {
-    assert.equal(navbarSource.includes("Alumno"), true);
+  it("muestra Iniciar sesión y Regístrate como enlaces públicos", () => {
+    assert.equal(navbarSource.includes("Iniciar sesión"), true);
     assert.equal(navbarSource.includes("Regístrate"), true);
     assert.equal(navbarSource.includes("onSignIn"), true);
     assert.equal(navbarSource.includes("onRegister"), true);
+    assert.equal(navbarSource.includes(">Alumno<"), false);
     assert.equal(navbarSource.includes("Carlos"), false);
     assert.equal(navbarSource.includes("MOCK_USER"), false);
   });
@@ -272,14 +273,14 @@ describe("FundamentoPreviewPage — desconectada pero conservada", () => {
 });
 
 describe("App — red de seguridad fundamento-preview", () => {
-  it("fundamento-preview y fundamento-path renderizan FreeFundamentoLessonPage", () => {
+  it("fundamento-preview y fundamento-path renderizan FreeFundamentoLessonPage con guard", () => {
     assert.equal(appSource.includes("isPublicFreeLessonPage"), true);
     assert.equal(isPublicFreeLessonPage("fundamento-preview"), true);
     assert.equal(isPublicFreeLessonPage("fundamento-path"), true);
     assert.equal(isPublicFreeLessonPage("fundamento-free-lesson"), true);
     assert.match(
       appSource,
-      /isPublicFreeLessonPage\(currentPage\)[\s\S]*FreeFundamentoLessonPage/
+      /isPublicFreeLessonPage\(currentPage\)[\s\S]*DemoAuthGuard[\s\S]*FreeFundamentoLessonPage/
     );
   });
 
@@ -384,11 +385,11 @@ describe("FreeFundamentoLessonPage", () => {
 });
 
 describe("App — rutas públicas del funnel A2.2", () => {
-  it("registra fundamento-free-lesson sin DEV_LEGACY", () => {
+  it("fundamento-free-lesson exige DemoAuthGuard", () => {
     assert.equal(appSource.includes("isPublicFreeLessonPage(currentPage)"), true);
     assert.match(
       appSource,
-      /isPublicFreeLessonPage\(currentPage\)[\s\S]*FreeFundamentoLessonPage/
+      /isPublicFreeLessonPage\(currentPage\)[\s\S]*DemoAuthGuard[\s\S]*FreeFundamentoLessonPage/
     );
     assert.equal(appSource.includes("DEV_LEGACY && currentPage === \"fundamento"), false);
   });
