@@ -15,6 +15,7 @@ import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSess
 const GOLD = "#C9A84C";
 const GOLD_BORDER = "rgba(201,168,76,0.3)";
 const WHITE_WARM = "#F5F0E8";
+const ONBOARDING_LEVEL_CTA_LABEL = "Continuar con este nivel";
 
 export function InteractiveLevelSelector({
   setPage,
@@ -195,7 +196,7 @@ export function InteractiveLevelSelector({
                           display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                         }}
                       >
-                        Ver clase gratuita
+                        {ONBOARDING_LEVEL_CTA_LABEL}
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                       </motion.button>
                     ) : (
@@ -214,13 +215,15 @@ export function InteractiveLevelSelector({
                         Próximamente
                       </div>
                     )}
-                    <div style={{
-                      fontSize: 11, color: "rgba(201,168,76,0.45)",
-                      fontFamily: "Inter, sans-serif", marginTop: 8,
-                      letterSpacing: "0.5px",
-                    }}>
-                      {showFreeClass ? "Guitarra · Sin tarjeta · 7 min" : "Disponible en una próxima etapa"}
-                    </div>
+                    {!showFreeClass && (
+                      <div style={{
+                        fontSize: 11, color: "rgba(201,168,76,0.45)",
+                        fontFamily: "Inter, sans-serif", marginTop: 8,
+                        letterSpacing: "0.5px",
+                      }}>
+                        Disponible en una próxima etapa
+                      </div>
+                    )}
                   </motion.div>
                 ) : (
                   <motion.div

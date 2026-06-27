@@ -2,12 +2,9 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { AcademiaInstrumentSelector } from "./AcademiaInstrumentSelector";
 import { InteractiveLevelSelector } from "../music/InteractiveLevelSelector";
-import { GOLD, GOLD_SOFT, WHITE_WARM, fadeUp, vp } from "./tokens";
-import { getDemoUserState } from "../../hooks/useDemoUserState";
+import { GOLD, WHITE_WARM, fadeUp, vp } from "./tokens";
 import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
 import type { AcademiaInstrumentId } from "../../data/academia-instruments";
-import { shouldShowTemperamentQuiz } from "../../utils/temperament-quiz-storage";
-import { resolveDemoEntryPage } from "../../utils/demo-auth-gate";
 
 type AcademiaStep = "instrument" | "program";
 
@@ -28,7 +25,6 @@ export function AcademiaOnboardingWizard({
   setLevel,
   session,
 }: AcademiaOnboardingWizardProps) {
-  const cta = getDemoUserState(session.status);
   const [step, setStep] = useState<AcademiaStep>("instrument");
   const [selectedInstrument, setSelectedInstrument] = useState<AcademiaInstrumentId | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -54,14 +50,6 @@ export function AcademiaOnboardingWizard({
 
   const isInstrumentStep = step === "instrument";
   const isSubscribedStudent = session.status === "authenticated";
-
-  const handleAcademiaCta = () => {
-    const rawDestination =
-      cta.destination === "mi-camino-demo" && shouldShowTemperamentQuiz({ isSubscribedStudent })
-        ? "onboarding-quiz"
-        : cta.destination;
-    setPage(resolveDemoEntryPage(session.status, rawDestination));
-  };
 
   return (
     <div
@@ -236,40 +224,6 @@ export function AcademiaOnboardingWizard({
                 isSubscribedStudent={isSubscribedStudent}
                 sessionStatus={session.status}
               />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              style={{ marginTop: 40 }}
-            >
-              <motion.button
-                whileHover={{
-                  background: GOLD_SOFT,
-                  boxShadow: "0 8px 32px rgba(201,168,76,0.35)",
-                }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ duration: 0.15 }}
-                onClick={handleAcademiaCta}
-                style={{
-                  height: 50,
-                  padding: "0 36px",
-                  borderRadius: 2,
-                  background: GOLD,
-                  color: "#080808",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  border: "none",
-                  cursor: "pointer",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  fontFamily: "Inter, sans-serif",
-                  boxShadow: "0 4px 20px rgba(201,168,76,0.22)",
-                }}
-              >
-                {cta.label}
-              </motion.button>
             </motion.div>
           </motion.div>
         )}

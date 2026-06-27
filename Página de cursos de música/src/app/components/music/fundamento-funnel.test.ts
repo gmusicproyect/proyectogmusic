@@ -197,18 +197,12 @@ describe("AcademiaOnboardingWizard — onboarding interno T4A", () => {
     assert.equal(onboardingWizardSource.includes("Cambiar instrumento"), true);
   });
 
-  it("tiene CTA dinámico via getDemoUserState", () => {
-    assert.equal(onboardingWizardSource.includes("getDemoUserState"), true);
-    assert.equal(onboardingWizardSource.includes("cta.label"), true);
-    assert.equal(onboardingWizardSource.includes("cta.destination"), true);
-  });
-
-  it("CTA inferior pasa por onboarding-quiz si el quiz no se completó", () => {
-    assert.equal(onboardingWizardSource.includes("shouldShowTemperamentQuiz"), true);
-    assert.equal(onboardingWizardSource.includes("isSubscribedStudent"), true);
-    assert.equal(onboardingWizardSource.includes('"onboarding-quiz"'), true);
-    assert.equal(onboardingWizardSource.includes("handleAcademiaCta"), true);
-    assert.equal(onboardingWizardSource.includes("resolveDemoEntryPage"), true);
+  it("delega la continuación al selector de nivel sin CTA promocional duplicado", () => {
+    assert.equal(onboardingWizardSource.includes("InteractiveLevelSelector"), true);
+    assert.equal(onboardingWizardSource.includes("getDemoUserState"), false);
+    assert.equal(onboardingWizardSource.includes("handleAcademiaCta"), false);
+    assert.equal(onboardingWizardSource.includes("gratis"), false);
+    assert.equal(onboardingWizardSource.includes("gratuita"), false);
   });
 
   it("no navega a páginas legacy ni preview", () => {
@@ -248,6 +242,15 @@ describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
     assert.equal(selectorSource.includes("isFreeClassTrack"), true);
     assert.equal(selectorSource.includes("resolveDemoEntryPage"), true);
     assertNoForbiddenNavigation(selectorSource, "InteractiveLevelSelector");
+  });
+
+  it("onboarding usa CTA de configuración sin copy promocional gratis", () => {
+    assert.equal(selectorSource.includes("Continuar con este nivel"), true);
+    assert.equal(selectorSource.includes("Ver clase gratuita"), false);
+    assert.equal(selectorSource.includes("gratis"), false);
+    assert.equal(selectorSource.includes("gratuita"), false);
+    assert.equal(selectorSource.includes("Sin tarjeta"), false);
+    assert.equal(selectorSource.includes("7 min"), false);
   });
 
   it("no inventa progreso, XP ni racha", () => {
