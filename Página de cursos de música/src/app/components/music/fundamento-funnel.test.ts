@@ -297,7 +297,7 @@ describe("App — flujo Semestral lineal", () => {
     assert.equal(appSource.includes("pendingSemestralCheckout"), true);
     assert.equal(appSource.includes("SEMESTRAL_CHECKOUT_COURSE"), true);
     assert.equal(appSource.includes("registrationOnly={pendingSemestralCheckout}"), true);
-    assert.equal(appSource.includes('setCurrentPage("checkout")'), true);
+    assert.equal(appSource.includes('handlePageChange("checkout")'), true);
     assert.equal(appSource.includes('handlePageChange("mi-estudio")'), true);
     assert.equal(appSource.includes('setCurrentPage("mi-estudio")'), false);
     assert.equal(appSource.includes("activateSemestralWithAccessVerification"), true);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { GM_BG, GM_BORDER, GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "./tokens";
 
@@ -7,38 +7,42 @@ interface DemoAuthGuardProps {
   setPage: (page: string) => void;
 }
 
+function SessionGateShell({ message }: { message: string }) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: GM_BG,
+        color: GM_TEXT_SEC,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      role="status"
+    >
+      {message}
+    </div>
+  );
+}
+
 export function DemoAuthGuard({ children, setPage }: DemoAuthGuardProps) {
   const { session, isLoggedIn } = useAuth();
   const redirectedRef = useRef(false);
 
-  useEffect(() => {
-    if (session.status === "loading" || isLoggedIn || redirectedRef.current) {
-      return;
-    }
+  useLayoutEffect(() => {
+    if (redirectedRef.current) return;
+    if (session.status === "loading") return;
+    if (isLoggedIn) return;
     redirectedRef.current = true;
     setPage("registro-cuenta");
   }, [session.status, isLoggedIn, setPage]);
 
   if (session.status === "loading") {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: GM_BG,
-          color: GM_TEXT_SEC,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        role="status"
-      >
-        Verificando sesión…
-      </div>
-    );
+    return <SessionGateShell message="Verificando sesión…" />;
   }
 
   if (!isLoggedIn) {
-    return null;
+    return <SessionGateShell message="Redirigiendo al registro…" />;
   }
 
   return <>{children}</>;

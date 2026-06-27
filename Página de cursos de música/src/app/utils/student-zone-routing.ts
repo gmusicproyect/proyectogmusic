@@ -142,9 +142,12 @@ function isOnSyncedUrl(currentPage: string, pathname: string): boolean {
   );
 }
 
-export function initStudentZoneRouting(setPage: (page: string) => void) {
+export function initStudentZoneRouting(
+  setPage: (page: string) => void,
+  resolvePage: (page: string) => string = (page) => page
+) {
   const handlePopState = () => {
-    const page = pageFromPathname(window.location.pathname);
+    const page = resolvePage(pageFromPathname(window.location.pathname));
     setPage(page);
     setDocumentTitle(page);
   };

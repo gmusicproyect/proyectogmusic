@@ -92,6 +92,8 @@ export default function App() {
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const { session: publicSession, refresh: refreshPublicSession } = useAuth();
   const hasAppliedAuthenticatedLandingRef = useRef(false);
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
 
   const handlePageChange = useCallback((page: string) => {
     const gated = resolveDemoEntryPage(publicSession.status, page);
@@ -130,7 +132,7 @@ export default function App() {
     setShowAuthModal(false);
     if (pendingSemestralCheckout) {
       setPendingSemestralCheckout(false);
-      setCurrentPage("checkout");
+      handlePageChange("checkout");
     }
   };
 
@@ -200,7 +202,7 @@ export default function App() {
 
   const handleCourseClick = (course: Course) => {
     setSelectedCourse(course);
-    setCurrentPage("course-detail");
+    handlePageChange("course-detail");
   };
 
   // Precargar imágenes críticas al montar
@@ -227,9 +229,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const cleanup = initStudentZoneRouting(setCurrentPage);
-    return cleanup;
-  }, []);
+    const applyRoutedPage = (page: string) => {
+      navigateStudentZoneAware(page, setCurrentPage, currentPageRef.current);
+    };
+
+    return initStudentZoneRouting(applyRoutedPage, (page) =>
+      resolveDemoEntryPage(publicSession.status, page)
+    );
+  }, [publicSession.status]);
 
   useEffect(() => {
     if (publicSession.status === "loading") return;
@@ -367,7 +374,7 @@ export default function App() {
       {currentPage === "album" && selectedAlbum && (
         <AlbumPage
           album={selectedAlbum}
-          setPage={setCurrentPage}
+          setPage={handlePageChange}
           onPlay={onPlay}
           currentTrack={currentTrack}
           playing={playing}
@@ -375,27 +382,27 @@ export default function App() {
       )}
 
       {currentPage === "courses" && (
-        <CoursesPage setPage={setCurrentPage} onCourseClick={handleCourseClick} />
+        <CoursesPage setPage={handlePageChange} onCourseClick={handleCourseClick} />
       )}
 
       {(currentPage === "instrument-selector" || currentPage === "instrument-courses") && (
         <InstrumentCoursesPage
           level={selectedLevel}
           instrument={selectedInstrument}
-          setPage={setCurrentPage}
+          setPage={handlePageChange}
         />
       )}
 
       {currentPage === "course-detail" && selectedCourse && (
         <CourseDetailPage
           course={selectedCourse}
-          setPage={setCurrentPage}
+          setPage={handlePageChange}
           onShowAuth={() => setShowAuthModal(true)}
           onShowCheckout={() => {
             if (userState === "anonymous") {
               setShowAuthModal(true);
             } else {
-              setCurrentPage("checkout");
+              handlePageChange("checkout");
             }
           }}
           userState={userState}
@@ -406,17 +413,17 @@ export default function App() {
         <CheckoutPage
           course={selectedCourse}
           user={userData}
-          onClose={() => setCurrentPage(isSemestralCheckoutCourse(selectedCourse) ? "home" : "course-detail")}
+          onClose={() => handlePageChange(isSemestralCheckoutCourse(selectedCourse) ? "home" : "course-detail")}
           onSuccess={handleCheckoutSuccess}
         />
       )}
 
       {currentPage === "community" && (
-        <CommunityPage setPage={setCurrentPage} />
+        <CommunityPage setPage={handlePageChange} />
       )}
 
       {currentPage === "probar" && (
-        <ProbarPage setPage={setCurrentPage} />
+        <ProbarPage setPage={handlePageChange} />
       )}
 
       {isPublicFreeLessonPage(currentPage) && (

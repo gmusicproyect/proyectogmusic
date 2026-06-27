@@ -102,6 +102,19 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.match(appSource, /navigateStudentZoneAware\("registro-cuenta"/);
   });
 
+  it("initStudentZoneRouting aplica gate de sesión al popstate inicial", () => {
+    assert.match(
+      appSource,
+      /initStudentZoneRouting\(applyRoutedPage[\s\S]*resolveDemoEntryPage\(publicSession\.status, page\)/
+    );
+  });
+
+  it("App no pasa setCurrentPage sin gate a páginas con setPage", () => {
+    assert.equal(appSource.includes("CommunityPage setPage={setCurrentPage}"), false);
+    assert.equal(appSource.includes("ProbarPage setPage={setCurrentPage}"), false);
+    assert.equal(appSource.includes("FreeFundamentoLessonPage setPage={handlePageChange}"), true);
+  });
+
   it("Navbar auth anónimo usa login-cuenta y registro-cuenta", () => {
     assert.match(appSource, /onSignIn=\{\(\) => handlePageChange\("login-cuenta"\)/);
     assert.match(appSource, /onRegister=\{\(\) => handlePageChange\("registro-cuenta"\)/);

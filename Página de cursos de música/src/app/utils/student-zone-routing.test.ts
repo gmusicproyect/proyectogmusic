@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 import {
   getInitialPageFromPath,
+  initStudentZoneRouting,
   navigateStudentZoneAware,
   pageFromPathname,
   pathnameForPage,
@@ -60,6 +61,8 @@ function withMockLocation(
         }
       },
     },
+    addEventListener() {},
+    removeEventListener() {},
   };
 
   Object.defineProperty(globalThis, "window", {
@@ -182,6 +185,20 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
       assert.equal(getInitialPageFromPath(), "fundamento-free-lesson");
     });
     assert.equal(pathnameForPage("fundamento-preview"), "/fundamento-preview");
+  });
+
+  it("initStudentZoneRouting aplica resolvePage al cargar pathname", () => {
+    let nextPage = "home";
+    withMockLocation("/mi-camino-demo", () => {
+      const cleanup = initStudentZoneRouting(
+        (page) => {
+          nextPage = page;
+        },
+        (page) => (page === "mi-camino-demo" ? "registro-cuenta" : page)
+      );
+      cleanup();
+    });
+    assert.equal(nextPage, "registro-cuenta");
   });
 });
 

@@ -16,6 +16,12 @@ export function isAnonymousSession(
   return status === "anonymous" || status === "error";
 }
 
+export function isLoggedInSession(
+  status: PublicStudentSessionState["status"]
+): boolean {
+  return status === "registered_no_sub" || status === "authenticated";
+}
+
 /** Pages that require registered_no_sub or authenticated — never anonymous. */
 export function requiresAccountForPage(page: string): boolean {
   if (DEMO_ENTRY_PAGES.has(page)) return true;
@@ -27,6 +33,7 @@ export function requiresAccountForPage(page: string): boolean {
 /**
  * Anonymous visitors are sent to registro before demo entry.
  * Logged-in users (registered_no_sub, authenticated) keep the target page.
+ * While session is loading, protected targets stay blocked at render time (DemoAuthGuard).
  */
 export function resolveDemoEntryPage(
   sessionStatus: PublicStudentSessionState["status"],
@@ -42,4 +49,14 @@ export function resolveDemoEntryPage(
     return "registro-cuenta";
   }
   return targetPage;
+}
+
+/** True when anonymous must not see protected page content. */
+export function shouldBlockProtectedPage(
+  sessionStatus: PublicStudentSessionState["status"],
+  page: string
+): boolean {
+  if (!requiresAccountForPage(page)) return false;
+  if (sessionStatus === "loading") return true;
+  return isAnonymousSession(sessionStatus);
 }

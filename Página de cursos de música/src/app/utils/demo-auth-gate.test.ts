@@ -4,6 +4,7 @@ import {
   isAnonymousSession,
   requiresAccountForPage,
   resolveDemoEntryPage,
+  shouldBlockProtectedPage,
 } from "./demo-auth-gate";
 
 describe("demo-auth-gate", () => {
@@ -37,6 +38,7 @@ describe("demo-auth-gate", () => {
   it("loading preserves protected target until session resolves (guard blocks render)", () => {
     assert.equal(resolveDemoEntryPage("loading", "mi-camino-demo"), "mi-camino-demo");
     assert.equal(resolveDemoEntryPage("loading", "demo-clase-1"), "demo-clase-1");
+    assert.equal(shouldBlockProtectedPage("loading", "mi-camino-demo"), true);
   });
 
   it("isAnonymousSession covers anonymous and error", () => {

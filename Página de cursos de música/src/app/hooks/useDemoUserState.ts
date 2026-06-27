@@ -85,22 +85,6 @@ export function getDemoUserState(
     };
   }
 
-  if (completed.length >= 5) {
-    return {
-      state: "demo_completed",
-      label: "Inscribirme para continuar",
-      destination: "inscripcion-gate",
-    };
-  }
-
-  if (completed.length > 0) {
-    return {
-      state: "demo_started",
-      label: "Continuar clase gratuita",
-      destination: "mi-camino-demo",
-    };
-  }
-
   return {
     state: "anonymous",
     label: "Probar mis 5 clases gratis",
