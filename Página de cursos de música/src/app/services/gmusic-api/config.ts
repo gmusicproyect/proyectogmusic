@@ -8,14 +8,17 @@ export function resolveApiBaseUrl(options: {
   hostname?: string | null;
   defaultBaseUrl?: string;
 }): string {
+  const hostname = options.hostname?.trim();
+
+  // Vercel: same-origin /api/v1 proxy (vercel.json → Render). Evita bloqueo de cookies
+  // third-party en navegadores reales; curl directo a Render sigue válido para smoke API.
+  if (hostname === "proyectogmusic.vercel.app" || hostname?.endsWith(".vercel.app")) {
+    return "/api/v1";
+  }
+
   const configured = options.configured?.trim();
   if (configured) {
     return configured.replace(/\/+$/, "");
-  }
-
-  const hostname = options.hostname?.trim();
-  if (hostname === "proyectogmusic.vercel.app" || hostname?.endsWith(".vercel.app")) {
-    return PRODUCTION_RENDER_API_BASE_URL;
   }
 
   return options.defaultBaseUrl ?? DEFAULT_API_BASE_URL;

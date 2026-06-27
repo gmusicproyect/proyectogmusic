@@ -1,28 +1,32 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  PRODUCTION_RENDER_API_BASE_URL,
-  resolveApiBaseUrl,
-} from "./config";
+import { resolveApiBaseUrl } from "./config";
 
 describe("resolveApiBaseUrl", () => {
-  it("usa VITE_API_BASE_URL cuando está configurada", () => {
+  it("usa VITE_API_BASE_URL cuando está configurada (fuera de Vercel)", () => {
     assert.equal(
       resolveApiBaseUrl({
         configured: "https://example.com/api/v1/",
-        hostname: "proyectogmusic.vercel.app",
+        hostname: "localhost",
       }),
       "https://example.com/api/v1"
     );
   });
 
-  it("en Vercel prod apunta a Render si no hay env de build", () => {
+  it("en Vercel prod usa /api/v1 same-origin (proxy vercel.json → Render)", () => {
+    assert.equal(
+      resolveApiBaseUrl({
+        configured: "https://gmusic-api.onrender.com/api/v1",
+        hostname: "proyectogmusic.vercel.app",
+      }),
+      "/api/v1"
+    );
     assert.equal(
       resolveApiBaseUrl({
         configured: null,
-        hostname: "proyectogmusic.vercel.app",
+        hostname: "preview-abc123.vercel.app",
       }),
-      PRODUCTION_RENDER_API_BASE_URL
+      "/api/v1"
     );
   });
 

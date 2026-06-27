@@ -26,6 +26,14 @@ if (!existsSync(vercelPath)) {
 } else {
   const vercel = JSON.parse(readFileSync(vercelPath, "utf8"));
   const rewrites = vercel.rewrites ?? [];
+  const hasApiProxy = rewrites.some(
+    (r) =>
+      typeof r.source === "string" &&
+      r.source.includes("/api/v1") &&
+      String(r.destination ?? "").includes("gmusic-api.onrender.com")
+  );
+  if (hasApiProxy) ok("vercel.json — proxy /api/v1 → Render (cookies same-origin)");
+  else fail("vercel.json — falta proxy /api/v1 → Render");
   const hasSpaRewrite = rewrites.some(
     (r) => r.destination === "/index.html" || r.destination?.endsWith("/index.html")
   );
