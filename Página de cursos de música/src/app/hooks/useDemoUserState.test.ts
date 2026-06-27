@@ -15,3 +15,11 @@ describe("useDemoUserState — registered_no_sub", () => {
     assert.equal(cta.destination, "mi-estudio");
   });
 });
+
+describe("useDemoUserState — anonymous", () => {
+  it("anónimo va a registro con copy de 5 clases gratis", () => {
+    const cta = useDemoUserState("anonymous");
+    assert.equal(cta.label, "Probar mis 5 clases gratis");
+    assert.equal(cta.destination, "registro-cuenta");
+  });
+});

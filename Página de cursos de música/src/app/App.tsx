@@ -27,6 +27,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { LessonPage } from "./pages/LessonPage";
 import { CurriculumPage } from "./pages/CurriculumPage";
 import { TemperamentQuizPage } from "./pages/TemperamentQuizPage";
+import { OnboardingAcademiaPage } from "./pages/OnboardingAcademiaPage";
 import { FreeFundamentoLessonPage } from "./pages/FreeFundamentoLessonPage";
 import { AuthModal } from "./components/music/AuthModal";
 import { isPublicFreeLessonPage } from "./utils/academia-track-matrix";
@@ -253,7 +254,7 @@ export default function App() {
 
   return (
     <div style={{ fontFamily:"'Inter','Outfit',sans-serif", background:"#080808", minHeight:"100vh", color:"#fff" }}>
-      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","mi-camino-demo","onboarding-quiz","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
+      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","mi-camino-demo","onboarding-quiz","onboarding-academia","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
         !isPublicFreeLessonPage(currentPage) &&
         demoLessonId === null && (
         <Navbar
@@ -304,6 +305,16 @@ export default function App() {
             setPage={handlePageChange}
             instrumentSlug={selectedInstrument}
             isSubscribedStudent={publicSession.status === "authenticated"}
+          />
+        </DemoAuthGuard>
+      )}
+
+      {currentPage === "onboarding-academia" && (
+        <DemoAuthGuard setPage={handlePageChange}>
+          <OnboardingAcademiaPage
+            setPage={handlePageChange}
+            setLevel={setSelectedLevel}
+            session={publicSession}
           />
         </DemoAuthGuard>
       )}

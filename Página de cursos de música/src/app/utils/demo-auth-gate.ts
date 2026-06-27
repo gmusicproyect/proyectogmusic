@@ -1,7 +1,11 @@
 import type { PublicStudentSessionState } from "../hooks/usePublicStudentSession";
 
 /** Demo funnel entry pages that require an account (PR2). */
-const DEMO_ENTRY_PAGES = new Set(["mi-camino-demo", "onboarding-quiz"]);
+const DEMO_ENTRY_PAGES = new Set([
+  "mi-camino-demo",
+  "onboarding-quiz",
+  "onboarding-academia",
+]);
 
 export function isAnonymousSession(
   status: PublicStudentSessionState["status"]

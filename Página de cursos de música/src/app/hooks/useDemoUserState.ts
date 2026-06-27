@@ -12,6 +12,18 @@ export interface DemoCtaConfig {
   destination: string;
 }
 
+export function readDemoCompletedLessons(): number[] {
+  return readCompletedLessons();
+}
+
+export function hasDemoProgress(): boolean {
+  return readCompletedLessons().length > 0;
+}
+
+export function isDemoFullyCompleted(): boolean {
+  return readCompletedLessons().length >= 5;
+}
+
 function readCompletedLessons(): number[] {
   try {
     const raw = localStorage.getItem(DEMO_STORAGE_KEY);
@@ -33,7 +45,7 @@ function readCompletedLessons(): number[] {
   }
 }
 
-export function useDemoUserState(
+export function getDemoUserState(
   sessionStatus:
     | "loading"
     | "authenticated"
@@ -91,7 +103,18 @@ export function useDemoUserState(
 
   return {
     state: "anonymous",
-    label: "Ver clase gratuita",
-    destination: "mi-camino-demo",
+    label: "Probar mis 5 clases gratis",
+    destination: "registro-cuenta",
   };
+}
+
+export function useDemoUserState(
+  sessionStatus:
+    | "loading"
+    | "authenticated"
+    | "registered_no_sub"
+    | "anonymous"
+    | "error"
+): DemoCtaConfig {
+  return getDemoUserState(sessionStatus);
 }

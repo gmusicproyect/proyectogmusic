@@ -12,7 +12,6 @@ import {
   saveTemperamentQuizResult,
   shouldShowTemperamentQuiz,
 } from "../utils/temperament-quiz-storage";
-import { navigateToHomeSection } from "../utils/public-home-navigation";
 
 const GOLD = "#C9A84C";
 const BG = "#080808";
@@ -51,7 +50,7 @@ export function TemperamentQuizPage({
       return;
     }
     if (!shouldShowTemperamentQuiz({ isSubscribedStudent })) {
-      navigateToHomeSection(setPage, "academia");
+      setPage("onboarding-academia");
     }
   }, [setPage, isSubscribedStudent]);
 
@@ -60,15 +59,15 @@ export function TemperamentQuizPage({
     [questionIndex]
   );
 
-  const goToAcademia = useCallback(() => {
-    navigateToHomeSection(setPage, "academia");
+  const goToOnboardingAcademia = useCallback(() => {
+    setPage("onboarding-academia");
   }, [setPage]);
 
   const handleSkip = useCallback(() => {
     markTemperamentQuizSkipped();
     analytics.temperamentQuizSkipped();
-    goToAcademia();
-  }, [goToAcademia]);
+    goToOnboardingAcademia();
+  }, [goToOnboardingAcademia]);
 
   const handleSelect = (optionId: QuizOptionId) => {
     if (selectedOption && selectedOption !== optionId) {
@@ -115,7 +114,7 @@ export function TemperamentQuizPage({
       }
     });
 
-    goToAcademia();
+    goToOnboardingAcademia();
   };
 
   return (

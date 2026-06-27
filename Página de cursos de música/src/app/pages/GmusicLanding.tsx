@@ -1,5 +1,5 @@
 import { HeroSection } from "../components/marketing/sections/HeroSection";
-import { AcademiaSection } from "../components/marketing/sections/AcademiaSection";
+import { AcademiaPublicSection } from "../components/marketing/sections/AcademiaPublicSection";
 import { ComunidadSection } from "../components/marketing/sections/ComunidadSection";
 import { PlanesSection } from "../components/marketing/sections/PlanesSection";
 import { ContactoSection } from "../components/marketing/sections/ContactoSection";
@@ -28,7 +28,7 @@ export function GmusicLanding({ setPage, setLevel, onSelectSemestralPlan, sessio
     <div className="bg-obsidian min-h-screen">
       <HeroSection scrollTo={scrollTo} setPage={setPage} />
       <div style={{ marginTop: "-12vh", position: "relative", zIndex: 1 }}>
-        <AcademiaSection setPage={setPage} setLevel={setLevel ?? (() => {})} session={session} />
+        <AcademiaPublicSection setPage={setPage} session={session} />
       </div>
       <ComunidadSection setPage={setPage} />
       <PlanesSection onSelectSemestralPlan={onSelectSemestralPlan} />

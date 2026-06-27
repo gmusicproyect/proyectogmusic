@@ -29,7 +29,8 @@ const navbarSource = readFileSync(join(root, "Navbar.tsx"), "utf8");
 const selectorSource = readFileSync(join(root, "InteractiveLevelSelector.tsx"), "utf8");
 const heroSource = readFileSync(join(root, "../marketing/sections/HeroSection.tsx"), "utf8");
 const planesSource = readFileSync(join(root, "../marketing/sections/PlanesSection.tsx"), "utf8");
-const academiaSource = readFileSync(join(root, "../marketing/sections/AcademiaSection.tsx"), "utf8");
+const academiaPublicSource = readFileSync(join(root, "../marketing/sections/AcademiaPublicSection.tsx"), "utf8");
+const onboardingWizardSource = readFileSync(join(root, "../marketing/AcademiaOnboardingWizard.tsx"), "utf8");
 const instrumentSelectorSource = readFileSync(join(root, "../marketing/AcademiaInstrumentSelector.tsx"), "utf8");
 const instrumentsDataSource = readFileSync(join(root, "../../data/academia-instruments.ts"), "utf8");
 const appSource = readFileSync(join(root, "../../App.tsx"), "utf8");
@@ -157,14 +158,50 @@ describe("PlanesSection — funnel público v3 (embudo demo)", () => {
   });
 });
 
-describe("AcademiaSection — copy y aislamiento legacy", () => {
-  it("paso 1 habla de elegir instrumento y paso 2 de punto de partida", () => {
-    assert.equal(academiaSource.includes("Elige tu instrumento"), true);
-    assert.equal(academiaSource.includes("Elige tu punto de partida"), true);
-    assert.equal(academiaSource.includes("AcademiaInstrumentSelector"), true);
-    assert.equal(academiaSource.includes("Cambiar instrumento"), true);
+describe("AcademiaPublicSection — landing T4A", () => {
+  it("muestra propuesta de valor sin selector de instrumento", () => {
+    assert.equal(academiaPublicSource.includes("Academia Gmusic"), true);
+    assert.equal(academiaPublicSource.includes("Un camino guiado para aprender música paso a paso."), true);
+    assert.equal(academiaPublicSource.includes("Probar mis 5 clases gratis"), false);
+    assert.equal(academiaPublicSource.includes("resolveAcademiaPublicCta"), true);
+    assert.equal(academiaPublicSource.includes("AcademiaInstrumentSelector"), false);
+    assert.equal(academiaPublicSource.includes("Elige tu instrumento"), false);
+    assert.equal(academiaPublicSource.includes('id="academia"'), true);
   });
 
+  it("no navega a páginas legacy ni preview", () => {
+    assertNoForbiddenNavigation(academiaPublicSource, "AcademiaPublicSection");
+  });
+});
+
+describe("AcademiaOnboardingWizard — onboarding interno T4A", () => {
+  it("paso 1 habla de elegir instrumento y paso 2 de punto de partida", () => {
+    assert.equal(onboardingWizardSource.includes("Elige tu instrumento"), true);
+    assert.equal(onboardingWizardSource.includes("Elige tu punto de partida"), true);
+    assert.equal(onboardingWizardSource.includes("AcademiaInstrumentSelector"), true);
+    assert.equal(onboardingWizardSource.includes("Cambiar instrumento"), true);
+  });
+
+  it("tiene CTA dinámico via getDemoUserState", () => {
+    assert.equal(onboardingWizardSource.includes("getDemoUserState"), true);
+    assert.equal(onboardingWizardSource.includes("cta.label"), true);
+    assert.equal(onboardingWizardSource.includes("cta.destination"), true);
+  });
+
+  it("CTA inferior pasa por onboarding-quiz si el quiz no se completó", () => {
+    assert.equal(onboardingWizardSource.includes("shouldShowTemperamentQuiz"), true);
+    assert.equal(onboardingWizardSource.includes("isSubscribedStudent"), true);
+    assert.equal(onboardingWizardSource.includes('"onboarding-quiz"'), true);
+    assert.equal(onboardingWizardSource.includes("handleAcademiaCta"), true);
+    assert.equal(onboardingWizardSource.includes("resolveDemoEntryPage"), true);
+  });
+
+  it("no navega a páginas legacy ni preview", () => {
+    assertNoForbiddenNavigation(onboardingWizardSource, "AcademiaOnboardingWizard");
+  });
+});
+
+describe("AcademiaInstrumentSelector — catálogo D-007", () => {
   it("solo guitarra habilitada en catálogo de instrumentos", () => {
     assert.equal(instrumentsDataSource.includes('"guitarra"'), true);
     assert.equal(instrumentsDataSource.includes('"teclado"'), true);
@@ -173,24 +210,6 @@ describe("AcademiaSection — copy y aislamiento legacy", () => {
     assert.equal(instrumentsDataSource.includes("available: false"), true);
     assert.equal(instrumentSelectorSource.includes("Próximamente"), true);
     assert.equal(instrumentSelectorSource.includes("Disponible"), true);
-  });
-
-  it("tiene CTA dinámico via useDemoUserState", () => {
-    assert.equal(academiaSource.includes("useDemoUserState"), true);
-    assert.equal(academiaSource.includes("cta.label"), true);
-    assert.equal(academiaSource.includes("cta.destination"), true);
-  });
-
-  it("CTA inferior pasa por onboarding-quiz si el quiz no se completó", () => {
-    assert.equal(academiaSource.includes("shouldShowTemperamentQuiz"), true);
-    assert.equal(academiaSource.includes("isSubscribedStudent"), true);
-    assert.equal(academiaSource.includes('"onboarding-quiz"'), true);
-    assert.equal(academiaSource.includes("handleAcademiaCta"), true);
-    assert.equal(academiaSource.includes("resolveDemoEntryPage"), true);
-  });
-
-  it("no navega a páginas legacy ni preview", () => {
-    assertNoForbiddenNavigation(academiaSource, "AcademiaSection");
   });
 });
 

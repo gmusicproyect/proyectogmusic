@@ -6,11 +6,13 @@ describe("demo-auth-gate", () => {
   it("anonymous visitors are gated to registro-cuenta on demo entry", () => {
     assert.equal(resolveDemoEntryPage("anonymous", "mi-camino-demo"), "registro-cuenta");
     assert.equal(resolveDemoEntryPage("anonymous", "onboarding-quiz"), "registro-cuenta");
+    assert.equal(resolveDemoEntryPage("anonymous", "onboarding-academia"), "registro-cuenta");
     assert.equal(resolveDemoEntryPage("error", "mi-camino-demo"), "registro-cuenta");
   });
 
   it("logged-in users reach demo entry pages", () => {
     assert.equal(resolveDemoEntryPage("registered_no_sub", "mi-camino-demo"), "mi-camino-demo");
+    assert.equal(resolveDemoEntryPage("registered_no_sub", "onboarding-academia"), "onboarding-academia");
     assert.equal(resolveDemoEntryPage("authenticated", "onboarding-quiz"), "onboarding-quiz");
   });
 
