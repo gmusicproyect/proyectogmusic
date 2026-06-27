@@ -36,6 +36,20 @@ const DEMO_FUNNEL_PAGES = new Set([
   "inscripcion-registro",
 ]);
 
+/** Rutas directas protegidas por cuenta (onboarding interno + fundamento demo). */
+const PROTECTED_ENTRY_PAGE_TO_PATH: Record<string, string> = {
+  "onboarding-academia": "/onboarding-academia",
+  "fundamento-free-lesson": "/fundamento-free-lesson",
+  "fundamento-preview": "/fundamento-preview",
+  "fundamento-path": "/fundamento-path",
+};
+
+const PROTECTED_ENTRY_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(PROTECTED_ENTRY_PAGE_TO_PATH).map(([page, path]) => [path, page])
+);
+
+const PROTECTED_ENTRY_PAGES = new Set(Object.keys(PROTECTED_ENTRY_PAGE_TO_PATH));
+
 const PAGE_TITLES: Record<string, string> = {
   home: "Gmusic Estudio",
   "mi-estudio": "Gmusic Estudio · Panel del alumno",
@@ -43,6 +57,7 @@ const PAGE_TITLES: Record<string, string> = {
   "mi-camino": "Gmusic Estudio · Mi Camino",
   "mi-camino-demo": "Gmusic Estudio · Camino demo",
   "onboarding-quiz": "Gmusic Estudio · Quiz de temperamento",
+  "onboarding-academia": "Gmusic Estudio · Onboarding Academia",
   "inscripcion-gate": "Gmusic Estudio · Inscripción",
   "registro-cuenta": "Gmusic Estudio · Crear cuenta",
   "login-cuenta": "Gmusic Estudio · Iniciar sesión",
@@ -73,6 +88,14 @@ export function isDemoFunnelPath(pathname: string): boolean {
   return pathname in DEMO_FUNNEL_PATH_TO_PAGE;
 }
 
+export function isProtectedEntryPage(page: string): boolean {
+  return PROTECTED_ENTRY_PAGES.has(page);
+}
+
+export function isProtectedEntryPath(pathname: string): boolean {
+  return pathname in PROTECTED_ENTRY_PATH_TO_PAGE;
+}
+
 export function pathnameForPage(page: string): string | null {
   if (page === "mi-estudio" || page === "welcome") return "/alumno";
   if (page === "mi-camino") return "/mi-camino";
@@ -80,6 +103,8 @@ export function pathnameForPage(page: string): string | null {
   if (authPath) return authPath;
   const demoPath = DEMO_FUNNEL_PAGE_TO_PATH[page];
   if (demoPath) return demoPath;
+  const protectedPath = PROTECTED_ENTRY_PAGE_TO_PATH[page];
+  if (protectedPath) return protectedPath;
   return null;
 }
 
@@ -91,6 +116,8 @@ export function pageFromPathname(pathname: string): string {
   if (authPage) return authPage;
   const demoPage = DEMO_FUNNEL_PATH_TO_PAGE[pathname];
   if (demoPage) return demoPage;
+  const protectedPage = PROTECTED_ENTRY_PATH_TO_PAGE[pathname];
+  if (protectedPage) return protectedPage;
   return "home";
 }
 
@@ -109,7 +136,9 @@ function isOnSyncedUrl(currentPage: string, pathname: string): boolean {
     isAuthPublicPage(currentPage) ||
     isAuthPublicPath(pathname) ||
     isDemoFunnelPage(currentPage) ||
-    isDemoFunnelPath(pathname)
+    isDemoFunnelPath(pathname) ||
+    isProtectedEntryPage(currentPage) ||
+    isProtectedEntryPath(pathname)
   );
 }
 

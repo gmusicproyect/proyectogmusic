@@ -173,6 +173,16 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
     });
     assert.equal(result.pathname, "/demo-clase-3");
   });
+
+  it("carga directa /onboarding-academia y fundamento-free-lesson", () => {
+    withMockLocation("/onboarding-academia", () => {
+      assert.equal(getInitialPageFromPath(), "onboarding-academia");
+    });
+    withMockLocation("/fundamento-free-lesson", () => {
+      assert.equal(getInitialPageFromPath(), "fundamento-free-lesson");
+    });
+    assert.equal(pathnameForPage("fundamento-preview"), "/fundamento-preview");
+  });
 });
 
 describe("student-zone-routing — navigateStudentZoneAware", () => {
