@@ -2,6 +2,25 @@ import { useState, useEffect, type CSSProperties } from "react";
 import { GM_GOLD } from "../gmusic/tokens";
 import { BrandLogo } from "../brand/BrandLogo";
 import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
+import {
+  ACTIVE_HOME_SECTION_EVENT,
+  notifyActiveHomeSection,
+} from "../../utils/public-home-navigation";
+
+const HOME_NAV_SECTIONS = ["hero", "academia", "comunidad", "planes", "contacto"] as const;
+const NAV_ACTIVE_OFFSET = 150;
+
+function detectActiveHomeSection(): (typeof HOME_NAV_SECTIONS)[number] {
+  let active: (typeof HOME_NAV_SECTIONS)[number] = "hero";
+  for (const section of HOME_NAV_SECTIONS) {
+    const element = document.getElementById(section);
+    if (!element) continue;
+    if (element.getBoundingClientRect().top <= NAV_ACTIVE_OFFSET) {
+      active = section;
+    }
+  }
+  return active;
+}
 
 const WHITE_WARM = "#F5F0E8";
 const BORDER = "rgba(255,255,255,0.06)";
@@ -38,23 +57,26 @@ export function Navbar({
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
-      const sections = ["hero", "academia", "comunidad", "planes", "contacto"];
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 150 && rect.bottom >= 150) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
+      setActiveSection(detectActiveHomeSection());
     };
+    const handleActiveSection = (event: Event) => {
+      const sectionId = (event as CustomEvent<{ sectionId: string }>).detail?.sectionId;
+      if (sectionId) setActiveSection(sectionId);
+    };
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener(ACTIVE_HOME_SECTION_EVENT, handleActiveSection);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(ACTIVE_HOME_SECTION_EVENT, handleActiveSection);
+    };
   }, []);
 
   const scrollToSection = (id: string) => {
+    setActiveSection(id);
+    notifyActiveHomeSection(id);
+
     if (currentPage && currentPage !== "home" && setPage) {
       setPage("home");
       requestAnimationFrame(() => {

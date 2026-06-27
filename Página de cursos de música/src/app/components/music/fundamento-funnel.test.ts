@@ -19,6 +19,7 @@ import {
   nextFreeFundamentoLessonPhase,
 } from "../../utils/free-fundamento-lesson";
 import {
+  ACTIVE_HOME_SECTION_EVENT,
   navigateToHomeSection,
   scrollToHomeSection,
 } from "../../utils/public-home-navigation";
@@ -379,6 +380,9 @@ describe("navigateToHomeSection", () => {
       value: {
         pageYOffset: 0,
         scrollTo() {},
+        dispatchEvent() {
+          return true;
+        },
         setTimeout(fn: () => void) {
           fn();
           return 0;
@@ -430,6 +434,9 @@ describe("navigateToHomeSection", () => {
       value: {
         pageYOffset: 0,
         scrollTo() {},
+        dispatchEvent() {
+          return true;
+        },
       },
     });
 
@@ -461,5 +468,64 @@ describe("navigateToHomeSection", () => {
     }
 
     assert.equal(scrolledTo, "planes");
+  });
+
+  it("emite evento de sección activa al desplazar", () => {
+    let notifiedSection: string | null = null;
+
+    const previousWindow = globalThis.window;
+    const previousDocument = globalThis.document;
+
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        pageYOffset: 0,
+        scrollTo() {},
+        dispatchEvent(event: Event) {
+          if (event.type === ACTIVE_HOME_SECTION_EVENT) {
+            notifiedSection = (event as CustomEvent<{ sectionId: string }>).detail.sectionId;
+          }
+          return true;
+        },
+      },
+    });
+
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: {
+        getElementById() {
+          return {
+            getBoundingClientRect() {
+              return { top: 400 };
+            },
+          };
+        },
+      },
+    });
+
+    try {
+      scrollToHomeSection("academia");
+    } finally {
+      Object.defineProperty(globalThis, "window", {
+        configurable: true,
+        value: previousWindow,
+      });
+      Object.defineProperty(globalThis, "document", {
+        configurable: true,
+        value: previousDocument,
+      });
+    }
+
+    assert.equal(notifiedSection, "academia");
+  });
+});
+
+describe("Navbar active section sync", () => {
+  it("escucha navegación programática y prioriza la sección más profunda en scroll", () => {
+    assert.match(navbarSource, /ACTIVE_HOME_SECTION_EVENT/);
+    assert.match(navbarSource, /notifyActiveHomeSection/);
+    assert.match(navbarSource, /detectActiveHomeSection/);
+    assert.match(navbarSource, /setActiveSection\(id\)/);
+    assert.doesNotMatch(navbarSource, /rect\.bottom >= 150/);
   });
 });
