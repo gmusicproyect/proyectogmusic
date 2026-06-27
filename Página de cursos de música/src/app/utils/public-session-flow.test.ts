@@ -92,6 +92,7 @@ describe("PR2 — funnel demo requiere cuenta", () => {
       /Gracias por inscribirte, te regalamos las primeras 5 clases/
     );
     assert.match(registroSource, /setPage\("onboarding-quiz"\)/);
+    assert.match(registroSource, /isLoggedIn/);
     assert.match(registroSource, /setTimeout/);
   });
 });

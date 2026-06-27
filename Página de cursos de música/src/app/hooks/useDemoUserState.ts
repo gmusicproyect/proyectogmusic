@@ -49,15 +49,29 @@ export function useDemoUserState(
     };
   }
 
+  const completed = readCompletedLessons();
+
   if (sessionStatus === "registered_no_sub") {
+    if (completed.length >= 5) {
+      return {
+        state: "demo_completed",
+        label: "Inscribirme para continuar",
+        destination: "inscripcion-gate",
+      };
+    }
+    if (completed.length > 0) {
+      return {
+        state: "demo_started",
+        label: "Continuar clase gratuita",
+        destination: "mi-camino-demo",
+      };
+    }
     return {
-      state: "subscribed",
-      label: "Completar mi suscripción",
-      destination: "inscripcion-pendiente",
+      state: "demo_started",
+      label: "Iniciar mis clases gratis",
+      destination: "mi-camino-demo",
     };
   }
-
-  const completed = readCompletedLessons();
 
   if (completed.length >= 5) {
     return {

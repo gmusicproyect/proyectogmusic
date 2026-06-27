@@ -216,10 +216,15 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
 const REGISTRO_EXITO_REDIRECT_MS = 2500;
 
 export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void }) {
+  const { isLoggedIn, session } = useAuth();
+
   useEffect(() => {
+    if (session.status === "loading" || !isLoggedIn) {
+      return;
+    }
     const timer = window.setTimeout(() => setPage("onboarding-quiz"), REGISTRO_EXITO_REDIRECT_MS);
     return () => window.clearTimeout(timer);
-  }, [setPage]);
+  }, [isLoggedIn, session.status, setPage]);
 
   return (
     <AuthFormShell

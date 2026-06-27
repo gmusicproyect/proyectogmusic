@@ -12,6 +12,7 @@ import {
   saveTemperamentQuizResult,
   shouldShowTemperamentQuiz,
 } from "../utils/temperament-quiz-storage";
+import { navigateToHomeSection } from "../utils/public-home-navigation";
 
 const GOLD = "#C9A84C";
 const BG = "#080808";
@@ -50,7 +51,7 @@ export function TemperamentQuizPage({
       return;
     }
     if (!shouldShowTemperamentQuiz({ isSubscribedStudent })) {
-      setPage("mi-camino-demo");
+      navigateToHomeSection(setPage, "academia");
     }
   }, [setPage, isSubscribedStudent]);
 
@@ -59,15 +60,15 @@ export function TemperamentQuizPage({
     [questionIndex]
   );
 
-  const goToDemo = useCallback(() => {
-    setPage("mi-camino-demo");
+  const goToAcademia = useCallback(() => {
+    navigateToHomeSection(setPage, "academia");
   }, [setPage]);
 
   const handleSkip = useCallback(() => {
     markTemperamentQuizSkipped();
     analytics.temperamentQuizSkipped();
-    goToDemo();
-  }, [goToDemo]);
+    goToAcademia();
+  }, [goToAcademia]);
 
   const handleSelect = (optionId: QuizOptionId) => {
     if (selectedOption && selectedOption !== optionId) {
@@ -114,7 +115,7 @@ export function TemperamentQuizPage({
       }
     });
 
-    goToDemo();
+    goToAcademia();
   };
 
   return (
@@ -250,7 +251,7 @@ export function TemperamentQuizPage({
             cursor: selectedOption ? "pointer" : "not-allowed",
           }}
         >
-          {isLastQuestion ? "Comenzar mi demo" : "Siguiente"}
+          {isLastQuestion ? "Elegir mi camino" : "Siguiente"}
         </button>
 
         <button
@@ -268,7 +269,7 @@ export function TemperamentQuizPage({
             textUnderlineOffset: 3,
           }}
         >
-          Saltar por ahora e ir al demo
+          Saltar por ahora
         </button>
       </div>
     </div>
