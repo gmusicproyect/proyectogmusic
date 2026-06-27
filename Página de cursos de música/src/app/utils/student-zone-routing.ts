@@ -2,6 +2,19 @@ import { scrollToHomeSection } from "./public-home-navigation";
 
 const STUDENT_ZONE_PAGES = new Set(["mi-estudio", "welcome", "mi-camino"]);
 
+/** Rutas públicas de auth (sync URL — fuera D-GOV-02 funnel demo). */
+const AUTH_PUBLIC_PAGE_TO_PATH: Record<string, string> = {
+  "registro-cuenta": "/registro-cuenta",
+  "login-cuenta": "/login-cuenta",
+  "registro-exito": "/registro-exito",
+};
+
+const AUTH_PUBLIC_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(AUTH_PUBLIC_PAGE_TO_PATH).map(([page, path]) => [path, page])
+);
+
+const AUTH_PUBLIC_PAGES = new Set(Object.keys(AUTH_PUBLIC_PAGE_TO_PATH));
+
 /** D-GOV-02 — mapa canónico funnel demo (sin inscripcion-registro). */
 const DEMO_FUNNEL_PAGE_TO_PATH: Record<string, string> = {
   "onboarding-quiz": "/quiz-temperamento",
@@ -31,6 +44,9 @@ const PAGE_TITLES: Record<string, string> = {
   "mi-camino-demo": "Gmusic Estudio · Camino demo",
   "onboarding-quiz": "Gmusic Estudio · Quiz de temperamento",
   "inscripcion-gate": "Gmusic Estudio · Inscripción",
+  "registro-cuenta": "Gmusic Estudio · Crear cuenta",
+  "login-cuenta": "Gmusic Estudio · Iniciar sesión",
+  "registro-exito": "Gmusic Estudio · Registro exitoso",
 };
 
 export function isStudentZonePage(page: string): boolean {
@@ -39,6 +55,14 @@ export function isStudentZonePage(page: string): boolean {
 
 export function isStudentZonePath(pathname: string): boolean {
   return pathname === "/alumno" || pathname === "/mi-camino";
+}
+
+export function isAuthPublicPage(page: string): boolean {
+  return AUTH_PUBLIC_PAGES.has(page);
+}
+
+export function isAuthPublicPath(pathname: string): boolean {
+  return pathname in AUTH_PUBLIC_PATH_TO_PAGE;
 }
 
 export function isDemoFunnelPage(page: string): boolean {
@@ -52,6 +76,8 @@ export function isDemoFunnelPath(pathname: string): boolean {
 export function pathnameForPage(page: string): string | null {
   if (page === "mi-estudio" || page === "welcome") return "/alumno";
   if (page === "mi-camino") return "/mi-camino";
+  const authPath = AUTH_PUBLIC_PAGE_TO_PATH[page];
+  if (authPath) return authPath;
   const demoPath = DEMO_FUNNEL_PAGE_TO_PATH[page];
   if (demoPath) return demoPath;
   return null;
@@ -61,6 +87,8 @@ export function pageFromPathname(pathname: string): string {
   if (pathname === "/alumno") return "mi-estudio";
   if (pathname === "/mi-camino") return "mi-camino";
   if (pathname === "/") return "home";
+  const authPage = AUTH_PUBLIC_PATH_TO_PAGE[pathname];
+  if (authPage) return authPage;
   const demoPage = DEMO_FUNNEL_PATH_TO_PAGE[pathname];
   if (demoPage) return demoPage;
   return "home";
@@ -78,6 +106,8 @@ function isOnSyncedUrl(currentPage: string, pathname: string): boolean {
   return (
     isStudentZonePage(currentPage) ||
     isStudentZonePath(pathname) ||
+    isAuthPublicPage(currentPage) ||
+    isAuthPublicPath(pathname) ||
     isDemoFunnelPage(currentPage) ||
     isDemoFunnelPath(pathname)
   );

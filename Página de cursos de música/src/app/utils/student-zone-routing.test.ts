@@ -13,6 +13,12 @@ import {
 const root = dirname(fileURLToPath(import.meta.url));
 const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
 
+const AUTH_PAGES = [
+  ["registro-cuenta", "/registro-cuenta"],
+  ["login-cuenta", "/login-cuenta"],
+  ["registro-exito", "/registro-exito"],
+] as const;
+
 const DEMO_PAGES = [
   ["onboarding-quiz", "/quiz-temperamento"],
   ["mi-camino-demo", "/mi-camino-demo"],
@@ -95,9 +101,49 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
     for (const [page, path] of DEMO_PAGES) {
       assert.equal(pageFromPathname(path), page);
     }
+    for (const [page, path] of AUTH_PAGES) {
+      assert.equal(pageFromPathname(path), page);
+    }
     assert.equal(pageFromPathname("/alumno"), "mi-estudio");
     assert.equal(pageFromPathname("/mi-camino"), "mi-camino");
     assert.equal(pageFromPathname("/"), "home");
+  });
+
+  it("page → pathname para rutas públicas de auth", () => {
+    for (const [page, path] of AUTH_PAGES) {
+      assert.equal(pathnameForPage(page), path);
+    }
+  });
+
+  it("carga directa /registro-cuenta → registro-cuenta", () => {
+    withMockLocation("/registro-cuenta", () => {
+      assert.equal(getInitialPageFromPath(), "registro-cuenta");
+    });
+  });
+
+  it("carga directa /login-cuenta → login-cuenta", () => {
+    withMockLocation("/login-cuenta", () => {
+      assert.equal(getInitialPageFromPath(), "login-cuenta");
+    });
+  });
+
+  it("carga directa /registro-exito → registro-exito", () => {
+    withMockLocation("/registro-exito", () => {
+      assert.equal(getInitialPageFromPath(), "registro-exito");
+    });
+  });
+
+  it("navegación interna a registro-cuenta sincroniza URL", () => {
+    let nextPage = "home";
+    const result = withMockLocation("/", () => {
+      navigateStudentZoneAware("registro-cuenta", (page) => {
+        nextPage = page;
+      }, "home");
+    });
+
+    assert.equal(nextPage, "registro-cuenta");
+    assert.equal(result.pathname, "/registro-cuenta");
+    assert.deepEqual(result.pushCalls, ["/registro-cuenta"]);
   });
 
   it("/inscripcion resuelve a inscripcion-gate", () => {
