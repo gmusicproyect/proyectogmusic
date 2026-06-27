@@ -7,12 +7,14 @@ export interface AcademiaPublicCta {
   disabled?: boolean;
 }
 
+export const LANDING_ACADEMIA_CTA_LABEL = "Comenzar mi camino";
+
 export function resolveAcademiaPublicCta(
   sessionStatus: PublicStudentSessionState["status"]
 ): AcademiaPublicCta {
   if (sessionStatus === "loading") {
     return {
-      label: "Probar mis 5 clases gratis",
+      label: LANDING_ACADEMIA_CTA_LABEL,
       destination: "registro-cuenta",
       disabled: true,
     };
@@ -46,7 +48,7 @@ export function resolveAcademiaPublicCta(
   }
 
   return {
-    label: "Probar mis 5 clases gratis",
+    label: LANDING_ACADEMIA_CTA_LABEL,
     destination: "registro-cuenta",
   };
 }

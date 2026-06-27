@@ -3,13 +3,13 @@ import { describe, it } from "node:test";
 import { resolveAcademiaPublicCta } from "./academia-public-cta";
 
 describe("resolveAcademiaPublicCta — landing pública T4A", () => {
-  it("anónimo/error lleva a registro con copy de 5 clases gratis", () => {
+  it("anónimo/error lleva a registro con copy aspiracional", () => {
     const anonymous = resolveAcademiaPublicCta("anonymous");
-    assert.equal(anonymous.label, "Probar mis 5 clases gratis");
+    assert.equal(anonymous.label, "Comenzar mi camino");
     assert.equal(anonymous.destination, "registro-cuenta");
 
     const error = resolveAcademiaPublicCta("error");
-    assert.equal(error.label, "Probar mis 5 clases gratis");
+    assert.equal(error.label, "Comenzar mi camino");
     assert.equal(error.destination, "registro-cuenta");
   });
 
@@ -28,5 +28,11 @@ describe("resolveAcademiaPublicCta — landing pública T4A", () => {
   it("loading deshabilita el CTA", () => {
     const cta = resolveAcademiaPublicCta("loading");
     assert.equal(cta.disabled, true);
+    assert.equal(cta.label, "Comenzar mi camino");
+  });
+
+  it("no menciona regalo de 5 clases en landing", () => {
+    assert.equal(resolveAcademiaPublicCta("anonymous").label.includes("5 clases"), false);
+    assert.equal(resolveAcademiaPublicCta("error").label.includes("5 clases"), false);
   });
 });

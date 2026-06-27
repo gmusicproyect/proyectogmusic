@@ -1,8 +1,9 @@
 import { motion } from "motion/react";
-import { GOLD, GOLD_SOFT, WHITE_WARM, BORDER, fadeUp, vp } from "../tokens";
+import { GOLD, GOLD_SOFT, WHITE_WARM, fadeUp, vp } from "../tokens";
 import type { PublicStudentSessionState } from "../../../hooks/usePublicStudentSession";
 import { resolveAcademiaPublicCta } from "../../../utils/academia-public-cta";
 import { resolveDemoEntryPage } from "../../../utils/demo-auth-gate";
+import { AcademiaPublicVisual } from "./AcademiaPublicVisual";
 
 interface AcademiaPublicSectionProps {
   setPage: (page: string) => void;
@@ -173,28 +174,7 @@ export function AcademiaPublicSection({ setPage, session }: AcademiaPublicSectio
           </motion.button>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={vp}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ position: "relative" }}
-        >
-          <div
-            style={{
-              borderRadius: 4,
-              overflow: "hidden",
-              border: `1px solid ${BORDER}`,
-              boxShadow: "0 32px 64px rgba(0,0,0,0.6)",
-              minHeight: 320,
-              backgroundImage:
-                "linear-gradient(180deg, rgba(8,8,8,0.15) 0%, rgba(8,8,8,0.75) 100%), url('/hero/threshold/fondoacademia.png')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            aria-hidden
-          />
-        </motion.div>
+        <AcademiaPublicVisual />
       </div>
     </section>
   );

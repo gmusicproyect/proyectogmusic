@@ -30,6 +30,8 @@ const selectorSource = readFileSync(join(root, "InteractiveLevelSelector.tsx"), 
 const heroSource = readFileSync(join(root, "../marketing/sections/HeroSection.tsx"), "utf8");
 const planesSource = readFileSync(join(root, "../marketing/sections/PlanesSection.tsx"), "utf8");
 const academiaPublicSource = readFileSync(join(root, "../marketing/sections/AcademiaPublicSection.tsx"), "utf8");
+const academiaPublicVisualSource = readFileSync(join(root, "../marketing/sections/AcademiaPublicVisual.tsx"), "utf8");
+const academiaPublicCtaSource = readFileSync(join(root, "../../utils/academia-public-cta.ts"), "utf8");
 const onboardingWizardSource = readFileSync(join(root, "../marketing/AcademiaOnboardingWizard.tsx"), "utf8");
 const instrumentSelectorSource = readFileSync(join(root, "../marketing/AcademiaInstrumentSelector.tsx"), "utf8");
 const instrumentsDataSource = readFileSync(join(root, "../../data/academia-instruments.ts"), "utf8");
@@ -163,10 +165,23 @@ describe("AcademiaPublicSection — landing T4A", () => {
     assert.equal(academiaPublicSource.includes("Academia Gmusic"), true);
     assert.equal(academiaPublicSource.includes("Un camino guiado para aprender música paso a paso."), true);
     assert.equal(academiaPublicSource.includes("Probar mis 5 clases gratis"), false);
+    assert.equal(academiaPublicSource.includes("5 clases gratis"), false);
     assert.equal(academiaPublicSource.includes("resolveAcademiaPublicCta"), true);
+    assert.equal(academiaPublicSource.includes("AcademiaPublicVisual"), true);
     assert.equal(academiaPublicSource.includes("AcademiaInstrumentSelector"), false);
     assert.equal(academiaPublicSource.includes("Elige tu instrumento"), false);
     assert.equal(academiaPublicSource.includes('id="academia"'), true);
+  });
+
+  it("CTA anónimo aspiracional sin revelar regalo de 5 clases", () => {
+    assert.equal(academiaPublicCtaSource.includes("Comenzar mi camino"), true);
+    assert.equal(academiaPublicCtaSource.includes("5 clases"), false);
+  });
+
+  it("visual lateral no duplica fondoacademia", () => {
+    assert.equal(academiaPublicVisualSource.includes("fondoacademia"), false);
+    assert.equal(academiaPublicVisualSource.includes("Tu ruta de aprendizaje"), true);
+    assert.equal(academiaPublicVisualSource.includes("Fundamento"), true);
   });
 
   it("no navega a páginas legacy ni preview", () => {
