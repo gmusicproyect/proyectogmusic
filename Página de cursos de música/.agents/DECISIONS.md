@@ -124,6 +124,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-GOV-12 | **Adopción ECC curada (no plugin completo):** integrar solo patrones ECC que complementan Gmusic — verificación (`gmusic-verification`), CI/deploy (`gmusic-ci-deploy`), handoff (`gmusic-session-handoff`), `npm run verify`, workflow CI, `agent-status.sh`. **No autoriza:** instalar `ecc@ecc` / `ecc-universal` entero, catálogo 260+ skills, Hermes, ecc2 daemon, skills ajenos al dominio, ni reglas ECC que contradigan DECISIONS. **Doc:** `docs/agents/ecc-adoption.md`. | Jun 2026 | **Aprobada** (Juan) | Mejorar harness de agentes sin diluir gobernanza Gmusic ni tickets T3/T3.5/T4. |
 | D-GOV-13 | **Inspiración freeCodeCamp (referencia pedagógica, no fork):** FCC aporta patrones de currículo versionado, validación de contenido, seeds e2e y separación contenido/runtime/API. **Responsabilidad:** escalar lecciones 6–75 y motor de ejercicios post-gates; **no** funnel T3, stack, auth, pagos ni Track B app. **No autoriza:** implementación hasta T3/T3.5 E2E cerrado + ticket explícito (FCC-A2…A6). **Doc:** `docs/agents/fcc-inspiration.md`. | Jun 2026 | **Propuesta — pendiente aprobación** (Juan) | Referencia clara sin scope creep; calendario de cuándo FCC aporta vs cuándo está bloqueado. |
 | D-GOV-15 | **Experiencia/onboarding — landing separada del selector académico (T4A):** la landing (`#academia` en home anónimo) **no** muestra wizard instrumento/nivel ni CTAs de clase gratis. Muestra bienvenida emocional + CTA **«Crear acceso gratis»** → `registro-cuenta`. Flujo post-registro: registro-exito → quiz → **selección instrumento → selección nivel** → CTA **«Iniciar mis clases gratis»** (solo Fundamento Básico / `isFreeClassTrack`) → `mi-camino-demo`. Rutas no implementadas: **«Próximamente»** / **«Disponible en el camino completo»**. **Complementa D-GOV-11 (no fusionar).** **Doc:** `docs/architecture/D-GOV-15-landing-academia-separada.md`. **No autoriza implementación** hasta gates T4A (Render + smoke auth + QA registro prod + brief Opus). | 27 Jun 2026 | **Aprobada — pendiente implementación** (Juan, 27 Jun 2026) | Regla de experiencia: cómo se presenta el camino. D-GOV-11 = quién entra; D-GOV-15 = cómo se ve el embudo. |
+| D-GOV-16 | **Registro gratuito liviano (T-REG-01):** en `registro-cuenta` solo pedir acceso rápido — nombre, username/artístico (interim: `User.name` hasta Prisma), correo, contraseña, confirmar contraseña. **No** pedir RUT, WhatsApp, facturación ni datos formales. Copy: «Crea tu acceso gratis» / «Te regalamos tus primeras 5 clases…» / «Crear mi acceso gratis». Datos formales (RUT, WhatsApp, plan, pago) **solo** en inscripción/compra (`inscripcion-registro`, Fase 5). **Separada** de D-GOV-11 (acceso) y D-GOV-15 (landing). **Doc:** `docs/architecture/D-GOV-16-registro-gratuito-liviano.md`. **No autoriza:** Prisma `username` sin aprobación; cambios D-GOV-15/T4A, pagos, seed, progreso alumno; tocar JWT/cookie. | 27 Jun 2026 | **Propuesta — pendiente aprobación** (Juan) | Menos fricción pre-demo; formalidad solo al convertir/comprar. |
 
 ---
 
@@ -156,6 +157,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | ~~D-GOV-11~~ | ~~¿Acceso gratis obligatorio antes de quiz + demo?~~ | ✅ Cerrada 27 Jun 2026 — regla de acceso (PR2 auth + DemoAuthGuard) |
 | D-GOV-13 | ¿Aprobar referencia FCC-inspiration y calendario FCC-A2…A6 post-T3? | Juan |
 | ~~D-GOV-15~~ | ~~¿Separar landing pública del wizard Academia (T4A)?~~ | ✅ Aprobada 27 Jun 2026 — dirección producto; **implementación bloqueada** (gates T4A) |
+| D-GOV-16 | ¿Registro gratis liviano (T-REG-01)? Sin WhatsApp/RUT en registro; datos formales solo en compra. | Juan |
 | ~~D-GOV-14~~ | ~~¿Aprobar ticket LessonRunner → GmusicPath (Fase A + Fase B TAP)?~~ | ✅ Aprobado 24 Jun 2026 (Juan) — **Fase A CERRADA** · **Fase B desbloqueada** |
 
 ---
@@ -168,6 +170,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | **T3.5** | **CERRADO** | 24 Jun 2026 | Reset funnel post-lead · commit base `900f1f4` |
 | **T4** | **NO INICIADO** | — | Gate Fase A levantado (24 Jun 2026) · pendiente ticket explícito |
 | **T4A** | **BLOQUEADO** | — | D-GOV-15 aprobada (27 Jun 2026) · **gates:** Render deploy OK · smoke auth OK · QA registro prod incógnito OK · brief Opus · luego Cursor |
+| **T-REG-01** | **PROPUESTO (D-GOV-16)** | — | Registro gratis liviano + copy · **bloqueado** hasta aprobación D-GOV-16 + QA registro prod estable |
 
 Commits T3 relevantes: `900f1f4` (FormData + link-lead), `410cf00` (autofill WhatsApp), `fb92675` (API Vercel→Render + quiz sync).
 
