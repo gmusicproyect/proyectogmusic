@@ -56,8 +56,28 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-014 | `passwordHash` nunca expuesto en ninguna respuesta de API | — | Seguridad: dato crítico que nunca sale del servidor. |
 | D-015 | `registerService` nunca crea una `Subscription` activa | — | Seguridad: la Subscription solo se activa vía webhook de pago confirmado. |
 | D-016 | `StudentZoneGuard` no desbloquea Mi Academia sin pago confirmado | — | Seguridad: no se puede acceder a zona alumno sin Subscription activa. |
-| D-017 | `devStudentAuth` está bloqueado en producción — no modificar hasta que `realStudentAuth` esté listo | — | Seguridad: el bypass de dev no puede llegar a producción. |
+| D-017 | **CERRADO (25 Jun 2026)** — Acceso zona alumno en prod vía `realStudentAuth` + `Subscription ACTIVE`. `devStudentAuth` **no está en rutas reales** (legacy/muerto; solo tests). Sin patch requerido. Matriz de estados: `docs/operations/student-access-states.md` | 25 Jun 2026 | E2E prod validado con cuenta QA `qa-alumno-prod-001@gmusic.test` + sub manual Supabase. Bloqueo sin sub es comportamiento esperado (`registered_no_sub`). |
 | D-018 | Routing es string-based en `App.tsx` (`currentPage` state) — no usar React Router | — | Decisión de arquitectura preexistente. Cambiar implicaría refactor mayor sin beneficio claro en esta fase. |
+
+### Cierre D-017 — Acceso zona alumno en producción (25 Jun 2026)
+
+**Estado:** CERRADO · **sin patch de código**
+
+**Validación E2E prod** (cuenta QA `qa-alumno-prod-001@gmusic.test`, userId `1a14fcc6-29d7-4477-b21a-1bab55f35da0`):
+
+| Check | Resultado |
+|-------|-----------|
+| Registro | Flujo normal `POST /auth/register` → `passwordHash` válido |
+| Subscription | `ACTIVE` manual en Supabase prod (ops; sin cambio schema) |
+| `GET /me/access` | `canAccessStudentZone: true`, `reason: ACTIVE_SUBSCRIPTION` |
+| Frontend | `session.status === "authenticated"` |
+| `/alumno`, `/mi-camino` | Entran sin bloqueo (`StudentZoneGuard` permite) |
+| Logout | `POST /auth/logout` → 204; post-logout `/alumno` bloquea → landing anónima |
+| `devStudentAuth` | No montado en rutas reales de prod; legacy en tests |
+
+**Matriz de estados (canónica):** ver `docs/operations/student-access-states.md`
+
+**Siguiente tarea separada (no D-017):** runbook ops temporal — registro → verificar usuario → crear `Subscription ACTIVE` → validar `/me/access` → validar `/alumno`. Knip cleanup de `devStudentAuth` **fuera de alcance** D-017.
 
 ---
 
@@ -182,7 +202,7 @@ Commits T3 relevantes: `900f1f4` (FormData + link-lead), `410cf00` (autofill Wha
 |-------|-----------|
 | Deploy prod | `2e7358c` — bundle Vercel incluye `Práctica completada` |
 | QA T1 loop | Suscriptor dev → `POST /lesson-sessions` → MCQ → `POST /complete` → **+100 XP · racha 1 · 100% precisión** → path `completed` 0→1, nodo activo `Primer acorde Am` |
-| Prod `/mi-camino` | Redirige sin sesión suscriptor real (esperado: D-017 `devStudentAuth` off en prod) |
+| Prod `/mi-camino` | Redirige sin JWT + `Subscription ACTIVE` (esperado; ver D-017 cerrado y `docs/operations/student-access-states.md`) |
 
 Commits: `2e7358c` (Fase A implementación).
 

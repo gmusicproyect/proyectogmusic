@@ -1,8 +1,19 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 18 Jun 2026 · `origin/main` = `e047ac3`
+Última actualización: 25 Jun 2026 · D-017 cerrado
 
-## Estado remoto (18 Jun 2026)
+## D-017 — Acceso zona alumno prod (25 Jun 2026)
+
+| Item | Estado |
+|------|--------|
+| Diagnóstico | Bloqueo sin `Subscription ACTIVE` = comportamiento esperado |
+| E2E prod QA | ✅ cuenta `qa-alumno-prod-001@gmusic.test` + sub manual |
+| Patch código | ❌ no requerido |
+| Doc estados | ✅ `docs/operations/student-access-states.md` |
+| Runbook ops manual | ⬜ tarea separada (registro → sub ACTIVE → validar) |
+| Knip `devStudentAuth` | ⬜ fuera de alcance D-017 |
+
+---
 
 | Item | Estado |
 |------|--------|

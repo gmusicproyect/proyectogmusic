@@ -1,11 +1,11 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 18 Jun 2026 · `origin/main` = `e047ac3`
+Última actualización: 25 Jun 2026 · D-017 cerrado (acceso alumno prod validado)
 
-**Repo canónico:** `gmusicproyect/proyectogmusic` · legacy `estudiosgpt2024-crypto/paginawebgmusic` = **SUPERSEDED**
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-02, D-GOV-03, D-GOV-05, D-GOV-06 · **D-017 CERRADO** (sin patch) · routing demo en remoto (`e047ac3`).
 
-**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-02, D-GOV-03, D-GOV-05, D-GOV-06 · routing demo en remoto (`e047ac3`).
+**Acceso alumno (canónico):** `docs/operations/student-access-states.md` — `anonymous` → landing/registro · `registered_no_sub` → demo 5 clases · `authenticated` + sub ACTIVE → academia completa.
 
 **Handoff operativo:** `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
 
