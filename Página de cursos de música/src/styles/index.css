@@ -32,6 +32,30 @@ body {
   }
 }
 
+/* ── Mi Camino — shell centrado (D-022A) ─────────────────────── */
+.path-shell {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--padding-x-mobile);
+  padding-right: var(--padding-x-mobile);
+}
+
+@media (min-width: 1024px) {
+  .path-shell {
+    padding-left: var(--padding-x);
+    padding-right: var(--padding-x);
+  }
+}
+
+.path-intro-stack {
+  width: 100%;
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* ── Mi Estudio — atmósfera Obsidian & Gold (D-021A) ─────────── */
 .studio-atmosphere {
   position: relative;

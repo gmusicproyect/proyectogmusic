@@ -119,6 +119,10 @@ describe("GmusicPath — identidad compartida", () => {
     assert.equal(pathSource.includes("userName={headerIdentity.userName}"), true);
   });
 
+  it("usa StudioAtmosphere como Mi Estudio (D-022A)", () => {
+    assert.equal(pathSource.includes("StudioAtmosphere"), true);
+  });
+
   it("pasa nombre de sesión autenticada al header", () => {
     assert.equal(pathSource.includes("useAuth"), true);
     assert.match(pathSource, /session\.status === "authenticated"/);

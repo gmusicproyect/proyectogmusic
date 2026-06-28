@@ -10,12 +10,13 @@ import {
   resolveCarouselActiveClass,
   resolveCarouselFocusIndex,
 } from "../components/gmusic/subscriber-path-carousel";
-import { DashboardErrorBanner } from "../components/gmusic/dashboard";
+import { DashboardErrorBanner, StudioAtmosphere } from "../components/gmusic/dashboard";
 import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
+import { PathShell } from "../components/gmusic/path/PathShell";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
 import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
 import { canStartLessonFromNode } from "../components/gmusic/path/path-lesson-start";
-import { GM_BG, GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
+import { GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { usePath } from "../hooks/usePath";
 import { useStartLessonSession } from "../hooks/useStartLessonSession";
 import { findPathNodeById } from "../services/gmusic-api/map-path";
@@ -88,6 +89,17 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     sessionStudentName
   );
 
+  const progressRail =
+    !isLoading && viewModel && !viewModel.isEmpty ? (
+      <DemoPathLevelBar
+        completedCount={viewModel.completedSteps}
+        activeClass={activeClass}
+        levelLabel={viewModel.badge.level}
+        totalClasses={viewModel.totalSteps}
+        variant="rail"
+      />
+    ) : undefined;
+
   useEffect(() => {
     if (lessonSession.status !== "success") return;
     const node = findPathNodeById(viewModel?.modules ?? [], lessonSession.nodeId);
@@ -127,7 +139,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: GM_BG, color: GM_TEXT }}>
+    <StudioAtmosphere>
       <GmusicInternalHeader
         activeNav="camino"
         userName={headerIdentity.userName}
@@ -136,44 +148,26 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         onPlaceholder={openNavPlaceholder}
       />
 
-      {!isLoading && viewModel && !viewModel.isEmpty && (
-        <div
-          style={{
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-            background: "rgba(8,8,8,0.6)",
-          }}
-        >
-          <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 py-3 md:py-4">
-            <DemoPathLevelBar
-              completedCount={viewModel.completedSteps}
-              activeClass={activeClass}
-              levelLabel={viewModel.badge.level}
-              totalClasses={viewModel.totalSteps}
-              variant="rail"
-            />
-          </div>
-        </div>
-      )}
-
-      <main className="flex-1 flex flex-col w-full">
-        <header className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 pt-6 md:pt-8 pb-2 md:pb-4">
+      <PathShell>
+        <header className="path-intro-stack mb-4 md:mb-5">
           <PathPageIntro
             badge={viewModel?.badge ?? { instrument: "…", month: "…", level: "…" }}
             completedSteps={viewModel?.completedSteps ?? 0}
             totalSteps={viewModel?.totalSteps ?? 0}
             isLoading={isLoading}
+            progressRail={progressRail}
           />
         </header>
 
         {path.status === "error" && (
-          <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 mb-4">
+          <div className="path-intro-stack mb-4">
             <DashboardErrorBanner message={path.message} onRetry={path.retry} />
           </div>
         )}
 
         {path.status === "success" && viewModel?.isEmpty && (
           <div
-            className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 rounded-lg border px-5 py-8 text-center"
+            className="path-intro-stack rounded-lg border px-5 py-8 text-center"
             style={{ borderColor: "rgba(255,255,255,0.08)", color: GM_TEXT_SEC }}
           >
             <p className="text-sm leading-relaxed">
@@ -183,14 +177,14 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         )}
 
         {path.status === "success" && viewModel?.isComplete && (
-          <div className="max-w-[600px] mx-auto w-full px-4 pb-8">
+          <div className="path-intro-stack pb-4">
             <CompletedPathPanel />
           </div>
         )}
 
         {isLoading && (
           <div
-            className="flex-1 flex items-center justify-center py-16 text-sm"
+            className="flex items-center justify-center py-12 text-sm"
             style={{ color: GM_TEXT_SEC }}
           >
             Cargando mapa del camino…
@@ -200,7 +194,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         {path.status === "success" && viewModel && !viewModel.isEmpty && !viewModel.isComplete && (
           <>
             {lessonSession.status === "error" && (
-              <div className="max-w-[600px] mx-auto w-full px-4 mb-4">
+              <div className="path-intro-stack mb-3">
                 <div
                   className="rounded-lg border px-4 py-3 flex flex-col gap-2"
                   style={{
@@ -228,7 +222,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
               </div>
             )}
 
-            <section className="flex-1 flex flex-col justify-center w-full py-6 md:py-10 lg:py-12 min-h-[320px]">
+            <section className="flex flex-col justify-center w-full py-2 md:py-4 lg:py-5 min-h-[300px]">
               <PathCarouselCards
                 nodes={pathNodes}
                 buildCardModels={buildCardModels}
@@ -245,7 +239,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
             </section>
           </>
         )}
-      </main>
+      </PathShell>
 
       <GmusicPlaceholderModal
         open={modal !== null}
@@ -264,6 +258,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           onSessionCompleted={path.retry}
         />
       )}
-    </div>
+    </StudioAtmosphere>
   );
 }
