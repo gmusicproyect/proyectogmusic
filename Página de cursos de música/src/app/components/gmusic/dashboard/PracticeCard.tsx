@@ -56,9 +56,11 @@ export function PracticeCard({
             onClick={onContinue}
             isLoading={isLoading}
             disabled={isLoading}
+            aria-label="Continuar mi Camino"
             icon={<ChevronRight className="h-5 w-5 shrink-0" />}
           >
-            Continuar mi Camino
+            <span className="md:hidden">Continuar</span>
+            <span className="hidden md:inline">Continuar mi Camino</span>
           </ChunkyButton>
         </div>
       </div>

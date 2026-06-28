@@ -26,4 +26,10 @@ describe("PracticeCard", () => {
     assert.match(practiceCardSource, /lg:flex-row/);
     assert.match(practiceCardSource, /text-left/);
   });
+
+  it("mobile — CTA corto sin wrap; desktop mantiene label completo", () => {
+    assert.match(practiceCardSource, /md:hidden">Continuar</);
+    assert.match(practiceCardSource, /hidden md:inline">Continuar mi Camino</);
+    assert.match(practiceCardSource, /aria-label="Continuar mi Camino"/);
+  });
 });
