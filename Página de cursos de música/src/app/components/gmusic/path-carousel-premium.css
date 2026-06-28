@@ -1,0 +1,96 @@
+/* D-022B — carrusel premium suscriptor (Mi Camino). Solo con .path-carousel--premium */
+
+.path-carousel--premium {
+  position: relative;
+}
+
+.path-carousel--premium .path-carousel__connector {
+  position: absolute;
+  top: 46%;
+  left: 4%;
+  right: 4%;
+  height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.12) 18%,
+    rgba(201, 168, 76, 0.14) 50%,
+    rgba(201, 168, 76, 0.12) 82%,
+    transparent 100%
+  );
+}
+
+.path-carousel--premium .path-carousel__track {
+  position: relative;
+  z-index: 1;
+}
+
+.path-carousel--premium .path-carousel__card {
+  position: relative;
+  width: min(86vw, 268px);
+  border-radius: 16px;
+}
+
+@media (min-width: 768px) {
+  .path-carousel--premium .path-carousel__card {
+    width: 248px;
+  }
+
+  .path-carousel--premium .path-carousel__card--focused {
+    width: 300px;
+  }
+}
+
+.path-carousel--premium .path-carousel__card--focused::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  border-radius: 999px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 168, 76, 0.95) 50%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(201, 168, 76, 0.35);
+}
+
+.path-carousel--premium .path-carousel__card-hero {
+  height: 132px;
+}
+
+.path-carousel--premium .path-carousel__card--focused .path-carousel__card-hero {
+  height: 140px;
+}
+
+.path-carousel--premium .path-carousel__cta {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.path-carousel--premium .path-carousel__cta-label-short {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .path-carousel--premium .path-carousel__cta-label-full {
+    display: none;
+  }
+
+  .path-carousel--premium .path-carousel__cta-label-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-carousel--premium .path-carousel__card {
+    transition: none !important;
+  }
+}

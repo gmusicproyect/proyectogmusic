@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import App from "./app/App.tsx";
 import { AuthProvider } from "./app/hooks/useAuth.tsx";
 import "./styles/index.css";
+import "./app/components/gmusic/path-carousel-premium.css";
 
 initSentryClient();
 

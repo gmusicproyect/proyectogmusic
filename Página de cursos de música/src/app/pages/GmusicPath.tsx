@@ -228,11 +228,10 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                 buildCardModels={buildCardModels}
                 initialFocusIndex={initialFocusIndex}
                 fullBleed
-                hintText="Desliza tu camino · completa cada paso para avanzar"
+                visualVariant="premium"
+                hintText="Tramo actual · desliza para explorar tu camino"
                 buildFooterText={(focusedIdx, nodes) =>
-                  nodes.length <= 12
-                    ? null
-                    : `Paso ${focusedIdx + 1} de ${nodes.length}`
+                  `Paso ${focusedIdx + 1} de ${nodes.length}`
                 }
                 useDotFooter={pathNodes.length <= 12}
               />
