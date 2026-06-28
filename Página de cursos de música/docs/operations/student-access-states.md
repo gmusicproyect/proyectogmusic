@@ -38,16 +38,10 @@ Checks pasados: login · `/me/access` · `/alumno` · `/mi-camino` · logout · 
 
 ---
 
-## Tarea pendiente (ops, separada de D-017)
+## Runbook ops (D-019)
 
-**Runbook temporal — activar alumnos manualmente** (hasta Fase 5 pagos):
+Procedimiento detallado para activar, verificar y revocar alumnos manualmente (hasta Fase 5 pagos):
 
-1. Usuario se registra (`POST /auth/register`) o ya existe en BD.
-2. Verificar fila `User` (email, `passwordHash` presente).
-3. Crear `Subscription` con `status: ACTIVE`, `planId` válido, `endsAt` futuro.
-4. Validar `GET /me/access` → `canAccessStudentZone: true`.
-5. Validar en prod: login → `/alumno` entra; logout → `/alumno` bloquea.
+→ **[`manual-student-activation.md`](./manual-student-activation.md)**
 
-Documento runbook detallado: **pendiente** (ticket ops separado).
-
-**Fuera de alcance D-017:** cleanup Knip de `devStudentAuth.ts`.
+**Fuera de alcance D-017 / D-019:** cleanup Knip de `devStudentAuth.ts`.
