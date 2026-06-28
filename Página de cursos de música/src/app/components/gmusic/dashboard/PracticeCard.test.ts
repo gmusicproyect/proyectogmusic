@@ -15,4 +15,15 @@ describe("PracticeCard", () => {
     assert.match(practiceCardSource, /isLoading={isLoading}/);
     assert.match(practiceCardSource, /disabled={isLoading}/);
   });
+
+  it("B2 — no repite el título del nodo en un h2 visible", () => {
+    assert.match(practiceCardSource, /sr-only/);
+    assert.doesNotMatch(practiceCardSource, /<h2[\s\S]*\{title\}/);
+  });
+
+  it("B1 — usa shell compartido con el hero", () => {
+    assert.match(practiceCardSource, /STUDIO_PANEL_SHELL_STYLE/);
+    assert.match(practiceCardSource, /lg:flex-row/);
+    assert.match(practiceCardSource, /text-left/);
+  });
 });

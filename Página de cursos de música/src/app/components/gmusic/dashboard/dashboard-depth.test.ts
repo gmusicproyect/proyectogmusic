@@ -38,8 +38,9 @@ describe("PremiumCard — elevación tokenizada", () => {
     assert.match(premiumCardSource, /DASH_TOKENS/);
   });
 
-  it("PracticeCard usa elevation raised", () => {
-    assert.match(practiceCardSource, /elevation="raised"/);
+  it("PracticeCard usa shell alineado al hero (D-021B1)", () => {
+    assert.match(practiceCardSource, /STUDIO_PANEL_SHELL_STYLE/);
+    assert.doesNotMatch(practiceCardSource, /elevation="raised"/);
   });
 });
 

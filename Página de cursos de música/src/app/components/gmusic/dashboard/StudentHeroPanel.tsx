@@ -1,5 +1,6 @@
 import { Flame, Mic } from "lucide-react";
 import { PremiumCard } from "./PremiumCard";
+import { STUDIO_PANEL_SHELL_STYLE } from "./studio-panel-shell";
 import { GM_GOLD, GM_TEXT_SEC } from "../tokens";
 
 export type StreakChipEmphasis = "none" | "active" | "recover";
@@ -33,14 +34,7 @@ export function StudentHeroPanel({
     <PremiumCard
       className="student-hero-panel w-full"
       padding="24px 28px"
-      style={{
-        borderRadius: 20,
-        background:
-          "linear-gradient(148deg, rgba(22, 22, 22, 0.98) 0%, rgba(10, 10, 10, 0.99) 55%, rgba(8, 8, 8, 1) 100%)",
-        border: "1px solid rgba(201, 168, 76, 0.12)",
-        boxShadow:
-          "0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 1px 0 rgba(201, 168, 76, 0.06) inset",
-      }}
+      style={STUDIO_PANEL_SHELL_STYLE}
     >
       <div className="flex w-full flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1 text-left">

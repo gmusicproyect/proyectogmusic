@@ -180,7 +180,7 @@ export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
             <div className="lg:col-span-12">
               {isLoading ? (
                 <PracticeCard
-                  title="Cargando práctica…"
+                  title="Cargando práctica"
                   typeLabel="Conectando con tu estudio"
                   description="Estamos preparando tu próxima sesión."
                   onContinue={goToCamino}
