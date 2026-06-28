@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { formatAuthFormError } from "../services/gmusic-api/client";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -6,6 +6,8 @@ import {
   authInputStyle,
   authPrimaryButtonStyle,
 } from "../components/gmusic/DemoAuthGuard";
+import { GM_GOLD, GM_GOLD_GLOW, GM_TEXT_SEC } from "../components/gmusic/tokens";
+import type { PublicStudentSessionState } from "../hooks/usePublicStudentSession";
 
 interface RegistroCuentaPageProps {
   setPage: (page: string) => void;
@@ -209,29 +211,119 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
   );
 }
 
-const REGISTRO_EXITO_REDIRECT_MS = 2500;
+const REGISTRO_EXITO_NEXT_PAGE = "onboarding-quiz";
+export const REGISTRO_EXITO_REDIRECT_SECONDS = 7;
+
+function registroExitoFirstName(session: PublicStudentSessionState): string | null {
+  if (session.status !== "registered_no_sub" && session.status !== "authenticated") {
+    return null;
+  }
+  const first = session.user.name.trim().split(/\s+/)[0];
+  return first || session.user.name;
+}
 
 export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void }) {
   const { isLoggedIn, session } = useAuth();
+  const [secondsRemaining, setSecondsRemaining] = useState(REGISTRO_EXITO_REDIRECT_SECONDS);
+  const advancedRef = useRef(false);
+  const timersRef = useRef<{ interval?: number; timeout?: number }>({});
+
+  const firstName = registroExitoFirstName(session);
+  const title = firstName ? `¡Felicitaciones, ${firstName}!` : "¡Felicitaciones!";
+
+  const advance = useCallback(() => {
+    if (advancedRef.current) return;
+    advancedRef.current = true;
+    if (timersRef.current.interval !== undefined) {
+      window.clearInterval(timersRef.current.interval);
+    }
+    if (timersRef.current.timeout !== undefined) {
+      window.clearTimeout(timersRef.current.timeout);
+    }
+    setPage(REGISTRO_EXITO_NEXT_PAGE);
+  }, [setPage]);
 
   useEffect(() => {
     if (session.status === "loading" || !isLoggedIn) {
       return;
     }
-    const timer = window.setTimeout(() => setPage("onboarding-quiz"), REGISTRO_EXITO_REDIRECT_MS);
-    return () => window.clearTimeout(timer);
-  }, [isLoggedIn, session.status, setPage]);
+
+    setSecondsRemaining(REGISTRO_EXITO_REDIRECT_SECONDS);
+    let remaining = REGISTRO_EXITO_REDIRECT_SECONDS;
+
+    timersRef.current.interval = window.setInterval(() => {
+      remaining -= 1;
+      setSecondsRemaining(Math.max(remaining, 0));
+      if (remaining <= 0 && timersRef.current.interval !== undefined) {
+        window.clearInterval(timersRef.current.interval);
+      }
+    }, 1000);
+
+    timersRef.current.timeout = window.setTimeout(
+      () => advance(),
+      REGISTRO_EXITO_REDIRECT_SECONDS * 1000
+    );
+
+    return () => {
+      if (timersRef.current.interval !== undefined) {
+        window.clearInterval(timersRef.current.interval);
+      }
+      if (timersRef.current.timeout !== undefined) {
+        window.clearTimeout(timersRef.current.timeout);
+      }
+    };
+  }, [isLoggedIn, session.status, advance]);
 
   return (
-    <AuthFormShell
-      title="¡Gracias por inscribirte!"
-      subtitle="Gracias por inscribirte, te regalamos las primeras 5 clases."
-    >
-      <p style={{ color: "#9CA3AF", fontSize: "13px", margin: "0 0 8px" }}>
-        Redirigiendo al quiz de temperamento…
+    <AuthFormShell title={title} subtitle="Tu cuenta fue creada correctamente.">
+      <div
+        style={{
+          border: "1px solid rgba(212, 175, 55, 0.32)",
+          borderRadius: 12,
+          padding: "16px 18px",
+          background: `linear-gradient(180deg, ${GM_GOLD_GLOW} 0%, rgba(255,255,255,0.02) 100%)`,
+          boxShadow: "0 0 20px rgba(212, 175, 55, 0.07)",
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: 15,
+            fontWeight: 600,
+            color: GM_GOLD,
+            lineHeight: 1.45,
+          }}
+        >
+          🎁 Ya desbloqueaste tus 5 clases gratis de guitarra
+        </p>
+        <p
+          style={{
+            margin: "10px 0 0",
+            fontSize: 13,
+            color: GM_TEXT_SEC,
+            lineHeight: 1.55,
+          }}
+        >
+          Estas clases son tu regalo de bienvenida para comenzar tu camino paso a paso.
+        </p>
+      </div>
+
+      <p
+        style={{
+          color: GM_TEXT_SEC,
+          fontSize: 12,
+          margin: "16px 0 0",
+          textAlign: "center",
+          lineHeight: 1.4,
+        }}
+        aria-live="polite"
+      >
+        Avanzaremos automáticamente en {secondsRemaining}{" "}
+        {secondsRemaining === 1 ? "segundo" : "segundos"}…
       </p>
-      <button type="button" style={authPrimaryButtonStyle} onClick={() => setPage("onboarding-quiz")}>
-        Continuar
+
+      <button type="button" style={authPrimaryButtonStyle} onClick={() => advance()}>
+        Comenzar mis 5 clases gratis
       </button>
     </AuthFormShell>
   );

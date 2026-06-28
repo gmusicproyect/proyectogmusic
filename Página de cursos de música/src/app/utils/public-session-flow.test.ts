@@ -131,13 +131,13 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.equal(appSource.includes('"registro-exito"'), true);
   });
 
-  it("registro-exito muestra mensaje de regalo y redirige al onboarding", () => {
-    assert.match(
-      registroSource,
-      /Gracias por inscribirte, te regalamos las primeras 5 clases/
-    );
-    assert.match(registroSource, /setPage\("onboarding-quiz"\)/);
+  it("registro-exito muestra recompensa de 5 clases y redirige al onboarding", () => {
+    assert.match(registroSource, /Felicitaciones/);
+    assert.match(registroSource, /5 clases gratis de guitarra/);
+    assert.match(registroSource, /Comenzar mis 5 clases gratis/);
+    assert.match(registroSource, /REGISTRO_EXITO_REDIRECT_SECONDS = 7/);
+    assert.match(registroSource, /setPage\(REGISTRO_EXITO_NEXT_PAGE\)/);
     assert.match(registroSource, /isLoggedIn/);
-    assert.match(registroSource, /setTimeout/);
+    assert.match(registroSource, /secondsRemaining/);
   });
 });
