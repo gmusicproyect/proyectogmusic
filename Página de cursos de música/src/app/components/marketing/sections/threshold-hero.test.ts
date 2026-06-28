@@ -24,7 +24,7 @@ describe("ThresholdHero — HeroSection Visual D (D0)", () => {
   it("bienvenida + logo centrados; sale al scroll hacia Academia", () => {
     assert.doesNotMatch(heroSource, /heroExitOpacity/);
     assert.match(heroSource, /160vh/);
-    assert.match(heroSource, /nueva experiencia de academia/);
+    assert.match(heroSource, /Una academia online para aprender música paso a paso/);
     assert.match(heroSource, /BrandLogo/);
     assert.doesNotMatch(heroSource, /Estás a un paso/);
   });
