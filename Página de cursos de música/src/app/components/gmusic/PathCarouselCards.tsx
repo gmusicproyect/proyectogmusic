@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
@@ -105,6 +105,7 @@ export function PathCarouselCards({
   const [focusedIdx, setFocusedIdx] = useState(safeInitial);
   const [reduceMotion, setReduceMotion] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const showDots = useDotFooter ?? nodes.length <= 12;
   const motionDuration = reduceMotion ? 0.01 : 0.3;
 
@@ -112,12 +113,20 @@ export function PathCarouselCards({
     setFocusedIdx(Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0))));
   }, [initialFocusIndex, nodes.length]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const track = trackRef.current;
     const card = cardRefs.current[focusedIdx];
-    if (card) {
-      card.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
-    }
-  }, [focusedIdx, reduceMotion]);
+    if (!track || !card) return;
+
+    const targetLeft = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    const nextLeft = Math.max(0, Math.min(targetLeft, maxScroll));
+
+    track.scrollTo({
+      left: nextLeft,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, [focusedIdx, reduceMotion, nodes.length, isPremium]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -131,9 +140,11 @@ export function PathCarouselCards({
 
   const carouselPadding = fullBleed
     ? isPremium
-      ? "8px max(4vw, 24px) 12px"
+      ? "8px 0 12px"
       : "12px max(5vw, 40px) 16px"
-    : "12px 56px 16px";
+    : isPremium
+      ? "8px 0 12px"
+      : "12px 56px 16px";
   const cardModels = buildCardModels(focusedIdx, goTo);
   const footerText = buildFooterText?.(focusedIdx, nodes) ?? null;
 
@@ -186,7 +197,7 @@ export function PathCarouselCards({
         }}
         className={cardClassName || undefined}
         animate={{
-          scale: isFocused ? 1 : isPremium ? 0.9 : reviewCompleted && isCompleted ? 0.94 : 0.88,
+          scale: isFocused ? 1 : isPremium ? (isLocked ? 0.84 : 0.88) : reviewCompleted && isCompleted ? 0.94 : 0.88,
           opacity: isFocused ? 1 : sideOpacity,
         }}
         transition={{ duration: motionDuration, ease: "easeOut" }}
@@ -329,6 +340,7 @@ export function PathCarouselCards({
           )}
           {stepNumber != null && (
             <span
+              className={isPremium ? "path-carousel__card-step" : undefined}
               style={{
                 position: "absolute",
                 top: 10,
@@ -481,6 +493,8 @@ export function PathCarouselCards({
       style={{
         position: "relative",
         width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -501,19 +515,23 @@ export function PathCarouselCards({
       )}
 
       <div
+        ref={trackRef}
         className={`gmusic-carousel${isPremium ? " path-carousel__track" : ""}`}
         style={{
           display: "flex",
           gap: isPremium ? 16 : 12,
           overflowX: "auto",
-          scrollSnapType: "x mandatory",
+          scrollSnapType: isPremium ? "x proximity" : "x mandatory",
           scrollbarWidth: "none",
           padding: carouselPadding,
           alignItems: "stretch",
+          minWidth: 0,
         }}
       >
         <style>{`.gmusic-carousel::-webkit-scrollbar { display: none; }`}</style>
+        {isPremium && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
         {carouselItems}
+        {isPremium && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
       </div>
 
       {focusedIdx < nodes.length - 1 && (

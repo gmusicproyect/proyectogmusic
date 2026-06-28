@@ -1,23 +1,33 @@
 /* D-022B — carrusel premium suscriptor (Mi Camino). Solo con .path-carousel--premium */
 
+.path-carousel-stage {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 .path-carousel--premium {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  isolation: isolate;
 }
 
 .path-carousel--premium .path-carousel__connector {
   position: absolute;
   top: 46%;
-  left: 4%;
-  right: 4%;
+  left: 8%;
+  right: 8%;
   height: 1px;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 76, 0.12) 18%,
-    rgba(201, 168, 76, 0.14) 50%,
-    rgba(201, 168, 76, 0.12) 82%,
+    rgba(201, 168, 76, 0.18) 16%,
+    rgba(201, 168, 76, 0.28) 50%,
+    rgba(201, 168, 76, 0.18) 84%,
     transparent 100%
   );
 }
@@ -25,21 +35,34 @@
 .path-carousel--premium .path-carousel__track {
   position: relative;
   z-index: 1;
+  min-width: 0;
+  scroll-padding-inline: 0;
+}
+
+.path-carousel--premium .path-carousel__edge-spacer {
+  flex: 0 0 auto;
+  width: max(calc(50% - 150px), 16px);
+  min-width: 16px;
+  pointer-events: none;
 }
 
 .path-carousel--premium .path-carousel__card {
   position: relative;
-  width: min(86vw, 268px);
+  width: min(78vw, 248px);
   border-radius: 16px;
 }
 
 @media (min-width: 768px) {
   .path-carousel--premium .path-carousel__card {
-    width: 248px;
+    width: 232px;
   }
 
   .path-carousel--premium .path-carousel__card--focused {
     width: 300px;
+  }
+
+  .path-carousel--premium .path-carousel__edge-spacer {
+    width: max(calc(50% - 150px), 24px);
   }
 }
 
@@ -67,7 +90,11 @@
 }
 
 .path-carousel--premium .path-carousel__card--focused .path-carousel__card-hero {
-  height: 140px;
+  height: 148px;
+}
+
+.path-carousel--premium .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
+  opacity: 0.28;
 }
 
 .path-carousel--premium .path-carousel__cta {

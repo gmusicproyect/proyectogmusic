@@ -27,6 +27,7 @@ describe("D-022B — carrusel premium (prototype)", () => {
     assert.match(carouselSource, /visualVariant\?: PathCarouselVisualVariant/);
     assert.match(carouselSource, /path-carousel--premium/);
     assert.match(carouselSource, /path-carousel__connector/);
+    assert.match(carouselSource, /path-carousel__edge-spacer/);
     assert.match(carouselSource, /pathCarouselPremiumCtaButtonStyle/);
     assert.match(carouselSource, /prefers-reduced-motion/);
   });

@@ -175,8 +175,8 @@ export function pathCarouselPremiumSideOpacity(
   isCompleted: boolean,
   reviewCompleted: boolean
 ): number {
-  if (isTeaser) return 0.78;
-  if (isLocked) return 0.68;
-  if (reviewCompleted && isCompleted) return 0.82;
-  return 0.72;
+  if (isTeaser) return 0.72;
+  if (isLocked) return 0.4;
+  if (reviewCompleted && isCompleted) return 0.78;
+  return 0.58;
 }

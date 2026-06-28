@@ -84,7 +84,7 @@ export function PathPageIntro({
       </div>
       {progressRail ? (
         <div
-          className="mt-5 pt-5 text-left"
+          className="mt-5 pt-5 w-full max-w-xl mx-auto"
           style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}
         >
           {progressRail}
