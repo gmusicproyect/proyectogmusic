@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
@@ -8,6 +8,10 @@ import {
   PATH_CAROUSEL_WHITE_WARM,
   pathCarouselArrowButtonStyle,
   pathCarouselCtaButtonStyle,
+  pathCarouselStageCardBorder,
+  pathCarouselStageCardShadow,
+  pathCarouselStageCtaButtonStyle,
+  pathCarouselStageSideOpacity,
 } from "./path-carousel-styles";
 
 export interface PathCarouselFocusedCta {
@@ -48,6 +52,14 @@ export interface PathCarouselCardsProps {
   hintText?: string;
   buildFooterText?: (focusedIdx: number, nodes: PathNodeData[]) => string | null;
   useDotFooter?: boolean;
+  /** D-022B2 — preset stage suscriptor; demo mantiene default */
+  visualVariant?: "default" | "stage";
+}
+
+function stageCtaShortLabel(label: string): string {
+  if (label === "Iniciar lección") return "Iniciar";
+  if (label === "Continuar") return "Continuar";
+  return label.split(" ")[0] ?? label;
 }
 
 function StarRating({ filled, dimmed }: { filled: number; dimmed?: boolean }) {
@@ -84,26 +96,60 @@ export function PathCarouselCards({
   hintText,
   buildFooterText,
   useDotFooter,
+  visualVariant = "default",
 }: PathCarouselCardsProps) {
+  const isStage = visualVariant === "stage";
   const safeInitial = Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0)));
   const [focusedIdx, setFocusedIdx] = useState(safeInitial);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const showDots = useDotFooter ?? nodes.length <= 12;
+  const motionDuration = reduceMotion ? 0.01 : 0.3;
 
   useEffect(() => {
     setFocusedIdx(Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0))));
   }, [initialFocusIndex, nodes.length]);
 
+  useLayoutEffect(() => {
+    if (!isStage) return;
+    const track = trackRef.current;
+    const card = cardRefs.current[focusedIdx];
+    if (!track || !card) return;
+
+    const targetLeft = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    const nextLeft = Math.max(0, Math.min(targetLeft, maxScroll));
+
+    track.scrollTo({
+      left: nextLeft,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, [focusedIdx, reduceMotion, nodes.length, isStage]);
+
   useEffect(() => {
+    if (isStage) return;
     const card = cardRefs.current[focusedIdx];
     if (card) {
-      card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      card.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
     }
-  }, [focusedIdx]);
+  }, [focusedIdx, reduceMotion, isStage]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduceMotion(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   const goTo = (idx: number) => setFocusedIdx(Math.max(0, Math.min(nodes.length - 1, idx)));
 
-  const carouselPadding = fullBleed ? "12px max(5vw, 40px) 16px" : "12px 56px 16px";
+  const carouselPadding = fullBleed
+    ? "12px max(5vw, 40px) 16px"
+    : isStage
+      ? "8px 0 12px"
+      : "12px 56px 16px";
   const cardModels = buildCardModels(focusedIdx, goTo);
   const footerText = buildFooterText?.(focusedIdx, nodes) ?? null;
 
@@ -131,47 +177,68 @@ export function PathCarouselCards({
       onCardClick,
     } = model;
 
+    const sideOpacity = isStage
+      ? pathCarouselStageSideOpacity(isLocked, !!isTeaser, isCompleted, reviewCompleted)
+      : isTeaser
+        ? 0.72
+        : isLocked
+          ? 0.45
+          : reviewCompleted && isCompleted
+            ? 0.82
+            : 0.55;
+
+    const cardClassName = [
+      isStage ? "path-carousel__card" : "",
+      isStage && isFocused ? "path-carousel__card--focused" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return (
       <motion.div
         key={node.id}
         ref={(el) => {
           cardRefs.current[i] = el;
         }}
+        className={cardClassName || undefined}
         animate={{
-          scale: isFocused ? 1 : reviewCompleted && isCompleted ? 0.94 : 0.88,
-          opacity: isFocused
+          scale: isFocused
             ? 1
-            : isTeaser
-              ? 0.72
-              : isLocked
-                ? 0.45
-                : reviewCompleted && isCompleted
-                  ? 0.82
-                  : 0.55,
+            : isStage
+              ? isLocked
+                ? 0.86
+                : 0.9
+              : reviewCompleted && isCompleted
+                ? 0.94
+                : 0.88,
+          opacity: isFocused ? 1 : sideOpacity,
         }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: isStage ? motionDuration : 0.3, ease: "easeOut" }}
         onClick={onCardClick}
         style={{
           flexShrink: 0,
-          width: 240,
-          borderRadius: 14,
+          width: isStage ? undefined : 240,
+          borderRadius: isStage ? undefined : 14,
           background: PATH_CAROUSEL_SURFACE_CARD,
-          border: isFocused
-            ? isTeaser
-              ? `2px solid ${PATH_CAROUSEL_GOLD}`
-              : isActive
+          border: isStage
+            ? pathCarouselStageCardBorder(isFocused, isActive, isCompleted, !!isTeaser)
+            : isFocused
+              ? isTeaser
                 ? `2px solid ${PATH_CAROUSEL_GOLD}`
-                : isCompleted
-                  ? "2px solid rgba(201,168,76,0.45)"
-                  : "2px solid rgba(255,255,255,0.12)"
-            : "2px solid rgba(255,255,255,0.06)",
+                : isActive
+                  ? `2px solid ${PATH_CAROUSEL_GOLD}`
+                  : isCompleted
+                    ? "2px solid rgba(201,168,76,0.45)"
+                    : "2px solid rgba(255,255,255,0.12)"
+              : "2px solid rgba(255,255,255,0.06)",
           cursor: "pointer",
           display: "flex",
           flexDirection: "column",
           scrollSnapAlign: "center",
           overflow: "hidden",
-          boxShadow:
-            isFocused && (isTeaser || isActive || (reviewCompleted && isCompleted))
+          boxShadow: isStage
+            ? pathCarouselStageCardShadow(isFocused, isActive, isCompleted, !!isTeaser)
+            : isFocused && (isTeaser || isActive || (reviewCompleted && isCompleted))
               ? "0 0 28px rgba(201,168,76,0.28), 0 16px 40px rgba(0,0,0,0.45)"
               : isFocused
                 ? "0 16px 40px rgba(0,0,0,0.4)"
@@ -180,8 +247,9 @@ export function PathCarouselCards({
         }}
       >
         <div
+          className={isStage ? "path-carousel__card-hero" : undefined}
           style={{
-            height: 120,
+            height: isStage ? undefined : 120,
             background: gradient,
             position: "relative",
             overflow: "hidden",
@@ -226,22 +294,22 @@ export function PathCarouselCards({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "rgba(0,0,0,0.35)",
+                background: isStage ? "rgba(0,0,0,0.26)" : "rgba(0,0,0,0.35)",
               }}
             >
               <div
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: isStage ? 40 : 44,
+                  height: isStage ? 40 : 44,
                   borderRadius: "50%",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.14)",
                   background: "rgba(0,0,0,0.45)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Lock size={20} color="rgba(255,255,255,0.45)" strokeWidth={1.75} />
+                <Lock size={isStage ? 18 : 20} color="rgba(255,255,255,0.55)" strokeWidth={1.75} />
               </div>
             </div>
           )}
@@ -285,6 +353,7 @@ export function PathCarouselCards({
           )}
           {stepNumber != null && (
             <span
+              className={isStage ? "path-carousel__card-step" : undefined}
               style={{
                 position: "absolute",
                 top: 10,
@@ -306,16 +375,23 @@ export function PathCarouselCards({
             style={{
               margin: "0 0 8px",
               fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 17,
+              fontSize: isStage && isFocused ? 18 : 17,
               fontWeight: 500,
               lineHeight: 1.25,
-              color: isLocked && !isTeaser ? "rgba(255,255,255,0.45)" : PATH_CAROUSEL_WHITE_WARM,
+              color:
+                isLocked && !isTeaser
+                  ? isStage
+                    ? "rgba(255,255,255,0.62)"
+                    : "rgba(255,255,255,0.45)"
+                  : PATH_CAROUSEL_WHITE_WARM,
             }}
           >
             {title}
           </h3>
 
-          {showStars && !isTeaser && <StarRating filled={starsFilled} dimmed={isLocked} />}
+          {showStars && !isTeaser && (
+            <StarRating filled={starsFilled} dimmed={isLocked && !isStage} />
+          )}
 
           {isTeaser && teaserDescription && (
             <p
@@ -352,7 +428,7 @@ export function PathCarouselCards({
                 alignItems: "center",
                 gap: 5,
                 fontSize: 11,
-                color: "rgba(255,255,255,0.28)",
+                color: isStage ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.28)",
                 fontFamily: "Inter, sans-serif",
               }}
             >
@@ -363,16 +439,21 @@ export function PathCarouselCards({
 
           {isFocused && focusedCta && (
             <motion.div
-              initial={{ opacity: 0, y: 4 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
+              transition={{ delay: reduceMotion ? 0 : 0.08 }}
               style={{ marginTop: 14 }}
             >
               {focusedCta.kind === "locked" ? (
                 <button
                   type="button"
                   disabled
-                  style={pathCarouselCtaButtonStyle(true)}
+                  className={isStage ? "path-carousel__cta" : undefined}
+                  style={
+                    isStage
+                      ? pathCarouselStageCtaButtonStyle(true)
+                      : pathCarouselCtaButtonStyle(true)
+                  }
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Lock size={14} style={{ marginRight: 6 }} />
@@ -381,13 +462,27 @@ export function PathCarouselCards({
               ) : (
                 <button
                   type="button"
+                  className={isStage ? "path-carousel__cta" : undefined}
                   onClick={(e) => {
                     e.stopPropagation();
                     focusedCta.onClick();
                   }}
-                  style={pathCarouselCtaButtonStyle(false, focusedCta.completedStyle)}
+                  style={
+                    isStage
+                      ? pathCarouselStageCtaButtonStyle(false, focusedCta.completedStyle)
+                      : pathCarouselCtaButtonStyle(false, focusedCta.completedStyle)
+                  }
                 >
-                  {focusedCta.label}
+                  {isStage ? (
+                    <>
+                      <span className="path-carousel__cta-label-full">{focusedCta.label}</span>
+                      <span className="path-carousel__cta-label-short">
+                        {stageCtaShortLabel(focusedCta.label)}
+                      </span>
+                    </>
+                  ) : (
+                    focusedCta.label
+                  )}
                 </button>
               )}
             </motion.div>
@@ -405,17 +500,24 @@ export function PathCarouselCards({
     );
   });
 
+  const rootClassName = isStage ? "path-carousel path-carousel--stage" : "path-carousel";
+
   return (
     <div
+      className={rootClassName}
       style={{
         position: "relative",
         width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         flex: 1,
       }}
     >
+      {isStage && <div className="path-carousel__connector" aria-hidden="true" />}
+
       {focusedIdx > 0 && (
         <button
           type="button"
@@ -428,19 +530,23 @@ export function PathCarouselCards({
       )}
 
       <div
-        className="gmusic-carousel"
+        ref={isStage ? trackRef : undefined}
+        className={`gmusic-carousel${isStage ? " path-carousel__track" : ""}`}
         style={{
           display: "flex",
-          gap: 12,
+          gap: isStage ? 14 : 12,
           overflowX: "auto",
-          scrollSnapType: "x mandatory",
+          scrollSnapType: isStage ? "x proximity" : "x mandatory",
           scrollbarWidth: "none",
           padding: carouselPadding,
           alignItems: "stretch",
+          minWidth: 0,
         }}
       >
         <style>{`.gmusic-carousel::-webkit-scrollbar { display: none; }`}</style>
+        {isStage && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
         {carouselItems}
+        {isStage && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
       </div>
 
       {focusedIdx < nodes.length - 1 && (
@@ -472,7 +578,7 @@ export function PathCarouselCards({
               fontSize: 10,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              color: "rgba(201,168,76,0.4)",
+              color: isStage ? "rgba(201,168,76,0.55)" : "rgba(201,168,76,0.4)",
               fontFamily: "Inter, sans-serif",
               marginBottom: 2,
             }}
@@ -494,7 +600,7 @@ export function PathCarouselCards({
                 background: i === focusedIdx ? PATH_CAROUSEL_GOLD : "rgba(255,255,255,0.15)",
                 border: "none",
                 cursor: "pointer",
-                transition: "all 0.3s",
+                transition: reduceMotion ? "none" : "all 0.3s",
                 padding: 0,
               }}
             />
@@ -505,7 +611,7 @@ export function PathCarouselCards({
               style={{
                 fontSize: 11,
                 letterSpacing: "0.08em",
-                color: "rgba(255,255,255,0.35)",
+                color: isStage ? "rgba(201,168,76,0.55)" : "rgba(255,255,255,0.35)",
                 fontFamily: "Inter, sans-serif",
               }}
             >

@@ -40,6 +40,8 @@ body {
   margin-right: auto;
   padding-left: var(--padding-x-mobile);
   padding-right: var(--padding-x-mobile);
+  min-width: 0;
+  overflow-x: clip;
 }
 
 @media (min-width: 1024px) {

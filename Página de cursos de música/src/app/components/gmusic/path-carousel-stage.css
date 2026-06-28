@@ -1,0 +1,133 @@
+/* D-022B2 — stage cinematográfico suscriptor (Mi Camino). Solo .path-carousel--stage */
+
+.path-stage {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  padding: 20px 0 12px;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% 35%, rgba(201, 168, 76, 0.07) 0%, transparent 58%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(0, 0, 0, 0.35) 0%, transparent 55%);
+}
+
+.path-carousel--stage {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  isolation: isolate;
+}
+
+.path-carousel--stage .path-carousel__connector {
+  position: absolute;
+  top: 44%;
+  left: 6%;
+  right: 6%;
+  height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.1) 20%,
+    rgba(201, 168, 76, 0.14) 50%,
+    rgba(201, 168, 76, 0.1) 80%,
+    transparent 100%
+  );
+}
+
+.path-carousel--stage .path-carousel__track {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  scroll-padding-inline: 12px;
+}
+
+.path-carousel--stage .path-carousel__edge-spacer {
+  flex: 0 0 auto;
+  width: clamp(12px, calc(50% - 144px), 360px);
+  min-width: 12px;
+  pointer-events: none;
+}
+
+.path-carousel--stage .path-carousel__card {
+  position: relative;
+  width: min(72vw, 228px);
+  border-radius: 16px;
+}
+
+@media (min-width: 768px) {
+  .path-carousel--stage .path-carousel__card {
+    width: 228px;
+  }
+
+  .path-carousel--stage .path-carousel__card--focused {
+    width: 288px;
+  }
+}
+
+.path-carousel--stage .path-carousel__card--focused::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  border-radius: 999px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 168, 76, 0.9) 50%,
+    transparent
+  );
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.28);
+}
+
+.path-carousel--stage .path-carousel__card-hero {
+  height: 128px;
+}
+
+.path-carousel--stage .path-carousel__card--focused .path-carousel__card-hero {
+  height: 142px;
+}
+
+.path-carousel--stage .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
+  opacity: 0.32;
+}
+
+.path-carousel--stage .path-carousel__cta {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.path-carousel--stage .path-carousel__cta-label-short {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .path-carousel--stage .path-carousel__card {
+    width: min(76vw, 240px);
+  }
+
+  .path-carousel--stage .path-carousel__card--focused {
+    width: min(84vw, 280px);
+  }
+
+  .path-carousel--stage .path-carousel__cta-label-full {
+    display: none;
+  }
+
+  .path-carousel--stage .path-carousel__cta-label-short {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-carousel--stage .path-carousel__card {
+    transition: none !important;
+  }
+}

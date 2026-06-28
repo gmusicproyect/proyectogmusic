@@ -222,17 +222,15 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
               </div>
             )}
 
-            <section className="flex flex-col justify-center w-full py-2 md:py-4 lg:py-5 min-h-[300px]">
+            <section className="path-stage flex flex-col justify-center w-full min-w-0 py-2 md:py-4 lg:py-6 min-h-[320px]">
               <PathCarouselCards
                 nodes={pathNodes}
                 buildCardModels={buildCardModels}
                 initialFocusIndex={initialFocusIndex}
-                fullBleed
-                hintText="Desliza tu camino · completa cada paso para avanzar"
+                visualVariant="stage"
+                hintText="Tramo actual · desliza para explorar tu camino"
                 buildFooterText={(focusedIdx, nodes) =>
-                  nodes.length <= 12
-                    ? null
-                    : `Paso ${focusedIdx + 1} de ${nodes.length}`
+                  `Paso ${focusedIdx + 1} de ${nodes.length}`
                 }
                 useDotFooter={pathNodes.length <= 12}
               />

@@ -83,3 +83,100 @@ export function pathCarouselArrowButtonStyle(side: "left" | "right"): CSSPropert
     transition: "background 0.2s",
   };
 }
+
+/** D-022B2 — preset stage suscriptor (Canva structure, sin lógica demo). */
+export function pathCarouselStageSideOpacity(
+  isLocked: boolean,
+  isTeaser: boolean,
+  isCompleted: boolean,
+  reviewCompleted: boolean
+): number {
+  if (isTeaser) return 0.72;
+  if (isLocked) return 0.6;
+  if (reviewCompleted && isCompleted) return 0.78;
+  return 0.65;
+}
+
+export function pathCarouselStageCardBorder(
+  isFocused: boolean,
+  isActive: boolean,
+  isCompleted: boolean,
+  isTeaser: boolean
+): string {
+  if (!isFocused) {
+    return isCompleted
+      ? "1px solid rgba(201,168,76,0.24)"
+      : "1px solid rgba(255,255,255,0.09)";
+  }
+  if (isTeaser || isActive) {
+    return "1px solid rgba(201, 168, 76, 0.72)";
+  }
+  if (isCompleted) {
+    return "1px solid rgba(201,168,76,0.48)";
+  }
+  return "1px solid rgba(255,255,255,0.14)";
+}
+
+export function pathCarouselStageCardShadow(
+  isFocused: boolean,
+  isActive: boolean,
+  isCompleted: boolean,
+  isTeaser: boolean
+): string {
+  if (!isFocused) return "none";
+  if (isTeaser || isActive) {
+    return "0 0 28px rgba(201,168,76,0.2), 0 18px 44px rgba(0,0,0,0.46)";
+  }
+  if (isCompleted) {
+    return "0 0 18px rgba(201,168,76,0.1), 0 16px 40px rgba(0,0,0,0.4)";
+  }
+  return "0 16px 40px rgba(0,0,0,0.4)";
+}
+
+export function pathCarouselStageCtaButtonStyle(
+  locked: boolean,
+  completed?: boolean
+): CSSProperties {
+  if (locked) {
+    return {
+      width: "100%",
+      minHeight: 44,
+      borderRadius: 10,
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      color: "rgba(255,255,255,0.55)",
+      fontSize: 12,
+      fontWeight: 600,
+      fontFamily: "Inter, sans-serif",
+      letterSpacing: "0.06em",
+      textTransform: "uppercase",
+      cursor: "not-allowed",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+    };
+  }
+
+  return {
+    width: "100%",
+    minHeight: 44,
+    borderRadius: 10,
+    background: completed ? "transparent" : PATH_CAROUSEL_GOLD,
+    border: completed ? `1.5px solid ${PATH_CAROUSEL_GOLD}` : "1px solid rgba(255,255,255,0.08)",
+    color: completed ? PATH_CAROUSEL_GOLD : "#0A0A0A",
+    fontSize: 12,
+    fontWeight: 700,
+    fontFamily: "Inter, sans-serif",
+    letterSpacing: "0.07em",
+    textTransform: "uppercase",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: completed
+      ? "none"
+      : "0 4px 0 rgba(100, 72, 16, 0.55), 0 6px 20px rgba(201, 168, 76, 0.22)",
+    transition: "transform 80ms ease, box-shadow 0.2s ease",
+  };
+}

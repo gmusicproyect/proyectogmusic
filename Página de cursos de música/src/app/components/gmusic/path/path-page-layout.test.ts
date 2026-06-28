@@ -43,7 +43,9 @@ describe("D-022A — Mi Camino shell y layout", () => {
     assert.match(gmusicPathSource, /buildSubscriberPathCardModels/);
     assert.match(gmusicPathSource, /PathLessonRunner/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
-    assert.match(gmusicPathSource, /fullBleed/);
+    assert.match(gmusicPathSource, /visualVariant="stage"/);
+    assert.match(gmusicPathSource, /path-stage/);
+    assert.doesNotMatch(gmusicPathSource, /fullBleed/);
   });
 
   it("PathDemoPage no importa PathPageIntro ni PathShell", () => {
