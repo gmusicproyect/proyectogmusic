@@ -18,6 +18,8 @@ export const WEEKLY_CHEST_XP_REWARD = 50;
 export interface DashboardViewModel {
   userName: string;
   streakLabel: string;
+  streakDays: number;
+  streakActiveToday: boolean;
   xpTotal: number;
   weeklyGain: number;
   consistencyStatus: string;
@@ -66,6 +68,8 @@ export function mapDashboardToViewModel(response: DashboardResponse): DashboardV
   return {
     userName: response.user.name,
     streakLabel: `${streakDays} días`,
+    streakDays,
+    streakActiveToday: response.streak.activeToday,
     xpTotal,
     weeklyGain,
     consistencyStatus: response.streak.activeToday ? "En ritmo" : "Retoma hoy",

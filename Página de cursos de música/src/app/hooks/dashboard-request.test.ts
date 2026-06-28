@@ -26,6 +26,8 @@ describe("outcomeToState", () => {
       viewModel: {
         userName: "Carlos",
         streakLabel: "2 días",
+        streakDays: 2,
+        streakActiveToday: true,
         xpTotal: 100,
         weeklyGain: 20,
         consistencyStatus: "En ritmo",
@@ -52,6 +54,8 @@ describe("applyDashboardOutcome", () => {
       viewModel: {
         userName: "Obsoleto",
         streakLabel: "0 días",
+        streakDays: 0,
+        streakActiveToday: false,
         xpTotal: 0,
         weeklyGain: 0,
         consistencyStatus: "Retoma hoy",

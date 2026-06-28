@@ -21,6 +21,7 @@ import { useStartLessonSession } from "../hooks/useStartLessonSession";
 import { findPathNodeById } from "../services/gmusic-api/map-path";
 import type { LessonSessionResponse } from "../services/gmusic-api/types";
 import { derivePathHeaderIdentity } from "../utils/student-zone-identity";
+import { useAuth } from "../hooks/useAuth";
 
 interface ActivePathRunner {
   session: LessonSessionResponse;
@@ -39,6 +40,9 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
   const path = usePath();
   const lessonSession = useStartLessonSession();
+  const { session } = useAuth();
+  const sessionStudentName =
+    session.status === "authenticated" ? session.user.name : undefined;
 
   const viewModel = path.status === "success" ? path.viewModel : null;
   const pathNodes = useMemo(
@@ -78,7 +82,11 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
 
   const mp = modalProps();
   const isLoading = path.status === "loading";
-  const headerIdentity = derivePathHeaderIdentity(viewModel?.badge, isLoading);
+  const headerIdentity = derivePathHeaderIdentity(
+    viewModel?.badge,
+    isLoading,
+    sessionStudentName
+  );
 
   useEffect(() => {
     if (lessonSession.status !== "success") return;

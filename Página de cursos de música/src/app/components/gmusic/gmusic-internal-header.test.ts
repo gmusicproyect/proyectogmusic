@@ -7,6 +7,7 @@ import {
   derivePathHeaderIdentity,
   deriveStudentInitials,
   deriveWelcomeHeaderSubtitle,
+  deriveStreakChipCopy,
   NEUTRAL_STUDENT_NAME,
   resolveStudentDisplayName,
 } from "../../utils/student-zone-identity";
@@ -57,9 +58,20 @@ describe("student-zone-identity", () => {
       userSubtitle: "Tu camino musical",
     });
   });
+
+  it("racha 0 no usa copy Racha activa", () => {
+    assert.doesNotMatch(deriveStreakChipCopy(0, false).label, /Racha activa/i);
+  });
 });
 
-describe("GmusicInternalHeader — Inicio e identidad", () => {
+describe("GmusicInternalHeader — modal próximamente", () => {
+  it("LOCKED_NAV_MODAL no suena a upsell de plan", () => {
+    assert.equal(headerSource.includes("Disponible en el plan completo"), false);
+    assert.match(headerSource, /Próximamente en tu academia/);
+  });
+});
+
+describe("GmusicInternalHeader — Inicio e identidad (continuación)", () => {
   it("expone Inicio en escritorio y menú móvil con icono Home", () => {
     assert.equal(headerSource.includes('from "lucide-react"'), true);
     assert.equal(headerSource.includes("Home"), true);
@@ -92,6 +104,12 @@ describe("GmusicWelcome — identidad API", () => {
     assert.equal(welcomeSource.includes("userName={headerUserName}"), true);
     assert.equal(welcomeSource.includes("MOCK_USER"), false);
   });
+
+  it("usa StudentHeroPanel sin copy fake Semana 3", () => {
+    assert.equal(welcomeSource.includes("StudentHeroPanel"), true);
+    assert.equal(welcomeSource.includes("Semana 3"), false);
+    assert.equal(welcomeSource.includes("StudioAtmosphere"), true);
+  });
 });
 
 describe("GmusicPath — identidad compartida", () => {
@@ -99,6 +117,12 @@ describe("GmusicPath — identidad compartida", () => {
     assert.equal(pathSource.includes("derivePathHeaderIdentity"), true);
     assert.equal(pathSource.includes("MOCK_USER"), false);
     assert.equal(pathSource.includes("userName={headerIdentity.userName}"), true);
+  });
+
+  it("pasa nombre de sesión autenticada al header", () => {
+    assert.equal(pathSource.includes("useAuth"), true);
+    assert.match(pathSource, /session\.status === "authenticated"/);
+    assert.equal(pathSource.includes("sessionStudentName"), true);
   });
 });
 

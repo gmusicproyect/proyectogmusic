@@ -47,6 +47,8 @@ describe("mapDashboardToViewModel", () => {
 
     assert.equal(viewModel.userName, "Carlos");
     assert.equal(viewModel.streakLabel, "4 días");
+    assert.equal(viewModel.streakDays, 4);
+    assert.equal(viewModel.streakActiveToday, true);
     assert.equal(viewModel.xpTotal, 1240);
     assert.equal(viewModel.weeklyGain, 180);
     assert.equal(viewModel.progressPercentLabel, "38%");

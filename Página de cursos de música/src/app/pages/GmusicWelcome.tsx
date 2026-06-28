@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Target, Dumbbell, TrendingUp, Activity } from "lucide-react";
 import { GmusicInternalHeader, isLockedNav, LOCKED_NAV_MODAL } from "../components/gmusic/GmusicInternalHeader";
 import { GmusicPlaceholderModal } from "../components/gmusic/GmusicPlaceholderModal";
 import {
   DashboardGrid,
   DashboardShell,
-  WelcomeHeroCard,
+  StudentHeroPanel,
+  StudioAtmosphere,
   PracticeCard,
   CompletedPathCard,
   DashboardErrorBanner,
@@ -15,9 +16,11 @@ import {
   WeeklyChestCelebrationShell,
   type WeeklyChestCelebrationState,
 } from "../components/gmusic/dashboard";
-import { GM_BG, GM_TEXT } from "../components/gmusic/tokens";
 import { useDashboard } from "../hooks/useDashboard";
 import {
+  deriveStreakChipCopy,
+  deriveStudentHeroEyebrow,
+  deriveStudentHeroSituationLine,
   deriveWelcomeHeaderSubtitle,
   resolveStudentDisplayName,
 } from "../utils/student-zone-identity";
@@ -30,7 +33,6 @@ type AudioState = "pending" | "granted" | "denied";
 
 const DAILY_QUOTE =
   "La constancia le gana al talento cuando el talento no practica.";
-const HERO_CONTEXT_LINE = "Tu estudio · Semana 3";
 
 export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
   const [audioState, setAudioState] = useState<AudioState>("pending");
@@ -101,6 +103,22 @@ export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
   );
   const headerUserSubtitle = deriveWelcomeHeaderSubtitle(viewModel?.phaseLabel, isLoading);
 
+  const heroEyebrow = deriveStudentHeroEyebrow(viewModel?.phaseLabel, isLoading);
+  const heroSituationLine = deriveStudentHeroSituationLine({
+    isLoading,
+    pathComplete: viewModel?.pathComplete ?? false,
+    nextPracticeTitle: viewModel?.nextPractice?.title,
+    currentNodeTitle: viewModel?.currentNodeTitle,
+  });
+  const streakChip = useMemo(
+    () =>
+      deriveStreakChipCopy(
+        isLoading ? 0 : (viewModel?.streakDays ?? 0),
+        isLoading ? false : (viewModel?.streakActiveToday ?? false)
+      ),
+    [isLoading, viewModel?.streakDays, viewModel?.streakActiveToday]
+  );
+
   const handleOpenChest = useCallback(() => {
     const xpReward = viewModel?.weeklyChest?.xpReward ?? 50;
     clearChestTimers();
@@ -127,15 +145,7 @@ export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
   );
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: GM_BG,
-        backgroundImage:
-          "radial-gradient(ellipse 90% 60% at 85% -15%, rgba(212,175,55,0.07) 0%, transparent 50%), radial-gradient(ellipse 70% 50% at 10% 100%, rgba(212,175,55,0.04) 0%, transparent 45%)",
-        color: GM_TEXT,
-      }}
-    >
+    <StudioAtmosphere>
       <GmusicInternalHeader
         activeNav="estudio"
         userName={headerUserName}
@@ -153,10 +163,12 @@ export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
           )}
 
           <div className="lg:col-span-12">
-            <WelcomeHeroCard
-              userName={isLoading ? "…" : (viewModel?.userName ?? "…")}
-              practiceWeekLine={HERO_CONTEXT_LINE}
-              streakLabel={isLoading ? "…" : (viewModel?.streakLabel ?? "—")}
+            <StudentHeroPanel
+              userName={resolveStudentDisplayName(isLoading ? undefined : viewModel?.userName)}
+              eyebrow={heroEyebrow}
+              situationLine={heroSituationLine}
+              streakChipLabel={isLoading ? "…" : streakChip.label}
+              streakEmphasis={isLoading ? "none" : streakChip.emphasis}
               audioLabel={audioLabel}
               audioState={audioState}
               isCheckingPermission={isCheckingPermission}
@@ -243,6 +255,6 @@ export function GmusicWelcome({ setPage }: GmusicWelcomeProps) {
         open={chestOpen}
         onOpenChange={handleChestClose}
       />
-    </div>
+    </StudioAtmosphere>
   );
 }

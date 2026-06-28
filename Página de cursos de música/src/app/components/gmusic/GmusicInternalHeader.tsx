@@ -7,9 +7,9 @@ export type GmusicNavId = "estudio" | "camino" | "progreso" | "comunidad";
 export type GmusicLockedNavId = "progreso" | "comunidad";
 
 export const LOCKED_NAV_MODAL = {
-  title: "Disponible en el plan completo",
-  subtitle: "Esta sección se desbloquea con la suscripción activa.",
-  footer: "Continúa en tu camino actual mientras activas tu plan.",
+  title: "Próximamente en tu academia",
+  subtitle: "Estamos preparando esta sección para alumnos con acceso activo.",
+  footer: "Mientras tanto, continúa en Mi Camino y Mi Estudio.",
 } as const;
 
 export function isLockedNav(id: string): id is GmusicLockedNavId {
