@@ -211,19 +211,6 @@ export function Navbar({
           width: stacked ? "100%" : undefined,
         }}
       >
-        <span
-          style={{
-            color: WHITE_WARM,
-            fontSize: 13,
-            fontWeight: 500,
-            maxWidth: stacked ? "100%" : 180,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Bienvenido, {firstName}
-        </span>
         <button
           type="button"
           onClick={() =>
@@ -232,7 +219,7 @@ export function Navbar({
           disabled={logoutProcessing}
           style={{ ...authButtonStyle(true), width: stacked ? "100%" : undefined }}
         >
-          {cta.label}
+          Bienvenido, {firstName}
         </button>
         <button
           type="button"

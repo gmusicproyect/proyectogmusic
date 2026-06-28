@@ -27,11 +27,13 @@ describe("R3.3D — sesión pública y logout", () => {
     assert.equal(navbarSource.includes(">Alumno<"), false);
   });
 
-  it("Navbar registered_no_sub muestra bienvenida y CTA de camino", () => {
+  it("Navbar registered_no_sub muestra bienvenida en botón primario hacia el camino", () => {
     assert.equal(navbarSource.includes("renderRegisteredAuth"), true);
     assert.equal(navbarSource.includes('session.status === "registered_no_sub"'), true);
-    assert.equal(navbarSource.includes("Bienvenido,"), true);
+    assert.match(navbarSource, /Bienvenido, \{firstName\}/);
     assert.equal(navbarSource.includes("resolveAcademiaPublicCta"), true);
+    assert.match(navbarSource, /cta\.destination/);
+    assert.equal(navbarSource.includes("cta.label"), false);
   });
 
   it("Navbar autenticado muestra nombre, Mi academia y Cerrar sesión", () => {
