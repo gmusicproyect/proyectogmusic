@@ -9,6 +9,7 @@ const gmusicPathSource = readFileSync(join(pathRoot, "../../../pages/GmusicPath.
 const pathPageIntroSource = readFileSync(join(pathRoot, "PathPageIntro.tsx"), "utf8");
 const pathShellSource = readFileSync(join(pathRoot, "PathShell.tsx"), "utf8");
 const pathDemoSource = readFileSync(join(pathRoot, "../../../pages/PathDemoPage.tsx"), "utf8");
+const levelBarSource = readFileSync(join(pathRoot, "../DemoPathLevelBar.tsx"), "utf8");
 
 describe("D-022A — Mi Camino shell y layout", () => {
   it("GmusicPath usa atmósfera de estudio y shell centrado", () => {
@@ -18,9 +19,11 @@ describe("D-022A — Mi Camino shell y layout", () => {
     assert.doesNotMatch(gmusicPathSource, /style=\{\{ background: GM_BG/);
   });
 
-  it("progreso integrado en intro — sin franja rail separada", () => {
+  it("progreso integrado en intro — variant embedded, sin franja rail demo", () => {
     assert.match(gmusicPathSource, /progressRail=/);
     assert.match(gmusicPathSource, /DemoPathLevelBar/);
+    assert.match(gmusicPathSource, /variant="embedded"/);
+    assert.doesNotMatch(gmusicPathSource, /variant="rail"/);
     assert.doesNotMatch(gmusicPathSource, /borderBottom: "1px solid rgba\(255,255,255,0\.06\)"/);
   });
 
@@ -47,5 +50,13 @@ describe("D-022A — Mi Camino shell y layout", () => {
     assert.doesNotMatch(pathDemoSource, /PathPageIntro/);
     assert.doesNotMatch(pathDemoSource, /PathShell/);
     assert.doesNotMatch(pathDemoSource, /StudioAtmosphere/);
+  });
+
+  it("DemoPathLevelBar mantiene rail para demo y expone embedded", () => {
+    assert.match(levelBarSource, /variant === "embedded"/);
+    assert.match(levelBarSource, /variant === "rail"/);
+    assert.match(levelBarSource, /dash-progress-track/);
+    assert.match(pathDemoSource, /variant="rail"/);
+    assert.doesNotMatch(pathDemoSource, /embedded/);
   });
 });

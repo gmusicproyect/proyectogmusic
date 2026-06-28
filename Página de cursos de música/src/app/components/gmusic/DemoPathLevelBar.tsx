@@ -10,8 +10,8 @@ export interface DemoPathLevelBarProps {
   levelLabel?: string;
   totalClasses?: number;
   freeClassCount?: number;
-  /** rail = franja compacta arriba de página; default = bloque con más aire */
-  variant?: "default" | "rail";
+  /** rail = franja demo full-width; embedded = panel suscriptor integrado */
+  variant?: "default" | "rail" | "embedded";
   embedded?: boolean;
 }
 
@@ -27,6 +27,103 @@ export function DemoPathLevelBar({
   const progressDenominator = freeClassCount ?? totalClasses;
   const progressPct = Math.min(100, (completedCount / progressDenominator) * 100);
   const showCompactNav = totalClasses > 12;
+
+  if (variant === "embedded") {
+    return (
+      <div className="path-progress-embedded w-full" style={{ fontFamily: "Inter, sans-serif" }}>
+        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 mb-3">
+          <div className="min-w-0 text-left">
+            <p
+              style={{
+                margin: 0,
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: "rgba(201,168,76,0.65)",
+              }}
+            >
+              Nivel · fase
+            </p>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: "clamp(17px, 2.5vw, 20px)",
+                fontWeight: 500,
+                color: GM_TEXT,
+              }}
+            >
+              {levelLabel}
+            </p>
+          </div>
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: GM_TEXT_SEC,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {freeClassCount != null
+              ? `${completedCount} / ${freeClassCount} gratis · ${totalClasses} total`
+              : `${completedCount} / ${totalClasses} clases`}
+          </span>
+        </div>
+
+        <div className="dash-progress-track" role="progressbar" aria-valuenow={completedCount} aria-valuemin={0} aria-valuemax={progressDenominator}>
+          <div className="dash-progress-fill" style={{ width: `${progressPct}%` }} />
+        </div>
+
+        {showCompactNav ? (
+          <p
+            className="mt-3 text-center text-xs font-semibold"
+            style={{ color: GOLD, letterSpacing: "0.06em" }}
+          >
+            Clase activa · {activeClass}
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+            {Array.from({ length: totalClasses }, (_, i) => {
+              const classNum = i + 1;
+              const isCompleted = classNum <= completedCount;
+              const isActive = classNum === activeClass && !isCompleted;
+
+              return (
+                <div
+                  key={classNum}
+                  title={`Clase ${classNum}`}
+                  style={{
+                    width: isActive ? 24 : 20,
+                    height: isActive ? 24 : 20,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: isActive ? 10 : 9,
+                    fontWeight: 600,
+                    color: isCompleted ? "#0A0A0A" : isActive ? GOLD : "rgba(255,255,255,0.35)",
+                    background: isCompleted
+                      ? GOLD
+                      : isActive
+                        ? "rgba(201,168,76,0.12)"
+                        : "rgba(255,255,255,0.06)",
+                    border: isActive
+                      ? `1.5px solid ${GOLD}`
+                      : "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: isActive ? `0 0 10px rgba(201,168,76,0.28)` : "none",
+                    transition: "all 0.25s ease",
+                  }}
+                >
+                  {classNum}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (variant === "rail") {
     return (

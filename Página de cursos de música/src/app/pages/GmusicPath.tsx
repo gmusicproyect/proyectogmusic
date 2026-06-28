@@ -96,7 +96,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         activeClass={activeClass}
         levelLabel={viewModel.badge.level}
         totalClasses={viewModel.totalSteps}
-        variant="rail"
+        variant="embedded"
       />
     ) : undefined;
 
