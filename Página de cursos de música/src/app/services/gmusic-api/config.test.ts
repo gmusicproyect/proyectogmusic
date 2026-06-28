@@ -7,9 +7,26 @@ describe("resolveApiBaseUrl", () => {
     assert.equal(
       resolveApiBaseUrl({
         configured: "https://example.com/api/v1/",
-        hostname: "localhost",
+        hostname: "app.example.com",
       }),
       "https://example.com/api/v1"
+    );
+  });
+
+  it("en localhost con API remota usa /api/v1 (proxy Vite, evita CORS)", () => {
+    assert.equal(
+      resolveApiBaseUrl({
+        configured: "https://gmusic-api.onrender.com/api/v1",
+        hostname: "127.0.0.1",
+      }),
+      "/api/v1"
+    );
+    assert.equal(
+      resolveApiBaseUrl({
+        configured: "https://gmusic-api.onrender.com/api/v1",
+        hostname: "localhost",
+      }),
+      "/api/v1"
     );
   });
 

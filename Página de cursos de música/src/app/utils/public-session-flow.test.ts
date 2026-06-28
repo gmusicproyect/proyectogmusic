@@ -14,8 +14,10 @@ describe("R3.3D — sesión pública y logout", () => {
     assert.equal(appSource.includes("useAuth"), true);
     assert.equal(appSource.includes("session={publicSession}"), true);
     assert.match(appSource, /activateSemestralWithAccessVerification[\s\S]*refreshPublicSession/);
-    assert.equal(appSource.includes("postDevLogout"), true);
-    assert.match(appSource, /postDevLogout[\s\S]*refreshPublicSession/);
+    assert.equal(appSource.includes("authLogout"), true);
+    assert.match(appSource, /authLogout[\s\S]*refreshPublicSession/);
+    assert.equal(appSource.includes("postDevLogout"), false);
+    assert.equal(appSource.includes("/auth/logout"), false);
   });
 
   it("Navbar anónimo muestra Iniciar sesión y Regístrate", () => {
@@ -44,6 +46,7 @@ describe("R3.3D — sesión pública y logout", () => {
     assert.match(appSource, /sessionOutcome\.type !== "anonymous"/);
     assert.equal(appSource.includes('handlePageChange("home")'), true);
     assert.equal(appSource.includes('handlePageChange("fundamento-free-lesson")'), false);
+    assert.equal(appSource.includes("Ruta no encontrada"), false);
     for (const source of [appSource, navbarSource]) {
       assert.equal(source.includes("localStorage"), false);
       assert.equal(source.includes("sessionStorage"), false);

@@ -33,7 +33,7 @@ import { AuthModal } from "./components/music/AuthModal";
 import { isPublicFreeLessonPage } from "./utils/academia-track-matrix";
 import { SEMESTRAL_CHECKOUT_COURSE, isSemestralCheckoutCourse } from "./utils/public-subscription-flow";
 import { activateSemestralWithAccessVerification } from "./services/gmusic-api/activate-semestral";
-import { postDevLogout, shouldAcceptLogoutSubmission } from "./services/gmusic-api/dev-logout";
+import { shouldAcceptLogoutSubmission } from "./services/gmusic-api/public-logout";
 import { GmusicApiError } from "./services/gmusic-api/client";
 import { useAuth } from "./hooks/useAuth";
 import { analytics } from "./utils/analytics";
@@ -90,7 +90,7 @@ export default function App() {
   const [pendingSemestralCheckout, setPendingSemestralCheckout] = useState(false);
   const [logoutProcessing, setLogoutProcessing] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
-  const { session: publicSession, refresh: refreshPublicSession } = useAuth();
+  const { session: publicSession, refresh: refreshPublicSession, logout: authLogout } = useAuth();
   const hasAppliedAuthenticatedLandingRef = useRef(false);
   const currentPageRef = useRef(currentPage);
   currentPageRef.current = currentPage;
@@ -177,7 +177,7 @@ export default function App() {
     setLogoutError(null);
 
     try {
-      await postDevLogout();
+      await authLogout();
       const sessionOutcome = await refreshPublicSession();
       if (sessionOutcome.type !== "anonymous") {
         throw new GmusicApiError(

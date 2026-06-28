@@ -21,9 +21,26 @@ function figmaAssetResolver() {
   }
 }
 
+function resolveDevApiProxyTarget(env: Record<string, string>): string {
+  const explicit = env.VITE_DEV_API_PROXY_TARGET?.trim();
+  if (explicit) return explicit.replace(/\/+$/, "");
+
+  const configuredApi = env.VITE_API_BASE_URL?.trim();
+  if (configuredApi?.startsWith("http")) {
+    try {
+      return new URL(configuredApi).origin;
+    } catch {
+      // Ignorar URL mal formada; caer al backend local.
+    }
+  }
+
+  return "http://localhost:3001";
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const devActivationKey = resolveDevActivationKeyFromLoadedEnv(env);
+  const devApiProxyTarget = resolveDevApiProxyTarget(env);
   const sentryAuthToken = env.SENTRY_AUTH_TOKEN;
   const sentryUploadEnabled = Boolean(
     sentryAuthToken && env.SENTRY_ORG && env.SENTRY_PROJECT
@@ -62,8 +79,9 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": {
-          target: "http://localhost:3001",
+          target: devApiProxyTarget,
           changeOrigin: true,
+          secure: devApiProxyTarget.startsWith("https://"),
           configure: createDevActivationProxyConfigure(devActivationKey),
         },
       },

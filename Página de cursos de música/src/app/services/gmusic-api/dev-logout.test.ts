@@ -1,17 +1,17 @@
 import assert from "node:assert/strict";
 import { afterEach, before, describe, it } from "node:test";
 import { GmusicApiError } from "./client";
+import { shouldAcceptLogoutSubmission } from "./public-logout";
 
 const originalFetch = globalThis.fetch;
 let postDevLogout: typeof import("./dev-logout").postDevLogout;
-let shouldAcceptLogoutSubmission: typeof import("./dev-logout").shouldAcceptLogoutSubmission;
 
 before(async () => {
   Object.defineProperty(import.meta, "env", {
     value: {},
     configurable: true,
   });
-  ({ postDevLogout, shouldAcceptLogoutSubmission } = await import("./dev-logout"));
+  ({ postDevLogout } = await import("./dev-logout"));
 });
 
 afterEach(() => {

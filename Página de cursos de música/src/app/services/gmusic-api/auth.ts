@@ -1,4 +1,4 @@
-import { apiPost } from "./client";
+import { apiPost, GmusicApiError, runFetch } from "./client";
 import { getApiBaseUrl } from "./config";
 
 export interface AuthUser {
@@ -38,8 +38,34 @@ export async function loginAccount(input: LoginInput): Promise<AuthUser> {
 }
 
 export async function logoutAccount(): Promise<void> {
-  await fetch(`${getApiBaseUrl()}/auth/logout`, {
+  const response = await runFetch(`${getApiBaseUrl()}/auth/logout`, {
     method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
     credentials: "include",
   });
+
+  if (!response.ok) {
+    let code = "INTERNAL_ERROR";
+    let message = `Error ${response.status} al cerrar sesión.`;
+
+    try {
+      const body = (await response.json()) as { error?: { code?: string; message?: string } };
+      if (body.error?.code) code = body.error.code;
+      if (body.error?.message) message = body.error.message;
+    } catch {
+      // Respuesta no JSON; mantener mensaje genérico.
+    }
+
+    throw new GmusicApiError(message, response.status, code);
+  }
+
+  if (response.status !== 204) {
+    throw new GmusicApiError(
+      "La respuesta de cierre de sesión no es válida.",
+      response.status,
+      "INVALID_RESPONSE"
+    );
+  }
 }

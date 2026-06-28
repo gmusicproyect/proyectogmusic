@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { GmusicApiError } from "../services/gmusic-api/client";
+import { formatAuthFormError } from "../services/gmusic-api/client";
 import { useAuth } from "../hooks/useAuth";
 import {
   AuthFormShell,
@@ -43,11 +43,9 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
       });
       setPage("registro-exito");
     } catch (err) {
-      const message =
-        err instanceof GmusicApiError
-          ? err.message
-          : "No pudimos crear tu cuenta. Inténtalo de nuevo.";
-      setError(message);
+      setError(
+        formatAuthFormError(err, "No pudimos crear tu cuenta. Inténtalo de nuevo.")
+      );
     } finally {
       setLoading(false);
     }
@@ -156,11 +154,9 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
       await login({ email, password });
       setPage("mi-camino-demo");
     } catch (err) {
-      const message =
-        err instanceof GmusicApiError
-          ? err.message
-          : "No pudimos iniciar sesión. Revisa tus datos.";
-      setError(message);
+      setError(
+        formatAuthFormError(err, "No pudimos iniciar sesión. Revisa tus datos.")
+      );
     } finally {
       setLoading(false);
     }

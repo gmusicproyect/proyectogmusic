@@ -9,6 +9,7 @@ export async function postDevLogout(options?: {
     headers: {
       Accept: "application/json",
     },
+    credentials: "include",
     signal: options?.signal,
   });
 
@@ -34,8 +35,4 @@ export async function postDevLogout(options?: {
       "INVALID_RESPONSE"
     );
   }
-}
-
-export function shouldAcceptLogoutSubmission(processing: boolean): boolean {
-  return !processing;
 }

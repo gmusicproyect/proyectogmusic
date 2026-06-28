@@ -7,12 +7,12 @@ import {
 } from "react";
 import {
   loginAccount,
-  logoutAccount,
   registerAccount,
   type AuthUser,
   type LoginInput,
   type RegisterInput,
 } from "../services/gmusic-api/auth";
+import { performPublicLogout } from "../services/gmusic-api/public-logout";
 import { assertAuthSessionEstablished } from "../services/gmusic-api/assert-auth-session";
 import {
   usePublicStudentSession,
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [publicSession]);
 
   const logout = useCallback(async () => {
-    await logoutAccount();
+    await performPublicLogout();
     await publicSession.refresh();
   }, [publicSession]);
 

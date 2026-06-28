@@ -23,4 +23,13 @@ describe("parseRegisterBody", () => {
     });
     assert.equal(parsed.phone, "+56953429676");
   });
+
+  it("acepta correo con + en la parte local", () => {
+    const parsed = parseRegisterBody({
+      name: "Juan",
+      email: "qa+tag@example.com",
+      password: "password1",
+    });
+    assert.equal(parsed.email, "qa+tag@example.com");
+  });
 });
