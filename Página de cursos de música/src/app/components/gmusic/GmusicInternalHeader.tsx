@@ -30,8 +30,8 @@ const NAV_ITEMS: {
   page?: string;
   locked?: boolean;
 }[] = [
-  { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
   { id: "camino", label: "Mi Camino", page: "mi-camino" },
+  { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
   { id: "progreso", label: "Mi Progreso", locked: true },
   { id: "comunidad", label: "Comunidad", locked: true },
 ];

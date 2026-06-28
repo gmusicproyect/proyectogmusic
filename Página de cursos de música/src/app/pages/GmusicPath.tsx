@@ -1,23 +1,24 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { RefreshCw } from "lucide-react";
 import { GmusicInternalHeader, isLockedNav, LOCKED_NAV_MODAL } from "../components/gmusic/GmusicInternalHeader";
 import { GmusicPlaceholderModal } from "../components/gmusic/GmusicPlaceholderModal";
+import { DemoPathLevelBar } from "../components/gmusic/DemoPathLevelBar";
+import { PathCarouselCards } from "../components/gmusic/PathCarouselCards";
+import {
+  buildSubscriberPathCardModels,
+  flattenPathNodes,
+  resolveCarouselActiveClass,
+  resolveCarouselFocusIndex,
+} from "../components/gmusic/subscriber-path-carousel";
 import { DashboardErrorBanner } from "../components/gmusic/dashboard";
 import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
-import { SerpentinePathMap } from "../components/gmusic/path/SerpentinePathMap";
-import { ActiveNodePanel } from "../components/gmusic/path/ActiveNodePanel";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
 import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
-import {
-  canStartLessonFromNode,
-} from "../components/gmusic/path/path-lesson-start";
-import {
-  resolveLessonSessionForPanel,
-} from "../components/gmusic/path/path-lesson-panel-session";
-import { GM_BG, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
+import { canStartLessonFromNode } from "../components/gmusic/path/path-lesson-start";
+import { GM_BG, GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { usePath } from "../hooks/usePath";
 import { useStartLessonSession } from "../hooks/useStartLessonSession";
 import { findPathNodeById } from "../services/gmusic-api/map-path";
-import type { PathNodeData } from "../data/gmusic-path-types";
 import type { LessonSessionResponse } from "../services/gmusic-api/types";
 import { derivePathHeaderIdentity } from "../utils/student-zone-identity";
 
@@ -33,35 +34,28 @@ interface GmusicPathProps {
 
 type ModalKind = "leveling" | "locked" | null;
 
-function panelEyebrow(node: PathNodeData | null): string {
-  if (!node) return "Próxima práctica";
-  if (node.status === "available") return "Paso desbloqueado";
-  return "Próxima práctica";
-}
-
 export function GmusicPath({ setPage }: GmusicPathProps) {
   const [modal, setModal] = useState<ModalKind>(null);
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const path = usePath();
   const lessonSession = useStartLessonSession();
 
   const viewModel = path.status === "success" ? path.viewModel : null;
-  const defaultPanelNodeId = path.status === "success" ? path.viewModel.defaultPanelNodeId : null;
-
-  useEffect(() => {
-    if (path.status === "success") {
-      setSelectedNodeId(path.viewModel.defaultPanelNodeId);
-    }
-  }, [path.status, defaultPanelNodeId]);
+  const pathNodes = useMemo(
+    () => (viewModel ? flattenPathNodes(viewModel.modules) : []),
+    [viewModel]
+  );
+  const initialFocusIndex = useMemo(
+    () => resolveCarouselFocusIndex(pathNodes, viewModel?.activeNodeId ?? null),
+    [pathNodes, viewModel?.activeNodeId]
+  );
+  const activeClass = useMemo(
+    () => resolveCarouselActiveClass(pathNodes, viewModel?.activeNodeId ?? null),
+    [pathNodes, viewModel?.activeNodeId]
+  );
 
   const openNavPlaceholder = useCallback((key: string) => {
     if (isLockedNav(key)) setModal("locked");
-  }, []);
-
-  const handleNodeSelect = useCallback((node: PathNodeData) => {
-    if (node.status === "completed" || node.status === "locked") return;
-    setSelectedNodeId(node.id);
   }, []);
 
   const modalProps = () => {
@@ -85,91 +79,47 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
   const mp = modalProps();
   const isLoading = path.status === "loading";
   const headerIdentity = derivePathHeaderIdentity(viewModel?.badge, isLoading);
-  const panelNode = viewModel ? findPathNodeById(viewModel.modules, selectedNodeId) : null;
-  const canStartLesson = canStartLessonFromNode(panelNode);
-  const panelSession = resolveLessonSessionForPanel(lessonSession, panelNode?.id);
 
   useEffect(() => {
-    if (lessonSession.status !== "success" || !panelNode) return;
-    if (lessonSession.nodeId !== panelNode.id) return;
+    if (lessonSession.status !== "success") return;
+    const node = findPathNodeById(viewModel?.modules ?? [], lessonSession.nodeId);
+    if (!node) return;
 
     setActiveRunner({
       session: lessonSession.result.session,
-      nodeTitle: panelNode.title,
-      nodeId: panelNode.id,
+      nodeTitle: node.title,
+      nodeId: node.id,
     });
-  }, [lessonSession, panelNode]);
+  }, [lessonSession, viewModel?.modules]);
 
-  const handleStartLesson = useCallback(() => {
-    if (!panelNode || !canStartLessonFromNode(panelNode)) return;
-    lessonSession.start(panelNode.id);
-  }, [panelNode, lessonSession]);
+  const handleStartNode = useCallback(
+    (nodeId: string) => {
+      const node = findPathNodeById(viewModel?.modules ?? [], nodeId);
+      if (!node || !canStartLessonFromNode(node)) return;
+      lessonSession.start(nodeId);
+    },
+    [viewModel?.modules, lessonSession]
+  );
 
   const handleRetrySession = useCallback(() => {
-    if (!panelSession.showRetry) return;
-    lessonSession.retry();
-  }, [panelSession.showRetry, lessonSession]);
+    if (lessonSession.status === "error") {
+      lessonSession.retry();
+    }
+  }, [lessonSession]);
 
   const handleCloseRunner = useCallback(() => {
     setActiveRunner(null);
     path.retry();
   }, [path]);
 
-  const sharedPanelProps = {
-    onStartLesson: handleStartLesson,
-    isStartingLesson: panelSession.isStartingLesson,
-    startLessonDisabled: !canStartLesson,
-    sessionError: panelSession.sessionError,
-    onRetrySession: panelSession.showRetry ? handleRetrySession : undefined,
-  };
-
-  const renderSidePanel = (compact?: boolean) => {
-    if (isLoading) {
-      return (
-        <ActiveNodePanel
-          compact={compact}
-          eyebrow="Próxima práctica"
-          title="Cargando lección…"
-          typeLabel="Conectando con tu camino"
-          description="Estamos preparando el detalle de tu próximo paso."
-          isLoading
-          startLessonDisabled
-          onStartLesson={() => {}}
-        />
-      );
-    }
-
-    if (viewModel?.isComplete) {
-      return <CompletedPathPanel compact={compact} />;
-    }
-
-    if (!panelNode) {
-      return (
-        <ActiveNodePanel
-          compact={compact}
-          eyebrow="Próxima práctica"
-          title="Sin paso seleccionado"
-          typeLabel="Selecciona un nodo desbloqueado"
-          description="Elige un paso activo o desbloqueado en el mapa para ver su detalle."
-          {...sharedPanelProps}
-        />
-      );
-    }
-
-    return (
-      <ActiveNodePanel
-        compact={compact}
-        eyebrow={panelEyebrow(panelNode)}
-        title={panelNode.title}
-        typeLabel={panelNode.typeLabel ?? panelNode.type}
-        description={panelNode.description ?? ""}
-        {...sharedPanelProps}
-      />
-    );
-  };
+  const buildCardModels = useCallback(
+    (focusedIdx: number, goTo: (idx: number) => void) =>
+      buildSubscriberPathCardModels(pathNodes, focusedIdx, goTo, handleStartNode),
+    [pathNodes, handleStartNode]
+  );
 
   return (
-    <div className="min-h-screen" style={{ background: GM_BG, color: GM_TEXT }}>
+    <div className="min-h-screen flex flex-col" style={{ background: GM_BG, color: GM_TEXT }}>
       <GmusicInternalHeader
         activeNav="camino"
         userName={headerIdentity.userName}
@@ -178,23 +128,44 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         onPlaceholder={openNavPlaceholder}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 lg:py-12">
-        <PathPageIntro
-          badge={viewModel?.badge ?? { instrument: "…", month: "…", level: "…" }}
-          completedSteps={viewModel?.completedSteps ?? 0}
-          totalSteps={viewModel?.totalSteps ?? 0}
-          isLoading={isLoading}
-        />
+      {!isLoading && viewModel && !viewModel.isEmpty && (
+        <div
+          style={{
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(8,8,8,0.6)",
+          }}
+        >
+          <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 py-3 md:py-4">
+            <DemoPathLevelBar
+              completedCount={viewModel.completedSteps}
+              activeClass={activeClass}
+              levelLabel={viewModel.badge.level}
+              totalClasses={viewModel.totalSteps}
+              variant="rail"
+            />
+          </div>
+        </div>
+      )}
+
+      <main className="flex-1 flex flex-col w-full">
+        <header className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 pt-6 md:pt-8 pb-2 md:pb-4">
+          <PathPageIntro
+            badge={viewModel?.badge ?? { instrument: "…", month: "…", level: "…" }}
+            completedSteps={viewModel?.completedSteps ?? 0}
+            totalSteps={viewModel?.totalSteps ?? 0}
+            isLoading={isLoading}
+          />
+        </header>
 
         {path.status === "error" && (
-          <div className="mb-6">
+          <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 mb-4">
             <DashboardErrorBanner message={path.message} onRetry={path.retry} />
           </div>
         )}
 
         {path.status === "success" && viewModel?.isEmpty && (
           <div
-            className="rounded-lg border px-5 py-8 text-center"
+            className="max-w-[1400px] mx-auto w-full px-4 md:px-8 lg:px-12 rounded-lg border px-5 py-8 text-center"
             style={{ borderColor: "rgba(255,255,255,0.08)", color: GM_TEXT_SEC }}
           >
             <p className="text-sm leading-relaxed">
@@ -203,32 +174,67 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           </div>
         )}
 
-        {path.status !== "error" && !viewModel?.isEmpty && (
+        {path.status === "success" && viewModel?.isComplete && (
+          <div className="max-w-[600px] mx-auto w-full px-4 pb-8">
+            <CompletedPathPanel />
+          </div>
+        )}
+
+        {isLoading && (
+          <div
+            className="flex-1 flex items-center justify-center py-16 text-sm"
+            style={{ color: GM_TEXT_SEC }}
+          >
+            Cargando mapa del camino…
+          </div>
+        )}
+
+        {path.status === "success" && viewModel && !viewModel.isEmpty && !viewModel.isComplete && (
           <>
-            <div className="lg:hidden mb-6">{renderSidePanel(true)}</div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-              <div className="lg:col-span-7">
-                {isLoading ? (
-                  <div
-                    className="max-w-lg mx-auto px-4 py-16 text-center text-sm"
-                    style={{ color: GM_TEXT_SEC }}
+            {lessonSession.status === "error" && (
+              <div className="max-w-[600px] mx-auto w-full px-4 mb-4">
+                <div
+                  className="rounded-lg border px-4 py-3 flex flex-col gap-2"
+                  style={{
+                    borderColor: "rgba(248, 113, 113, 0.25)",
+                    background: "rgba(40, 18, 18, 0.55)",
+                  }}
+                >
+                  <p className="text-xs leading-relaxed" style={{ color: GM_TEXT_SEC }}>
+                    {lessonSession.message}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleRetrySession}
+                    className="inline-flex items-center justify-center gap-1.5 self-start px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] transition-colors hover:bg-[#C9A84C]/20 cursor-pointer"
+                    style={{
+                      color: GM_GOLD,
+                      border: "1px solid rgba(201, 168, 76, 0.35)",
+                      background: "rgba(201, 168, 76, 0.08)",
+                    }}
                   >
-                    Cargando mapa del camino…
-                  </div>
-                ) : (
-                  <SerpentinePathMap
-                    modules={viewModel?.modules ?? []}
-                    activeNodeId={viewModel?.activeNodeId ?? null}
-                    selectedNodeId={selectedNodeId}
-                    onLevelingChallenge={() => setModal("leveling")}
-                    onNodeSelect={handleNodeSelect}
-                  />
-                )}
+                    <RefreshCw className="w-3 h-3" />
+                    Reintentar
+                  </button>
+                </div>
               </div>
+            )}
 
-              <div className="hidden lg:block lg:col-span-5">{renderSidePanel()}</div>
-            </div>
+            <section className="flex-1 flex flex-col justify-center w-full py-6 md:py-10 lg:py-12 min-h-[320px]">
+              <PathCarouselCards
+                nodes={pathNodes}
+                buildCardModels={buildCardModels}
+                initialFocusIndex={initialFocusIndex}
+                fullBleed
+                hintText="Desliza tu camino · completa cada paso para avanzar"
+                buildFooterText={(focusedIdx, nodes) =>
+                  nodes.length <= 12
+                    ? null
+                    : `Paso ${focusedIdx + 1} de ${nodes.length}`
+                }
+                useDotFooter={pathNodes.length <= 12}
+              />
+            </section>
           </>
         )}
       </main>
