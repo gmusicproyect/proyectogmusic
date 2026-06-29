@@ -265,12 +265,28 @@ export function PathCarouselCards({
                     justifyContent: "center",
                   }}
                 >
-                  <HeroIcon
-                    size={isPlayableFocused ? 36 : 26}
-                    color="rgba(255,255,255,1)"
-                    strokeWidth={1.25}
-                    style={{ opacity: isPlayableFocused ? 0.55 : 0.28 }}
-                  />
+                  <div
+                    style={{
+                      width: isPlayableFocused ? 72 : 56,
+                      height: isPlayableFocused ? 72 : 56,
+                      borderRadius: "50%",
+                      background: isPlayableFocused
+                        ? "rgba(212,175,55,0.12)"
+                        : "rgba(255,255,255,0.08)",
+                      border: isPlayableFocused
+                        ? "1px solid rgba(212,175,55,0.25)"
+                        : "1px solid rgba(255,255,255,0.12)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <HeroIcon
+                      size={isPlayableFocused ? 44 : 30}
+                      color={isPlayableFocused ? "#D4AF37" : "rgba(255,255,255,0.9)"}
+                      strokeWidth={1.25}
+                    />
+                  </div>
                 </div>
               );
             })()}
