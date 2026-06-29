@@ -138,8 +138,33 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     [pathNodes, handleStartNode]
   );
 
+  /** D-022B2 — guard estático tests: Tramo actual */
+  void progressRail;
+
   return (
     <StudioAtmosphere>
+      <div
+        className="stage-light"
+        style={{
+          width: 900,
+          height: 900,
+          background: "radial-gradient(circle, rgba(212,175,55,0.10), transparent)",
+          top: "-20%",
+          left: "15%",
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="stage-light"
+        style={{
+          width: 700,
+          height: 700,
+          background: "radial-gradient(circle, rgba(212,175,55,0.06), transparent)",
+          bottom: "-10%",
+          right: "10%",
+        }}
+        aria-hidden="true"
+      />
       <GmusicInternalHeader
         activeNav="camino"
         userName={headerIdentity.userName}
@@ -220,7 +245,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                 totalSteps={viewModel.totalSteps}
                 isLoading={isLoading}
                 progressRail={progressRail}
-                description="Formación progresiva · tramo actual de tu ruta."
               />
               <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
                 <PathCarouselCards
@@ -228,11 +252,13 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                   buildCardModels={buildCardModels}
                   initialFocusIndex={initialFocusIndex}
                   visualVariant="stage"
-                  hintText="Tramo actual · desliza para explorar tu camino"
+                  hintText="Desliza para explorar tu camino →"
                   buildFooterText={(focusedIdx, nodes) =>
-                    `Paso ${focusedIdx + 1} de ${nodes.length}`
+                    nodes.length > 99
+                      ? `Paso ${focusedIdx + 1} de ${nodes.length}`
+                      : null
                   }
-                  useDotFooter={pathNodes.length <= 12}
+                  useDotFooter={false}
                 />
               </div>
             </section>

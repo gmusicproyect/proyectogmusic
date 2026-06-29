@@ -1,6 +1,29 @@
-/* D-022B2 — escena cinematográfica suscriptor (Mi Camino). Solo clases stage */
+/* D-022B2 — escena Canva suscriptor (Mi Camino). Solo clases stage */
 
-/* ── Escena unificada: intro + carrusel ─────────────────────── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.stage-light {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.studio-atmosphere {
+  position: relative;
+  overflow-x: clip;
+}
+
+/* ── Escena unificada ───────────────────────────────────────── */
 .path-scene {
   position: relative;
   min-width: 0;
@@ -8,92 +31,103 @@
   overflow-x: clip;
   container-type: inline-size;
   container-name: path-scene;
-  margin-top: 0.25rem;
-  padding: 10px 12px 10px;
-  border-radius: 16px;
-  border: 1px solid rgba(201, 168, 76, 0.1);
-  background:
-    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(201, 168, 76, 0.07) 0%, transparent 52%),
-    radial-gradient(ellipse 100% 65% at 50% 100%, rgba(0, 0, 0, 0.38) 0%, transparent 58%),
-    linear-gradient(180deg, rgba(14, 14, 14, 0.92) 0%, rgba(8, 8, 8, 0.96) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(201, 168, 76, 0.06),
-    0 10px 32px rgba(0, 0, 0, 0.32);
+  margin-top: 0.5rem;
+  padding: 24px 16px 20px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 @media (min-width: 768px) {
   .path-scene {
-    padding: 12px 16px 10px;
+    padding: 32px 24px 28px;
   }
 }
 
-.path-scene-intro {
-  padding-bottom: 0;
+/* ── Hero Canva centrado ───────────────────────────────────── */
+.path-scene-intro--canva {
+  padding-bottom: 8px;
 }
 
-.path-scene-intro__progress {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+.path-scene-intro__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.6);
 }
 
-/* Intro compacto — objetivo < ~22% altura de escena en desktop */
-.path-scene .path-scene-intro h1 {
-  margin-bottom: 0.25rem !important;
+.path-scene-intro__title {
+  margin: 0.75rem 0 0;
+  font-weight: 300;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: #e5e5e5;
+  font-family: "Inter", system-ui, sans-serif;
 }
 
-.path-scene .path-scene-intro > p:first-of-type {
-  margin-bottom: 0.2rem !important;
+@media (min-width: 768px) {
+  .path-scene-intro__title {
+    font-size: 3rem;
+  }
 }
 
-.path-scene .path-scene-intro > p:nth-of-type(2) {
-  margin-bottom: 0.45rem !important;
-  line-height: 1.35 !important;
+.path-scene-intro__subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #737373;
 }
 
-.path-scene .path-scene-intro__progress {
-  margin-top: 0.35rem !important;
-  padding-top: 0.45rem !important;
+.path-scene-intro__progress-bar {
+  margin-top: 2rem;
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.path-scene .path-progress-embedded .dash-progress-track {
-  height: 3px;
-  margin-bottom: 6px;
+.path-scene-intro__progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
-.path-scene .path-progress-embedded .flex.flex-wrap.items-end {
-  margin-bottom: 4px !important;
-  gap: 0.35rem 0.75rem !important;
+.path-scene-intro__progress-count {
+  font-size: 0.75rem;
+  color: #737373;
 }
 
-.path-scene .path-progress-embedded p[style*="Playfair"] {
-  font-size: clamp(14px, 1.8vw, 17px) !important;
-  margin-top: 2px !important;
+.path-scene-intro__progress-percent {
+  font-size: 0.75rem;
+  color: #d4af37;
+  font-weight: 600;
 }
 
-.path-scene .path-progress-embedded .mt-3 {
-  margin-top: 4px !important;
+.path-scene-intro__progress-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #262626;
+  overflow: hidden;
 }
 
-.path-scene .path-progress-embedded .flex.flex-wrap.items-center.justify-center.gap-1\.5 > div {
-  width: 18px !important;
-  height: 18px !important;
-  font-size: 8px !important;
+.path-scene-intro__progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #d4af37, #f5d76e);
+  transition: width 0.45s ease;
 }
 
-.path-scene .path-progress-embedded .flex.flex-wrap.items-center.justify-center.gap-1\.5 > div[style*="24px"] {
-  width: 20px !important;
-  height: 20px !important;
-}
-
-/* ── Stage carrusel (dentro de .path-scene) ─────────────────── */
+/* ── Stage carrusel ────────────────────────────────────────── */
 .path-stage {
   position: relative;
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
-  padding: 4px 0 2px;
+  padding: 16px 0 0;
   margin-top: 0;
-  background: transparent;
-  border-radius: 0;
 }
 
 .path-carousel--stage {
@@ -106,19 +140,19 @@
 
 .path-carousel--stage .path-carousel__connector {
   position: absolute;
-  top: 40%;
-  left: 3%;
-  right: 3%;
+  top: 50%;
+  left: 0;
+  right: 0;
   height: 1px;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    rgba(201, 168, 76, 0.07) 12%,
-    rgba(201, 168, 76, 0.12) 50%,
-    rgba(201, 168, 76, 0.07) 88%,
-    transparent 100%
+    transparent 5%,
+    rgba(212, 175, 55, 0.12) 20%,
+    rgba(212, 175, 55, 0.25) 50%,
+    rgba(212, 175, 55, 0.12) 80%,
+    transparent 95%
   );
 }
 
@@ -126,143 +160,228 @@
   position: relative;
   z-index: 1;
   min-width: 0;
-  scroll-padding-inline: 10px;
+  scroll-padding-inline: 16px;
+  align-items: stretch;
+  gap: 16px;
 }
 
 .path-carousel--stage .path-carousel__edge-spacer {
   flex: 0 0 auto;
-  width: clamp(10px, calc(50% - 110px), 280px);
-  min-width: 10px;
+  width: clamp(12px, calc(50% - 128px), 320px);
+  min-width: 12px;
   pointer-events: none;
 }
 
-/* Scroll mode (mobile / contenedor estrecho) */
+/* ── Cards Canva ───────────────────────────────────────────── */
 .path-carousel--stage .path-carousel__card {
   position: relative;
-  width: min(72vw, 200px);
-  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(30, 30, 30, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.25rem;
+  width: 12rem;
+  flex-shrink: 0;
+  opacity: 0.35;
+  filter: saturate(0.15);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-@media (min-width: 768px) {
-  .path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card {
-    width: 168px;
-  }
-
-  .path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card--focused {
-    width: 210px;
-  }
+.path-carousel--stage .path-carousel__card--active {
+  width: 16rem;
+  padding: 1.5rem;
+  opacity: 1;
+  filter: none;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow:
+    0 0 80px rgba(212, 175, 55, 0.15),
+    0 8px 50px rgba(0, 0, 0, 0.6);
+  animation: float 4s ease-in-out infinite;
 }
 
-/* Fit mode: activado por JS según ancho de contenedor (sin gate 1024px) */
+.path-carousel--stage .path-carousel__card--focused.path-carousel__card--locked {
+  opacity: 0.55;
+  filter: saturate(0.35);
+}
+
+.path-carousel--stage .path-carousel__card-hero {
+  height: 6rem;
+  border-radius: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-hero {
+  height: 8rem;
+}
+
+.path-carousel--stage .path-carousel__card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.path-carousel--stage .path-carousel__card-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-label-row {
+  margin-top: 0.875rem;
+}
+
+.path-carousel--stage .path-carousel__card-class {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #737373;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-class {
+  color: #d4af37;
+}
+
+.path-carousel--stage .path-carousel__pill-available {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(6, 78, 59, 0.2);
+  color: #34d399;
+  white-space: nowrap;
+}
+
+.path-carousel--stage .path-carousel__lock-icon {
+  color: #525252;
+  flex-shrink: 0;
+}
+
+.path-carousel--stage .path-carousel__card-title {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #e5e5e5;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-title {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.path-carousel--stage .path-carousel__card-duration {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: #737373;
+  line-height: 1.4;
+}
+
+.path-carousel--stage .path-carousel__cta--canva {
+  margin-top: 1.25rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  cursor: pointer;
+  background: linear-gradient(135deg, #d4af37, #9a7b0a);
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.path-carousel--stage .path-carousel__cta--canva:hover {
+  background: linear-gradient(135deg, #f5d76e, #d4af37);
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.45);
+  transform: translateY(-2px);
+}
+
+.path-carousel--stage .path-carousel__hint {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #525252;
+  margin-top: 2.5rem;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Fit mode — contenedor ancho */
 .path-carousel--stage-fit .path-carousel__track {
   justify-content: center;
   overflow-x: hidden;
-  gap: clamp(6px, 0.75cqw, 9px);
-  padding: 0 2px 4px;
+  gap: clamp(10px, 1.2cqw, 16px);
+  padding: 0 4px 4px;
 }
 
 .path-carousel--stage-fit .path-carousel__edge-spacer {
   display: none;
 }
 
-.path-carousel--stage-fit .path-carousel__connector {
-  top: 38%;
-  left: 1.5%;
-  right: 1.5%;
-}
-
 .path-carousel--stage-fit .path-carousel__card {
-  width: clamp(100px, 11cqw, 142px);
+  width: clamp(7.5rem, 10cqw, 11.5rem);
 }
 
-.path-carousel--stage-fit .path-carousel__card--focused {
-  width: clamp(142px, 14.8cqw, 188px);
+.path-carousel--stage-fit .path-carousel__card--active {
+  width: clamp(11rem, 13.5cqw, 16rem);
 }
 
 .path-carousel--stage-fit .path-carousel__card-hero {
-  height: clamp(72px, 8.5cqw, 88px);
+  height: clamp(5rem, 7cqw, 6rem);
 }
 
-.path-carousel--stage-fit .path-carousel__card--focused .path-carousel__card-hero {
-  height: clamp(82px, 9.5cqw, 98px);
+.path-carousel--stage-fit .path-carousel__card--active .path-carousel__card-hero {
+  height: clamp(6.5rem, 8.5cqw, 8rem);
 }
 
-.path-carousel--stage-fit .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
-  opacity: 0.38;
-}
-
-.path-carousel--stage-fit .path-carousel__cta {
-  min-height: 36px;
-  font-size: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.path-carousel--stage .path-carousel__card--focused::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 12%;
-  right: 12%;
-  height: 2px;
-  border-radius: 999px;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(201, 168, 76, 0.9) 50%,
-    transparent
-  );
-  box-shadow: 0 0 10px rgba(201, 168, 76, 0.24);
-}
-
-.path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card-hero {
-  height: 104px;
-}
-
-.path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card--focused .path-carousel__card-hero {
-  height: 118px;
-}
-
-.path-carousel--stage .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
-  opacity: 0.32;
-}
-
-.path-carousel--stage .path-carousel__cta {
-  min-height: 38px;
-  white-space: nowrap;
-  font-size: 11px;
-}
-
-.path-carousel--stage .path-carousel__cta-label-short {
-  display: none;
+.path-carousel--stage-fit .path-carousel__cta--canva {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
 }
 
 @media (max-width: 767px) {
   .path-scene {
-    padding: 10px 8px 8px;
+    padding: 20px 12px 16px;
   }
 
   .path-carousel--stage .path-carousel__card {
-    width: min(76vw, 220px);
+    width: min(44vw, 11rem);
   }
 
-  .path-carousel--stage .path-carousel__card--focused {
-    width: min(84vw, 260px);
+  .path-carousel--stage .path-carousel__card--active {
+    width: min(72vw, 16rem);
   }
 
-  .path-carousel--stage .path-carousel__cta-label-full {
-    display: none;
-  }
-
-  .path-carousel--stage .path-carousel__cta-label-short {
-    display: inline;
+  .path-carousel--stage .path-carousel__cta--canva {
+    font-size: 0.8125rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .path-carousel--stage .path-carousel__card--active {
+    animation: none !important;
+  }
+
   .path-carousel--stage .path-carousel__card {
     transition: none !important;
+  }
+
+  .path-carousel--stage .path-carousel__cta--canva:hover {
+    transform: none;
   }
 }

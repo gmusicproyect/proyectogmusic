@@ -3,8 +3,8 @@ import { Guitar, Home, Menu, Lock } from "lucide-react";
 import { GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "./tokens";
 import { deriveStudentInitials } from "../../utils/student-zone-identity";
 
-export type GmusicNavId = "estudio" | "camino" | "progreso" | "comunidad";
-export type GmusicLockedNavId = "progreso" | "comunidad";
+export type GmusicNavId = "estudio" | "camino" | "comunidad";
+export type GmusicLockedNavId = "comunidad";
 
 export const LOCKED_NAV_MODAL = {
   title: "Próximamente en tu academia",
@@ -13,7 +13,7 @@ export const LOCKED_NAV_MODAL = {
 } as const;
 
 export function isLockedNav(id: string): id is GmusicLockedNavId {
-  return id === "progreso" || id === "comunidad";
+  return id === "comunidad";
 }
 
 interface GmusicInternalHeaderProps {
@@ -32,7 +32,6 @@ const NAV_ITEMS: {
 }[] = [
   { id: "camino", label: "Mi Camino", page: "mi-camino" },
   { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
-  { id: "progreso", label: "Mi Progreso", locked: true },
   { id: "comunidad", label: "Comunidad", locked: true },
 ];
 

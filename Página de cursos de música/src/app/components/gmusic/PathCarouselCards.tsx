@@ -12,10 +12,7 @@ import {
   PATH_CAROUSEL_WHITE_WARM,
   pathCarouselArrowButtonStyle,
   pathCarouselCtaButtonStyle,
-  pathCarouselStageCardBorder,
-  pathCarouselStageCardShadow,
   pathCarouselStageCtaButtonStyle,
-  pathCarouselStageSideOpacity,
 } from "./path-carousel-styles";
 
 export interface PathCarouselFocusedCta {
@@ -213,22 +210,81 @@ export function PathCarouselCards({
       onCardClick,
     } = model;
 
-    const sideOpacity = isStage
-      ? pathCarouselStageSideOpacity(isLocked, !!isTeaser, isCompleted, reviewCompleted)
-      : isTeaser
-        ? 0.72
-        : isLocked
-          ? 0.45
-          : reviewCompleted && isCompleted
-            ? 0.82
-            : 0.55;
+    const isPlayableFocused = isFocused && focusedCta?.kind === "action";
 
-    const cardClassName = [
-      isStage ? "path-carousel__card" : "",
-      isStage && isFocused ? "path-carousel__card--focused" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    if (isStage) {
+      const stageCardClass = [
+        "path-carousel__card",
+        isFocused ? "path-carousel__card--focused" : "",
+        isPlayableFocused ? "path-carousel__card--active" : "path-carousel__card--locked",
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      return (
+        <motion.div
+          key={node.id}
+          ref={(el) => {
+            cardRefs.current[i] = el;
+          }}
+          className={stageCardClass}
+          animate={{
+            scale: isPlayableFocused ? 1 : isFocused ? 0.96 : 0.94,
+            opacity: isPlayableFocused ? 1 : isFocused ? 0.55 : 0.35,
+          }}
+          transition={{ duration: motionDuration, ease: "easeOut" }}
+          onClick={onCardClick}
+          style={{
+            flexShrink: 0,
+            cursor: "pointer",
+            scrollSnapAlign: "center",
+          }}
+        >
+          <div
+            className="path-carousel__card-hero"
+            style={{ background: gradient }}
+          />
+          <div className="path-carousel__card-body">
+            <div className="path-carousel__card-label-row">
+              <span className="path-carousel__card-class">
+                CLASE {stepNumber ?? i + 1}
+              </span>
+              {isPlayableFocused ? (
+                <span className="path-carousel__pill-available">Disponible</span>
+              ) : (
+                <Lock size={14} className="path-carousel__lock-icon" aria-hidden="true" />
+              )}
+            </div>
+            <h3 className="path-carousel__card-title">{title}</h3>
+            {durationText ? (
+              <p className="path-carousel__card-duration">{durationText}</p>
+            ) : isLocked && lockedHint ? (
+              <p className="path-carousel__card-duration">{lockedHint}</p>
+            ) : null}
+            {isPlayableFocused && focusedCta && (
+              <button
+                type="button"
+                className="path-carousel__cta path-carousel__cta--canva"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  focusedCta.onClick();
+                }}
+              >
+                {focusedCta.label}
+              </button>
+            )}
+          </div>
+        </motion.div>
+      );
+    }
+
+    const sideOpacity = isTeaser
+      ? 0.72
+      : isLocked
+        ? 0.45
+        : reviewCompleted && isCompleted
+          ? 0.82
+          : 0.55;
 
     return (
       <motion.div
@@ -236,47 +292,37 @@ export function PathCarouselCards({
         ref={(el) => {
           cardRefs.current[i] = el;
         }}
-        className={cardClassName || undefined}
         animate={{
           scale: isFocused
             ? 1
-            : isStage
-              ? stageDesktopFit
-                ? 0.94
-                : isLocked
-                  ? 0.86
-                  : 0.9
-              : reviewCompleted && isCompleted
-                ? 0.94
-                : 0.88,
+            : reviewCompleted && isCompleted
+              ? 0.94
+              : 0.88,
           opacity: isFocused ? 1 : sideOpacity,
         }}
-        transition={{ duration: isStage ? motionDuration : 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
         onClick={onCardClick}
         style={{
           flexShrink: 0,
-          width: isStage ? undefined : 240,
-          borderRadius: isStage ? undefined : 14,
+          width: 240,
+          borderRadius: 14,
           background: PATH_CAROUSEL_SURFACE_CARD,
-          border: isStage
-            ? pathCarouselStageCardBorder(isFocused, isActive, isCompleted, !!isTeaser)
-            : isFocused
-              ? isTeaser
+          border: isFocused
+            ? isTeaser
+              ? `2px solid ${PATH_CAROUSEL_GOLD}`
+              : isActive
                 ? `2px solid ${PATH_CAROUSEL_GOLD}`
-                : isActive
-                  ? `2px solid ${PATH_CAROUSEL_GOLD}`
-                  : isCompleted
-                    ? "2px solid rgba(201,168,76,0.45)"
-                    : "2px solid rgba(255,255,255,0.12)"
-              : "2px solid rgba(255,255,255,0.06)",
+                : isCompleted
+                  ? "2px solid rgba(201,168,76,0.45)"
+                  : "2px solid rgba(255,255,255,0.12)"
+            : "2px solid rgba(255,255,255,0.06)",
           cursor: "pointer",
           display: "flex",
           flexDirection: "column",
           scrollSnapAlign: "center",
           overflow: "hidden",
-          boxShadow: isStage
-            ? pathCarouselStageCardShadow(isFocused, isActive, isCompleted, !!isTeaser)
-            : isFocused && (isTeaser || isActive || (reviewCompleted && isCompleted))
+          boxShadow:
+            isFocused && (isTeaser || isActive || (reviewCompleted && isCompleted))
               ? "0 0 28px rgba(201,168,76,0.28), 0 16px 40px rgba(0,0,0,0.45)"
               : isFocused
                 ? "0 16px 40px rgba(0,0,0,0.4)"
@@ -285,9 +331,8 @@ export function PathCarouselCards({
         }}
       >
         <div
-          className={isStage ? "path-carousel__card-hero" : undefined}
           style={{
-            height: isStage ? undefined : 120,
+            height: 120,
             background: gradient,
             position: "relative",
             overflow: "hidden",
@@ -616,17 +661,21 @@ export function PathCarouselCards({
         }}
       >
         {hintText && (
-          <span
-            style={{
-              width: "100%",
-              textAlign: "center",
-              fontSize: 10,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: isStage ? "rgba(201,168,76,0.55)" : "rgba(201,168,76,0.4)",
-              fontFamily: "Inter, sans-serif",
-              marginBottom: 2,
-            }}
+          <span className={isStage ? "path-carousel__hint" : undefined}
+            style={
+              isStage
+                ? undefined
+                : {
+                    width: "100%",
+                    textAlign: "center",
+                    fontSize: 10,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "rgba(201,168,76,0.4)",
+                    fontFamily: "Inter, sans-serif",
+                    marginBottom: 2,
+                  }
+            }
           >
             {hintText}
           </span>
