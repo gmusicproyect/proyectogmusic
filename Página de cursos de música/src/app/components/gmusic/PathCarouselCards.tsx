@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lock, Star, BookOpen, Music, Timer, PlayCircle, Guitar } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
 import {
   shouldStageContainerFit,
@@ -86,6 +86,15 @@ function StarRating({ filled, dimmed }: { filled: number; dimmed?: boolean }) {
       })}
     </div>
   );
+}
+
+function resolveStageHeroIcon(categoryLabel: string) {
+  const l = categoryLabel.toLowerCase();
+  if (l.includes("fundamento")) return BookOpen;
+  if (l.includes("técnica") || l.includes("tecnica")) return Music;
+  if (l.includes("práctica") || l.includes("practica")) return Timer;
+  if (l.includes("canción") || l.includes("cancion") || l.includes("crear")) return PlayCircle;
+  return Guitar;
 }
 
 export function PathCarouselCards({
@@ -243,7 +252,29 @@ export function PathCarouselCards({
           <div
             className="path-carousel__card-hero"
             style={{ background: gradient }}
-          />
+          >
+            {(() => {
+              const HeroIcon = resolveStageHeroIcon(categoryLabel);
+              return (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <HeroIcon
+                    size={isPlayableFocused ? 36 : 26}
+                    color="rgba(255,255,255,1)"
+                    strokeWidth={1.25}
+                    style={{ opacity: isPlayableFocused ? 0.55 : 0.28 }}
+                  />
+                </div>
+              );
+            })()}
+          </div>
           <div className="path-carousel__card-body">
             <div className="path-carousel__card-label-row">
               <span className="path-carousel__card-class">

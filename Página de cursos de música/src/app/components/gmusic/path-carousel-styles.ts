@@ -5,11 +5,14 @@ export const PATH_CAROUSEL_GOLD = "#C9A84C";
 export const PATH_CAROUSEL_SURFACE_CARD = "#161616";
 
 export const PATH_CARD_GRADIENTS: Record<number, string> = {
-  1: "linear-gradient(145deg, #3d2a08 0%, #7a5810 45%, #C9A84C 100%)",
-  2: "linear-gradient(145deg, #0a1628 0%, #1a3a6a 55%, #2a5a9a 100%)",
-  3: "linear-gradient(145deg, #0a2018 0%, #1a4a32 55%, #2a7a52 100%)",
-  4: "linear-gradient(145deg, #1a0a32 0%, #3a1a6a 55%, #5a2a9a 100%)",
-  5: "linear-gradient(145deg, #4a3010 0%, #9a7010 50%, #e6c060 100%)",
+  // Slots 1-2: Aprender — toma íntima, penumbra cálida
+  1: "linear-gradient(145deg, #1A0E06 0%, #3D2010 45%, #6B3A1A 100%)",
+  2: "linear-gradient(145deg, #0F0A04 0%, #2C1A08 50%, #4A2C10 100%)",
+  // Slot 3: Técnica — detalle macro, contraste frío
+  3: "linear-gradient(145deg, #080C14 0%, #141E2E 45%, #1C2C44 100%)",
+  // Slots 4-5: Crear / Consolidar — toma amplia, luz de escenario dorada
+  4: "linear-gradient(145deg, #1A0F00 0%, #3D2800 40%, #7A5500 75%, #C9A84C 100%)",
+  5: "linear-gradient(145deg, #0F0900 0%, #2C1E00 35%, #5A3D00 65%, #B8952A 100%)",
 };
 
 export const PATH_CAROUSEL_LOCKED_GRADIENT =
@@ -18,8 +21,7 @@ export const PATH_CAROUSEL_LOCKED_GRADIENT =
 export const PATH_CAROUSEL_ACADEMY_TEASER_GRADIENT =
   "linear-gradient(145deg, #2a1f08 0%, #5a4010 40%, #C9A84C 100%)";
 
-export function pathCarouselGradientForIndex(index: number, locked: boolean): string {
-  if (locked) return PATH_CAROUSEL_LOCKED_GRADIENT;
+export function pathCarouselGradientForIndex(index: number, _locked: boolean): string {
   const slot = (index % 5) + 1;
   return PATH_CARD_GRADIENTS[slot] ?? PATH_CAROUSEL_LOCKED_GRADIENT;
 }
