@@ -41,7 +41,7 @@ export function PathPageIntro({
       <p
         className={
           isStrip
-            ? "mb-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
+            ? "mb-0.5 text-[10px] font-semibold uppercase tracking-[0.18em]"
             : isStudio
               ? "mb-2.5 text-[10px] font-bold uppercase tracking-[0.22em]"
               : "text-[11px] font-medium tracking-[0.2em] uppercase mb-3"
@@ -53,11 +53,11 @@ export function PathPageIntro({
       <h1
         className={`${
           isStrip
-            ? "text-xl md:text-2xl"
+            ? "text-lg md:text-xl"
             : compact
               ? "text-xl md:text-2xl"
               : "text-2xl md:text-[32px] lg:text-[34px]"
-        } font-semibold mb-1.5 tracking-tight leading-tight`}
+        } font-semibold mb-1 tracking-tight leading-tight`}
         style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
       >
         {title}
@@ -65,11 +65,11 @@ export function PathPageIntro({
       <p
         className={`${
           isStrip
-            ? "text-xs md:text-sm"
+            ? "text-[11px] md:text-xs"
             : compact
               ? "text-sm md:text-base"
               : "text-sm md:text-base lg:text-[17px]"
-        } mb-3 max-w-2xl leading-snug md:leading-relaxed ${isStudio || isStrip ? "mx-auto" : ""}`}
+        } mb-2 max-w-xl leading-snug ${isStudio || isStrip ? "mx-auto" : ""}`}
         style={{ color: GM_TEXT_SEC }}
       >
         {description}
@@ -101,7 +101,7 @@ export function PathPageIntro({
       {progressRail ? (
         <div
           className={
-            isStrip ? "path-scene-intro__progress w-full mt-2 pt-2" : "path-intro-progress mt-5 pt-5 w-full"
+            isStrip ? "path-scene-intro__progress w-full mt-1 pt-1" : "path-intro-progress mt-5 pt-5 w-full"
           }
         >
           {progressRail}

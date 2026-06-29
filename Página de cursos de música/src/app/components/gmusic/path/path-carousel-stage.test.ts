@@ -33,10 +33,13 @@ describe("D-022B2 — stage Canva structure (prototype)", () => {
     assert.match(carouselSource, /path-carousel--stage/);
     assert.match(carouselSource, /path-carousel--stage-fit/);
     assert.match(carouselSource, /stageDesktopFit/);
+    assert.match(carouselSource, /shouldStageContainerFit/);
+    assert.match(carouselSource, /ResizeObserver/);
     assert.match(carouselSource, /path-carousel__connector/);
     assert.match(carouselSource, /path-carousel__edge-spacer/);
     assert.match(carouselSource, /pathCarouselStageCtaButtonStyle/);
     assert.match(carouselSource, /prefers-reduced-motion/);
+    assert.doesNotMatch(carouselSource, /min-width: 1024px/);
   });
 
   it("helpers stage en path-carousel-styles", () => {

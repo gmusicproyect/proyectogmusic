@@ -3,6 +3,10 @@ import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
 import {
+  shouldStageContainerFit,
+  STAGE_FIT_MAX_NODES,
+} from "./path-carousel-stage-fit";
+import {
   PATH_CAROUSEL_GOLD,
   PATH_CAROUSEL_SURFACE_CARD,
   PATH_CAROUSEL_WHITE_WARM,
@@ -105,9 +109,10 @@ export function PathCarouselCards({
   const [stageDesktopFit, setStageDesktopFit] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const showDots = useDotFooter ?? nodes.length <= 12;
   const motionDuration = reduceMotion ? 0.01 : 0.3;
-  const stageFitEligible = isStage && nodes.length > 0 && nodes.length <= 8;
+  const stageFitEligible = isStage && nodes.length > 0 && nodes.length <= STAGE_FIT_MAX_NODES;
 
   useEffect(() => {
     setFocusedIdx(Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0))));
@@ -118,12 +123,29 @@ export function PathCarouselCards({
       setStageDesktopFit(false);
       return;
     }
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const apply = () => setStageDesktopFit(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, [stageFitEligible]);
+
+    const root = rootRef.current;
+    if (!root) return;
+
+    const updateFit = () => {
+      const containerWidth = root.clientWidth;
+      const viewportWidth = window.innerWidth;
+      setStageDesktopFit(
+        shouldStageContainerFit(containerWidth, nodes.length, viewportWidth)
+      );
+    };
+
+    updateFit();
+
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(updateFit) : null;
+    ro?.observe(root);
+    window.addEventListener("resize", updateFit);
+
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", updateFit);
+    };
+  }, [stageFitEligible, nodes.length]);
 
   useLayoutEffect(() => {
     if (!isStage || stageDesktopFit) return;
@@ -526,6 +548,7 @@ export function PathCarouselCards({
 
   return (
     <div
+      ref={rootRef}
       className={rootClassName}
       style={{
         position: "relative",

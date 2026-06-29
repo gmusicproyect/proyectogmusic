@@ -6,22 +6,24 @@
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
+  container-type: inline-size;
+  container-name: path-scene;
   margin-top: 0.25rem;
-  padding: 16px 14px 14px;
-  border-radius: 18px;
+  padding: 10px 12px 10px;
+  border-radius: 16px;
   border: 1px solid rgba(201, 168, 76, 0.1);
   background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(201, 168, 76, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 70% at 50% 100%, rgba(0, 0, 0, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(201, 168, 76, 0.07) 0%, transparent 52%),
+    radial-gradient(ellipse 100% 65% at 50% 100%, rgba(0, 0, 0, 0.38) 0%, transparent 58%),
     linear-gradient(180deg, rgba(14, 14, 14, 0.92) 0%, rgba(8, 8, 8, 0.96) 100%);
   box-shadow:
     inset 0 1px 0 rgba(201, 168, 76, 0.06),
-    0 12px 40px rgba(0, 0, 0, 0.35);
+    0 10px 32px rgba(0, 0, 0, 0.32);
 }
 
 @media (min-width: 768px) {
   .path-scene {
-    padding: 18px 20px 16px;
+    padding: 12px 16px 10px;
   }
 }
 
@@ -30,24 +32,56 @@
 }
 
 .path-scene-intro__progress {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Intro compacto — objetivo < ~22% altura de escena en desktop */
+.path-scene .path-scene-intro h1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.path-scene .path-scene-intro > p:first-of-type {
+  margin-bottom: 0.2rem !important;
+}
+
+.path-scene .path-scene-intro > p:nth-of-type(2) {
+  margin-bottom: 0.45rem !important;
+  line-height: 1.35 !important;
+}
+
+.path-scene .path-scene-intro__progress {
+  margin-top: 0.35rem !important;
+  padding-top: 0.45rem !important;
 }
 
 .path-scene .path-progress-embedded .dash-progress-track {
-  height: 4px;
-  margin-bottom: 10px;
+  height: 3px;
+  margin-bottom: 6px;
 }
 
 .path-scene .path-progress-embedded .flex.flex-wrap.items-end {
-  margin-bottom: 8px !important;
+  margin-bottom: 4px !important;
+  gap: 0.35rem 0.75rem !important;
 }
 
 .path-scene .path-progress-embedded p[style*="Playfair"] {
-  font-size: clamp(15px, 2vw, 18px) !important;
+  font-size: clamp(14px, 1.8vw, 17px) !important;
+  margin-top: 2px !important;
 }
 
 .path-scene .path-progress-embedded .mt-3 {
-  margin-top: 8px !important;
+  margin-top: 4px !important;
+}
+
+.path-scene .path-progress-embedded .flex.flex-wrap.items-center.justify-center.gap-1\.5 > div {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 8px !important;
+}
+
+.path-scene .path-progress-embedded .flex.flex-wrap.items-center.justify-center.gap-1\.5 > div[style*="24px"] {
+  width: 20px !important;
+  height: 20px !important;
 }
 
 /* ── Stage carrusel (dentro de .path-scene) ─────────────────── */
@@ -56,8 +90,8 @@
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
-  padding: 6px 0 4px;
-  margin-top: 2px;
+  padding: 4px 0 2px;
+  margin-top: 0;
   background: transparent;
   border-radius: 0;
 }
@@ -72,18 +106,18 @@
 
 .path-carousel--stage .path-carousel__connector {
   position: absolute;
-  top: 42%;
-  left: 4%;
-  right: 4%;
+  top: 40%;
+  left: 3%;
+  right: 3%;
   height: 1px;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 76, 0.08) 12%,
-    rgba(201, 168, 76, 0.13) 50%,
-    rgba(201, 168, 76, 0.08) 88%,
+    rgba(201, 168, 76, 0.07) 12%,
+    rgba(201, 168, 76, 0.12) 50%,
+    rgba(201, 168, 76, 0.07) 88%,
     transparent 100%
   );
 }
@@ -92,70 +126,76 @@
   position: relative;
   z-index: 1;
   min-width: 0;
-  scroll-padding-inline: 12px;
+  scroll-padding-inline: 10px;
 }
 
 .path-carousel--stage .path-carousel__edge-spacer {
   flex: 0 0 auto;
-  width: clamp(12px, calc(50% - 120px), 320px);
-  min-width: 12px;
+  width: clamp(10px, calc(50% - 110px), 280px);
+  min-width: 10px;
   pointer-events: none;
 }
 
+/* Scroll mode (mobile / contenedor estrecho) */
 .path-carousel--stage .path-carousel__card {
   position: relative;
-  width: min(72vw, 210px);
+  width: min(72vw, 200px);
   border-radius: 14px;
 }
 
 @media (min-width: 768px) {
-  .path-carousel--stage .path-carousel__card {
-    width: 200px;
+  .path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card {
+    width: 168px;
   }
 
-  .path-carousel--stage .path-carousel__card--focused {
-    width: 248px;
+  .path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card--focused {
+    width: 210px;
   }
 }
 
-/* Desktop: ventana completa del tramo (hasta 8 pasos visibles) */
-@media (min-width: 1024px) {
-  .path-carousel--stage-fit .path-carousel__track {
-    justify-content: center;
-    overflow-x: hidden;
-    gap: 10px;
-    padding: 2px 4px 6px;
-  }
+/* Fit mode: activado por JS según ancho de contenedor (sin gate 1024px) */
+.path-carousel--stage-fit .path-carousel__track {
+  justify-content: center;
+  overflow-x: hidden;
+  gap: clamp(6px, 0.75cqw, 9px);
+  padding: 0 2px 4px;
+}
 
-  .path-carousel--stage-fit .path-carousel__edge-spacer {
-    display: none;
-  }
+.path-carousel--stage-fit .path-carousel__edge-spacer {
+  display: none;
+}
 
-  .path-carousel--stage-fit .path-carousel__connector {
-    top: 40%;
-    left: 2%;
-    right: 2%;
-  }
+.path-carousel--stage-fit .path-carousel__connector {
+  top: 38%;
+  left: 1.5%;
+  right: 1.5%;
+}
 
-  .path-carousel--stage-fit .path-carousel__card {
-    width: clamp(128px, 14vw, 168px);
-  }
+.path-carousel--stage-fit .path-carousel__card {
+  width: clamp(100px, 11cqw, 142px);
+}
 
-  .path-carousel--stage-fit .path-carousel__card--focused {
-    width: clamp(168px, 18vw, 212px);
-  }
+.path-carousel--stage-fit .path-carousel__card--focused {
+  width: clamp(142px, 14.8cqw, 188px);
+}
 
-  .path-carousel--stage-fit .path-carousel__card-hero {
-    height: 88px;
-  }
+.path-carousel--stage-fit .path-carousel__card-hero {
+  height: clamp(72px, 8.5cqw, 88px);
+}
 
-  .path-carousel--stage-fit .path-carousel__card--focused .path-carousel__card-hero {
-    height: 100px;
-  }
+.path-carousel--stage-fit .path-carousel__card--focused .path-carousel__card-hero {
+  height: clamp(82px, 9.5cqw, 98px);
+}
 
-  .path-carousel--stage-fit .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
-    opacity: 0.38;
-  }
+.path-carousel--stage-fit .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
+  opacity: 0.38;
+}
+
+.path-carousel--stage-fit .path-carousel__cta {
+  min-height: 36px;
+  font-size: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .path-carousel--stage .path-carousel__card--focused::before {
@@ -174,15 +214,15 @@
     rgba(201, 168, 76, 0.9) 50%,
     transparent
   );
-  box-shadow: 0 0 12px rgba(201, 168, 76, 0.28);
+  box-shadow: 0 0 10px rgba(201, 168, 76, 0.24);
 }
 
-.path-carousel--stage .path-carousel__card-hero {
-  height: 112px;
+.path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card-hero {
+  height: 104px;
 }
 
-.path-carousel--stage .path-carousel__card--focused .path-carousel__card-hero {
-  height: 126px;
+.path-carousel--stage:not(.path-carousel--stage-fit) .path-carousel__card--focused .path-carousel__card-hero {
+  height: 118px;
 }
 
 .path-carousel--stage .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
@@ -190,7 +230,7 @@
 }
 
 .path-carousel--stage .path-carousel__cta {
-  min-height: 40px;
+  min-height: 38px;
   white-space: nowrap;
   font-size: 11px;
 }
@@ -201,7 +241,7 @@
 
 @media (max-width: 767px) {
   .path-scene {
-    padding: 14px 10px 12px;
+    padding: 10px 8px 8px;
   }
 
   .path-carousel--stage .path-carousel__card {
