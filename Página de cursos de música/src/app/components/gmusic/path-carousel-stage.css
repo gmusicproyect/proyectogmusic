@@ -1,15 +1,65 @@
-/* D-022B2 — stage cinematográfico suscriptor (Mi Camino). Solo .path-carousel--stage */
+/* D-022B2 — escena cinematográfica suscriptor (Mi Camino). Solo clases stage */
 
+/* ── Escena unificada: intro + carrusel ─────────────────────── */
+.path-scene {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  margin-top: 0.25rem;
+  padding: 16px 14px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(201, 168, 76, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 70% at 50% 100%, rgba(0, 0, 0, 0.4) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(14, 14, 14, 0.92) 0%, rgba(8, 8, 8, 0.96) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(201, 168, 76, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 768px) {
+  .path-scene {
+    padding: 18px 20px 16px;
+  }
+}
+
+.path-scene-intro {
+  padding-bottom: 0;
+}
+
+.path-scene-intro__progress {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.path-scene .path-progress-embedded .dash-progress-track {
+  height: 4px;
+  margin-bottom: 10px;
+}
+
+.path-scene .path-progress-embedded .flex.flex-wrap.items-end {
+  margin-bottom: 8px !important;
+}
+
+.path-scene .path-progress-embedded p[style*="Playfair"] {
+  font-size: clamp(15px, 2vw, 18px) !important;
+}
+
+.path-scene .path-progress-embedded .mt-3 {
+  margin-top: 8px !important;
+}
+
+/* ── Stage carrusel (dentro de .path-scene) ─────────────────── */
 .path-stage {
   position: relative;
   min-width: 0;
   max-width: 100%;
   overflow-x: clip;
-  padding: 20px 0 12px;
-  border-radius: 20px;
-  background:
-    radial-gradient(ellipse 85% 55% at 50% 35%, rgba(201, 168, 76, 0.07) 0%, transparent 58%),
-    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(0, 0, 0, 0.35) 0%, transparent 55%);
+  padding: 6px 0 4px;
+  margin-top: 2px;
+  background: transparent;
+  border-radius: 0;
 }
 
 .path-carousel--stage {
@@ -22,18 +72,18 @@
 
 .path-carousel--stage .path-carousel__connector {
   position: absolute;
-  top: 44%;
-  left: 6%;
-  right: 6%;
+  top: 42%;
+  left: 4%;
+  right: 4%;
   height: 1px;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(201, 168, 76, 0.1) 20%,
-    rgba(201, 168, 76, 0.14) 50%,
-    rgba(201, 168, 76, 0.1) 80%,
+    rgba(201, 168, 76, 0.08) 12%,
+    rgba(201, 168, 76, 0.13) 50%,
+    rgba(201, 168, 76, 0.08) 88%,
     transparent 100%
   );
 }
@@ -47,24 +97,64 @@
 
 .path-carousel--stage .path-carousel__edge-spacer {
   flex: 0 0 auto;
-  width: clamp(12px, calc(50% - 144px), 360px);
+  width: clamp(12px, calc(50% - 120px), 320px);
   min-width: 12px;
   pointer-events: none;
 }
 
 .path-carousel--stage .path-carousel__card {
   position: relative;
-  width: min(72vw, 228px);
-  border-radius: 16px;
+  width: min(72vw, 210px);
+  border-radius: 14px;
 }
 
 @media (min-width: 768px) {
   .path-carousel--stage .path-carousel__card {
-    width: 228px;
+    width: 200px;
   }
 
   .path-carousel--stage .path-carousel__card--focused {
-    width: 288px;
+    width: 248px;
+  }
+}
+
+/* Desktop: ventana completa del tramo (hasta 8 pasos visibles) */
+@media (min-width: 1024px) {
+  .path-carousel--stage-fit .path-carousel__track {
+    justify-content: center;
+    overflow-x: hidden;
+    gap: 10px;
+    padding: 2px 4px 6px;
+  }
+
+  .path-carousel--stage-fit .path-carousel__edge-spacer {
+    display: none;
+  }
+
+  .path-carousel--stage-fit .path-carousel__connector {
+    top: 40%;
+    left: 2%;
+    right: 2%;
+  }
+
+  .path-carousel--stage-fit .path-carousel__card {
+    width: clamp(128px, 14vw, 168px);
+  }
+
+  .path-carousel--stage-fit .path-carousel__card--focused {
+    width: clamp(168px, 18vw, 212px);
+  }
+
+  .path-carousel--stage-fit .path-carousel__card-hero {
+    height: 88px;
+  }
+
+  .path-carousel--stage-fit .path-carousel__card--focused .path-carousel__card-hero {
+    height: 100px;
+  }
+
+  .path-carousel--stage-fit .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
+    opacity: 0.38;
   }
 }
 
@@ -88,11 +178,11 @@
 }
 
 .path-carousel--stage .path-carousel__card-hero {
-  height: 128px;
+  height: 112px;
 }
 
 .path-carousel--stage .path-carousel__card--focused .path-carousel__card-hero {
-  height: 142px;
+  height: 126px;
 }
 
 .path-carousel--stage .path-carousel__card:not(.path-carousel__card--focused) .path-carousel__card-step {
@@ -100,8 +190,9 @@
 }
 
 .path-carousel--stage .path-carousel__cta {
-  min-height: 44px;
+  min-height: 40px;
   white-space: nowrap;
+  font-size: 11px;
 }
 
 .path-carousel--stage .path-carousel__cta-label-short {
@@ -109,12 +200,16 @@
 }
 
 @media (max-width: 767px) {
+  .path-scene {
+    padding: 14px 10px 12px;
+  }
+
   .path-carousel--stage .path-carousel__card {
-    width: min(76vw, 240px);
+    width: min(76vw, 220px);
   }
 
   .path-carousel--stage .path-carousel__card--focused {
-    width: min(84vw, 280px);
+    width: min(84vw, 260px);
   }
 
   .path-carousel--stage .path-carousel__cta-label-full {

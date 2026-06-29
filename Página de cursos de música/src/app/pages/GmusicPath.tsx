@@ -149,16 +149,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
       />
 
       <PathShell>
-        <header className="path-intro-stack mb-4 md:mb-5">
-          <PathPageIntro
-            badge={viewModel?.badge ?? { instrument: "…", month: "…", level: "…" }}
-            completedSteps={viewModel?.completedSteps ?? 0}
-            totalSteps={viewModel?.totalSteps ?? 0}
-            isLoading={isLoading}
-            progressRail={progressRail}
-          />
-        </header>
-
         {path.status === "error" && (
           <div className="path-intro-stack mb-4">
             <DashboardErrorBanner message={path.message} onRetry={path.retry} />
@@ -222,18 +212,29 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
               </div>
             )}
 
-            <section className="path-stage flex flex-col justify-center w-full min-w-0 py-2 md:py-4 lg:py-6 min-h-[320px]">
-              <PathCarouselCards
-                nodes={pathNodes}
-                buildCardModels={buildCardModels}
-                initialFocusIndex={initialFocusIndex}
-                visualVariant="stage"
-                hintText="Tramo actual · desliza para explorar tu camino"
-                buildFooterText={(focusedIdx, nodes) =>
-                  `Paso ${focusedIdx + 1} de ${nodes.length}`
-                }
-                useDotFooter={pathNodes.length <= 12}
+            <section className="path-scene w-full min-w-0">
+              <PathPageIntro
+                layout="strip"
+                badge={viewModel.badge}
+                completedSteps={viewModel.completedSteps}
+                totalSteps={viewModel.totalSteps}
+                isLoading={isLoading}
+                progressRail={progressRail}
+                description="Formación progresiva · tramo actual de tu ruta."
               />
+              <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
+                <PathCarouselCards
+                  nodes={pathNodes}
+                  buildCardModels={buildCardModels}
+                  initialFocusIndex={initialFocusIndex}
+                  visualVariant="stage"
+                  hintText="Tramo actual · desliza para explorar tu camino"
+                  buildFooterText={(focusedIdx, nodes) =>
+                    `Paso ${focusedIdx + 1} de ${nodes.length}`
+                  }
+                  useDotFooter={pathNodes.length <= 12}
+                />
+              </div>
             </section>
           </>
         )}

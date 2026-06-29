@@ -15,7 +15,8 @@ const mainSource = readFileSync(join(root, "../../../../main.tsx"), "utf8");
 describe("D-022B2 — stage Canva structure (prototype)", () => {
   it("GmusicPath activa visualVariant stage sin fullBleed", () => {
     assert.match(gmusicPathSource, /visualVariant="stage"/);
-    assert.match(gmusicPathSource, /path-stage/);
+    assert.match(gmusicPathSource, /path-scene/);
+    assert.match(gmusicPathSource, /layout="strip"/);
     assert.match(gmusicPathSource, /Tramo actual/);
     assert.match(gmusicPathSource, /Paso \$\{focusedIdx \+ 1\} de \$\{nodes\.length\}/);
     assert.doesNotMatch(gmusicPathSource, /fullBleed/);
@@ -30,6 +31,8 @@ describe("D-022B2 — stage Canva structure (prototype)", () => {
   it("PathCarouselCards expone preset stage aislado", () => {
     assert.match(carouselSource, /visualVariant\?: "default" \| "stage"/);
     assert.match(carouselSource, /path-carousel--stage/);
+    assert.match(carouselSource, /path-carousel--stage-fit/);
+    assert.match(carouselSource, /stageDesktopFit/);
     assert.match(carouselSource, /path-carousel__connector/);
     assert.match(carouselSource, /path-carousel__edge-spacer/);
     assert.match(carouselSource, /pathCarouselStageCtaButtonStyle/);

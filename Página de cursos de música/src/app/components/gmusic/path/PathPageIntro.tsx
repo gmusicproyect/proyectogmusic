@@ -18,6 +18,8 @@ export interface PathPageIntroProps {
   compact?: boolean;
   /** Rail de progreso integrado (DemoPathLevelBar) — suscriptor D-022A */
   progressRail?: ReactNode;
+  /** panel = tarjeta premium; strip = hero compacto integrado al stage (D-022B2) */
+  layout?: "panel" | "strip";
 }
 
 export function PathPageIntro({
@@ -29,67 +31,91 @@ export function PathPageIntro({
   description = "Tu ruta de guitarra, paso a paso. Cada módulo construye técnica, oído y continuidad en la práctica.",
   compact = false,
   progressRail,
+  layout = "panel",
 }: PathPageIntroProps) {
-  const isStudio = !compact;
+  const isStrip = layout === "strip";
+  const isStudio = !compact && !isStrip;
 
   const content = (
     <>
       <p
         className={
-          isStudio
-            ? "mb-2.5 text-[10px] font-bold uppercase tracking-[0.22em]"
-            : "text-[11px] font-medium tracking-[0.2em] uppercase mb-3"
+          isStrip
+            ? "mb-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
+            : isStudio
+              ? "mb-2.5 text-[10px] font-bold uppercase tracking-[0.22em]"
+              : "text-[11px] font-medium tracking-[0.2em] uppercase mb-3"
         }
-        style={{ color: isStudio ? "rgba(201, 168, 76, 0.72)" : "rgba(212, 175, 55, 0.55)" }}
+        style={{ color: isStudio || isStrip ? "rgba(201, 168, 76, 0.72)" : "rgba(212, 175, 55, 0.55)" }}
       >
         Ruta de guitarra · {badge.level}
       </p>
       <h1
         className={`${
-          compact ? "text-xl md:text-2xl" : "text-2xl md:text-[32px] lg:text-[34px]"
-        } font-semibold mb-2 tracking-tight leading-tight`}
+          isStrip
+            ? "text-xl md:text-2xl"
+            : compact
+              ? "text-xl md:text-2xl"
+              : "text-2xl md:text-[32px] lg:text-[34px]"
+        } font-semibold mb-1.5 tracking-tight leading-tight`}
         style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
       >
         {title}
       </h1>
       <p
         className={`${
-          compact ? "text-sm md:text-base" : "text-sm md:text-base lg:text-[17px]"
-        } mb-5 max-w-2xl leading-relaxed ${isStudio ? "mx-auto" : ""}`}
+          isStrip
+            ? "text-xs md:text-sm"
+            : compact
+              ? "text-sm md:text-base"
+              : "text-sm md:text-base lg:text-[17px]"
+        } mb-3 max-w-2xl leading-snug md:leading-relaxed ${isStudio || isStrip ? "mx-auto" : ""}`}
         style={{ color: GM_TEXT_SEC }}
       >
         {description}
       </p>
-      <div
-        className={`flex flex-wrap items-center gap-3 ${isStudio ? "justify-center" : ""}`}
-      >
+      {!isStrip && (
         <div
-          className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs border"
-          style={{
-            borderColor: GM_BORDER,
-            color: GM_TEXT_SEC,
-            background: "rgba(18, 18, 18, 0.5)",
-          }}
+          className={`flex flex-wrap items-center gap-3 ${isStudio ? "justify-center" : ""}`}
         >
-          <Guitar className="w-3.5 h-3.5 shrink-0" style={{ color: GM_GOLD }} />
-          <span>{badge.instrument}</span>
-          <span style={{ color: GM_GOLD_MATT }}>·</span>
-          <span>{badge.month}</span>
+          <div
+            className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs border"
+            style={{
+              borderColor: GM_BORDER,
+              color: GM_TEXT_SEC,
+              background: "rgba(18, 18, 18, 0.5)",
+            }}
+          >
+            <Guitar className="w-3.5 h-3.5 shrink-0" style={{ color: GM_GOLD }} />
+            <span>{badge.instrument}</span>
+            <span style={{ color: GM_GOLD_MATT }}>·</span>
+            <span>{badge.month}</span>
+          </div>
+          {!progressRail && (
+            <span className="text-xs" style={{ color: "rgba(160,160,165,0.7)" }}>
+              {isLoading ? "Cargando progreso…" : `${completedSteps} de ${totalSteps} pasos completados`}
+            </span>
+          )}
         </div>
-        {!progressRail && (
-          <span className="text-xs" style={{ color: "rgba(160,160,165,0.7)" }}>
-            {isLoading ? "Cargando progreso…" : `${completedSteps} de ${totalSteps} pasos completados`}
-          </span>
-        )}
-      </div>
+      )}
       {progressRail ? (
-        <div className="path-intro-progress mt-5 pt-5 w-full">{progressRail}</div>
+        <div
+          className={
+            isStrip ? "path-scene-intro__progress w-full mt-2 pt-2" : "path-intro-progress mt-5 pt-5 w-full"
+          }
+        >
+          {progressRail}
+        </div>
       ) : null}
     </>
   );
 
   if (compact) {
     return <div className="mb-0">{content}</div>;
+  }
+
+  if (isStrip) {
+    return <div className="path-scene-intro w-full text-center">{content}</div>;
   }
 
   return (

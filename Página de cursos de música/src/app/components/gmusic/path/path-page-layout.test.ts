@@ -15,8 +15,15 @@ describe("D-022A — Mi Camino shell y layout", () => {
   it("GmusicPath usa atmósfera de estudio y shell centrado", () => {
     assert.match(gmusicPathSource, /StudioAtmosphere/);
     assert.match(gmusicPathSource, /PathShell/);
-    assert.match(gmusicPathSource, /path-intro-stack/);
+    assert.match(gmusicPathSource, /path-scene/);
     assert.doesNotMatch(gmusicPathSource, /style=\{\{ background: GM_BG/);
+  });
+
+  it("intro strip integrada en escena — sin panel premium separado", () => {
+    assert.match(gmusicPathSource, /layout="strip"/);
+    assert.match(gmusicPathSource, /path-scene/);
+    assert.match(pathPageIntroSource, /layout\?: "panel" \| "strip"/);
+    assert.match(pathPageIntroSource, /path-scene-intro/);
   });
 
   it("progreso integrado en intro — variant embedded, sin franja rail demo", () => {
@@ -44,7 +51,7 @@ describe("D-022A — Mi Camino shell y layout", () => {
     assert.match(gmusicPathSource, /PathLessonRunner/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
     assert.match(gmusicPathSource, /visualVariant="stage"/);
-    assert.match(gmusicPathSource, /path-stage/);
+    assert.match(gmusicPathSource, /path-scene/);
     assert.doesNotMatch(gmusicPathSource, /fullBleed/);
   });
 

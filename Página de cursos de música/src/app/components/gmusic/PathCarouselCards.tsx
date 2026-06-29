@@ -102,17 +102,31 @@ export function PathCarouselCards({
   const safeInitial = Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0)));
   const [focusedIdx, setFocusedIdx] = useState(safeInitial);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [stageDesktopFit, setStageDesktopFit] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const showDots = useDotFooter ?? nodes.length <= 12;
   const motionDuration = reduceMotion ? 0.01 : 0.3;
+  const stageFitEligible = isStage && nodes.length > 0 && nodes.length <= 8;
 
   useEffect(() => {
     setFocusedIdx(Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0))));
   }, [initialFocusIndex, nodes.length]);
 
+  useEffect(() => {
+    if (!stageFitEligible) {
+      setStageDesktopFit(false);
+      return;
+    }
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const apply = () => setStageDesktopFit(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, [stageFitEligible]);
+
   useLayoutEffect(() => {
-    if (!isStage) return;
+    if (!isStage || stageDesktopFit) return;
     const track = trackRef.current;
     const card = cardRefs.current[focusedIdx];
     if (!track || !card) return;
@@ -125,7 +139,7 @@ export function PathCarouselCards({
       left: nextLeft,
       behavior: reduceMotion ? "auto" : "smooth",
     });
-  }, [focusedIdx, reduceMotion, nodes.length, isStage]);
+  }, [focusedIdx, reduceMotion, nodes.length, isStage, stageDesktopFit]);
 
   useEffect(() => {
     if (isStage) return;
@@ -205,9 +219,11 @@ export function PathCarouselCards({
           scale: isFocused
             ? 1
             : isStage
-              ? isLocked
-                ? 0.86
-                : 0.9
+              ? stageDesktopFit
+                ? 0.94
+                : isLocked
+                  ? 0.86
+                  : 0.9
               : reviewCompleted && isCompleted
                 ? 0.94
                 : 0.88,
@@ -500,7 +516,13 @@ export function PathCarouselCards({
     );
   });
 
-  const rootClassName = isStage ? "path-carousel path-carousel--stage" : "path-carousel";
+  const rootClassName = [
+    "path-carousel",
+    isStage ? "path-carousel--stage" : "",
+    isStage && stageDesktopFit ? "path-carousel--stage-fit" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
@@ -518,7 +540,7 @@ export function PathCarouselCards({
     >
       {isStage && <div className="path-carousel__connector" aria-hidden="true" />}
 
-      {focusedIdx > 0 && (
+      {focusedIdx > 0 && !(isStage && stageDesktopFit) && (
         <button
           type="button"
           onClick={() => goTo(focusedIdx - 1)}
@@ -544,12 +566,12 @@ export function PathCarouselCards({
         }}
       >
         <style>{`.gmusic-carousel::-webkit-scrollbar { display: none; }`}</style>
-        {isStage && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
+        {isStage && !stageDesktopFit && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
         {carouselItems}
-        {isStage && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
+        {isStage && !stageDesktopFit && <div className="path-carousel__edge-spacer" aria-hidden="true" />}
       </div>
 
-      {focusedIdx < nodes.length - 1 && (
+      {focusedIdx < nodes.length - 1 && !(isStage && stageDesktopFit) && (
         <button
           type="button"
           onClick={() => goTo(focusedIdx + 1)}
