@@ -23,6 +23,10 @@
   overflow-x: clip;
 }
 
+.studio-atmosphere.gmusic-community-shell {
+  overflow: visible;
+}
+
 /* ── Escena unificada ───────────────────────────────────────── */
 .path-scene {
   position: relative;
@@ -167,7 +171,7 @@
 
 .path-carousel--stage .path-carousel__edge-spacer {
   flex: 0 0 auto;
-  width: clamp(12px, calc(50% - 144px), 320px);
+  width: clamp(12px, calc(50% - 168px), 360px);
   min-width: 12px;
   pointer-events: none;
 }
@@ -182,15 +186,25 @@
   background: rgba(30, 30, 30, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 1.25rem;
-  width: 15rem;
+  width: 17rem;
   flex-shrink: 0;
-  opacity: 0.40;
-  filter: saturate(0.25);
+  opacity: 1;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
+.path-carousel--stage .path-carousel__card--locked:not(.path-carousel__card--active)
+  .path-carousel__card-hero:not(.path-carousel__card-hero--illustration)
+  .path-carousel__card-hero-img {
+  filter: brightness(0.92) saturate(0.95);
+}
+
+.path-carousel--stage .path-carousel__card--locked:not(.path-carousel__card--active) .path-carousel__card-body {
+  filter: saturate(0.88);
+  opacity: 0.92;
+}
+
 .path-carousel--stage .path-carousel__card--active {
-  width: 18rem;
+  width: 21rem;
   padding: 1.5rem;
   opacity: 1;
   filter: none;
@@ -203,20 +217,68 @@
 }
 
 .path-carousel--stage .path-carousel__card--focused.path-carousel__card--locked {
-  opacity: 0.55;
-  filter: saturate(0.35);
+  opacity: 1;
 }
 
 .path-carousel--stage .path-carousel__card-hero {
-  height: 6rem;
+  height: 7.5rem;
   border-radius: 0.75rem;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+  background: #2a2218;
+}
+
+.path-carousel--stage .path-carousel__card-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.path-carousel--stage .path-carousel__card-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+.path-carousel--stage .path-carousel__card-hero--illustration .path-carousel__card-hero-overlay {
+  background: none;
+}
+
+.path-carousel--stage .path-carousel__card-hero--illustration .path-carousel__card-hero-img {
+  object-fit: cover;
+  padding: 0;
+  background: linear-gradient(145deg, #8b6914 0%, #c9a84c 50%, #6b3a1a 100%);
+}
+
+.path-carousel--stage .path-carousel__hero-stage-label {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  color: #f5f0e8;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .path-carousel--stage .path-carousel__card--active .path-carousel__card-hero {
-  height: 10rem;
+  height: 12rem;
 }
 
 .path-carousel--stage .path-carousel__card-body {
@@ -334,19 +396,19 @@
 }
 
 .path-carousel--stage-fit .path-carousel__card {
-  width: clamp(10rem, 11cqw, 15rem);
+  width: clamp(11rem, 12cqw, 17rem);
 }
 
 .path-carousel--stage-fit .path-carousel__card--active {
-  width: clamp(13rem, 13.5cqw, 18rem);
+  width: clamp(15rem, 14.5cqw, 21rem);
 }
 
 .path-carousel--stage-fit .path-carousel__card-hero {
-  height: clamp(5rem, 7cqw, 6rem);
+  height: clamp(5.5rem, 8cqw, 7.5rem);
 }
 
 .path-carousel--stage-fit .path-carousel__card--active .path-carousel__card-hero {
-  height: clamp(6.5rem, 8.5cqw, 8rem);
+  height: clamp(7rem, 10cqw, 12rem);
 }
 
 .path-carousel--stage-fit .path-carousel__cta--canva {
@@ -360,11 +422,11 @@
   }
 
   .path-carousel--stage .path-carousel__card {
-    width: min(48vw, 15rem);
+    width: min(52vw, 17rem);
   }
 
   .path-carousel--stage .path-carousel__card--active {
-    width: min(76vw, 18rem);
+    width: min(82vw, 21rem);
   }
 
   .path-carousel--stage .path-carousel__cta--canva {

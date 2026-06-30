@@ -21,6 +21,31 @@ export const PATH_CAROUSEL_LOCKED_GRADIENT =
 export const PATH_CAROUSEL_ACADEMY_TEASER_GRADIENT =
   "linear-gradient(145deg, #2a1f08 0%, #5a4010 40%, #C9A84C 100%)";
 
+/** D-022D — heroes micro-ciclo pedagógico (activos locales en public/path-heroes/) */
+export const STAGE_MICRO_CYCLE_LABELS = [
+  "Fundamento uno",
+  "Fundamento dos",
+  "Técnica",
+  "Práctica",
+  "Tocar",
+] as const;
+
+export const STAGE_CARD_PHOTOS: readonly string[] = [
+  "/path-heroes/micro-cycle/0-fundamento.jpg",
+  "/path-heroes/micro-cycle/1-fundamento-2.jpg",
+  "/path-heroes/micro-cycle/2-tecnica.jpg",
+  "/path-heroes/micro-cycle/3-practica.jpg",
+  "/path-heroes/micro-cycle/4-tocar.jpg",
+];
+
+export function pathCarouselPhotoForIndex(index: number): string {
+  return STAGE_CARD_PHOTOS[index % 5] ?? STAGE_CARD_PHOTOS[0];
+}
+
+export function pathCarouselStageLabelForIndex(index: number): string {
+  return STAGE_MICRO_CYCLE_LABELS[index % 5] ?? STAGE_MICRO_CYCLE_LABELS[0];
+}
+
 export function pathCarouselGradientForIndex(index: number, _locked: boolean): string {
   const slot = (index % 5) + 1;
   return PATH_CARD_GRADIENTS[slot] ?? PATH_CAROUSEL_LOCKED_GRADIENT;

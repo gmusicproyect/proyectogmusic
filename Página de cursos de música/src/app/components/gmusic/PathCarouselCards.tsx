@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { motion } from "motion/react";
-import { ChevronLeft, ChevronRight, Lock, Star, BookOpen, Music, Timer, PlayCircle, Guitar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
 import {
   shouldStageContainerFit,
@@ -12,7 +12,9 @@ import {
   PATH_CAROUSEL_WHITE_WARM,
   pathCarouselArrowButtonStyle,
   pathCarouselCtaButtonStyle,
+  pathCarouselPhotoForIndex,
   pathCarouselStageCtaButtonStyle,
+  pathCarouselStageLabelForIndex,
 } from "./path-carousel-styles";
 
 export interface PathCarouselFocusedCta {
@@ -86,15 +88,6 @@ function StarRating({ filled, dimmed }: { filled: number; dimmed?: boolean }) {
       })}
     </div>
   );
-}
-
-function resolveStageHeroIcon(categoryLabel: string) {
-  const l = categoryLabel.toLowerCase();
-  if (l.includes("fundamento")) return BookOpen;
-  if (l.includes("técnica") || l.includes("tecnica")) return Music;
-  if (l.includes("práctica") || l.includes("practica")) return Timer;
-  if (l.includes("canción") || l.includes("cancion") || l.includes("crear")) return PlayCircle;
-  return Guitar;
 }
 
 export function PathCarouselCards({
@@ -222,6 +215,8 @@ export function PathCarouselCards({
     const isPlayableFocused = isFocused && focusedCta?.kind === "action";
 
     if (isStage) {
+      const photo = pathCarouselPhotoForIndex(i);
+      const stageLabel = pathCarouselStageLabelForIndex(i);
       const stageCardClass = [
         "path-carousel__card",
         isFocused ? "path-carousel__card--focused" : "",
@@ -238,8 +233,8 @@ export function PathCarouselCards({
           }}
           className={stageCardClass}
           animate={{
-            scale: isPlayableFocused ? 1 : isFocused ? 0.96 : 0.94,
-            opacity: isPlayableFocused ? 1 : isFocused ? 0.55 : 0.35,
+            scale: isPlayableFocused ? 1 : isFocused ? 0.97 : 0.94,
+            opacity: 1,
           }}
           transition={{ duration: motionDuration, ease: "easeOut" }}
           onClick={onCardClick}
@@ -249,47 +244,16 @@ export function PathCarouselCards({
             scrollSnapAlign: "center",
           }}
         >
-          <div
-            className="path-carousel__card-hero"
-            style={{ background: gradient }}
-          >
-            {(() => {
-              const HeroIcon = resolveStageHeroIcon(categoryLabel);
-              return (
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: isPlayableFocused ? 72 : 56,
-                      height: isPlayableFocused ? 72 : 56,
-                      borderRadius: "50%",
-                      background: isPlayableFocused
-                        ? "rgba(212,175,55,0.12)"
-                        : "rgba(255,255,255,0.08)",
-                      border: isPlayableFocused
-                        ? "1px solid rgba(212,175,55,0.25)"
-                        : "1px solid rgba(255,255,255,0.12)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <HeroIcon
-                      size={isPlayableFocused ? 44 : 30}
-                      color={isPlayableFocused ? "#D4AF37" : "rgba(255,255,255,0.9)"}
-                      strokeWidth={1.25}
-                    />
-                  </div>
-                </div>
-              );
-            })()}
+          <div className="path-carousel__card-hero">
+            <img
+              src={photo}
+              alt=""
+              className="path-carousel__card-hero-img"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="path-carousel__card-hero-overlay" aria-hidden="true" />
+            <span className="path-carousel__hero-stage-label">{stageLabel}</span>
           </div>
           <div className="path-carousel__card-body">
             <div className="path-carousel__card-label-row">
