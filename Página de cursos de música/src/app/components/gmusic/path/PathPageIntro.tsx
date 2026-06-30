@@ -54,7 +54,7 @@ export function PathPageIntro({
             <span className="path-scene-intro__progress-count">
               {isLoading
                 ? "Cargando progreso…"
-                : `${completedSteps} de ${totalSteps} clases`}
+                : `${completedSteps} de ${totalSteps} etapas completadas`}
             </span>
             {!isLoading && (
               <span className="path-scene-intro__progress-percent">{percent}%</span>

@@ -14,7 +14,7 @@ import {
   pathCarouselCtaButtonStyle,
   pathCarouselPhotoForIndex,
   pathCarouselStageCtaButtonStyle,
-  pathCarouselStageLabelForIndex,
+  microCycleStageLabel,
 } from "./path-carousel-styles";
 
 export interface PathCarouselFocusedCta {
@@ -216,7 +216,7 @@ export function PathCarouselCards({
 
     if (isStage) {
       const photo = pathCarouselPhotoForIndex(i);
-      const stageLabel = pathCarouselStageLabelForIndex(i);
+      const stageLabel = microCycleStageLabel(i);
       const stageCardClass = [
         "path-carousel__card",
         isFocused ? "path-carousel__card--focused" : "",
@@ -266,6 +266,7 @@ export function PathCarouselCards({
                 <Lock size={14} className="path-carousel__lock-icon" aria-hidden="true" />
               )}
             </div>
+            <p className="path-carousel__card-stage-label">{microCycleStageLabel(i)}</p>
             <h3 className="path-carousel__card-title">{title}</h3>
             {durationText ? (
               <p className="path-carousel__card-duration">{durationText}</p>

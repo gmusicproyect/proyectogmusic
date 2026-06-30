@@ -300,6 +300,19 @@
   margin-top: 0.875rem;
 }
 
+.path-carousel--stage .path-carousel__card-stage-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.45);
+  margin: 0.25rem 0 0;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-stage-label {
+  color: rgba(212, 175, 55, 0.9);
+}
+
 .path-carousel--stage .path-carousel__card-class {
   font-size: 0.75rem;
   font-weight: 600;

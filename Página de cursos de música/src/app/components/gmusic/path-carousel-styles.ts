@@ -21,8 +21,8 @@ export const PATH_CAROUSEL_LOCKED_GRADIENT =
 export const PATH_CAROUSEL_ACADEMY_TEASER_GRADIENT =
   "linear-gradient(145deg, #2a1f08 0%, #5a4010 40%, #C9A84C 100%)";
 
-/** D-022D — heroes micro-ciclo pedagógico (activos locales en public/path-heroes/) */
-export const STAGE_MICRO_CYCLE_LABELS = [
+/** D-022D — etiquetas del microciclo pedagógico (5 etapas por bloque). */
+export const MICRO_CYCLE_STAGE_LABELS = [
   "Fundamento uno",
   "Fundamento dos",
   "Técnica",
@@ -30,6 +30,18 @@ export const STAGE_MICRO_CYCLE_LABELS = [
   "Tocar",
 ] as const;
 
+/** @deprecated Usar `MICRO_CYCLE_STAGE_LABELS`. */
+export const STAGE_MICRO_CYCLE_LABELS = MICRO_CYCLE_STAGE_LABELS;
+
+export function microCycleStageLabel(index: number): string {
+  return MICRO_CYCLE_STAGE_LABELS[index % 5] ?? "Fundamento uno";
+}
+
+export function pathCarouselStageLabelForIndex(index: number): string {
+  return microCycleStageLabel(index);
+}
+
+/** D-022D — heroes micro-ciclo (activos locales en public/path-heroes/) */
 export const STAGE_CARD_PHOTOS: readonly string[] = [
   "/path-heroes/micro-cycle/0-fundamento.jpg",
   "/path-heroes/micro-cycle/1-fundamento-2.jpg",
@@ -40,10 +52,6 @@ export const STAGE_CARD_PHOTOS: readonly string[] = [
 
 export function pathCarouselPhotoForIndex(index: number): string {
   return STAGE_CARD_PHOTOS[index % 5] ?? STAGE_CARD_PHOTOS[0];
-}
-
-export function pathCarouselStageLabelForIndex(index: number): string {
-  return STAGE_MICRO_CYCLE_LABELS[index % 5] ?? STAGE_MICRO_CYCLE_LABELS[0];
 }
 
 export function pathCarouselGradientForIndex(index: number, _locked: boolean): string {
