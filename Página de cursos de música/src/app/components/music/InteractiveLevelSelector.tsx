@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
+import type { AcademiaInstrumentId } from "../../data/academia-instruments";
 import {
   ACADEMIA_TIERS,
   getTracksForTier,
@@ -8,6 +9,7 @@ import {
   type AcademiaTrackCombination,
 } from "../../utils/academia-track-matrix";
 import { analytics } from "../../utils/analytics";
+import { persistCommunityEnrollmentFromAcademiaSelection } from "../../utils/community-enrollment";
 import { shouldShowTemperamentQuiz } from "../../utils/temperament-quiz-storage";
 import { resolveDemoEntryPage } from "../../utils/demo-auth-gate";
 import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
@@ -22,11 +24,14 @@ export function InteractiveLevelSelector({
   setLevel,
   isSubscribedStudent = false,
   sessionStatus = "anonymous",
+  academiaInstrumentId = null,
 }: {
   setPage: (page: string) => void;
   setLevel: (level: string) => void;
   isSubscribedStudent?: boolean;
   sessionStatus?: PublicStudentSessionState["status"];
+  /** Instrumento elegido en Academia — vincula sector de Comunidad al nivel seleccionado. */
+  academiaInstrumentId?: AcademiaInstrumentId | null;
 }) {
   const [activeTierId, setActiveTierId] = useState<AcademiaTierId>("basico");
   const [activeFocusIndex, setActiveFocusIndex] = useState(0);
@@ -35,6 +40,12 @@ export function InteractiveLevelSelector({
 
   const handleStart = (track: AcademiaTrackCombination) => {
     if (!isFreeClassTrack(track)) return;
+    if (academiaInstrumentId) {
+      persistCommunityEnrollmentFromAcademiaSelection({
+        instrumentId: academiaInstrumentId,
+        academicTierId: track.tierId,
+      });
+    }
     analytics.demoCtaClicked();
     setLevel(track.focusId);
     const targetPage = shouldShowTemperamentQuiz({ isSubscribedStudent })
@@ -55,6 +66,12 @@ export function InteractiveLevelSelector({
                 onClick={() => {
                   setActiveTierId(tier.id);
                   setActiveFocusIndex(0);
+                  if (academiaInstrumentId) {
+                    persistCommunityEnrollmentFromAcademiaSelection({
+                      instrumentId: academiaInstrumentId,
+                      academicTierId: tier.id,
+                    });
+                  }
                 }}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,

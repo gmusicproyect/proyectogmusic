@@ -94,6 +94,26 @@ body {
   z-index: 1;
 }
 
+/* Comunidad — scroll natural; solo el nav interno es sticky (como Mi Estudio) */
+.studio-atmosphere.gmusic-community-shell {
+  overflow: visible;
+  min-height: 100dvh;
+}
+
+.community-page {
+  width: 100%;
+}
+
+.community-toolbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.community-page__content {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 40px) 48px;
+}
+
 /* ── Dashboard atmosphere — progreso LED ─────────── */
 .dash-progress-track {
   width: 100%;

@@ -73,4 +73,45 @@ export const analytics = {
 
   temperamentQuizSyncFailed: (sessionId: string) =>
     enabled && posthog.capture("temperament_quiz_sync_failed", { session_id: sessionId }),
+
+  communityViewed: (level: string, programLabel: string) =>
+    enabled &&
+    posthog.capture("community_viewed", {
+      community_level: level,
+      program_label: programLabel,
+    }),
+
+  communityLevelChanged: (fromLevel: string, toLevel: string, isAssignedLevel: boolean) =>
+    enabled &&
+    posthog.capture("community_level_changed", {
+      from_level: fromLevel,
+      to_level: toLevel,
+      is_assigned_level: isAssignedLevel,
+    }),
+
+  postCreated: (postType: string, level: string) =>
+    enabled && posthog.capture("post_created", { post_type: postType, community_level: level }),
+
+  externalLinkClicked: (provider: string, postType: string) =>
+    enabled && posthog.capture("external_link_clicked", { provider, post_type: postType }),
+
+  challengeViewed: (level: string, lessonNumber: number | null) =>
+    enabled &&
+    posthog.capture("challenge_viewed", {
+      community_level: level,
+      lesson_number: lessonNumber,
+    }),
+
+  challengeSubmitted: (level: string, lessonNumber: number | null) =>
+    enabled &&
+    posthog.capture("challenge_submitted", {
+      community_level: level,
+      lesson_number: lessonNumber,
+    }),
+
+  commentCreated: (postId: string) =>
+    enabled && posthog.capture("comment_created", { post_id: postId }),
+
+  feedbackGiven: (category: string) =>
+    enabled && posthog.capture("feedback_given", { feedback_category: category }),
 };

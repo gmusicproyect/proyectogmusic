@@ -223,6 +223,7 @@ export function AcademiaOnboardingWizard({
                 setLevel={setLevel}
                 isSubscribedStudent={isSubscribedStudent}
                 sessionStatus={session.status}
+                academiaInstrumentId={selectedInstrument}
               />
             </motion.div>
           </motion.div>
