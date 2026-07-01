@@ -217,10 +217,11 @@ export function PathCarouselCards({
     if (isStage) {
       const photo = pathCarouselPhotoForIndex(i);
       const stageLabel = microCycleStageLabel(i);
+      const stageIsInteractive = isPlayableFocused || (isFocused && isTeaser);
       const stageCardClass = [
         "path-carousel__card",
         isFocused ? "path-carousel__card--focused" : "",
-        isPlayableFocused ? "path-carousel__card--active" : "path-carousel__card--locked",
+        stageIsInteractive ? "path-carousel__card--active" : "path-carousel__card--locked",
       ]
         .filter(Boolean)
         .join(" ");
@@ -233,7 +234,7 @@ export function PathCarouselCards({
           }}
           className={stageCardClass}
           animate={{
-            scale: isPlayableFocused ? 1 : isFocused ? 0.97 : 0.94,
+            scale: stageIsInteractive ? 1 : isFocused ? 0.97 : 0.94,
             opacity: 1,
           }}
           transition={{ duration: motionDuration, ease: "easeOut" }}
@@ -273,7 +274,7 @@ export function PathCarouselCards({
             ) : isLocked && lockedHint ? (
               <p className="path-carousel__card-duration">{lockedHint}</p>
             ) : null}
-            {isPlayableFocused && focusedCta && (
+            {stageIsInteractive && focusedCta && (
               <button
                 type="button"
                 className="path-carousel__cta path-carousel__cta--canva"

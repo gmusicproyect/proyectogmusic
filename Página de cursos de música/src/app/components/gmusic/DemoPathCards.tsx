@@ -172,6 +172,7 @@ export function DemoPathCards({
       fullBleed={fullBleed}
       reviewCompleted={reviewCompleted}
       hintText={hintText}
+      visualVariant="stage"
       buildFooterText={(focusedIdx, carouselNodes) => {
         if (carouselNodes.length <= 12) return null;
         const node = carouselNodes[focusedIdx];
