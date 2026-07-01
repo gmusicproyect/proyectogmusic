@@ -1,0 +1,462 @@
+/* D-022B2 — escena Canva suscriptor (Mi Camino). Solo clases stage */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.stage-light {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.studio-atmosphere {
+  position: relative;
+  overflow-x: clip;
+}
+
+.studio-atmosphere.gmusic-community-shell {
+  overflow: visible;
+}
+
+/* ── Escena unificada ───────────────────────────────────────── */
+.path-scene {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  container-type: inline-size;
+  container-name: path-scene;
+  margin-top: 0.5rem;
+  padding: 24px 16px 20px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (min-width: 768px) {
+  .path-scene {
+    padding: 32px 24px 28px;
+  }
+}
+
+/* ── Hero Canva centrado ───────────────────────────────────── */
+.path-scene-intro--canva {
+  padding-bottom: 8px;
+}
+
+.path-scene-intro__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.6);
+}
+
+.path-scene-intro__title {
+  margin: 0.75rem 0 0;
+  font-weight: 300;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: #e5e5e5;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+@media (min-width: 768px) {
+  .path-scene-intro__title {
+    font-size: 3rem;
+  }
+}
+
+.path-scene-intro__subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #737373;
+}
+
+.path-scene-intro__progress-bar {
+  margin-top: 2rem;
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.path-scene-intro__progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.path-scene-intro__progress-count {
+  font-size: 0.75rem;
+  color: #737373;
+}
+
+.path-scene-intro__progress-percent {
+  font-size: 0.75rem;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+.path-scene-intro__progress-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #262626;
+  overflow: hidden;
+}
+
+.path-scene-intro__progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #d4af37, #f5d76e);
+  transition: width 0.45s ease;
+}
+
+/* ── Stage carrusel ────────────────────────────────────────── */
+.path-stage {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  padding: 16px 0 0;
+  margin-top: 0;
+}
+
+.path-carousel--stage {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+  isolation: isolate;
+}
+
+.path-carousel--stage .path-carousel__connector {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 5%,
+    rgba(212, 175, 55, 0.12) 20%,
+    rgba(212, 175, 55, 0.25) 50%,
+    rgba(212, 175, 55, 0.12) 80%,
+    transparent 95%
+  );
+}
+
+.path-carousel--stage .path-carousel__track {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  scroll-padding-inline: 16px;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.path-carousel--stage .path-carousel__edge-spacer {
+  flex: 0 0 auto;
+  width: clamp(12px, calc(50% - 168px), 360px);
+  min-width: 12px;
+  pointer-events: none;
+}
+
+/* ── Cards Canva ───────────────────────────────────────────── */
+.path-carousel--stage .path-carousel__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(30, 30, 30, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.25rem;
+  width: 17rem;
+  flex-shrink: 0;
+  opacity: 1;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.path-carousel--stage .path-carousel__card--locked:not(.path-carousel__card--active)
+  .path-carousel__card-hero:not(.path-carousel__card-hero--illustration)
+  .path-carousel__card-hero-img {
+  filter: brightness(0.92) saturate(0.95);
+}
+
+.path-carousel--stage .path-carousel__card--locked:not(.path-carousel__card--active) .path-carousel__card-body {
+  filter: saturate(0.88);
+  opacity: 0.92;
+}
+
+.path-carousel--stage .path-carousel__card--active {
+  width: 21rem;
+  padding: 1.5rem;
+  opacity: 1;
+  filter: none;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow:
+    0 0 80px rgba(212, 175, 55, 0.15),
+    0 8px 50px rgba(0, 0, 0, 0.6);
+  animation: float 4s ease-in-out infinite;
+}
+
+.path-carousel--stage .path-carousel__card--focused.path-carousel__card--locked {
+  opacity: 1;
+}
+
+.path-carousel--stage .path-carousel__card-hero {
+  height: 7.5rem;
+  border-radius: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #2a2218;
+}
+
+.path-carousel--stage .path-carousel__card-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.path-carousel--stage .path-carousel__card-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+.path-carousel--stage .path-carousel__card-hero--illustration .path-carousel__card-hero-overlay {
+  background: none;
+}
+
+.path-carousel--stage .path-carousel__card-hero--illustration .path-carousel__card-hero-img {
+  object-fit: cover;
+  padding: 0;
+  background: linear-gradient(145deg, #8b6914 0%, #c9a84c 50%, #6b3a1a 100%);
+}
+
+.path-carousel--stage .path-carousel__hero-stage-label {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  color: #f5f0e8;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-hero {
+  height: 12rem;
+}
+
+.path-carousel--stage .path-carousel__card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.path-carousel--stage .path-carousel__card-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-label-row {
+  margin-top: 0.875rem;
+}
+
+.path-carousel--stage .path-carousel__card-stage-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.45);
+  margin: 0.25rem 0 0;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-stage-label {
+  color: rgba(212, 175, 55, 0.9);
+}
+
+.path-carousel--stage .path-carousel__card-class {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #737373;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-class {
+  color: #d4af37;
+}
+
+.path-carousel--stage .path-carousel__pill-available {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(6, 78, 59, 0.2);
+  color: #34d399;
+  white-space: nowrap;
+}
+
+.path-carousel--stage .path-carousel__lock-icon {
+  color: #525252;
+  flex-shrink: 0;
+}
+
+.path-carousel--stage .path-carousel__card-title {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #e5e5e5;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-title {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.path-carousel--stage .path-carousel__card-duration {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  color: #737373;
+  line-height: 1.4;
+}
+
+.path-carousel--stage .path-carousel__cta--canva {
+  margin-top: 1.25rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  cursor: pointer;
+  background: linear-gradient(135deg, #d4af37, #9a7b0a);
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.path-carousel--stage .path-carousel__cta--canva:hover {
+  background: linear-gradient(135deg, #f5d76e, #d4af37);
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.45);
+  transform: translateY(-2px);
+}
+
+.path-carousel--stage .path-carousel__hint {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #525252;
+  margin-top: 2.5rem;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Fit mode — contenedor ancho */
+.path-carousel--stage-fit .path-carousel__track {
+  justify-content: center;
+  overflow-x: hidden;
+  gap: clamp(10px, 1.2cqw, 16px);
+  padding: 0 4px 4px;
+}
+
+.path-carousel--stage-fit .path-carousel__edge-spacer {
+  display: none;
+}
+
+.path-carousel--stage-fit .path-carousel__card {
+  width: clamp(11rem, 12cqw, 17rem);
+}
+
+.path-carousel--stage-fit .path-carousel__card--active {
+  width: clamp(15rem, 14.5cqw, 21rem);
+}
+
+.path-carousel--stage-fit .path-carousel__card-hero {
+  height: clamp(5.5rem, 8cqw, 7.5rem);
+}
+
+.path-carousel--stage-fit .path-carousel__card--active .path-carousel__card-hero {
+  height: clamp(7rem, 10cqw, 12rem);
+}
+
+.path-carousel--stage-fit .path-carousel__cta--canva {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .path-scene {
+    padding: 20px 12px 16px;
+  }
+
+  .path-carousel--stage .path-carousel__card {
+    width: min(52vw, 17rem);
+  }
+
+  .path-carousel--stage .path-carousel__card--active {
+    width: min(82vw, 21rem);
+  }
+
+  .path-carousel--stage .path-carousel__cta--canva {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-carousel--stage .path-carousel__card--active {
+    animation: none !important;
+  }
+
+  .path-carousel--stage .path-carousel__card {
+    transition: none !important;
+  }
+
+  .path-carousel--stage .path-carousel__cta--canva:hover {
+    transform: none;
+  }
+}

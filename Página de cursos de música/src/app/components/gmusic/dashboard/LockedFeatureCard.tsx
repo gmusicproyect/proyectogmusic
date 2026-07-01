@@ -26,7 +26,7 @@ export function LockedFeatureCard({ icon: Icon, eyebrow, description }: LockedFe
           />
         </div>
       </div>
-      <p className="dash-locked-card__eyebrow text-[10px] uppercase tracking-[0.2em] mb-2 font-bold">
+      <p className="dash-locked-card__eyebrow text-[10px] uppercase tracking-[0.2em] mb-2 font-bold whitespace-normal break-words">
         {eyebrow}
       </p>
       <h3 className="dash-locked-card__title text-xl font-semibold mb-2.5 transition-colors duration-300">

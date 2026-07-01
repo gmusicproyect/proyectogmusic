@@ -18,6 +18,8 @@ export interface PathPageIntroProps {
   compact?: boolean;
   /** Rail de progreso integrado (DemoPathLevelBar) — suscriptor D-022A */
   progressRail?: ReactNode;
+  /** panel = tarjeta premium; strip = hero Canva centrado (D-022B2) */
+  layout?: "panel" | "strip";
 }
 
 export function PathPageIntro({
@@ -29,8 +31,51 @@ export function PathPageIntro({
   description = "Tu ruta de guitarra, paso a paso. Cada módulo construye técnica, oído y continuidad en la práctica.",
   compact = false,
   progressRail,
+  layout = "panel",
 }: PathPageIntroProps) {
-  const isStudio = !compact;
+  const isStrip = layout === "strip";
+  const isStudio = !compact && !isStrip;
+
+  if (isStrip) {
+    const percent =
+      totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+    return (
+      <div className="path-scene-intro path-scene-intro--canva w-full text-center">
+        <p className="path-scene-intro__eyebrow">
+          RUTA DE GUITARRA · {badge.level} · {badge.month}
+        </p>
+        <h1 className="path-scene-intro__title">Mi Camino</h1>
+        <p className="path-scene-intro__subtitle">
+          Avanza paso a paso por tu entrenamiento de guitarra
+        </p>
+        <div className="path-scene-intro__progress-bar">
+          <div className="path-scene-intro__progress-meta">
+            <span className="path-scene-intro__progress-count">
+              {isLoading
+                ? "Cargando progreso…"
+                : `${completedSteps} de ${totalSteps} etapas completadas`}
+            </span>
+            {!isLoading && (
+              <span className="path-scene-intro__progress-percent">{percent}%</span>
+            )}
+          </div>
+          <div
+            className="path-scene-intro__progress-track"
+            role="progressbar"
+            aria-valuenow={completedSteps}
+            aria-valuemin={0}
+            aria-valuemax={totalSteps}
+          >
+            <div
+              className="path-scene-intro__progress-fill"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const content = (
     <>
@@ -46,16 +91,20 @@ export function PathPageIntro({
       </p>
       <h1
         className={`${
-          compact ? "text-xl md:text-2xl" : "text-2xl md:text-[32px] lg:text-[34px]"
-        } font-semibold mb-2 tracking-tight leading-tight`}
+          compact
+            ? "text-xl md:text-2xl"
+            : "text-2xl md:text-[32px] lg:text-[34px]"
+        } font-semibold mb-1 tracking-tight leading-tight`}
         style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
       >
         {title}
       </h1>
       <p
         className={`${
-          compact ? "text-sm md:text-base" : "text-sm md:text-base lg:text-[17px]"
-        } mb-5 max-w-2xl leading-relaxed ${isStudio ? "mx-auto" : ""}`}
+          compact
+            ? "text-sm md:text-base"
+            : "text-sm md:text-base lg:text-[17px]"
+        } mb-2 max-w-xl leading-snug ${isStudio ? "mx-auto" : ""}`}
         style={{ color: GM_TEXT_SEC }}
       >
         {description}
@@ -83,12 +132,7 @@ export function PathPageIntro({
         )}
       </div>
       {progressRail ? (
-        <div
-          className="mt-5 pt-5 text-left"
-          style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}
-        >
-          {progressRail}
-        </div>
+        <div className="path-intro-progress mt-5 pt-5 w-full">{progressRail}</div>
       ) : null}
     </>
   );

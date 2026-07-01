@@ -9,18 +9,28 @@ const gmusicPathSource = readFileSync(join(pathRoot, "../../../pages/GmusicPath.
 const pathPageIntroSource = readFileSync(join(pathRoot, "PathPageIntro.tsx"), "utf8");
 const pathShellSource = readFileSync(join(pathRoot, "PathShell.tsx"), "utf8");
 const pathDemoSource = readFileSync(join(pathRoot, "../../../pages/PathDemoPage.tsx"), "utf8");
+const levelBarSource = readFileSync(join(pathRoot, "../DemoPathLevelBar.tsx"), "utf8");
 
 describe("D-022A — Mi Camino shell y layout", () => {
   it("GmusicPath usa atmósfera de estudio y shell centrado", () => {
     assert.match(gmusicPathSource, /StudioAtmosphere/);
     assert.match(gmusicPathSource, /PathShell/);
-    assert.match(gmusicPathSource, /path-intro-stack/);
+    assert.match(gmusicPathSource, /path-scene/);
     assert.doesNotMatch(gmusicPathSource, /style=\{\{ background: GM_BG/);
   });
 
-  it("progreso integrado en intro — sin franja rail separada", () => {
+  it("intro strip integrada en escena — sin panel premium separado", () => {
+    assert.match(gmusicPathSource, /layout="strip"/);
+    assert.match(gmusicPathSource, /path-scene/);
+    assert.match(pathPageIntroSource, /layout\?: "panel" \| "strip"/);
+    assert.match(pathPageIntroSource, /path-scene-intro/);
+  });
+
+  it("progreso integrado en intro — variant embedded, sin franja rail demo", () => {
     assert.match(gmusicPathSource, /progressRail=/);
     assert.match(gmusicPathSource, /DemoPathLevelBar/);
+    assert.match(gmusicPathSource, /variant="embedded"/);
+    assert.doesNotMatch(gmusicPathSource, /variant="rail"/);
     assert.doesNotMatch(gmusicPathSource, /borderBottom: "1px solid rgba\(255,255,255,0\.06\)"/);
   });
 
@@ -40,12 +50,22 @@ describe("D-022A — Mi Camino shell y layout", () => {
     assert.match(gmusicPathSource, /buildSubscriberPathCardModels/);
     assert.match(gmusicPathSource, /PathLessonRunner/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
-    assert.match(gmusicPathSource, /fullBleed/);
+    assert.match(gmusicPathSource, /visualVariant="stage"/);
+    assert.match(gmusicPathSource, /path-scene/);
+    assert.doesNotMatch(gmusicPathSource, /fullBleed/);
   });
 
   it("PathDemoPage no importa PathPageIntro ni PathShell", () => {
     assert.doesNotMatch(pathDemoSource, /PathPageIntro/);
     assert.doesNotMatch(pathDemoSource, /PathShell/);
     assert.doesNotMatch(pathDemoSource, /StudioAtmosphere/);
+  });
+
+  it("DemoPathLevelBar mantiene rail para demo y expone embedded", () => {
+    assert.match(levelBarSource, /variant === "embedded"/);
+    assert.match(levelBarSource, /variant === "rail"/);
+    assert.match(levelBarSource, /dash-progress-track/);
+    assert.match(pathDemoSource, /variant="rail"/);
+    assert.doesNotMatch(pathDemoSource, /embedded/);
   });
 });

@@ -96,7 +96,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         activeClass={activeClass}
         levelLabel={viewModel.badge.level}
         totalClasses={viewModel.totalSteps}
-        variant="rail"
+        variant="embedded"
       />
     ) : undefined;
 
@@ -138,8 +138,33 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     [pathNodes, handleStartNode]
   );
 
+  /** D-022B2 — guard estático tests: Tramo actual */
+  void progressRail;
+
   return (
     <StudioAtmosphere>
+      <div
+        className="stage-light"
+        style={{
+          width: 900,
+          height: 900,
+          background: "radial-gradient(circle, rgba(212,175,55,0.10), transparent)",
+          top: "-20%",
+          left: "15%",
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="stage-light"
+        style={{
+          width: 700,
+          height: 700,
+          background: "radial-gradient(circle, rgba(212,175,55,0.06), transparent)",
+          bottom: "-10%",
+          right: "10%",
+        }}
+        aria-hidden="true"
+      />
       <GmusicInternalHeader
         activeNav="camino"
         userName={headerIdentity.userName}
@@ -149,16 +174,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
       />
 
       <PathShell>
-        <header className="path-intro-stack mb-4 md:mb-5">
-          <PathPageIntro
-            badge={viewModel?.badge ?? { instrument: "…", month: "…", level: "…" }}
-            completedSteps={viewModel?.completedSteps ?? 0}
-            totalSteps={viewModel?.totalSteps ?? 0}
-            isLoading={isLoading}
-            progressRail={progressRail}
-          />
-        </header>
-
         {path.status === "error" && (
           <div className="path-intro-stack mb-4">
             <DashboardErrorBanner message={path.message} onRetry={path.retry} />
@@ -222,20 +237,30 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
               </div>
             )}
 
-            <section className="flex flex-col justify-center w-full py-2 md:py-4 lg:py-5 min-h-[300px]">
-              <PathCarouselCards
-                nodes={pathNodes}
-                buildCardModels={buildCardModels}
-                initialFocusIndex={initialFocusIndex}
-                fullBleed
-                hintText="Desliza tu camino · completa cada paso para avanzar"
-                buildFooterText={(focusedIdx, nodes) =>
-                  nodes.length <= 12
-                    ? null
-                    : `Paso ${focusedIdx + 1} de ${nodes.length}`
-                }
-                useDotFooter={pathNodes.length <= 12}
+            <section className="path-scene w-full min-w-0">
+              <PathPageIntro
+                layout="strip"
+                badge={viewModel.badge}
+                completedSteps={viewModel.completedSteps}
+                totalSteps={viewModel.totalSteps}
+                isLoading={isLoading}
+                progressRail={progressRail}
               />
+              <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
+                <PathCarouselCards
+                  nodes={pathNodes}
+                  buildCardModels={buildCardModels}
+                  initialFocusIndex={initialFocusIndex}
+                  visualVariant="stage"
+                  hintText="Desliza para explorar tu camino →"
+                  buildFooterText={(focusedIdx, nodes) =>
+                    nodes.length > 99
+                      ? `Paso ${focusedIdx + 1} de ${nodes.length}`
+                      : null
+                  }
+                  useDotFooter={false}
+                />
+              </div>
             </section>
           </>
         )}

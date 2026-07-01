@@ -141,7 +141,7 @@ interface LoginCuentaPageProps {
 }
 
 export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
-  const { login } = useAuth();
+  const { login, refresh } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -154,7 +154,8 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
 
     try {
       await login({ email, password });
-      setPage("mi-camino-demo");
+      const outcome = await refresh();
+      setPage(outcome.type === "authenticated" ? "mi-camino" : "mi-camino-demo");
     } catch (err) {
       setError(
         formatAuthFormError(err, "No pudimos iniciar sesión. Revisa tus datos.")

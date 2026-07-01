@@ -3,8 +3,10 @@ import { Guitar, Home, Menu, Lock } from "lucide-react";
 import { GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "./tokens";
 import { deriveStudentInitials } from "../../utils/student-zone-identity";
 
-export type GmusicNavId = "estudio" | "camino" | "progreso" | "comunidad";
-export type GmusicLockedNavId = "progreso" | "comunidad";
+export type GmusicNavId = "estudio" | "camino" | "comunidad";
+
+/** Reservado para futuros ítems bloqueados en el nav interno. */
+export type GmusicLockedNavId = never;
 
 export const LOCKED_NAV_MODAL = {
   title: "Próximamente en tu academia",
@@ -12,8 +14,8 @@ export const LOCKED_NAV_MODAL = {
   footer: "Mientras tanto, continúa en Mi Camino y Mi Estudio.",
 } as const;
 
-export function isLockedNav(id: string): id is GmusicLockedNavId {
-  return id === "progreso" || id === "comunidad";
+export function isLockedNav(_id: string): _id is GmusicLockedNavId {
+  return false;
 }
 
 interface GmusicInternalHeaderProps {
@@ -32,8 +34,7 @@ const NAV_ITEMS: {
 }[] = [
   { id: "camino", label: "Mi Camino", page: "mi-camino" },
   { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
-  { id: "progreso", label: "Mi Progreso", locked: true },
-  { id: "comunidad", label: "Comunidad", locked: true },
+  { id: "comunidad", label: "Comunidad", page: "community" },
 ];
 
 const HEADER_BORDER = "rgba(255, 255, 255, 0.08)";

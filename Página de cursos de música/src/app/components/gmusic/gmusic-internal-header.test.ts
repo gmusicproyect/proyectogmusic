@@ -69,6 +69,12 @@ describe("GmusicInternalHeader — modal próximamente", () => {
     assert.equal(headerSource.includes("Disponible en el plan completo"), false);
     assert.match(headerSource, /Próximamente en tu academia/);
   });
+
+  it("Comunidad navega a community sin candado", () => {
+    assert.match(headerSource, /id:\s*"comunidad"[\s\S]*page:\s*"community"/);
+    assert.equal(headerSource.includes('locked: true'), false);
+    assert.equal(headerSource.includes("isLockedNav(id)"), false);
+  });
 });
 
 describe("GmusicInternalHeader — Inicio e identidad (continuación)", () => {
