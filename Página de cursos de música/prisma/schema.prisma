@@ -41,6 +41,14 @@ enum PublishStatus {
   ARCHIVED
 }
 
+enum StageType {
+  FUNDAMENTO_UNO
+  FUNDAMENTO_DOS
+  TECNICA
+  PRACTICA
+  TOCAR
+}
+
 enum SubscriptionStatus {
   ACTIVE
   PAST_DUE
@@ -173,13 +181,18 @@ model Module {
 }
 
 model PathNode {
-  id        String        @id @default(uuid())
-  moduleId  String
-  title     String
-  order     Int
-  status    PublishStatus @default(DRAFT)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id                 String        @id @default(uuid())
+  moduleId           String
+  title              String
+  order              Int
+  status             PublishStatus @default(DRAFT)
+  stageType          StageType?
+  videoUrl           String?
+  guideText          String?
+  completionCriteria String?
+  ctaLabel           String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   exercises MicroExercise[]
   progress  UserProgress[]
