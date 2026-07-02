@@ -2,6 +2,15 @@ import { scrollToHomeSection } from "./public-home-navigation";
 
 const STUDENT_ZONE_PAGES = new Set(["mi-estudio", "welcome", "mi-camino"]);
 
+/** Rutas admin creador (R-008 / D-GOV-04). */
+const ADMIN_PAGE_TO_PATH: Record<string, string> = {
+  admin: "/admin",
+};
+
+const ADMIN_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(ADMIN_PAGE_TO_PATH).map(([page, path]) => [path, page])
+);
+
 /** Rutas públicas de auth (sync URL — fuera D-GOV-02 funnel demo). */
 const AUTH_PUBLIC_PAGE_TO_PATH: Record<string, string> = {
   "registro-cuenta": "/registro-cuenta",
@@ -62,7 +71,16 @@ const PAGE_TITLES: Record<string, string> = {
   "registro-cuenta": "Gmusic Estudio · Crear cuenta",
   "login-cuenta": "Gmusic Estudio · Iniciar sesión",
   "registro-exito": "Gmusic Estudio · Registro exitoso",
+  admin: "Gmusic Estudio · Admin Creador",
 };
+
+export function isAdminPage(page: string): boolean {
+  return page in ADMIN_PAGE_TO_PATH;
+}
+
+export function isAdminPath(pathname: string): boolean {
+  return pathname in ADMIN_PATH_TO_PAGE;
+}
 
 export function isStudentZonePage(page: string): boolean {
   return STUDENT_ZONE_PAGES.has(page);
@@ -105,6 +123,8 @@ export function pathnameForPage(page: string): string | null {
   if (demoPath) return demoPath;
   const protectedPath = PROTECTED_ENTRY_PAGE_TO_PATH[page];
   if (protectedPath) return protectedPath;
+  const adminPath = ADMIN_PAGE_TO_PATH[page];
+  if (adminPath) return adminPath;
   return null;
 }
 
@@ -118,6 +138,8 @@ export function pageFromPathname(pathname: string): string {
   if (demoPage) return demoPage;
   const protectedPage = PROTECTED_ENTRY_PATH_TO_PAGE[pathname];
   if (protectedPage) return protectedPage;
+  const adminPage = ADMIN_PATH_TO_PAGE[pathname];
+  if (adminPage) return adminPage;
   return "home";
 }
 
@@ -138,7 +160,9 @@ function isOnSyncedUrl(currentPage: string, pathname: string): boolean {
     isDemoFunnelPage(currentPage) ||
     isDemoFunnelPath(pathname) ||
     isProtectedEntryPage(currentPage) ||
-    isProtectedEntryPath(pathname)
+    isProtectedEntryPath(pathname) ||
+    isAdminPage(currentPage) ||
+    isAdminPath(pathname)
   );
 }
 

@@ -22,6 +22,7 @@ import { InstrumentCoursesPage } from "./pages/legacy/InstrumentCoursesPage";
 import { CourseDetailPage } from "./pages/legacy/CourseDetailPage";
 import { CheckoutPage } from "./pages/legacy/CheckoutPage";
 import { GmusicCommunity } from "./pages/GmusicCommunity";
+import { AdminPage } from "./pages/AdminPage";
 import { ProbarPage } from "./pages/ProbarPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LessonPage } from "./pages/LessonPage";
@@ -423,6 +424,8 @@ export default function App() {
           <GmusicCommunity setPage={handlePageChange} />
         </StudentZoneGuard>
       )}
+
+      {currentPage === "admin" && <AdminPage setPage={handlePageChange} />}
 
       {currentPage === "probar" && (
         <ProbarPage setPage={handlePageChange} />
