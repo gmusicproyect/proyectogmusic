@@ -1,7 +1,7 @@
 import { SESSION_COOKIE_NAME } from "../../lib/jwtSession.js";
 import { signSessionToken } from "../../lib/jwtSession.js";
 import { createApp } from "../../app.js";
-import request from "supertest";
+import request, { type Test } from "supertest";
 import { getDevStudent } from "./db.js";
 
 export async function buildSessionCookieHeader(userId: string): Promise<string> {
@@ -19,16 +19,19 @@ export async function getDevStudentSessionCookie(): Promise<string> {
   return cachedDevStudentCookie;
 }
 
-export function authedGet(path: string, app = createApp()) {
-  return getDevStudentSessionCookie().then((cookie) =>
-    request(app).get(path).set("Cookie", cookie)
-  );
+export async function authedGet(path: string, app = createApp()): Promise<Test> {
+  const cookie = await getDevStudentSessionCookie();
+  return request(app).get(path).set("Cookie", cookie);
 }
 
-export function authedPost(path: string, app = createApp()) {
-  return getDevStudentSessionCookie().then((cookie) =>
-    request(app).post(path).set("Cookie", cookie)
-  );
+export async function authedPost(path: string, app = createApp()): Promise<Test> {
+  const cookie = await getDevStudentSessionCookie();
+  return request(app).post(path).set("Cookie", cookie);
+}
+
+export async function authedPut(path: string, app = createApp()): Promise<Test> {
+  const cookie = await getDevStudentSessionCookie();
+  return request(app).put(path).set("Cookie", cookie);
 }
 
 export function withSessionCookie(

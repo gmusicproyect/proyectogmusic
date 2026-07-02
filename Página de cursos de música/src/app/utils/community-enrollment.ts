@@ -5,8 +5,11 @@ import {
   communityLevelFromAcademicTier,
   parseCommunityLevelFromProgramLabel,
 } from "../data/community-level";
-
-export const ENROLLMENT_STORAGE_KEY = "gmusic:community_enrollment_v1";
+import {
+  buildUpsertCommunityEnrollmentBody,
+  mapCommunityEnrollmentApiRecord,
+} from "../services/gmusic-api/map-community-enrollment";
+import { upsertCommunityEnrollment } from "../services/gmusic-api/community";
 
 const TIER_PROGRAM_LABELS: Record<AcademiaTierId, string> = {
   basico: "Básico",
@@ -24,12 +27,12 @@ export interface CommunityEnrollment {
 }
 
 export interface ResolveCommunityEnrollmentInput {
-  /** Futuro: enrollment activo desde API (ej. "Guitarra Básico"). */
+  /** Enrollment activo desde API (ej. "Guitarra Básico"). */
   enrollmentProgramLabel?: string | null;
   instrument?: string | null;
   currentLessonNumber?: number | null;
   currentLessonTitle?: string | null;
-  /** Fallback cuando no hay enrollment explícito (mock Track A). */
+  /** Fallback cuando no hay enrollment explícito (Track A sin API). */
   defaultAcademicTierId?: AcademiaTierId;
 }
 
@@ -42,18 +45,6 @@ export const DEFAULT_MOCK_COMMUNITY_ENROLLMENT: CommunityEnrollment = {
   currentLessonTitle: "Acordes abiertos",
 };
 
-function readPersistedCommunityEnrollment(): Partial<CommunityEnrollment> | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(ENROLLMENT_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<CommunityEnrollment>;
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
 export function buildCommunityProgramLabel(
   instrument: string,
   academicTierId: AcademiaTierId
@@ -61,11 +52,7 @@ export function buildCommunityProgramLabel(
   return `${instrument} ${TIER_PROGRAM_LABELS[academicTierId]}`;
 }
 
-/**
- * Persiste el sector de Comunidad cuando el alumno elige instrumento + nivel en Academia.
- * Fuente interna hasta que la API exponga enrollment activo.
- */
-export function persistCommunityEnrollmentFromAcademiaSelection(input: {
+function buildCommunityEnrollmentFromAcademiaSelection(input: {
   instrumentId: AcademiaInstrumentId;
   academicTierId: AcademiaTierId;
   currentLessonNumber?: number | null;
@@ -74,7 +61,7 @@ export function persistCommunityEnrollmentFromAcademiaSelection(input: {
   const instrument =
     ACADEMIA_INSTRUMENTS.find((item) => item.id === input.instrumentId)?.name ?? "Guitarra";
   const programLabel = buildCommunityProgramLabel(instrument, input.academicTierId);
-  const enrollment: CommunityEnrollment = {
+  return {
     instrument,
     academicTierId: input.academicTierId,
     communityLevel: communityLevelFromAcademicTier(input.academicTierId),
@@ -83,52 +70,70 @@ export function persistCommunityEnrollmentFromAcademiaSelection(input: {
       input.currentLessonNumber ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.currentLessonNumber,
     currentLessonTitle: input.currentLessonTitle ?? null,
   };
+}
 
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(ENROLLMENT_STORAGE_KEY, JSON.stringify(enrollment));
+/**
+ * Persiste el sector de Comunidad cuando el alumno elige instrumento + nivel en Academia.
+ * Suscriptores sincronizan vía API PostgreSQL; demo anónimo conserva solo estado local derivado.
+ */
+export async function persistCommunityEnrollmentFromAcademiaSelection(
+  input: {
+    instrumentId: AcademiaInstrumentId;
+    academicTierId: AcademiaTierId;
+    currentLessonNumber?: number | null;
+    currentLessonTitle?: string | null;
+  },
+  options?: { syncToApi?: boolean }
+): Promise<CommunityEnrollment> {
+  const enrollment = buildCommunityEnrollmentFromAcademiaSelection(input);
+
+  if (options?.syncToApi === false) {
+    return enrollment;
   }
 
-  return enrollment;
+  try {
+    const record = await upsertCommunityEnrollment(
+      buildUpsertCommunityEnrollmentBody({
+        instrument: enrollment.instrument,
+        academicTierId: enrollment.academicTierId,
+        programLabel: enrollment.programLabel,
+        currentLessonNumber: enrollment.currentLessonNumber,
+        currentLessonTitle: enrollment.currentLessonTitle,
+      })
+    );
+    return mapCommunityEnrollmentApiRecord(record);
+  } catch {
+    return enrollment;
+  }
 }
 
 export function resolveCommunityEnrollment(
   input: ResolveCommunityEnrollmentInput = {}
 ): CommunityEnrollment {
-  const persisted = readPersistedCommunityEnrollment();
   const programLabel =
-    persisted?.programLabel ??
-    input.enrollmentProgramLabel?.trim() ??
-    DEFAULT_MOCK_COMMUNITY_ENROLLMENT.programLabel;
+    input.enrollmentProgramLabel?.trim() ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.programLabel;
 
   const parsedLevel = parseCommunityLevelFromProgramLabel(programLabel);
   const academicTierId =
-    persisted?.academicTierId ??
-    (parsedLevel
+    parsedLevel
       ? ({
           BASIC: "basico",
           INTERMEDIATE: "intermedio",
           ADVANCED: "avanzado",
         } satisfies Record<CommunityLevel, AcademiaTierId>)[parsedLevel]
-      : (input.defaultAcademicTierId ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.academicTierId));
+      : (input.defaultAcademicTierId ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.academicTierId);
 
-  const communityLevel =
-    persisted?.communityLevel ?? communityLevelFromAcademicTier(academicTierId);
+  const communityLevel = communityLevelFromAcademicTier(academicTierId);
 
   return {
     instrument:
-      persisted?.instrument ??
-      input.instrument?.trim() ??
-      DEFAULT_MOCK_COMMUNITY_ENROLLMENT.instrument,
+      input.instrument?.trim() ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.instrument,
     academicTierId,
     communityLevel,
     programLabel,
     currentLessonNumber:
-      persisted?.currentLessonNumber ??
-      input.currentLessonNumber ??
-      DEFAULT_MOCK_COMMUNITY_ENROLLMENT.currentLessonNumber,
+      input.currentLessonNumber ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.currentLessonNumber,
     currentLessonTitle:
-      persisted?.currentLessonTitle ??
-      input.currentLessonTitle ??
-      DEFAULT_MOCK_COMMUNITY_ENROLLMENT.currentLessonTitle,
+      input.currentLessonTitle ?? DEFAULT_MOCK_COMMUNITY_ENROLLMENT.currentLessonTitle,
   };
 }

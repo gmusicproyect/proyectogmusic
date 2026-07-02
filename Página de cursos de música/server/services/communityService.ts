@@ -5,9 +5,19 @@ import {
   buildCommunityRequestScope,
 } from "../lib/communityAccess.js";
 import { ApiError } from "../lib/errors.js";
+import {
+  buildProgramLabelFromEnrollment,
+  type UpsertCommunityEnrollmentInput,
+} from "../lib/parseUpsertCommunityEnrollmentBody.js";
 import { resolveStudentAccess } from "../lib/studentAccess.js";
 import { prisma } from "../lib/prisma.js";
 import type { CreateCommunityPostInput } from "../lib/parseCreateCommunityPostBody.js";
+
+const TIER_TO_COMMUNITY_LEVEL: Record<string, string> = {
+  basico: "BASIC",
+  intermedio: "INTERMEDIATE",
+  avanzado: "ADVANCED",
+};
 
 export async function assertCommunitySubscriber(student: User): Promise<void> {
   const subscriptions = await prisma.subscription.findMany({
@@ -29,24 +39,6 @@ export async function assertCommunitySubscriber(student: User): Promise<void> {
       "Comunidad requiere suscripción activa."
     );
   }
-}
-
-export async function getCommunityEnrollmentForUser(
-  userId: string
-): Promise<CommunityEnrollment> {
-  const enrollment = await prisma.communityEnrollment.findUnique({
-    where: { userId },
-  });
-
-  if (!enrollment) {
-    throw new ApiError(
-      403,
-      "FORBIDDEN",
-      "Sin inscripción de comunidad. Elige tu nivel en Academia."
-    );
-  }
-
-  return enrollment;
 }
 
 export interface CommunityPostApiRecord {
@@ -162,4 +154,88 @@ export async function createCommunityPostForStudent(
   });
 
   return mapCommunityPostToApi(created, student.name);
+}
+
+export interface CommunityEnrollmentApiRecord {
+  instrument: string;
+  academic_tier_id: string;
+  community_level: string;
+  program_label: string;
+  current_lesson_number: number | null;
+  current_lesson_title: string | null;
+}
+
+export function mapCommunityEnrollmentToApi(
+  enrollment: CommunityEnrollment
+): CommunityEnrollmentApiRecord {
+  return {
+    instrument: enrollment.instrument,
+    academic_tier_id: enrollment.academicTierId,
+    community_level:
+      TIER_TO_COMMUNITY_LEVEL[enrollment.academicTierId] ?? "BASIC",
+    program_label: enrollment.programLabel,
+    current_lesson_number: enrollment.currentLessonNumber,
+    current_lesson_title: enrollment.currentLessonTitle,
+  };
+}
+
+export async function getCommunityEnrollmentForUser(
+  userId: string
+): Promise<CommunityEnrollment> {
+  const enrollment = await prisma.communityEnrollment.findUnique({
+    where: { userId },
+  });
+
+  if (!enrollment) {
+    throw new ApiError(
+      403,
+      "FORBIDDEN",
+      "Sin inscripción de comunidad. Elige tu nivel en Academia."
+    );
+  }
+
+  return enrollment;
+}
+
+export async function getCommunityEnrollmentForStudent(
+  student: User
+): Promise<CommunityEnrollmentApiRecord> {
+  await assertCommunitySubscriber(student);
+  const enrollment = await getCommunityEnrollmentForUser(student.id);
+  return mapCommunityEnrollmentToApi(enrollment);
+}
+
+export async function upsertCommunityEnrollmentForStudent(
+  student: User,
+  input: UpsertCommunityEnrollmentInput
+): Promise<CommunityEnrollmentApiRecord> {
+  await assertCommunitySubscriber(student);
+
+  const programLabel =
+    input.programLabel ??
+    buildProgramLabelFromEnrollment({
+      instrument: input.instrument,
+      academicTierId: input.academicTierId,
+    });
+
+  const enrollment = await prisma.communityEnrollment.upsert({
+    where: { userId: student.id },
+    update: {
+      instrument: input.instrument,
+      academicTierId: input.academicTierId,
+      programLabel,
+      currentLessonNumber: input.currentLessonNumber,
+      currentLessonTitle: input.currentLessonTitle,
+    },
+    create: {
+      userId: student.id,
+      instrument: input.instrument,
+      academicTierId: input.academicTierId,
+      programLabel,
+      currentLessonNumber: input.currentLessonNumber,
+      currentLessonTitle: input.currentLessonTitle,
+    },
+  });
+
+  return mapCommunityEnrollmentToApi(enrollment);
 }

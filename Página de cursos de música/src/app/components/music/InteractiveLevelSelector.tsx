@@ -41,7 +41,7 @@ export function InteractiveLevelSelector({
   const handleStart = (track: AcademiaTrackCombination) => {
     if (!isFreeClassTrack(track)) return;
     if (academiaInstrumentId) {
-      persistCommunityEnrollmentFromAcademiaSelection({
+      void persistCommunityEnrollmentFromAcademiaSelection({
         instrumentId: academiaInstrumentId,
         academicTierId: track.tierId,
       });
@@ -67,7 +67,7 @@ export function InteractiveLevelSelector({
                   setActiveTierId(tier.id);
                   setActiveFocusIndex(0);
                   if (academiaInstrumentId) {
-                    persistCommunityEnrollmentFromAcademiaSelection({
+                    void persistCommunityEnrollmentFromAcademiaSelection({
                       instrumentId: academiaInstrumentId,
                       academicTierId: tier.id,
                     });

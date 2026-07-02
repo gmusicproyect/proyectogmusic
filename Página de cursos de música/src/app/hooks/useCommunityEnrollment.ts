@@ -1,28 +1,61 @@
-import { useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CommunityEnrollment } from "../utils/community-enrollment";
 import { resolveCommunityEnrollment } from "../utils/community-enrollment";
+import { loadCommunityEnrollmentOnce } from "../services/gmusic-api/community-enrollment-load";
+import { DashboardRequestManager } from "./dashboard-request";
 import { useDashboard } from "./useDashboard";
 
+export type CommunityEnrollmentHookState =
+  | { status: "loading" }
+  | { status: "ready"; enrollment: CommunityEnrollment; fromApi: boolean };
+
 /**
- * Enrollment activo para Comunidad.
- * Track A: mock + override local hasta que API exponga programLabel de inscripción.
+ * Enrollment activo para Comunidad desde API PostgreSQL.
  */
 export function useCommunityEnrollment(): {
   enrollment: CommunityEnrollment;
   isLoading: boolean;
 } {
   const dashboard = useDashboard();
+  const [state, setState] = useState<CommunityEnrollmentHookState>({ status: "loading" });
+  const managerRef = useRef(new DashboardRequestManager());
 
-  const enrollment = useMemo(() => {
-    const viewModel = dashboard.status === "success" ? dashboard.viewModel : null;
-    return resolveCommunityEnrollment({
-      // TODO(C2+): enrollmentProgramLabel desde API cuando exista campo de inscripción académica.
-      currentLessonTitle: viewModel?.currentNodeTitle ?? null,
+  const currentLessonTitle =
+    dashboard.status === "success" ? dashboard.viewModel.currentNodeTitle : null;
+
+  const load = useCallback(async () => {
+    const manager = managerRef.current;
+    const { generation, signal } = manager.begin();
+    setState({ status: "loading" });
+
+    const outcome = await loadCommunityEnrollmentOnce(signal, {
+      currentLessonTitle,
     });
-  }, [dashboard.status, dashboard.status === "success" ? dashboard.viewModel?.currentNodeTitle : null]);
+
+    if (!manager.isCurrent(generation)) return;
+
+    if (outcome.type === "aborted") return;
+
+    setState({
+      status: "ready",
+      enrollment: outcome.enrollment,
+      fromApi: outcome.type === "success",
+    });
+  }, [currentLessonTitle]);
+
+  useEffect(() => {
+    void load();
+    const manager = managerRef.current;
+    return () => manager.dispose();
+  }, [load]);
+
+  const enrollment =
+    state.status === "ready"
+      ? state.enrollment
+      : resolveCommunityEnrollment({ currentLessonTitle });
 
   return {
     enrollment,
-    isLoading: dashboard.status === "loading",
+    isLoading: state.status === "loading",
   };
 }

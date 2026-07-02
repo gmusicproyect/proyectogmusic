@@ -53,11 +53,14 @@ describe("community-enrollment", () => {
     assert.equal(enrollment.currentLessonTitle, "Hammer-on");
   });
 
-  it("persiste sector al elegir instrumento y nivel en Academia", () => {
-    const enrollment = persistCommunityEnrollmentFromAcademiaSelection({
-      instrumentId: "guitarra",
-      academicTierId: "intermedio",
-    });
+  it("arma enrollment local al elegir instrumento y nivel en Academia", async () => {
+    const enrollment = await persistCommunityEnrollmentFromAcademiaSelection(
+      {
+        instrumentId: "guitarra",
+        academicTierId: "intermedio",
+      },
+      { syncToApi: false }
+    );
     assert.equal(enrollment.communityLevel, "INTERMEDIATE");
     assert.equal(enrollment.programLabel, "Guitarra Intermedio");
     assert.equal(enrollment.instrument, "Guitarra");
