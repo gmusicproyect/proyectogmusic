@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CommunityAdminCuratedPanel } from "../components/gmusic/community/CommunityAdminCuratedPanel";
 import { CommunityConductModal } from "../components/gmusic/community/CommunityConductModal";
+import { CommunityCreatePostForm } from "../components/gmusic/community/CommunityCreatePostForm";
 import { CommunityFeedFilterRow } from "../components/gmusic/community/CommunityFeedFilterRow";
 import { CommunityLevelBadge } from "../components/gmusic/community/CommunityLevelBadge";
 import { CommunityMentorshipPanel } from "../components/gmusic/community/CommunityMentorshipPanel";
@@ -18,8 +19,9 @@ import {
   DEFAULT_MENTORSHIP_PROGRESS,
   peersForLevel,
 } from "../data/mock-community-data";
-import { MOCK_COMMUNITY_POSTS } from "../data/mock-community-posts";
 import { buildCommunityPostCreateContext } from "../utils/community-access";
+import { fetchCommunityPosts } from "../services/gmusic-api/community";
+import { mapCommunityPostApiRecord } from "../services/gmusic-api/map-community-post";
 import type { CommunityEnrollment } from "../utils/community-enrollment";
 import { analytics } from "../utils/analytics";
 import { getStudentCommunityLevel } from "../utils/get-student-community-level";
@@ -41,10 +43,39 @@ export function CommunityPage({
 }: CommunityPageProps) {
   const studentLevel = getStudentCommunityLevel(enrollment);
   const [feedFilter, setFeedFilter] = useState<CommunityFeedFilter>("all");
-  const [posts, setPosts] = useState<CommunityPost[]>(MOCK_COMMUNITY_POSTS);
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postsError, setPostsError] = useState<string | null>(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showConduct, setShowConduct] = useState(false);
   const viewedRef = useRef(false);
+
+  useEffect(() => {
+    if (!embedded || enrollmentLoading || !enrollment) return;
+
+    const controller = new AbortController();
+    setPostsLoading(true);
+    setPostsError(null);
+
+    void fetchCommunityPosts({ signal: controller.signal })
+      .then((records) => {
+        setPosts(records.map(mapCommunityPostApiRecord));
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        const message =
+          error instanceof Error && error.message.trim()
+            ? error.message
+            : "No pudimos cargar el feed.";
+        setPostsError(message);
+        setPosts([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setPostsLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [embedded, enrollmentLoading, enrollment?.programLabel]);
 
   useEffect(() => {
     if (enrollmentLoading || !enrollment || viewedRef.current) return;
@@ -88,6 +119,11 @@ export function CommunityPage({
 
   const handlePostAction = useCallback((postId: string) => {
     analytics.commentCreated(postId);
+  }, []);
+
+  const handlePostCreated = useCallback((post: CommunityPost) => {
+    setPosts((current) => [post, ...current]);
+    setShowCreatePost(false);
   }, []);
 
   const emptyFeedMessage =
@@ -181,28 +217,23 @@ export function CommunityPage({
           )}
 
           {showCreatePost && postCreateContext && (
-            <div
-              style={{
-                border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 14,
-                padding: 18,
-                marginBottom: 20,
-                fontSize: 13,
-                color: "rgba(255,255,255,0.58)",
-              }}
-            >
-              Formulario de publicación — ciclo C2. Se guardará automáticamente en{" "}
-              <strong style={{ color: GOLD }}>{COMMUNITY_LEVEL_LABELS[postCreateContext.level]}</strong>
-              {" · "}
-              {postCreateContext.instrument}
-              {postCreateContext.lessonNumber != null
-                ? ` · Clase ${postCreateContext.lessonNumber}`
-                : null}
-              .
-            </div>
+            <CommunityCreatePostForm
+              context={postCreateContext}
+              onCreated={handlePostCreated}
+              onCancel={() => setShowCreatePost(false)}
+            />
           )}
 
-          {visiblePosts.length === 0 &&
+          {postsLoading ? (
+            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)" }}>Cargando feed…</p>
+          ) : postsError ? (
+            <p style={{ fontSize: 14, color: "rgba(248,113,113,0.85)" }} role="alert">
+              {postsError}
+            </p>
+          ) : null}
+
+          {!postsLoading &&
+          visiblePosts.length === 0 &&
           !(curatedPlacement === "bottom" && curatedItems.length > 0) ? (
             <div
               style={{

@@ -3,6 +3,7 @@ import express from "express";
 import { createCorsMiddleware } from "./lib/cors.js";
 import { ApiError, errorBody } from "./lib/errors.js";
 import { authRouter } from "./routes/auth.js";
+import { communityRouter } from "./routes/community.js";
 import { devRouter } from "./routes/dev.js";
 import { healthRouter } from "./routes/health.js";
 import { lessonSessionsRouter } from "./routes/lessonSessions.js";
@@ -30,6 +31,7 @@ export function createApp() {
   app.use("/api/v1/me", meRouter);
   app.use("/api/v1/onboarding", onboardingRouter);
   app.use("/api/v1/lesson-sessions", lessonSessionsRouter);
+  app.use("/api/v1/community", communityRouter);
   app.use("/api/v1/dev", devRouter);
 
   app.use((_req, res) => {

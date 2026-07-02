@@ -54,6 +54,30 @@ enum TemperamentType {
   phlegmatic
 }
 
+enum CommunityLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CommunityPostType {
+  question
+  progress
+  music
+  feedback
+  collaboration
+  admin_featured
+}
+
+enum ExternalLinkProvider {
+  drive
+  youtube
+  soundcloud
+  spotify
+  facebook
+  other
+}
+
 model User {
   id            String          @id @default(uuid())
   email         String          @unique
@@ -75,6 +99,8 @@ model User {
   subscriptions Subscription[]
   onboardingAnalytics OnboardingAnalytics[]
   demoProgress  DemoProgress[]
+  communityEnrollment CommunityEnrollment?
+  communityPosts      CommunityPost[]
 }
 
 model DemoProgress {
@@ -291,4 +317,41 @@ model OnboardingAnalytics {
   @@index([completedAt(sort: Desc)])
   @@index([email])
   @@map("onboarding_analytics")
+}
+
+model CommunityEnrollment {
+  id                  String   @id @default(uuid())
+  userId              String   @unique @map("user_id")
+  instrument          String
+  academicTierId      String   @map("academic_tier_id")
+  programLabel        String   @map("program_label")
+  currentLessonNumber Int?     @map("current_lesson_number")
+  currentLessonTitle  String?  @map("current_lesson_title")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("community_enrollments")
+}
+
+model CommunityPost {
+  id               String                @id @default(uuid())
+  userId           String                @map("user_id")
+  postType         CommunityPostType     @map("post_type")
+  level            CommunityLevel
+  instrument       String
+  lessonNumber     Int?                  @map("lesson_number")
+  content          String
+  topicLabel       String?               @map("topic_label")
+  externalUrl      String?               @map("external_url")
+  externalProvider ExternalLinkProvider? @map("external_provider")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([level, createdAt(sort: Desc)])
+  @@index([userId])
+  @@map("community_posts")
 }
