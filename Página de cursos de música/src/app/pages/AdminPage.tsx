@@ -323,11 +323,6 @@ export function AdminPage({ setPage }: AdminPageProps) {
             >
               Volver al inicio
             </button>
-            <p className="admin-login-hint">
-              Cuenta seed local: <strong>admin@gmusic.academy</strong>
-              <br />
-              Tras <code>npx prisma db seed</code>: contraseña <strong>GmusicAdmin2026!</strong>
-            </p>
           </form>
         </AuthFormShell>
         {toastNode}

@@ -9,8 +9,6 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-const DEV_ADMIN_PASSWORD = "GmusicAdmin2026!";
-
 const USERS = {
   admin: {
     email: "admin@gmusic.academy",
@@ -233,10 +231,18 @@ const MODULES = [
   },
 ] as const;
 
-async function seedUsers() {
-  const adminPasswordHash = await bcrypt.hash(DEV_ADMIN_PASSWORD, 10);
+async function seedAdminUser() {
+  const adminPassword = process.env.ADMIN_SEED_PASSWORD?.trim();
+  if (!adminPassword) {
+    console.warn(
+      "⚠️  ADMIN_SEED_PASSWORD no definida — omitiendo usuario admin@gmusic.academy en seed."
+    );
+    return null;
+  }
 
-  const admin = await prisma.user.upsert({
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 10);
+
+  return prisma.user.upsert({
     where: { email: USERS.admin.email },
     update: {
       name: USERS.admin.name,
@@ -248,7 +254,10 @@ async function seedUsers() {
       passwordHash: adminPasswordHash,
     },
   });
+}
 
+async function seedUsers() {
+  const admin = await seedAdminUser();
   const guardian = await prisma.user.upsert({
     where: { email: USERS.guardian.email },
     update: { name: USERS.guardian.name, role: USERS.guardian.role },

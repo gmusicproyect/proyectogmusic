@@ -303,14 +303,13 @@ Dentro de una sola transacción se realizan:
 
 | Campo | Evaluación |
 |---|---|
-| Estado | Riesgo futuro |
+| Estado | **Mitigado parcialmente** — Admin Creador MVP en `fd65927` |
 | Contextos | Administration como interfaz sobre Academy, Identity, Entitlements, Learning Journey y Community |
-| Situación actual | No existe panel admin funcional |
-| Impacto | Un panel futuro podría duplicar reglas y crear caminos paralelos de modificación |
-| Severidad | Alta cuando comience su construcción |
-| Activador recomendado | Antes de crear edición de cursos, gestión de alumnos, activación manual o moderación |
-| Caminos posibles | Casos de uso administrados por cada contexto y UI admin como consumidora |
-| Decisión pendiente | Definir capacidades administrativas y contexto dueño de cada operación |
+| Situación actual | Panel `/admin` + API `/api/v1/admin/*`; dueño de reglas publish = `server/services/curriculum.ts` |
+| Impacto | UI y rutas admin son capas delgadas; `requireAdmin` verifica rol contra DB en cada request |
+| Severidad | Alta si admin duplica reglas de negocio o expone credenciales |
+| Regla permanente (2 Jul 2026) | Credenciales seed admin **solo** vía `ADMIN_SEED_PASSWORD` en env; nunca hardcodeadas ni mostradas en UI. Contraseñas expuestas en git se tratan como quemadas — rotar en prod de inmediato. |
+| Decisión pendiente | Casos de uso admin futuros (moderación, alumnos) deben declarar contexto dueño antes de implementar |
 
 ### R-009 — IA sin decisiones delimitadas
 
