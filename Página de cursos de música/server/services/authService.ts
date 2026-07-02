@@ -63,8 +63,8 @@ export async function loginStudent(body: unknown) {
     throw new ApiError(401, "INVALID_CREDENTIALS", "Correo o contraseña incorrectos.");
   }
 
-  if (user.role !== Role.STUDENT) {
-    throw new ApiError(403, "FORBIDDEN", "Solo alumnos pueden iniciar sesión.");
+  if (user.role !== Role.STUDENT && user.role !== Role.ADMIN) {
+    throw new ApiError(403, "FORBIDDEN", "Este correo no puede iniciar sesión aquí.");
   }
 
   const valid = await bcrypt.compare(input.password, user.passwordHash);

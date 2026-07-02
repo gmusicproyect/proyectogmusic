@@ -54,6 +54,10 @@ export async function loadPublicStudentSessionOnce(
       return { type: "anonymous" };
     }
 
+    if (response.status === 403) {
+      return { type: "anonymous" };
+    }
+
     if (!response.ok) {
       let code = "INTERNAL_ERROR";
       let message = `Error ${response.status} al consultar la API.`;

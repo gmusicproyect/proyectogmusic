@@ -2,6 +2,7 @@ import { getCorsAllowedOriginsFromEnv } from "./lib/cors.js";
 
 const DEFAULT_API_PORT = 3001;
 const DEFAULT_DEV_STUDENT_EMAIL = "carlos@gmusic.academy";
+const DEFAULT_DEV_ADMIN_EMAIL = "admin@gmusic.academy";
 const DEFAULT_COURSE_SLUG = "ruta-guitarra-12-meses";
 const DEV_JWT_SECRET = "gmusic-dev-jwt-secret-change-in-production";
 
@@ -22,6 +23,9 @@ export const config = {
   /** Solo desarrollo: resuelve al alumno sin JWT. No usar en producción. */
   get devStudentEmail(): string {
     return process.env.GMUSIC_DEV_USER_EMAIL ?? DEFAULT_DEV_STUDENT_EMAIL;
+  },
+  get devAdminEmail(): string {
+    return process.env.GMUSIC_DEV_ADMIN_EMAIL ?? DEFAULT_DEV_ADMIN_EMAIL;
   },
   defaultCourseSlug: DEFAULT_COURSE_SLUG,
   get jwtSecret(): string | undefined {

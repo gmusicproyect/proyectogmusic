@@ -5,8 +5,11 @@ import {
   ExerciseType,
   type Prisma,
 } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
+
+const DEV_ADMIN_PASSWORD = "GmusicAdmin2026!";
 
 const USERS = {
   admin: {
@@ -231,10 +234,19 @@ const MODULES = [
 ] as const;
 
 async function seedUsers() {
+  const adminPasswordHash = await bcrypt.hash(DEV_ADMIN_PASSWORD, 10);
+
   const admin = await prisma.user.upsert({
     where: { email: USERS.admin.email },
-    update: { name: USERS.admin.name, role: USERS.admin.role },
-    create: USERS.admin,
+    update: {
+      name: USERS.admin.name,
+      role: USERS.admin.role,
+      passwordHash: adminPasswordHash,
+    },
+    create: {
+      ...USERS.admin,
+      passwordHash: adminPasswordHash,
+    },
   });
 
   const guardian = await prisma.user.upsert({
