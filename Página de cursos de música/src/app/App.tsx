@@ -275,7 +275,7 @@ export default function App() {
 
   return (
     <div style={{ fontFamily:"'Inter','Outfit',sans-serif", background:"#080808", minHeight:"100vh", color:"#fff" }}>
-      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","community","mi-camino-demo","onboarding-quiz","onboarding-academia","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
+      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","community","admin","mi-camino-demo","onboarding-quiz","onboarding-academia","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
         !isPublicFreeLessonPage(currentPage) &&
         demoLessonId === null && (
         <Navbar
@@ -468,7 +468,7 @@ export default function App() {
         registrationOnly={pendingSemestralCheckout}
       />
 
-      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && currentPage !== "community" && currentPage !== "mi-camino-demo" && currentPage !== "onboarding-quiz" && currentPage !== "inscripcion-gate" && currentPage !== "inscripcion-registro" && currentPage !== "registro-cuenta" && currentPage !== "login-cuenta" && currentPage !== "registro-exito" && !isPublicFreeLessonPage(currentPage) && demoLessonId === null && (
+      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && currentPage !== "community" && currentPage !== "admin" && currentPage !== "mi-camino-demo" && currentPage !== "onboarding-quiz" && currentPage !== "inscripcion-gate" && currentPage !== "inscripcion-registro" && currentPage !== "registro-cuenta" && currentPage !== "login-cuenta" && currentPage !== "registro-exito" && !isPublicFreeLessonPage(currentPage) && demoLessonId === null && (
         <MusicPlayer
           track={currentTrack}
           playlist={playlist}
