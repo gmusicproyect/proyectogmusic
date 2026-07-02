@@ -23,9 +23,8 @@ describe("D-022B2 — stage Canva structure (prototype)", () => {
     assert.doesNotMatch(gmusicPathSource, /visualVariant="premium"/);
   });
 
-  it("DemoPathCards no activa stage — demo sin cambio visual", () => {
-    assert.doesNotMatch(demoPathCardsSource, /visualVariant/);
-    assert.doesNotMatch(demoPathCardsSource, /stage/);
+  it("DemoPathCards activa visualVariant stage — paridad visual D-GOV-07", () => {
+    assert.match(demoPathCardsSource, /visualVariant="stage"/);
   });
 
   it("PathCarouselCards expone preset stage aislado", () => {
