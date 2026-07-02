@@ -264,16 +264,16 @@ function LockedGate({ completedCount, onGoBack }: LockedGateProps) {
             fontWeight: 600,
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            color: "rgba(255,255,255,0.25)",
+            color: "rgba(201,168,76,0.55)",
             fontFamily: "Inter, sans-serif",
           }}
         >
-          Zona bloqueada
+          Antes de inscribirte
         </p>
 
         <h1
           style={{
-            margin: "0 0 16px",
+            margin: "0 0 12px",
             fontFamily: "'Playfair Display', serif",
             fontSize: "clamp(24px, 4vw, 32px)",
             fontWeight: 400,
@@ -281,8 +281,20 @@ function LockedGate({ completedCount, onGoBack }: LockedGateProps) {
             lineHeight: 1.2,
           }}
         >
-          Completa tu primer camino para desbloquear esta zona
+          Estás a 5 clases de inscribirte
         </h1>
+
+        <p
+          style={{
+            margin: "0 0 16px",
+            fontSize: 14,
+            lineHeight: 1.6,
+            color: TEXT_SEC,
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
+          Prueba el camino gratuito primero — así sabrás exactamente qué estás comprando.
+        </p>
 
         {/* Progress bar */}
         <div style={{ marginBottom: 28 }}>

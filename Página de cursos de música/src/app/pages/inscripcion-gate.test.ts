@@ -79,8 +79,11 @@ describe("InscripcionGatePage — puerta de inscripción", () => {
 
   it("muestra estado bloqueado si demo no está completo", () => {
     assert.equal(gateSource.includes("LockedGate"), true);
-    assert.equal(gateSource.includes("Zona bloqueada"), true);
-    assert.equal(gateSource.includes("Completa tu primer camino"), true);
+    assert.equal(gateSource.includes("Estás a 5 clases de inscribirte"), true);
+    assert.equal(
+      gateSource.includes("Prueba el camino gratuito primero — así sabrás exactamente qué estás comprando."),
+      true
+    );
   });
 
   it("muestra los 3 tiers usando PLAN_TIERS", () => {
