@@ -1,6 +1,38 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: 25 Jun 2026 · D-017 cerrado
+Última actualización: **2 Jul 2026** · HEAD `11c7034`
+
+## Snapshot operativo (2 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **HEAD** | `11c7034` — test(path): alinear stage demo con D-GOV-07 |
+| **Tests app** | **550/550** |
+| **Rama** | `main` · sync con `origin/main` |
+| **Visual D-022C** | ✅ stage demo + suscriptor (paridad microciclo) |
+| **Comunidad MVP** | ✅ mergeado (`d171c20`) · C2/API pendiente |
+| **Rewrites SPA prod** | ✅ `vercel.json` commiteado (`75332fd`) · smoke **2 Jul 2026** |
+
+### Smoke deploy prod (2 Jul 2026)
+
+| URL | Resultado | Nota |
+|-----|-----------|------|
+| `/mi-camino-demo` | ✅ pass | SPA carga |
+| `/quiz-temperamento` | ✅ pass | SPA carga |
+| `/demo-clase-1` | ✅ pass | SPA carga |
+| `/inscripcion` | ✅ pass (comportamiento esperado) | Ver abajo — no es bug de routing |
+
+**`/inscripcion` — lógica (no cruce de rutas):**
+
+- Pathname `/inscripcion` → `currentPage: inscripcion-gate` → **`InscripcionGatePage`** (`student-zone-routing.ts`, tests en `student-zone-routing.test.ts`).
+- Si configured in `App.tsx` **sin** `StudentZoneGuard` ni `DemoAuthGuard` — ruta pública del funnel.
+- Si `useDemoProgress().demoFinished === false` (0–4/5 clases, típico incógnito o CTA Semestral D-025): renderiza **`LockedGate`** dentro de la misma página — copy *"Completa tu primer camino para desbloquear esta zona"*, barra *"X de 5 clases completadas"*, CTA *"Volver a mi camino gratuito"*.
+- Si `demoFinished === true` (5/5): selector de planes + celebración (puerta abierta D-GOV-05).
+- **D-GOV-11** aplica a quiz + demo (cuenta antes de clases); **no** redirige `/inscripcion` a registro — el gate es el punto de conversión post-demo o con puerta cerrada si demo incompleto.
+
+Config Vercel: `vercel.json` — catch-all `/(.*) → /index.html` + proxy `/api/v1/*` → Render.
+
+---
 
 ## D-017 — Acceso zona alumno prod (25 Jun 2026)
 
@@ -18,14 +50,14 @@
 | Item | Estado |
 |------|--------|
 | Repo canónico | `gmusicproyect/proyectogmusic` |
-| **HEAD** | `e047ac3` — feat(routing): sync demo funnel URLs |
-| Routing demo D-GOV-02/03 | ✅ `e047ac3` (código) · aprobadas en `4cdc911` |
+| **HEAD** | `11c7034` — ver snapshot arriba |
+| Routing demo D-GOV-02/03 | ✅ código + rewrites prod verificados 2 Jul |
 | Academia 2 pasos | ✅ `f20e795` |
-| Teaser B + CTA híbrido | ✅ `2bd1bdc` (D-GOV-05/06) |
-| Gobernanza operativa | ✅ `1f04e7e` |
-| **Tests app** | **389/389** |
-| Untracked local | `logogmusic.png` — fase visual hero (futuro; fuera del repo) |
-| **Deploy pendiente** | Rewrites SPA funnel → `index.html` |
+| Teaser B + CTA híbrido | ✅ D-GOV-05/06 |
+| Gobernanza operativa | ✅ |
+| **Tests app** | **550/550** |
+| Untracked local | `logogmusic.png` — fase visual hero (futuro) |
+| **Deploy rewrites** | ✅ en repo + prod smoke 2 Jul (ver snapshot) |
 
 Handoff operativo: `docs/vision/handoffs/2026-06-18-gmusic-repo-canonico-estado-actual.md`
 
@@ -72,9 +104,9 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 | `/alumno` | `mi-estudio` / `welcome` | ✅ sin cambio |
 | `/mi-camino` | `mi-camino` | ✅ sin cambio |
 
-Implementación: `student-zone-routing.ts` + `handlePageChange`. Tests: `student-zone-routing.test.ts` (389/389 app).
+Implementación: `student-zone-routing.ts` + `handlePageChange`. Tests: `student-zone-routing.test.ts` (**550/550** app).
 
-**Deploy:** rewrite SPA en hosting para refresh directo en rutas funnel.
+**Deploy:** rewrites en `vercel.json` — verificado prod 2 Jul 2026 (snapshot arriba).
 
 ---
 
