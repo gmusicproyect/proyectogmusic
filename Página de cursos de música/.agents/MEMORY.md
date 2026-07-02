@@ -1,9 +1,13 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: 25 Jun 2026 · D-017 cerrado (acceso alumno prod validado)
+Última actualización: **2 Jul 2026** · Admin Creador MVP + fix P0 `2134e71`
 
-**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01, D-GOV-02, D-GOV-03, D-GOV-05, D-GOV-06 · **D-017 CERRADO** (sin patch) · routing demo en remoto (`e047ac3`).
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01..06 · **D-GOV-04 CERRADA** (mapa bloques + Admin MVP) · D-017 CERRADO.
+
+**Incidente activo:** INC-2026-07-02 — credencial admin quemada. Repo cerrado; **prod DB pendiente rotación Juan** → `docs/operations/incident-2026-07-02-admin-credential.md`
+
+**Siguiente fase autorizada (interina):** Piloto Bloque 1 en admin tras rotación → `docs/operations/piloto-bloque-1-admin.md`
 
 **Acceso alumno (canónico):** `docs/operations/student-access-states.md` — `anonymous` → landing/registro · `registered_no_sub` → demo 5 clases · `authenticated` + sub ACTIVE → academia completa.
 

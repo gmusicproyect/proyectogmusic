@@ -1,8 +1,19 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **2 Jul 2026** · HEAD `11c7034`
+Última actualización: **2 Jul 2026** · HEAD `2134e71`
 
-## Snapshot operativo (2 Jul 2026)
+## Snapshot operativo (2 Jul 2026 — tarde)
+
+| Item | Estado |
+|------|--------|
+| **HEAD** | `2134e71` — fix(security): admin seed via env |
+| **Admin Creador MVP (R-008)** | ✅ `bc2de81`..`fd65927` — API + UI + shell |
+| **Tests app** | **554/554** |
+| **INC admin credential P0** | Repo ✅ cerrado · **Prod DB 🔴 abierto** — rotar antes de publicar materia |
+| **Siguiente autorizado** | Piloto Bloque 1 vía admin (tras rotación) — `docs/operations/piloto-bloque-1-admin.md` |
+| **Rama** | `main` · sync `origin/main` |
+
+## Snapshot operativo (2 Jul 2026 — mañana)
 
 | Item | Estado |
 |------|--------|
