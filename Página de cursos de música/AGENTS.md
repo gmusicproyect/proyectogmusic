@@ -51,6 +51,7 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 | **Funnel Demo** | `inscripcion-gate` | `/inscripcion` | Cierre de conversión / pasarela |
 | **Alumno suscriptor** | `mi-estudio` / `welcome` | `/alumno` | Dashboard principal del alumno |
 | **Alumno suscriptor** | `mi-camino` | `/mi-camino` | Ruta de aprendizaje de guitarra |
+| **Admin creador (R-008)** | `admin` | `/admin` | Panel Juan: publicar bloques (Module) y etapas (PathNode) — rol `ADMIN` + `requireAdmin` |
 
 ### Estado de implementación URL (referencia técnica)
 
@@ -61,6 +62,7 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 | `/demo-clase-1` … `/demo-clase-5` | **Sí** — `e047ac3`, D-GOV-02/03 |
 | `/inscripcion` | **Sí** — `inscripcion-gate`; `e047ac3`, D-GOV-02/03 |
 | `inscripcion-registro` | **Sin URL pública** — sub-estado interno; gate → registro mantiene `/inscripcion` |
+| `/admin` | **Sí** — D-GOV-04 / R-008 Admin Creador MVP; guard `requireAdmin` en API |
 | Legacy / resto de `currentPage` | **No** — fuera de alcance D-GOV-03 |
 
 Reglas de navegación (zona suscriptor + funnel demo):

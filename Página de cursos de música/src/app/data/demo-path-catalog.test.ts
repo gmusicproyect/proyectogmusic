@@ -42,8 +42,8 @@ describe("demo-path-catalog", () => {
   it("títulos teaser del módulo Fundamento son coherentes (6–15)", () => {
     const teaser = getCarouselDemoPathEntries().slice(5);
     assert.equal(teaser.length, 10);
-    assert.match(teaser[0]?.title ?? "", /^Clase 6 · /);
-    assert.match(teaser[9]?.title ?? "", /^Clase 15 · /);
+    assert.equal(teaser[0]?.title, "Clase 6 · Tu primer acorde");
+    assert.equal(teaser[9]?.title, "Clase 15 · 🏆 El gran momento");
     assert.equal(teaser.every((e) => e.moduleName === "Fundamento"), true);
   });
 });
