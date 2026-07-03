@@ -63,6 +63,7 @@ export interface PathNodeResponse {
   status: PathNodeStatus;
   duration: string;
   contentKind: PathContentKind;
+  videoUrl: string | null;
 }
 
 export interface PathModuleResponse {

@@ -28,6 +28,8 @@ interface ActivePathRunner {
   session: LessonSessionResponse;
   nodeTitle: string;
   nodeId: string;
+  videoUrl: string | null;
+  nodeDuration?: string;
 }
 
 interface GmusicPathProps {
@@ -109,6 +111,8 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
       session: lessonSession.result.session,
       nodeTitle: node.title,
       nodeId: node.id,
+      videoUrl: node.videoUrl ?? null,
+      nodeDuration: node.duration,
     });
   }, [lessonSession, viewModel?.modules]);
 
@@ -279,6 +283,8 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           key={activeRunner.session.sessionId}
           session={activeRunner.session}
           nodeTitle={activeRunner.nodeTitle}
+          videoUrl={activeRunner.videoUrl}
+          nodeDuration={activeRunner.nodeDuration}
           onExit={handleCloseRunner}
           onSessionCompleted={path.retry}
         />

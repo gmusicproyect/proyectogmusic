@@ -43,6 +43,8 @@ export interface LessonRunnerShellProps {
   onExit: () => void;
   onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
   submission?: LessonRunnerSubmissionView;
+  /** embedded = sin header técnico; usado dentro de PathLessonRunner suscriptor */
+  variant?: "default" | "embedded";
 }
 
 type ShellPreparation =
@@ -94,11 +96,13 @@ function LessonRunnerShellFrame({
   sessionIdLabel,
   onExit,
   children,
+  showSessionId = true,
 }: {
   nodeTitle: string;
   sessionIdLabel: string;
   onExit: () => void;
   children: ReactNode;
+  showSessionId?: boolean;
 }) {
   const titleId = useId();
 
@@ -128,9 +132,11 @@ function LessonRunnerShellFrame({
             >
               {nodeTitle}
             </h1>
-            <p className="text-xs font-mono tracking-wide mt-1" style={{ color: GM_TEXT_SEC }}>
-              Sesión {sessionIdLabel}
-            </p>
+            {showSessionId ? (
+              <p className="text-xs font-mono tracking-wide mt-1" style={{ color: GM_TEXT_SEC }}>
+                Sesión {sessionIdLabel}
+              </p>
+            ) : null}
           </div>
           <Button
             type="button"
@@ -299,12 +305,14 @@ function LessonRunnerActive({
   onExit,
   onPracticeFinished,
   submission,
+  showSecondaryExit = true,
 }: {
   exercises: ParsedExerciseView[];
   expiresAt: string;
   onExit: () => void;
   onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
   submission?: LessonRunnerSubmissionView;
+  showSecondaryExit?: boolean;
 }) {
   const { state, currentExercise, selectOption, nextExercise, completeTap } = useLessonRunner({
     exercises,
@@ -379,14 +387,16 @@ function LessonRunnerActive({
             {isLastExercise ? "Finalizar práctica" : "Siguiente"}
           </Button>
         ) : null}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onExit}
-          className="w-full font-medium min-h-[44px] tracking-wide"
-        >
-          Volver al camino
-        </Button>
+        {showSecondaryExit ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onExit}
+            className="w-full font-medium min-h-[44px] tracking-wide"
+          >
+            Volver al camino
+          </Button>
+        ) : null}
       </div>
     </div>
   );
@@ -398,50 +408,78 @@ export function LessonRunnerShell({
   onExit,
   onPracticeFinished,
   submission,
+  variant = "default",
 }: LessonRunnerShellProps) {
   const preparation = useMemo(() => prepareShellSession(session), [session]);
   const sessionIdLabel = abbreviateSessionId(session.sessionId);
+  const embedded = variant === "embedded";
 
   useEscapeExit(onExit);
 
+  const practiceRunner = (
+    <LessonRunnerActive
+      key={getLessonRunnerResetKey(session.sessionId)}
+      exercises={preparation.kind === "supported" ? preparation.exercises : []}
+      expiresAt={session.expiresAt}
+      onExit={onExit}
+      onPracticeFinished={onPracticeFinished}
+      submission={submission}
+      showSecondaryExit={!embedded}
+    />
+  );
+
   if (preparation.kind === "unsafe") {
+    const panel = (
+      <UnsupportedExercisePanel reason={preparation.message} onExit={onExit} />
+    );
+    if (embedded) return panel;
     return (
       <LessonRunnerShellFrame
         nodeTitle={nodeTitle}
         sessionIdLabel={sessionIdLabel}
         onExit={onExit}
       >
-        <UnsupportedExercisePanel reason={preparation.message} onExit={onExit} />
+        {panel}
       </LessonRunnerShellFrame>
     );
   }
 
   if (preparation.kind === "incompatible") {
+    const panel = (
+      <UnsupportedExercisePanel
+        reason={preparation.reason}
+        exerciseId={preparation.exerciseId}
+        onExit={onExit}
+      />
+    );
+    if (embedded) return panel;
     return (
       <LessonRunnerShellFrame
         nodeTitle={nodeTitle}
         sessionIdLabel={sessionIdLabel}
         onExit={onExit}
       >
-        <UnsupportedExercisePanel
-          reason={preparation.reason}
-          exerciseId={preparation.exerciseId}
-          onExit={onExit}
-        />
+        {panel}
       </LessonRunnerShellFrame>
     );
   }
 
   if (preparation.exercises.length === 0) {
+    const panel = <LessonRunnerEmptyState onExit={onExit} />;
+    if (embedded) return panel;
     return (
       <LessonRunnerShellFrame
         nodeTitle={nodeTitle}
         sessionIdLabel={sessionIdLabel}
         onExit={onExit}
       >
-        <LessonRunnerEmptyState onExit={onExit} />
+        {panel}
       </LessonRunnerShellFrame>
     );
+  }
+
+  if (embedded) {
+    return practiceRunner;
   }
 
   return (
@@ -450,14 +488,7 @@ export function LessonRunnerShell({
       sessionIdLabel={sessionIdLabel}
       onExit={onExit}
     >
-      <LessonRunnerActive
-        key={getLessonRunnerResetKey(session.sessionId)}
-        exercises={preparation.exercises}
-        expiresAt={session.expiresAt}
-        onExit={onExit}
-        onPracticeFinished={onPracticeFinished}
-        submission={submission}
-      />
+      {practiceRunner}
     </LessonRunnerShellFrame>
   );
 }

@@ -29,6 +29,7 @@ export function getMockPathResponse(): PathResponse {
         status: node.status,
         duration: node.duration ?? "5 min",
         contentKind: node.type,
+        videoUrl: null,
       })),
     })),
     activeNodeId: ACTIVE_NODE_ID,

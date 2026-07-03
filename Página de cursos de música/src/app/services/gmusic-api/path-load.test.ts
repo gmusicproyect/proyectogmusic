@@ -28,6 +28,7 @@ const BASE_RESPONSE: PathResponse = {
           status: "active",
           duration: "5 min",
           contentKind: "video",
+          videoUrl: null,
         },
       ],
     },

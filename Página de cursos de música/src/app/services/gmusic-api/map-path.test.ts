@@ -31,6 +31,7 @@ const BASE_RESPONSE: PathResponse = {
           status: "completed",
           duration: "8 min",
           contentKind: "video",
+          videoUrl: null,
         },
         {
           id: "n2",
@@ -39,6 +40,7 @@ const BASE_RESPONSE: PathResponse = {
           status: "active",
           duration: "5 min",
           contentKind: "audio_lab",
+          videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         },
         {
           id: "n3",
@@ -47,6 +49,7 @@ const BASE_RESPONSE: PathResponse = {
           status: "available",
           duration: "6 min",
           contentKind: "video",
+          videoUrl: null,
         },
       ],
     },
@@ -65,6 +68,7 @@ const BASE_RESPONSE: PathResponse = {
           status: "locked",
           duration: "7 min",
           contentKind: "audio_lab",
+          videoUrl: null,
         },
       ],
     },
@@ -90,9 +94,11 @@ describe("mapPathToViewModel", () => {
     const viewModel = mapPathToViewModel(BASE_RESPONSE);
     const available = findPathNodeById(viewModel.modules, "n3");
     const locked = findPathNodeById(viewModel.modules, "n4");
+    const active = findPathNodeById(viewModel.modules, "n2");
 
     assert.equal(available?.status, "available");
     assert.equal(locked?.status, "locked");
+    assert.equal(active?.videoUrl, "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
   });
 
   it("marca camino completado cuando activeNodeId es null", () => {

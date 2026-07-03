@@ -35,6 +35,15 @@ export function extractYoutubeId(url: string): string | null {
   return null;
 }
 
+export function isSafeMaterialUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function computeAdminStats(modules: AdminModuleListItem[]) {
   return {
     total: modules.length,

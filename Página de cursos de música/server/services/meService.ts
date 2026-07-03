@@ -129,6 +129,10 @@ export async function buildPathResponse(student: User, courseSlug: string) {
             status: statusByNodeId.get(node.id) ?? "locked",
             duration: `${Math.max(3, node.exercises.length * 3)} min`,
             contentKind,
+            videoUrl:
+              node.videoUrl && node.videoUrl.trim().startsWith("https://")
+                ? node.videoUrl.trim()
+                : null,
           };
         }),
       };

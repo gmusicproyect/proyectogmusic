@@ -85,6 +85,7 @@ export function mapPathToViewModel(response: PathResponse): PathViewModel {
         duration: node.duration,
         typeLabel: derivePathNodeTypeLabel(node.contentKind, node.duration),
         description: derivePathNodeDescription(status, module.focus),
+        videoUrl: node.videoUrl ?? null,
       } satisfies PathNodeData;
     }),
   }));

@@ -17,6 +17,7 @@ export interface PathNodeData {
   duration?: string;
   typeLabel?: string;
   description?: string;
+  videoUrl?: string | null;
 }
 
 export interface PathModuleData {
