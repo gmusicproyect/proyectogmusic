@@ -15,6 +15,7 @@ describe("curriculum publish rules", () => {
     status: PublishStatus.DRAFT,
     stageType,
     videoUrl: null,
+    guidePdfUrl: null,
     guideText: "Guía",
     completionCriteria: "Completar la etapa",
     ctaLabel: "Continuar",

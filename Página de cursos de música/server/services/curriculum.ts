@@ -1,5 +1,6 @@
 import { PublishStatus, StageType, type PathNode } from "@prisma/client";
 import { ApiError } from "../lib/errors.js";
+import { normalizeMaterialUrl } from "../lib/normalizeMaterialUrl.js";
 import { prisma } from "../lib/prisma.js";
 
 export const STAGE_TYPES_BY_ORDER: readonly StageType[] = [
@@ -26,6 +27,7 @@ export type PathNodeSlotSnapshot = Pick<
   | "status"
   | "stageType"
   | "videoUrl"
+  | "guidePdfUrl"
   | "guideText"
   | "completionCriteria"
   | "ctaLabel"
@@ -167,6 +169,7 @@ export async function getAdminModuleDetail(moduleId: string) {
             title: node.title,
             status: node.status,
             videoUrl: node.videoUrl,
+            guidePdfUrl: node.guidePdfUrl,
             guideText: node.guideText,
             completionCriteria: node.completionCriteria,
             ctaLabel: node.ctaLabel,
@@ -237,6 +240,7 @@ export async function createAdminModule(courseSlug: string, title: string) {
 export type UpdateAdminSlotInput = {
   title: string;
   videoUrl?: string | null;
+  guidePdfUrl?: string | null;
   guideText?: string | null;
   completionCriteria?: string | null;
   ctaLabel?: string | null;
@@ -274,7 +278,8 @@ export async function updateAdminSlot(
     },
     update: {
       title: trimmedTitle,
-      videoUrl: normalizeNullableText(input.videoUrl),
+      videoUrl: normalizeMaterialUrl(input.videoUrl, "URL de video"),
+      guidePdfUrl: normalizeMaterialUrl(input.guidePdfUrl, "URL del PDF"),
       guideText: normalizeNullableText(input.guideText),
       completionCriteria: normalizeNullableText(input.completionCriteria),
       ctaLabel: normalizeNullableText(input.ctaLabel),
@@ -285,7 +290,8 @@ export async function updateAdminSlot(
       moduleId,
       order: slotOrder,
       title: trimmedTitle,
-      videoUrl: normalizeNullableText(input.videoUrl),
+      videoUrl: normalizeMaterialUrl(input.videoUrl, "URL de video"),
+      guidePdfUrl: normalizeMaterialUrl(input.guidePdfUrl, "URL del PDF"),
       guideText: normalizeNullableText(input.guideText),
       completionCriteria: normalizeNullableText(input.completionCriteria),
       ctaLabel: normalizeNullableText(input.ctaLabel),

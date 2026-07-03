@@ -15,7 +15,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../.
 import { Separator } from "../../ui/separator";
 import type { AdminModuleListItem } from "../../../services/gmusic-api/admin";
 
-export type AdminNavView = "list" | "detail" | "edit";
+export type AdminNavView = "list" | "detail" | "edit" | "attempts";
 
 interface AdminLayoutProps {
   children: ReactNode;

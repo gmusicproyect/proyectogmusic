@@ -188,6 +188,7 @@ model PathNode {
   status             PublishStatus @default(DRAFT)
   stageType          StageType?
   videoUrl           String?
+  guidePdfUrl        String?
   guideText          String?
   completionCriteria String?
   ctaLabel           String?

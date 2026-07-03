@@ -22,6 +22,7 @@ export type AdminSlotNode = {
   title: string;
   status: string;
   videoUrl: string | null;
+  guidePdfUrl: string | null;
   guideText: string | null;
   completionCriteria: string | null;
   ctaLabel: string | null;
@@ -52,9 +53,29 @@ export type AdminModuleDetailResponse = {
 export type UpdateAdminSlotInput = {
   title: string;
   videoUrl?: string | null;
+  guidePdfUrl?: string | null;
   guideText?: string | null;
   completionCriteria?: string | null;
   ctaLabel?: string | null;
+};
+
+export type AdminNodeAttemptsResponse = {
+  node: {
+    id: string;
+    order: number;
+    title: string;
+    module: { id: string; order: number; title: string };
+  };
+  summary: { total: number; correct: number; incorrect: number };
+  attempts: Array<{
+    id: string;
+    isCorrect: boolean;
+    selectedAnswer: string;
+    responseTimeMs: number;
+    createdAt: string;
+    student: { id: string; name: string; email: string };
+    exercise: { id: string; order: number; instruction: string; type: string };
+  }>;
 };
 
 export async function fetchAdminModules(options?: { signal?: AbortSignal }) {
@@ -99,4 +120,11 @@ export async function publishAdminModule(moduleId: string) {
 export async function deleteAdminModule(moduleId: string) {
   const { data } = await apiDelete(`${getApiBaseUrl()}/admin/modules/${moduleId}`);
   return data;
+}
+
+export async function fetchAdminNodeAttempts(nodeId: string, options?: { signal?: AbortSignal }) {
+  return apiGet<AdminNodeAttemptsResponse>(
+    `${getApiBaseUrl()}/admin/nodes/${nodeId}/attempts`,
+    options
+  );
 }

@@ -14,6 +14,7 @@ import {
   publishAdminModule,
   updateAdminSlot,
 } from "../services/curriculum.js";
+import { getAdminNodeAttempts } from "../services/adminReports.js";
 
 export const adminRouter = Router();
 
@@ -84,6 +85,17 @@ adminRouter.delete("/modules/:moduleId", async (req, res, next) => {
   try {
     assertAdmin(req);
     const payload = await deleteAdminModule(req.params.moduleId);
+    res.json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.get("/nodes/:nodeId/attempts", async (req, res, next) => {
+  try {
+    assertAdmin(req);
+    const payload = await getAdminNodeAttempts(req.params.nodeId);
+    res.set("Cache-Control", "no-store");
     res.json(payload);
   } catch (error) {
     next(error);

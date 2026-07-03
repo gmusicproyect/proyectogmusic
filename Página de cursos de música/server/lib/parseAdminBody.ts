@@ -3,6 +3,7 @@ import { ApiError } from "./errors.js";
 export type UpdateAdminSlotBody = {
   title: string;
   videoUrl?: string | null;
+  guidePdfUrl?: string | null;
   guideText?: string | null;
   completionCriteria?: string | null;
   ctaLabel?: string | null;
@@ -54,6 +55,7 @@ export function parseUpdateAdminSlotBody(body: unknown): UpdateAdminSlotBody {
   return {
     title: readRequiredString(record.title, "title"),
     videoUrl: readOptionalString(record.videoUrl),
+    guidePdfUrl: readOptionalString(record.guidePdfUrl),
     guideText: readOptionalString(record.guideText),
     completionCriteria: readOptionalString(record.completionCriteria),
     ctaLabel: readOptionalString(record.ctaLabel),

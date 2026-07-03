@@ -97,6 +97,24 @@ describe("admin routes", () => {
     assert.equal(publish.body.canPublish, true);
   });
 
+  it("PUT slot acepta guidePdfUrl https", async (t) => {
+    if (!hasDatabase || !dbReady || !createdModuleId) {
+      t.skip("DATABASE_URL no disponible o bloque QA no creado");
+      return;
+    }
+
+    const save = await request(app)
+      .put(`/api/v1/admin/modules/${createdModuleId}/slots/1`)
+      .set("Cookie", adminCookie)
+      .send({
+        title: "Etapa 1",
+        guidePdfUrl: "https://cdn.example.com/am-diagram.pdf",
+        completionCriteria: "Marcar como visto",
+      });
+    assert.equal(save.status, 200);
+    assert.equal(save.body.node.guidePdfUrl, "https://cdn.example.com/am-diagram.pdf");
+  });
+
   it("DELETE /admin/modules elimina borrador y rechaza publicados", async (t) => {
     if (!hasDatabase || !dbReady) {
       t.skip("DATABASE_URL no disponible");
@@ -137,5 +155,37 @@ describe("admin routes", () => {
       .set("Cookie", adminCookie);
     assert.equal(deletePublished.status, 409);
     assert.equal(deletePublished.body.error.code, "MODULE_NOT_DELETABLE");
+  });
+
+  it("GET /admin/nodes/:nodeId/attempts requiere ADMIN", async (t) => {
+    if (!hasDatabase || !dbReady) {
+      t.skip("DATABASE_URL no disponible");
+      return;
+    }
+
+    const firstNode = await prisma.pathNode.findFirst({
+      where: { module: { title: "Fundamentos" } },
+      select: { id: true },
+    });
+
+    if (!firstNode) {
+      t.skip("Sin nodo seed para intentos");
+      return;
+    }
+
+    const anon = await request(app).get(`/api/v1/admin/nodes/${firstNode.id}/attempts`);
+    assert.equal(anon.status, 401);
+
+    const student = await request(app)
+      .get(`/api/v1/admin/nodes/${firstNode.id}/attempts`)
+      .set("Cookie", studentCookie);
+    assert.equal(student.status, 403);
+
+    const admin = await request(app)
+      .get(`/api/v1/admin/nodes/${firstNode.id}/attempts`)
+      .set("Cookie", adminCookie);
+    assert.equal(admin.status, 200);
+    assert.ok(admin.body.summary);
+    assert.ok(Array.isArray(admin.body.attempts));
   });
 });
