@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { CheckCircle2, CircleDashed, Plus, Rocket, Trash2 } from "lucide-react";
+import { CheckCircle2, CircleDashed, FileText, Plus, Rocket, Trash2, XCircle } from "lucide-react";
 import { AdminLayout } from "../components/gmusic/admin/AdminLayout";
 import {
   BLOCK_STARTER_TITLES,
   STAGE_HINTS,
   computeAdminStats,
   extractYoutubeId,
+  isSafeMaterialUrl,
   statusLabel,
 } from "../components/gmusic/admin/admin-utils";
 import {
@@ -44,10 +45,12 @@ import {
   deleteAdminModule,
   fetchAdminModuleDetail,
   fetchAdminModules,
+  fetchAdminNodeAttempts,
   publishAdminModule,
   updateAdminSlot,
   type AdminModuleDetailResponse,
   type AdminModuleListItem,
+  type AdminNodeAttemptsResponse,
 } from "../services/gmusic-api/admin";
 import "./admin-page.css";
 
@@ -58,7 +61,8 @@ interface AdminPageProps {
 type AdminView =
   | { kind: "list" }
   | { kind: "detail"; moduleId: string }
-  | { kind: "edit"; moduleId: string; slotOrder: number };
+  | { kind: "edit"; moduleId: string; slotOrder: number }
+  | { kind: "attempts"; moduleId: string; nodeId: string; slotOrder: number };
 
 type Toast = { message: string; tone: "success" | "error" } | null;
 
@@ -96,9 +100,13 @@ export function AdminPage({ setPage }: AdminPageProps) {
 
   const [slotTitle, setSlotTitle] = useState("");
   const [slotVideoUrl, setSlotVideoUrl] = useState("");
+  const [slotGuidePdfUrl, setSlotGuidePdfUrl] = useState("");
   const [slotGuideText, setSlotGuideText] = useState("");
   const [slotCompletionCriteria, setSlotCompletionCriteria] = useState("");
   const [slotCtaLabel, setSlotCtaLabel] = useState("Continuar");
+  const [attemptsData, setAttemptsData] = useState<AdminNodeAttemptsResponse | null>(null);
+  const [attemptsLoading, setAttemptsLoading] = useState(false);
+  const [attemptsError, setAttemptsError] = useState<string | null>(null);
   const [deleteConfirming, setDeleteConfirming] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -106,11 +114,20 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const stats = useMemo(() => computeAdminStats(modules), [modules]);
 
   const activeModuleId =
-    view.kind === "detail" || view.kind === "edit" ? view.moduleId : null;
+    view.kind === "detail" || view.kind === "edit" || view.kind === "attempts"
+      ? view.moduleId
+      : null;
   const activeModuleTitle =
     detail?.module.id === activeModuleId ? detail.module.title : modules.find((m) => m.id === activeModuleId)?.title ?? null;
 
-  const navView = view.kind === "list" ? "list" : view.kind === "edit" ? "edit" : "detail";
+  const navView =
+    view.kind === "list"
+      ? "list"
+      : view.kind === "edit"
+        ? "edit"
+        : view.kind === "attempts"
+          ? "attempts"
+          : "detail";
 
   const showToast = useCallback((message: string, tone: "success" | "error" = "success") => {
     setToast({ message, tone });
@@ -138,10 +155,12 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const loadDetail = useCallback(async (moduleId: string) => {
     setDetailError(null);
     setDetailLoading(true);
+    setDetail(null);
     try {
       const response = await fetchAdminModuleDetail(moduleId);
       setDetail(response);
     } catch (error) {
+      setDetail(null);
       setDetailError(
         error instanceof GmusicApiError ? error.message : "No pudimos cargar el bloque."
       );
@@ -155,10 +174,32 @@ export function AdminPage({ setPage }: AdminPageProps) {
   }, [loadList]);
 
   useEffect(() => {
-    if (view.kind === "detail" || view.kind === "edit") {
+    if (view.kind === "detail" || view.kind === "edit" || view.kind === "attempts") {
       void loadDetail(view.moduleId);
     }
   }, [view, loadDetail]);
+
+  const loadAttempts = useCallback(async (nodeId: string) => {
+    setAttemptsError(null);
+    setAttemptsLoading(true);
+    try {
+      const response = await fetchAdminNodeAttempts(nodeId);
+      setAttemptsData(response);
+    } catch (error) {
+      setAttemptsError(
+        error instanceof GmusicApiError ? error.message : "No pudimos cargar las respuestas."
+      );
+      setAttemptsData(null);
+    } finally {
+      setAttemptsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (view.kind === "attempts") {
+      void loadAttempts(view.nodeId);
+    }
+  }, [view, loadAttempts]);
 
   useEffect(() => {
     if (view.kind !== "detail") {
@@ -173,6 +214,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
     const node = slot?.node;
     setSlotTitle(node?.title ?? "");
     setSlotVideoUrl(node?.videoUrl ?? "");
+    setSlotGuidePdfUrl(node?.guidePdfUrl ?? "");
     setSlotGuideText(node?.guideText ?? "");
     setSlotCompletionCriteria(node?.completionCriteria ?? "");
     setSlotCtaLabel(node?.ctaLabel ?? "Continuar");
@@ -209,7 +251,19 @@ export function AdminPage({ setPage }: AdminPageProps) {
     event?.preventDefault();
     const title = (titleOverride ?? newBlockTitle).trim();
     if (!title) return;
+
+    const existing = modules.find(
+      (module) => module.title.localeCompare(title, "es", { sensitivity: "accent" }) === 0
+    );
+    if (existing) {
+      setNewBlockTitle("");
+      setView({ kind: "detail", moduleId: existing.id });
+      showToast(`"${existing.title}" ya existe (B${existing.order}) — abriéndolo para editar.`);
+      return;
+    }
+
     setBusy(true);
+    setListError(null);
     try {
       const created = await createAdminModule(title);
       setNewBlockTitle("");
@@ -217,9 +271,10 @@ export function AdminPage({ setPage }: AdminPageProps) {
       setView({ kind: "detail", moduleId: created.module.id });
       showToast("Bloque creado — completa las 5 etapas.");
     } catch (error) {
-      setListError(
-        error instanceof GmusicApiError ? error.message : "No pudimos crear el bloque."
-      );
+      const message =
+        error instanceof GmusicApiError ? error.message : "No pudimos crear el bloque.";
+      setListError(message);
+      showToast(message, "error");
     } finally {
       setBusy(false);
     }
@@ -240,6 +295,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
       await updateAdminSlot(view.moduleId, view.slotOrder, {
         title: slotTitle,
         videoUrl: slotVideoUrl || null,
+        guidePdfUrl: slotGuidePdfUrl || null,
         guideText: slotGuideText || null,
         completionCriteria: slotCompletionCriteria || null,
         ctaLabel: slotCtaLabel || null,
@@ -392,7 +448,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              {view.kind === "edit" ? (
+              {view.kind === "edit" || view.kind === "attempts" ? (
                 <BreadcrumbLink asChild>
                   <button
                     type="button"
@@ -414,6 +470,16 @@ export function AdminPage({ setPage }: AdminPageProps) {
             <BreadcrumbItem>
               <BreadcrumbPage>
                 {detail.slots.find((s) => s.order === view.slotOrder)?.stageLabel}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </>
+        ) : null}
+        {view.kind === "attempts" && detail ? (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                Respuestas · {detail.slots.find((s) => s.order === view.slotOrder)?.stageLabel}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </>
@@ -464,7 +530,10 @@ export function AdminPage({ setPage }: AdminPageProps) {
       <Card className="admin-panel-card">
         <CardHeader>
           <CardTitle className="admin-card-title">Nuevo bloque</CardTitle>
-          <CardDescription>Empieza con un título alineado al mapa D-GOV-04.</CardDescription>
+          <CardDescription>
+            Escribe un título y pulsa Crear — o usa un atajo. Si el bloque ya está en la tabla
+            de abajo, haz clic en esa fila para editarlo (no hace falta crearlo de nuevo).
+          </CardDescription>
         </CardHeader>
         <CardContent className="admin-create-section">
           <form className="admin-create-form" onSubmit={handleCreateBlock}>
@@ -517,7 +586,10 @@ export function AdminPage({ setPage }: AdminPageProps) {
         <Card className="admin-panel-card">
           <CardHeader>
             <CardTitle className="admin-card-title">Biblioteca de bloques</CardTitle>
-            <CardDescription>Haz clic en una fila para editar las 5 etapas.</CardDescription>
+            <CardDescription>
+              Haz clic en una fila (o en Recientes del menú lateral) para abrir el bloque y
+              completar sus 5 etapas.
+            </CardDescription>
           </CardHeader>
           <CardContent className="admin-table-wrap">
             <Table>
@@ -539,7 +611,15 @@ export function AdminPage({ setPage }: AdminPageProps) {
                     <TableRow
                       key={module.id}
                       className="admin-table-row"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setView({ kind: "detail", moduleId: module.id })}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setView({ kind: "detail", moduleId: module.id });
+                        }
+                      }}
                     >
                       <TableCell className="admin-table-num">B{module.order}</TableCell>
                       <TableCell className="admin-table-title">{module.title}</TableCell>
@@ -568,7 +648,29 @@ export function AdminPage({ setPage }: AdminPageProps) {
   );
 
   const renderDetail = () => {
-    if (detailLoading || !detail) {
+    if (view.kind !== "detail") return null;
+
+    if (detailLoading) {
+      return <AdminLoading message="Cargando bloque…" />;
+    }
+
+    if (detailError && (!detail || detail.module.id !== view.moduleId)) {
+      return (
+        <>
+          <Alert variant="destructive" className="admin-alert">
+            <AlertDescription>{detailError}</AlertDescription>
+          </Alert>
+          <Button variant="outline" onClick={() => void loadDetail(view.moduleId)}>
+            Reintentar
+          </Button>
+          <Button variant="ghost" className="admin-ml-btn" onClick={() => setView({ kind: "list" })}>
+            Volver a la lista
+          </Button>
+        </>
+      );
+    }
+
+    if (!detail || detail.module.id !== view.moduleId) {
       return <AdminLoading message="Cargando bloque…" />;
     }
 
@@ -638,6 +740,36 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </button>
           ))}
         </div>
+
+        <Card className="admin-panel-card admin-evaluation-card">
+          <CardHeader>
+            <CardTitle className="admin-card-title">Evaluación</CardTitle>
+            <CardDescription>
+              Respuestas de ejercicios por etapa — quién acertó y quién no (solo lectura).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="admin-evaluation-card__body">
+            {detail.slots.map((slot) =>
+              slot.node ? (
+                <Button
+                  key={slot.order}
+                  variant="outline"
+                  className="admin-evaluation-chip"
+                  onClick={() =>
+                    setView({
+                      kind: "attempts",
+                      moduleId: detail.module.id,
+                      nodeId: slot.node!.id,
+                      slotOrder: slot.order,
+                    })
+                  }
+                >
+                  Etapa {slot.order} · {slot.stageLabel}
+                </Button>
+              ) : null
+            )}
+          </CardContent>
+        </Card>
 
         <Card className="admin-panel-card admin-publish-card">
           <CardContent className="admin-publish-card__body">
@@ -780,6 +912,30 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </div>
 
             <div className="admin-form-field">
+              <Label htmlFor="slot-pdf">Material PDF (URL)</Label>
+              <p className="admin-field-hint">
+                Opcional — enlace https a PDF (Drive, Dropbox, Supabase Storage…).
+              </p>
+              <Input
+                id="slot-pdf"
+                className="admin-shadcn-input"
+                value={slotGuidePdfUrl}
+                onChange={(e) => setSlotGuidePdfUrl(e.target.value)}
+                placeholder="https://..."
+              />
+              {slotGuidePdfUrl && isSafeMaterialUrl(slotGuidePdfUrl) ? (
+                <a
+                  href={slotGuidePdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="admin-pdf-link"
+                >
+                  <FileText aria-hidden="true" /> Abrir PDF de prueba
+                </a>
+              ) : null}
+            </div>
+
+            <div className="admin-form-field">
               <Label htmlFor="slot-guide">Texto guía</Label>
               <Textarea
                 id="slot-guide"
@@ -815,6 +971,21 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </div>
 
             <div className="admin-form-actions">
+              {slot?.node ? (
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setView({
+                      kind: "attempts",
+                      moduleId: editView.moduleId,
+                      nodeId: slot.node!.id,
+                      slotOrder: editView.slotOrder,
+                    })
+                  }
+                >
+                  Ver respuestas
+                </Button>
+              ) : null}
               <Button variant="outline" onClick={() => setView({ kind: "detail", moduleId: editView.moduleId })}>
                 Cancelar
               </Button>
@@ -828,9 +999,120 @@ export function AdminPage({ setPage }: AdminPageProps) {
     );
   };
 
+  const renderAttempts = () => {
+    if (view.kind !== "attempts") return null;
+    if (attemptsLoading) return <AdminLoading message="Cargando respuestas…" />;
+
+    const slotLabel = detail?.slots.find((s) => s.order === view.slotOrder)?.stageLabel;
+
+    return (
+      <>
+        {renderBreadcrumb()}
+        <header className="admin-page-header">
+          <div>
+            <p className="admin-eyebrow">Evaluación · Etapa {view.slotOrder}</p>
+            <h1 className="admin-title">{slotLabel ?? "Respuestas"}</h1>
+            <p className="admin-subtitle">
+              Intentos registrados en ejercicios de esta etapa (calificación en servidor).
+            </p>
+          </div>
+        </header>
+
+        {attemptsError ? (
+          <Alert variant="destructive" className="admin-alert">
+            <AlertDescription>{attemptsError}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        {attemptsData ? (
+          <>
+            <div className="admin-stats-grid admin-stats-grid--attempts">
+              <Card className="admin-stat-card">
+                <CardHeader className="pb-2">
+                  <CardDescription>Total intentos</CardDescription>
+                  <CardTitle className="admin-stat-value">{attemptsData.summary.total}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card className="admin-stat-card">
+                <CardHeader className="pb-2">
+                  <CardDescription>Correctos</CardDescription>
+                  <CardTitle className="admin-stat-value admin-stat-value--green">
+                    {attemptsData.summary.correct}
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+              <Card className="admin-stat-card">
+                <CardHeader className="pb-2">
+                  <CardDescription>Incorrectos</CardDescription>
+                  <CardTitle className="admin-stat-value admin-stat-value--gold">
+                    {attemptsData.summary.incorrect}
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            <Card className="admin-panel-card">
+              <CardContent className="admin-table-wrap" style={{ paddingTop: "1.25rem" }}>
+                {attemptsData.attempts.length === 0 ? (
+                  <p className="admin-empty__text">Aún no hay respuestas en esta etapa.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Alumno</TableHead>
+                        <TableHead>Ejercicio</TableHead>
+                        <TableHead>Respuesta</TableHead>
+                        <TableHead>Resultado</TableHead>
+                        <TableHead>Fecha</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {attemptsData.attempts.map((attempt) => (
+                        <TableRow key={attempt.id}>
+                          <TableCell>
+                            <span className="admin-table-title">{attempt.student.name}</span>
+                            <br />
+                            <span style={{ fontSize: 12, color: "#888" }}>{attempt.student.email}</span>
+                          </TableCell>
+                          <TableCell>#{attempt.exercise.order}</TableCell>
+                          <TableCell>{attempt.selectedAnswer}</TableCell>
+                          <TableCell>
+                            {attempt.isCorrect ? (
+                              <Badge className="admin-badge-ok">
+                                <CheckCircle2 aria-hidden="true" /> Correcto
+                              </Badge>
+                            ) : (
+                              <Badge variant="destructive" className="admin-badge-fail">
+                                <XCircle aria-hidden="true" /> Incorrecto
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(attempt.createdAt).toLocaleString("es-CL")}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        ) : null}
+
+        <div className="admin-form-actions" style={{ marginTop: "1rem" }}>
+          <Button variant="outline" onClick={() => setView({ kind: "detail", moduleId: view.moduleId })}>
+            Volver al bloque
+          </Button>
+        </div>
+      </>
+    );
+  };
+
   let content: ReactNode;
   if (view.kind === "list") content = renderList();
   else if (view.kind === "detail") content = renderDetail();
+  else if (view.kind === "attempts") content = renderAttempts();
   else content = renderEdit();
 
   return (
