@@ -163,3 +163,35 @@ export async function apiPut<T>(
   const data = (await response.json()) as T;
   return { data, status: response.status };
 }
+
+export async function apiDelete<T = { deleted: boolean; moduleId: string }>(
+  path: string,
+  options?: { signal?: AbortSignal }
+): Promise<{ data: T; status: number }> {
+  const response = await runFetch(path, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+    },
+    credentials: "include",
+    signal: options?.signal,
+  });
+
+  if (!response.ok) {
+    let code = "INTERNAL_ERROR";
+    let message = `Error ${response.status} al consultar la API.`;
+
+    try {
+      const errorBody = (await response.json()) as ApiErrorBody;
+      if (errorBody.error?.code) code = errorBody.error.code;
+      if (errorBody.error?.message) message = errorBody.error.message;
+    } catch {
+      // Respuesta no JSON; mantener mensaje genérico.
+    }
+
+    throw new GmusicApiError(message, response.status, code);
+  }
+
+  const data = (await response.json()) as T;
+  return { data, status: response.status };
+}

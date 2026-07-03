@@ -96,4 +96,46 @@ describe("admin routes", () => {
     assert.equal(publish.body.module.status, PublishStatus.PUBLISHED);
     assert.equal(publish.body.canPublish, true);
   });
+
+  it("DELETE /admin/modules elimina borrador y rechaza publicados", async (t) => {
+    if (!hasDatabase || !dbReady) {
+      t.skip("DATABASE_URL no disponible");
+      return;
+    }
+
+    const createResponse = await request(app)
+      .post("/api/v1/admin/modules")
+      .set("Cookie", adminCookie)
+      .send({ title: "Bloque QA Delete" });
+
+    assert.equal(createResponse.status, 201);
+    const draftModuleId = createResponse.body.module.id as string;
+
+    const deleteDraft = await request(app)
+      .delete(`/api/v1/admin/modules/${draftModuleId}`)
+      .set("Cookie", adminCookie);
+    assert.equal(deleteDraft.status, 200);
+    assert.equal(deleteDraft.body.deleted, true);
+
+    const missing = await request(app)
+      .get(`/api/v1/admin/modules/${draftModuleId}`)
+      .set("Cookie", adminCookie);
+    assert.equal(missing.status, 404);
+
+    const publishedModule = await prisma.module.findFirst({
+      where: { title: "Fundamentos", status: PublishStatus.PUBLISHED },
+      select: { id: true },
+    });
+
+    if (!publishedModule) {
+      t.skip("Sin módulo publicado seed");
+      return;
+    }
+
+    const deletePublished = await request(app)
+      .delete(`/api/v1/admin/modules/${publishedModule.id}`)
+      .set("Cookie", adminCookie);
+    assert.equal(deletePublished.status, 409);
+    assert.equal(deletePublished.body.error.code, "MODULE_NOT_DELETABLE");
+  });
 });

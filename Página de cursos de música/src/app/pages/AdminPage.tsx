@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { CheckCircle2, CircleDashed, Plus, Rocket } from "lucide-react";
+import { CheckCircle2, CircleDashed, Plus, Rocket, Trash2 } from "lucide-react";
 import { AdminLayout } from "../components/gmusic/admin/AdminLayout";
 import {
   BLOCK_STARTER_TITLES,
@@ -41,6 +41,7 @@ import { loginAccount, logoutAccount } from "../services/gmusic-api/auth";
 import { GmusicApiError } from "../services/gmusic-api/client";
 import {
   createAdminModule,
+  deleteAdminModule,
   fetchAdminModuleDetail,
   fetchAdminModules,
   publishAdminModule,
@@ -98,6 +99,9 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const [slotGuideText, setSlotGuideText] = useState("");
   const [slotCompletionCriteria, setSlotCompletionCriteria] = useState("");
   const [slotCtaLabel, setSlotCtaLabel] = useState("Continuar");
+  const [deleteConfirming, setDeleteConfirming] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const stats = useMemo(() => computeAdminStats(modules), [modules]);
 
@@ -155,6 +159,13 @@ export function AdminPage({ setPage }: AdminPageProps) {
       void loadDetail(view.moduleId);
     }
   }, [view, loadDetail]);
+
+  useEffect(() => {
+    if (view.kind !== "detail") {
+      setDeleteConfirming(false);
+      setDeleteError(null);
+    }
+  }, [view]);
 
   useEffect(() => {
     if (view.kind !== "edit" || !detail) return;
@@ -260,6 +271,43 @@ export function AdminPage({ setPage }: AdminPageProps) {
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const handleDeleteBlock = async (): Promise<boolean> => {
+    if (view.kind !== "detail" || !detail) {
+      setDeleteError("No pudimos leer el bloque. Vuelve a abrirlo e intenta de nuevo.");
+      return false;
+    }
+    if (detail.module.status === "PUBLISHED") {
+      const message = "Solo puedes eliminar bloques en borrador.";
+      setDeleteError(message);
+      showToast(message, "error");
+      return false;
+    }
+
+    const deletedTitle = detail.module.title;
+    setDeleteError(null);
+    setDeleteBusy(true);
+    try {
+      await deleteAdminModule(detail.module.id);
+      setDetail(null);
+      setDetailError(null);
+      setDeleteConfirming(false);
+      await loadList();
+      setView({ kind: "list" });
+      showToast(`Bloque «${deletedTitle}» eliminado.`);
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof GmusicApiError
+          ? error.message
+          : "No pudimos eliminar el bloque. ¿Está corriendo la API local?";
+      setDeleteError(message);
+      showToast(message, "error");
+      return false;
+    } finally {
+      setDeleteBusy(false);
     }
   };
 
@@ -611,6 +659,67 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </Button>
           </CardContent>
         </Card>
+
+        {detail.module.status !== "PUBLISHED" ? (
+          <Card className="admin-panel-card admin-delete-card">
+            <CardContent className="admin-delete-card__body">
+              <div className="admin-delete-card__text">
+                <p className="admin-delete-card__title">Eliminar borrador</p>
+                <p className="admin-delete-card__copy">
+                  Quita este bloque de la biblioteca. Solo disponible mientras esté en borrador
+                  y sin actividad de alumnos.
+                </p>
+              </div>
+              {deleteConfirming ? (
+                <div className="admin-delete-confirm">
+                  <p className="admin-delete-confirm__prompt">
+                    ¿Eliminar «{detail.module.title}»? Se borran las 5 etapas. No se puede deshacer.
+                  </p>
+                  {deleteError ? (
+                    <p className="admin-delete-confirm__error" role="alert">
+                      {deleteError}
+                    </p>
+                  ) : null}
+                  <div className="admin-delete-confirm__actions">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={deleteBusy}
+                      onClick={() => {
+                        setDeleteConfirming(false);
+                        setDeleteError(null);
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="admin-delete-btn"
+                      disabled={deleteBusy}
+                      onClick={() => void handleDeleteBlock()}
+                    >
+                      {deleteBusy ? "Eliminando…" : "Sí, eliminar"}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="admin-delete-btn"
+                  onClick={() => {
+                    setDeleteError(null);
+                    setDeleteConfirming(true);
+                  }}
+                >
+                  <Trash2 aria-hidden="true" />
+                  <span>Eliminar bloque</span>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        ) : null}
       </>
     );
   };

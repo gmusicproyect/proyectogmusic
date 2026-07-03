@@ -335,6 +335,70 @@ export async function publishAdminModule(moduleId: string) {
   return getAdminModuleDetail(moduleId);
 }
 
+export async function deleteAdminModule(moduleId: string) {
+  const module = await prisma.module.findUnique({
+    where: { id: moduleId },
+    include: { nodes: { select: { id: true } } },
+  });
+
+  if (!module) {
+    throw new ApiError(404, "MODULE_NOT_FOUND", "Bloque no encontrado.");
+  }
+
+  if (module.status !== PublishStatus.DRAFT) {
+    throw new ApiError(
+      409,
+      "MODULE_NOT_DELETABLE",
+      "Solo puedes eliminar bloques en borrador."
+    );
+  }
+
+  const nodeIds = module.nodes.map((node) => node.id);
+
+  if (nodeIds.length > 0) {
+    const [progressCount, sessionCount] = await Promise.all([
+      prisma.userProgress.count({ where: { nodeId: { in: nodeIds } } }),
+      prisma.lessonSession.count({ where: { nodeId: { in: nodeIds } } }),
+    ]);
+
+    if (progressCount > 0 || sessionCount > 0) {
+      throw new ApiError(
+        409,
+        "MODULE_NOT_DELETABLE",
+        "Este bloque ya tiene actividad de alumnos y no se puede eliminar."
+      );
+    }
+
+    const exercises = await prisma.microExercise.findMany({
+      where: { nodeId: { in: nodeIds } },
+      select: { id: true },
+    });
+
+    if (exercises.length > 0) {
+      const attemptCount = await prisma.exerciseAttempt.count({
+        where: { microExerciseId: { in: exercises.map((entry) => entry.id) } },
+      });
+      if (attemptCount > 0) {
+        throw new ApiError(
+          409,
+          "MODULE_NOT_DELETABLE",
+          "Este bloque tiene respuestas de ejercicios y no se puede eliminar."
+        );
+      }
+    }
+
+    await prisma.$transaction([
+      prisma.microExercise.deleteMany({ where: { nodeId: { in: nodeIds } } }),
+      prisma.pathNode.deleteMany({ where: { moduleId } }),
+      prisma.module.delete({ where: { id: moduleId } }),
+    ]);
+  } else {
+    await prisma.module.delete({ where: { id: moduleId } });
+  }
+
+  return { deleted: true as const, moduleId };
+}
+
 function normalizeNullableText(value: string | null | undefined): string | null {
   if (value == null) return null;
   const trimmed = value.trim();

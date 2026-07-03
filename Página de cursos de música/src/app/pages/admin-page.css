@@ -605,6 +605,62 @@
   max-width: 28rem;
 }
 
+.admin-delete-card__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem !important;
+}
+
+.admin-delete-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f5f5f7;
+}
+
+.admin-delete-card__copy {
+  margin: 0;
+  font-size: 13px;
+  color: #a0a0a5;
+  line-height: 1.45;
+  max-width: 28rem;
+}
+
+.admin-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.admin-delete-confirm {
+  display: grid;
+  gap: 0.75rem;
+  width: min(100%, 22rem);
+}
+
+.admin-delete-confirm__prompt {
+  margin: 0;
+  font-size: 13px;
+  color: #f5f5f7;
+  line-height: 1.45;
+}
+
+.admin-delete-confirm__error {
+  margin: 0;
+  font-size: 13px;
+  color: #f87171;
+}
+
+.admin-delete-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 .admin-form-stack {
   display: grid;
   gap: 1.15rem;

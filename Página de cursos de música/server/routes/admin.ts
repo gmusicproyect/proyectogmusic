@@ -8,6 +8,7 @@ import {
 import { assertAdmin, requireAdmin } from "../middleware/requireAdmin.js";
 import {
   createAdminModule,
+  deleteAdminModule,
   getAdminModuleDetail,
   listAdminModules,
   publishAdminModule,
@@ -73,6 +74,16 @@ adminRouter.post("/modules/:moduleId/publish", async (req, res, next) => {
   try {
     assertAdmin(req);
     const payload = await publishAdminModule(req.params.moduleId);
+    res.json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.delete("/modules/:moduleId", async (req, res, next) => {
+  try {
+    assertAdmin(req);
+    const payload = await deleteAdminModule(req.params.moduleId);
     res.json(payload);
   } catch (error) {
     next(error);

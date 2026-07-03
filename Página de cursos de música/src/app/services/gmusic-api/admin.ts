@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from "./client";
+import { apiGet, apiPost, apiPut, apiDelete } from "./client";
 import { getApiBaseUrl } from "./config";
 
 export type AdminModuleListItem = {
@@ -93,5 +93,10 @@ export async function publishAdminModule(moduleId: string) {
     `${getApiBaseUrl()}/admin/modules/${moduleId}/publish`,
     {}
   );
+  return data;
+}
+
+export async function deleteAdminModule(moduleId: string) {
+  const { data } = await apiDelete(`${getApiBaseUrl()}/admin/modules/${moduleId}`);
   return data;
 }
