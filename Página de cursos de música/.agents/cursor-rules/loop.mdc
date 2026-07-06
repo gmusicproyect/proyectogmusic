@@ -23,9 +23,12 @@ atómico y verificable.
 
 ### 1. ESTADO
 Antes de proponer o tocar nada, **lee el estado real del repo**:
+- `.agents/PROJECT_STATUS.md` (obligatorio al inicio)
 - Rama / track activo — `./scripts/agent-status.sh`
 - Número real de tests pasando (córrelos, no asumas cifras)
 - Último resultado de build
+
+Al **cierre** de ticket o sesión: actualizar `.agents/PROJECT_STATUS.md`.
 
 **Nunca uses números hardcodeados de un spec viejo.** Si el spec dice "371
 tests" pero el repo tiene otra cifra, vale la realidad del repo.
