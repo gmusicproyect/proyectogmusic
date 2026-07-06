@@ -178,6 +178,40 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 
 **Mejora futura (fuera de este ciclo):** deploy gating en Vercel/Render para esperar CI verde antes de prod.
 
+### CI — secret `DATABASE_URL` (⚠️ leer antes de configurar)
+
+**Respuesta canónica (6 Jul 2026):** `api:test` **no** usa base efímera, schema aislado ni transacciones con rollback global. Usa **directamente** la BD apuntada por `DATABASE_URL` vía Prisma (`server/lib/prisma.js`).
+
+| Aspecto | Realidad en repo |
+|---------|------------------|
+| Aislamiento | **Ninguno** — misma instancia/schema que el secret |
+| Escrituras | **Sí** — `lessonSession`, `exerciseAttempt`, `xpEvent`, `communityPost`, usuarios de prueba, etc. |
+| Cleanup | Parcial — `restoreCompleteTestDbSnapshot` y deletes por test; **no** garantiza estado idéntico (flake `T-API-01`) |
+| Concurrencia | `--test-concurrency=1` en `package.json` — serializa suites, no aísla BD |
+| Usuario ancla | `getDevStudent()` → email `GMUSIC_DEV_USER_EMAIL` / seed (`carlos@gmusic.academy`) |
+| Migraciones/seed en CI | **No** — el workflow no corre `prisma migrate` ni `db seed`; la BD debe estar preparada |
+
+**Qué poner en el secret de GitHub:**
+
+| ✅ Correcto | ❌ Prohibido |
+|-------------|-------------|
+| Proyecto **Supabase dedicado** a CI/staging (free tier aparte) | Connection string de **producción** (alumnos reales) |
+| Misma BD que usas localmente **solo si** es staging/CI dedicada, no prod | Compartir prod “porque ya tiene seed” |
+
+**Bootstrap único de la BD de CI** (en el proyecto Supabase de test):
+
+```bash
+# .env apuntando al proyecto CI (NO prod)
+npx prisma migrate deploy
+npx prisma db seed
+```
+
+**Secret:** `Settings → Secrets → Actions → DATABASE_URL` = URI Session pooler del **proyecto CI**.
+
+Si el secret apunta a prod, cada push a `main` contaminaría datos reales — convierte F19 en riesgo de integridad.
+
+Referencia flake: `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` (“BD compartida Supabase”).
+
 ---
 
 ## Tabla resumen de hallazgos

@@ -47,6 +47,11 @@ jobs:
       - name: API tests
         working-directory: ${{ env.PROJECT_DIR }}
         env:
+          # ⚠️ NUNCA usar la connection string de producción (alumnos reales).
+          # api:test escribe en la BD vía Prisma (sesiones, XP, posts, usuarios de prueba).
+          # No hay schema aislado ni rollback global — solo cleanup parcial por test.
+          # Usar: proyecto Supabase dedicado a CI/staging + migrate deploy + seed.
+          # Ver: docs/operations/checklist-seguridad-pre-lanzamiento.md § CI DATABASE_URL
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           if [ -z "${DATABASE_URL:-}" ]; then
