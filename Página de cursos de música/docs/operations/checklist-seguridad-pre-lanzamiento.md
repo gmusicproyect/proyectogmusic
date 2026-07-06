@@ -1,6 +1,6 @@
 # Checklist de seguridad pre-lanzamiento — Gmusic Track A
 
-**Versión:** 1.1  
+**Versión:** 1.2 (parcial — B7 prod verificado; A8/A9/CI pendientes)  
 **Fecha:** 2026-07-06  
 **Owner:** Juan (Director) · ejecución auditoría: Cursor  
 **Base repo auditada:** `origin/main` @ `9440e45`
@@ -82,7 +82,7 @@ JP en dashboards (no asumir “creo que sí”):
 | **B4** | Registro no crea Subscription automática | **OK** | `authService.ts` L24–38 |
 | **B5** | CORS allowlist explícito | **OK** | `server/lib/cors.ts` L20–28 |
 | **B6** | Rate limiting / brute-force en auth | **HALLAZGO** (medio) | Sin `rateLimit`/`helmet` en `server/` — **backlog**, fuera de bloque F19 |
-| **B7** | Endpoints `/api/v1/dev/*` bloqueados en producción | **OK** (código) · **NO VERIFICABLE** (curl prod) | `devActivationGate.ts` L28–31; tests `dev-activate-semestral.test.ts`, `dev-student-session.test.ts` L184–220 |
+| **B7** | Endpoints `/api/v1/dev/*` bloqueados en producción | **OK** | Código: `devActivationGate.ts` L28–31. Prod: curl 6 Jul 2026 → **404** (ver abajo) |
 
 ### Verificación manual B7
 
@@ -95,11 +95,15 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 
 | Campo | Valor |
 |-------|-------|
-| HTTP code observado | _pendiente Juan_ |
-| Fecha | _pendiente_ |
-| Resultado | ☐ OK (404) · ☐ HALLAZGO |
+| HTTP code observado | **404** |
+| Body | `{"error":{"code":"INTERNAL_ERROR","message":"Ruta no encontrada."}}` |
+| Verificado por | Cursor (curl prod) · confirmado JP |
+| Fecha | **2026-07-06** |
+| Resultado | ☑ OK (404) · ☐ HALLAZGO |
 
-**Riesgo residual B7:** `activateSemestralSubscription` crea subs ACTIVE — impacto **crítico** si el gate fallara; hoy `NODE_ENV === "production"` → 404 en `devActivationGate.ts` L28–31.
+**Observación (no seguridad):** el body usa `"code":"INTERNAL_ERROR"` para un 404; semánticamente sería `NOT_FOUND`. El mensaje genérico es deseable (no revela rutas existentes); solo inconsistencia de código de error — **sin ticket**.
+
+**Riesgo residual B7:** cerrado en prod (404). En código, `activateSemestralSubscription` crea subs ACTIVE — impacto **crítico** si el gate fallara; gate confirmado en prod.
 
 ---
 
@@ -201,9 +205,9 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 **Bootstrap único de la BD de CI** (en el proyecto Supabase de test):
 
 ```bash
-# .env apuntando al proyecto CI (NO prod)
-npx prisma migrate deploy
-npx prisma db seed
+# Usar .env.ci (NO editar .env principal). Ya cubierto por .gitignore L12 (.env.*)
+npx prisma migrate deploy --env-file=.env.ci
+npx prisma db seed --env-file=.env.ci
 ```
 
 **Secret:** `Settings → Secrets → Actions → DATABASE_URL` = URI Session pooler del **proyecto CI**.
@@ -349,6 +353,7 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 |---------|-------|--------|
 | 1.0 | 2026-07-06 | Checklist versionado + Anexo A (auditoría inicial) + Anexo B (ítems 10, 13, 15, 18) + F19 |
 | 1.1 | 2026-07-06 | Ciclo 3: F19 + E3 + fix 13c (`normalizeMaterialUrl` Comunidad) |
+| 1.2 | 2026-07-06 | B7 prod verificado (404, 6 Jul); observación código error 404; `.env.ci` vía `.gitignore` `.env.*` |
 
 ---
 
@@ -359,4 +364,5 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 | B6 rate limit | Backlog |
 | E2 npm audit vite | Backlog |
 | Deploy gating Vercel/Render post-CI | Mejora futura |
-| Verificaciones manuales B7, A8, A9, 15-prod | Juan |
+| Verificaciones manuales A8, A9, CI BD, 15-prod | Juan — sesión dedicada |
+| B7 curl prod | ✅ Cerrado 2026-07-06 (404) |
