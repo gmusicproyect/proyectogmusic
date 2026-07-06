@@ -1,9 +1,9 @@
 # Visión — Admin Platform Gmusic (Track A)
 
 **Fecha:** 2 Jul 2026  
-**Estado:** Aprobada por Juan (2 Jul 2026) — pendiente registro formal D-GOV-17 con Opus  
+**Estado:** Aprobada por Juan (2 Jul 2026) — **D-GOV-17 cerrada 3 Jul 2026** (Opción B)  
 **Palabra clave:** Retomar Gmusic  
-**Decisión pendiente formal:** D-GOV-17 (registro en `.agents/DECISIONS.md` cuando vuelva Opus)
+**Decisión formal:** D-GOV-17 en `.agents/DECISIONS.md`
 
 ### Aprobación Juan (2 Jul 2026)
 
