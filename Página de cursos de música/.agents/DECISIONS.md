@@ -97,6 +97,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-021 | No hacer commit sin autorización explícita de Juan | — | Protocolo establecido desde el inicio del proyecto. Juan es el gatekeeper del historial de git. |
 | D-022 | No hacer push a main sin autorización explícita de Juan | — | Idem. Push afecta producción / remoto compartido. |
 | D-023 | `.agents/` es la fuente oficial de verdad — Cursor debe leerla antes de cada sesión | Jun 2026 | Protocolo para mantener coherencia entre sesiones y entre herramientas (Fable, Cursor, ChatGPT). |
+| D-023b | **Diagramas de flujo (canon):** mapa operativo en `docs/flows/` (índice `README.md` + 5 secciones). **Regla de sync:** todo commit que cambie una **decisión de flujo de usuario** (routing post-login, guard de zona, publish admin → alumno, path API, fin de camino, etc.) **debe actualizar el diagrama de su sección** en el **mismo commit**. Si el cambio es solo bugfix sin cambio de contrato UX, actualizar solo si el diagrama quedó falsificado. | 6 Jul 2026 | Evitar redescubrir deuda; diagramas buscables vs chat efímero. |
 | D-024 | Post-demo = solicitud de inscripción estructurada + WhatsApp; "reservar lugar" prohibido en copy hasta que exista backend de cupos | Jun 2026 | No hay sistema de reservas. El copy "Reservar mi lugar" y "Tu lugar está reservado" crea expectativa falsa. El flujo es: form (nombre/email/WhatsApp/doc) → mensaje WhatsApp prefilled → equipo confirma acceso manualmente. Dos CTAs diferenciados: inscripción intencional vs. despejar dudas. |
 | D-025 | Landing "Semestral" CTA → siempre `inscripcion-gate` (Opción B) — checkout legacy congelado hasta Fase 5 | Jun 2026 | Quien hace clic en "Semestral" ya mostró intención de compra; mandarlos al demo es un desvío. `InscripcionGatePage` mantiene el `LockedGate` si no completó el demo — no hay bypass. Implementado en Fase 3.5b (`handleSemestralPlanSelect` → `setCurrentPage("inscripcion-gate")`). |
 | D-026 | PostHog host = `us.i.posthog.com` por defecto; override vía `VITE_POSTHOG_HOST` | Jun 2026 | El proyecto de Juan responde en US (EU devuelve 404 en config.js). El host es configurable para no hardcodear la región en código — si el proyecto migra a EU basta con cambiar la var de entorno. |
@@ -122,6 +123,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | D-GOV-05 | **CTA demo bloqueado — híbrido C (Track A):** **Antes de 5/5:** click en clases bloqueadas **6–15** → panel inline + CTA **“Ver planes”** → sección planes en `home`; click en card **“Más de 60”** → `inscripcion-gate` **solo si `demoFinished`**; si demo incompleto → siguiente clase gratis *(refinamiento T3.5, jun 2026)*. **Después de 5/5:** banner de celebración y FAB **“Inscribirse”** → `inscripcion-gate`; clases **6–15** mantienen panel + **“Ver planes”** (no gate). Gate reservado para mayor intención: card +60 (post-5/5), banner y FAB. Navegación vía `currentPage`; sync URL según **D-GOV-02/03** una vez implementado. No sustituye D-024 ni D-025. **No autoriza:** backend, auth, pagos, schema, R-001, R-002. | 16 Jun 2026 | **Aprobada** (Juan) | Separa exploración (planes) de conversión (gate); coherente con funnel Track A. |
 | D-GOV-06 | **Teaser B (Track A):** demo público con **5 clases jugables gratuitas** (1–5), **10 clases bloqueadas visibles** en carrusel (6–15, sin contenido jugable), **1 card final “Más de 60”** (resume 16–75), **catálogo interno de 75** lecciones y **carrusel visible de 15 nodos de lección + 1 nodo academy teaser**. **D-003 se mantiene** en espíritu (ver fila D-003). Títulos 6–15 alineados a **bloques 1–10** (D-GOV-04). **No autoriza:** auth real, pagos, backend, schema, routing URL, R-001, R-002 ni contenido jugable 6–75. | 16 Jun 2026 | **Aprobada** (Juan) | Opción B vs 75 candados (Opus). Reduce fricción pre-CTA; formaliza contrato de producto antes de commit del paquete demo-path. |
 | D-GOV-04 | **Pedagogía Nivel 1: mapa de bloques y teaser (CERRADA):** la unidad pedagógica del suscriptor es el **bloque de 5 etapas** (`instruccion-maestra-clases.md`). Nivel 1 post-demo = **12 bloques**: 10 de arco principal (Am → Em → cambio → ritmo → G → tres acordes → C → patrón → progresión → hito Concierto del Nivel) + 2 de teoría post-hito (12 notas, escalas). Orden de acordes: **Am → Em → G → C**. **Teaser 6–15 (D-GOV-06):** 10 labels 1:1 con bloques 1–10 por **nombre de bloque**, nunca etapas internas; bloques 11–12 fuera del teaser. **Copy:** sin jerga de grados (I–IV–V) antes del hito; reservada para celebración B10 y teoría post-hito. **Datos:** contenido extiende `Course → Module` (bloque) → `PathNode` (etapa) con `StageType` + campos de materia; sin modelo paralelo. Publicación de bloque exige 5 etapas completas (título + criterio; video nullable). Producción vía **Admin Creador MVP (R-008)**. Títulos finos por etapa se definen al cargar cada bloque en el admin. **Fuente:** `docs/product/mapa-bloques-nivel-1.md`. | 2 Jul 2026 | **Cerrada** (Juan) | Cierra pedagogía 6–75 y teaser; habilita admin MVP sobre schema existente. |
+| D-GOV-17 | **Bloques seed legacy B1/B2 vs admin 5 etapas — Opción B (badge legacy):** mantener seed 3+2 nodos tal cual; admin muestra “Publicado legacy”; alumno sigue viendo path jugable vía `loadPublishedCoursePath`. **No** backfill bloqueante a 5 etapas. Smoke 3 Jul 2026: Carlos 3/5 pasos, 5 nodos jugables; “0/5” admin no llega al alumno. **Doc:** `docs/operations/D-GOV-17-legacy-blocks-opcion-b.md`. | 3 Jul 2026 | **Aprobada** (Juan) | Evidencia API + browser; piloto admin puede continuar sin migrar seed. |
 
 ---
 
@@ -180,6 +182,23 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | ~~D-GOV-15~~ | ~~¿Separar landing pública del wizard Academia (T4A)?~~ | ✅ Aprobada 27 Jun 2026 — dirección producto; **implementación bloqueada** (gates T4A) |
 | D-GOV-16 | ¿Registro gratis liviano (T-REG-01)? Sin WhatsApp/RUT en registro; datos formales solo en compra. | Juan |
 | ~~D-GOV-14~~ | ~~¿Aprobar ticket LessonRunner → GmusicPath (Fase A + Fase B TAP)?~~ | ✅ Aprobado 24 Jun 2026 (Juan) — **Fase A CERRADA** · **Fase B desbloqueada** |
+| ~~D-GOV-17~~ | ~~Bloques seed legacy B1/B2 vs admin 5 etapas — Opción B badge legacy~~ | ✅ Aprobado 3 Jul 2026 (Juan) — ver `docs/operations/D-GOV-17-legacy-blocks-opcion-b.md` |
+
+---
+
+## Backlog operativo (tickets)
+
+| ID | Título | Prioridad | Doc |
+|----|--------|-----------|-----|
+| T-API-01 | Flaky `phase3b2` concurrencia | Alta | `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
+| T-UX-01 | StudentZoneGuard copy genérico en 403 (sesión admin) | Media | `docs/operations/T-UX-01-student-zone-guard-403-admin-session.md` |
+| T-FLOW-01 | Post-auth routing login (demo / suscriptor / **ADMIN** → `/admin`) | Media | `docs/flows/01-funnel-auth-landing.md` |
+| T-FLOW-02 | Exponer `guidePdfUrl` en path API + UI alumno | Media | `docs/flows/02-mi-camino-suscriptor.md` |
+| T-FLOW-03 | Badge «Publicado legacy» admin UI (D-GOV-17 Opción B) | Baja | `docs/flows/03-admin-contenido.md` |
+| T-FLOW-04 | Pantalla fin de camino / fin de nivel (contenido agotado) | Baja | `docs/flows/02-mi-camino-suscriptor.md` |
+| T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) | Baja | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |
+
+**Observaciones sin ticket** (repro formal pendiente): scroll flicker iPhone landing — ver `docs/flows/README.md`.
 
 ---
 
