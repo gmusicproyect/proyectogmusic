@@ -24,8 +24,5 @@ secrets.json
 # Accidental duplicate repo/folder
 paginawebgmusic/
 
-# Lockfile generated locally by npm install
-package-lock.json
-
 # Cursor IDE (local skill symlinks; secrets path also listed above)
 .cursor/

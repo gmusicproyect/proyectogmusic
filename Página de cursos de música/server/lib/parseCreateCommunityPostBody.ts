@@ -1,5 +1,6 @@
 import type { CommunityPostType, ExternalLinkProvider } from "@prisma/client";
 import { ApiError } from "./errors.js";
+import { normalizeMaterialUrl } from "./normalizeMaterialUrl.js";
 
 const FEED_POST_TYPES = new Set<string>(["question", "progress", "music", "feedback"]);
 const EXTERNAL_PROVIDERS = new Set<string>([
@@ -61,7 +62,13 @@ export function parseCreateCommunityPostBody(body: unknown): CreateCommunityPost
   }
 
   const topicLabel = readOptionalString(record.topic_label ?? record.topicLabel, MAX_TOPIC_LENGTH);
-  const externalUrl = readOptionalString(record.external_url ?? record.externalUrl, MAX_URL_LENGTH);
+  const externalUrlRaw = readOptionalString(
+    record.external_url ?? record.externalUrl,
+    MAX_URL_LENGTH
+  );
+  const externalUrl = externalUrlRaw
+    ? normalizeMaterialUrl(externalUrlRaw, "Enlace externo")
+    : null;
 
   let externalProvider: ExternalLinkProvider | null = null;
   const providerRaw =

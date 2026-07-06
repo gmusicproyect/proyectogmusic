@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT_DIR: "Página de cursos de música"
+
+jobs:
+  verify:
+    name: Typecheck · Tests · Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ${{ env.PROJECT_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: npx prisma generate
+
+      - name: Typecheck
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: npm run typecheck
+
+      - name: App tests
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: npm run app:test
+
+      - name: API tests
+        working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL:-}" ]; then
+            echo "Skipping API tests — DATABASE_URL secret not configured in repo."
+            exit 0
+          fi
+          npm run api:test
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: npm run build

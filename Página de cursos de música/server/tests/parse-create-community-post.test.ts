@@ -40,6 +40,20 @@ describe("parseCreateCommunityPostBody", () => {
     assert.equal(parsed.externalProvider, "youtube");
   });
 
+  it("rechaza javascript: en enlace externo", () => {
+    assert.throws(
+      () =>
+        parseCreateCommunityPostBody({
+          post_type: "music",
+          content: "Mi cover",
+          external_url: "javascript:alert(1)",
+          external_provider: "other",
+        }),
+      (error: unknown) =>
+        error instanceof ApiError && error.code === "INVALID_MATERIAL_URL"
+    );
+  });
+
   it("rechaza tipo de publicación no permitido en feed", () => {
     assert.throws(
       () =>

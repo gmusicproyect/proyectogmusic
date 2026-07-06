@@ -1,6 +1,6 @@
 # Checklist de seguridad pre-lanzamiento — Gmusic Track A
 
-**Versión:** 1.0  
+**Versión:** 1.1  
 **Fecha:** 2026-07-06  
 **Owner:** Juan (Director) · ejecución auditoría: Cursor  
 **Base repo auditada:** `origin/main` @ `9440e45`
@@ -108,7 +108,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 | ID | Criterio | Estado | Evidencia / notas |
 |----|----------|--------|-------------------|
 | **10** | **IDOR:** alumno no puede leer/escribir progreso de otro manipulando IDs en API | **OK** | Ver [Anexo B — ítem 10](#anexo-b--auditoría-complementaria-2026-07-06-ciclo-2) |
-| **13** | **XSS almacenado Comunidad:** posts sanitizan/escapan HTML | **HALLAZGO** (medio) | Ver Anexo B — ítem 13 |
+| **13** | **XSS almacenado Comunidad:** posts sanitizan/escapan HTML | **OK** (post-fix Ciclo 3) | `parseCreateCommunityPostBody.ts` + `normalizeMaterialUrl`; test `parse-create-community-post.test.ts` |
 | **15** | **Errores prod:** respuestas no filtran stack traces | **OK** (código) · **NO VERIFICABLE** (prod) | Ver Anexo B — ítem 15 |
 | **18** | **Postgres:** cliente no accede directo; todo vía API | **OK** | Ver Anexo B — ítem 18 |
 
@@ -145,7 +145,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 |----|----------|--------|-------------------|
 | **E1** | `security-scan.yml` en GitHub | **OK** | Remoto: workflow activo |
 | **E2** | `npm audit --omit=dev --audit-level=high` limpio | **HALLAZGO** (medio) | 4 high en cadena `vite` (devDependency) — **backlog** |
-| **E3** | `package-lock.json` versionado | **HALLAZGO** (medio) | `.gitignore` L28; pendiente fix con **F19** (Ciclo 3) |
+| **E3** | `package-lock.json` versionado | **OK** (post-fix Ciclo 3) | Lockfile en repo; removido de `.gitignore` |
 | **E4** | Doc/skill alineado con workflows reales | **HALLAZGO** (bajo) | `gmusic-ci-deploy/SKILL.md` vs remoto sin `ci.yml` |
 
 ---
@@ -158,7 +158,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 | **F2** | Prisma baseline prod (R-OPS-01) | **HALLAZGO** (medio) | `.agents/DECISIONS.md` R-OPS-01 |
 | **F3** | Sentry configurado en prod | **NO VERIFICABLE** | JP: env `SENTRY_DSN`, `VITE_SENTRY_DSN` |
 | **F4** | `x-powered-by` deshabilitado | **OK** | `server/app.ts` L17 |
-| **F19** | **CI verify** (typecheck → tests → build) en GitHub antes de deploy | **HALLAZGO** (alto) | Remoto solo `security-scan.yml`; local untracked `.github/workflows/ci.yml` |
+| **F19** | **CI verify** (typecheck → tests → build) en GitHub antes de deploy | **OK** (post-fix Ciclo 3) | `.github/workflows/ci.yml` — CI-on-push; sin branch protection (decisión JP 6 Jul) |
 
 ### F19 — Implicación deploy actual
 
@@ -167,12 +167,16 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 3. Render build/start API (sin tests previos en CI).
 4. **No hay gate** que exija tests en verde antes de deploy automático.
 
-**Fix propuesto (Ciclo 3 — requiere autorización push):**
+**Decisión JP (6 Jul 2026):** CI-on-push primero; **sin** branch protection (solo dev + Loop como gate humano).
 
-- Commitear `.github/workflows/ci.yml`
-- Secret `DATABASE_URL` en GitHub (para `api:test`)
-- JP decide: branch protection vs CI-on-push only
-- Incluir **E3**: sacar `package-lock.json` de `.gitignore` y versionarlo (`npm ci` lo requiere)
+**Implementado Ciclo 3:**
+
+- `.github/workflows/ci.yml` commiteado
+- Secret `DATABASE_URL` en GitHub (para `api:test`; skip graceful si ausente)
+- **E3:** `package-lock.json` versionado
+- **13c:** `normalizeMaterialUrl` en Comunidad
+
+**Mejora futura (fuera de este ciclo):** deploy gating en Vercel/Render para esperar CI verde antes de prod.
 
 ---
 
@@ -180,10 +184,10 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 
 | ID | Severidad | Hallazgo | Acción |
 |----|-----------|----------|--------|
-| **F19** | **Alto** | CI verify ausente en GitHub | Ciclo 3 (autorización pendiente) |
-| **13** | **Medio** | `external_url` Comunidad sin validación http(s) | Fix post-priorización |
+| **F19** | **Alto** | ~~CI verify ausente~~ | **Cerrado Ciclo 3** — `ci.yml` CI-on-push |
+| **13** | **Medio** | ~~`external_url` sin http(s)~~ | **Cerrado Ciclo 3** — `normalizeMaterialUrl` |
+| **E3** | **Medio** | ~~Lockfile gitignored~~ | **Cerrado Ciclo 3** — lockfile versionado |
 | **B6** | **Medio** | Sin rate limit auth | Backlog ticket |
-| **E3** | **Medio** | Lockfile gitignored | Mismo fix que F19 |
 | **E2** | **Medio** | 4 high vite (dev) | Backlog ticket |
 | **F2** | **Medio** | R-OPS-01 Prisma baseline | Ops |
 | **E4** | **Bajo** | Doc drift ci.yml | Sync skill |
@@ -250,7 +254,7 @@ Read-only · base `9440e45` · orden: **13 → 10 → 15 → 18**
 |-------------|-----------|-----------|
 | **13a** Contenido texto (`content`) | **OK** | `CommunityPostCard.tsx` L90–91 — `{post.content}` en nodo texto React (escape automático, sin `dangerouslySetInnerHTML`) |
 | **13b** Persistencia servidor | **OK** (para HTML en body) | `parseCreateCommunityPostBody.ts` L58–61 — string plano; no se interpreta HTML en servidor |
-| **13c** Enlaces externos (`external_url`) | **HALLAZGO** (medio) | `parseCreateCommunityPostBody.ts` L64 — `readOptionalString` sin validar protocolo; `CommunityExternalLinkCard.tsx` L32 — `href={post.externalUrl}`. Admin/materials usa `normalizeMaterialUrl.ts` L14–20 (solo http/https); Comunidad **no** reutiliza ese helper. Vector: `javascript:alert(1)` almacenado + click en tarjeta enlace |
+| **13c** Enlaces externos (`external_url`) | **OK** (post-fix Ciclo 3) | `parseCreateCommunityPostBody.ts` — `normalizeMaterialUrl(..., "Enlace externo")`; test rechazo `javascript:` |
 | **13d** Tests | **HALLAZGO** (bajo) | `parse-create-community-post.test.ts` — caso YouTube https; **sin** test rechazo `javascript:` (contraste: `normalizeMaterialUrl.test.ts` L19–21) |
 
 **Severidad ítem 13:** medio — HTML en cuerpo de post mitigado por React; riesgo residual en URLs externas.
@@ -310,6 +314,7 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 | Versión | Fecha | Cambio |
 |---------|-------|--------|
 | 1.0 | 2026-07-06 | Checklist versionado + Anexo A (auditoría inicial) + Anexo B (ítems 10, 13, 15, 18) + F19 |
+| 1.1 | 2026-07-06 | Ciclo 3: F19 + E3 + fix 13c (`normalizeMaterialUrl` Comunidad) |
 
 ---
 
@@ -319,5 +324,5 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 |--------|--------|
 | B6 rate limit | Backlog |
 | E2 npm audit vite | Backlog |
-| Ciclo 3 F19 + E3 | Autorización push pendiente |
+| Deploy gating Vercel/Render post-CI | Mejora futura |
 | Verificaciones manuales B7, A8, A9, 15-prod | Juan |
