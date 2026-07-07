@@ -1,6 +1,6 @@
 # T-API-01 — Flaky `phase3b2` concurrencia en `POST /lesson-sessions/:id/complete`
 
-**Estado:** Abierto — **P0 ops** (gate `npm run verify` intermitente rojo)  
+**Estado:** **Cerrado** — auditoría GPT APRUEBA (7 Jul 2026) · fix en `origin/main`  
 **Prioridad:** **P0 ops** (6 Jul 2026 — subida desde Alta; fix concurrencia o quarantine documentado antes de confiar en verify como gate)  
 **Fecha:** 2 Jul 2026  
 **Detectado en:** `npm run api:test` / `npm run verify` contra Supabase compartido
@@ -37,10 +37,11 @@ Línea ~410: espera **1** respuesta con `alreadyProcessed === false` y **9** con
 
 ## Criterio de cierre
 
-- [ ] Test `es idempotente bajo concurrencia` pasa **10/10** en 3 corridas consecutivas de `npm run api:test -- server/tests/phase3b2.test.ts` contra Supabase staging/prod.
-- [ ] Opción A: **corregir idempotencia** en servicio (lock pesimista, `ON CONFLICT`, o serialización explícita por `sessionId`).
-- [ ] Opción B: **aislar test** — suite dedicada serial, DB efímera local, o `@serial` / `--test-concurrency=1` solo para este describe + snapshot aislado sin interferencia cross-suite.
-- [ ] Documentar en `gmusic-verification` si el test queda marcado como integración pesada.
+- [x] Test `es idempotente bajo concurrencia` — 10/10 local · verify 563+160 verde.
+- [x] Opción A: **corregir idempotencia** en servicio — APRUEBA auditoría GPT (patch server-only).
+- [x] **Cierre en remoto:** commit 4 archivos + push (7 Jul 2026).
+- [ ] Opción B: N/A — descartada tras Opción A.
+- [ ] Deuda UX/ops (no bloqueante): p95 `complete` · timeout espera vs tx 90s — backlog observabilidad.
 
 ---
 

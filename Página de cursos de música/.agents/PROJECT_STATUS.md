@@ -17,18 +17,20 @@
 |------|--------|
 | **HEAD remoto** | `df842a5` — fix(auth): redirect post-login LoginCuentaPage |
 | **Tests app** | **563/563** |
-| **npm run verify** | 🔴 **Gate muerto** — flake `phase3b2` concurrencia (**T-API-01**, prioridad **P0 ops**) |
+| **npm run verify** | ✅ **563 + 160** · gate verde (7 Jul 2026) |
 | **Backlog nuevo** | **T-UX-COPY-LOGIN** (Baja) — copy anonymous login vs registro · `assert-auth-session.ts:15` |
 | **Rama** | `main` · sync `origin/main` · dirty: `.env.example`, checklist |
 
-## Cola operativa (6 Jul 2026 — noche)
+## Cola operativa (7 Jul 2026)
 
 | Orden | Item | Estado | Dependencia / nota |
 |-------|------|--------|-------------------|
-| **1** | **T-API-01** — flake `phase3b2` concurrencia | **Próximo ticket** · spec lista | Fase 1 diagnóstico 45 min → reporte A/B → Fase 2 solo con OK JP · `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
-| **2** | **Piloto B3** — validación E2E publish-to-student (admin → alumno) | **En cola** · no iniciar | **Requiere T-API-01 cerrado** (verify confiable como red) · **Requiere spec del arquitecto** antes de arrancar · ambigüedad Bloque 1 vs Bloque 3 pendiente con JP |
+| **1** | ~~**T-API-01**~~ — flake `phase3b2` concurrencia | ✅ **Cerrado** 7 Jul 2026 | APRUEBA GPT · FOR UPDATE + tx retry · verify verde |
+| **2** | **T-PUB-01** — Piloto Publicación (admin → alumno) | **En cola** · siguiente tras T-API-01 en remoto | **Bloque 1** (D-GOV-04) · Fase 0: inventario biblioteca admin · spec pendiente |
 
-**Regla:** no arrancar Piloto B3 mientras `npm run verify` sea gate intermitente. B3 valida el pipeline completo; construir sobre verify roto es construir sobre arena.
+**Regla:** T-PUB-01 valida el **pipeline** publish-to-student, no el currículo completo. Nombre anterior "Piloto B3" **retirado** — colisionaba con Bloque 3 pedagógico y labels del admin.
+
+## Cola operativa (6 Jul 2026 — noche, superseded)
 
 ## Snapshot operativo (6 Jul 2026 — noche, superseded)
 

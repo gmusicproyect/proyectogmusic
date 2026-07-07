@@ -1,7 +1,8 @@
-import { SessionStatus, type User } from "@prisma/client";
+import { Prisma, SessionStatus, type User } from "@prisma/client";
 import { isAnswerCorrect } from "../lib/answerValidation.js";
 import {
   acquireSessionCompleteAdvisoryLock,
+  lockLessonSessionForComplete,
 } from "../lib/advisoryLock.js";
 import { ApiError } from "../lib/errors.js";
 import { prisma } from "../lib/prisma.js";
@@ -40,6 +41,12 @@ type TransactionResult =
   | { kind: "expired" }
   | { kind: "not_startable" };
 
+/** Waiters block on pg_advisory_xact_lock; default Prisma 5s timeout caused 500s under burst. */
+const COMPLETE_SESSION_TX_OPTIONS = {
+  maxWait: 30_000,
+  timeout: 90_000,
+} as const;
+
 export async function completeLessonSession(
   student: User,
   sessionIdParam: string,
@@ -61,10 +68,44 @@ export async function completeLessonSession(
     throw new ApiError(403, "FORBIDDEN", "No puedes cerrar una sesión de otro alumno.");
   }
 
-  const result = await prisma.$transaction(async (tx) => {
-    await acquireSessionCompleteAdvisoryLock(tx, sessionId);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const result = await prisma.$transaction(
+        async (tx) => executeCompleteLessonSessionTransaction(tx, student, sessionId, attempts),
+        COMPLETE_SESSION_TX_OPTIONS
+      );
+      return finalizeTransactionResult(result);
+    } catch (error) {
+      if (!isUniqueConstraintError(error) && !isCompleteContentionError(error)) {
+        throw error;
+      }
 
-    const session = await tx.lessonSession.findUnique({
+      const idempotent = await loadAlreadyCompletedResponse(student, sessionId);
+      if (idempotent) {
+        return idempotent;
+      }
+
+      if (attempt === 0) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new ApiError(500, "INTERNAL_ERROR", "No se pudo completar la sesión.");
+}
+
+async function executeCompleteLessonSessionTransaction(
+  tx: Prisma.TransactionClient,
+  student: User,
+  sessionId: string,
+  attempts: CompleteAttemptInput[]
+): Promise<TransactionResult> {
+  await acquireSessionCompleteAdvisoryLock(tx, sessionId);
+  await lockLessonSessionForComplete(tx, sessionId);
+
+  const session = await tx.lessonSession.findUnique({
       where: { id: sessionId },
       include: {
         attempts: {
@@ -203,18 +244,27 @@ export async function completeLessonSession(
     }
 
     if (xpEarned > 0) {
-      await tx.xpEvent.create({
-        data: {
-          userId: student.id,
-          sessionId,
-          amount: xpEarned,
-          reason: "SESSION_COMPLETED",
-        },
-      });
+      try {
+        await tx.xpEvent.create({
+          data: {
+            userId: student.id,
+            sessionId,
+            amount: xpEarned,
+            reason: "SESSION_COMPLETED",
+          },
+        });
+      } catch (error) {
+        if (!isUniqueConstraintError(error)) {
+          throw error;
+        }
+      }
     }
 
-    const updatedSession = await tx.lessonSession.update({
-      where: { id: sessionId },
+    const { count: completedCount } = await tx.lessonSession.updateMany({
+      where: {
+        id: sessionId,
+        status: SessionStatus.STARTED,
+      },
       data: {
         status: SessionStatus.COMPLETED,
         accuracy,
@@ -222,6 +272,14 @@ export async function completeLessonSession(
         streakUpdated,
         completedAt,
       },
+    });
+
+    if (completedCount === 0) {
+      return loadCompletedTransactionResult(tx, session, student);
+    }
+
+    const updatedSession = await tx.lessonSession.findUniqueOrThrow({
+      where: { id: sessionId },
     });
 
     const response = await buildCompletedResponse(
@@ -233,9 +291,113 @@ export async function completeLessonSession(
     );
 
     return { kind: "completed" as const, response };
+}
+
+async function loadCompletedTransactionResult(
+  tx: Prisma.TransactionClient,
+  session: { id: string; nodeId: string },
+  student: User
+): Promise<TransactionResult> {
+  const completed = await tx.lessonSession.findUnique({
+    where: { id: session.id },
+    include: {
+      attempts: {
+        select: {
+          microExerciseId: true,
+          isCorrect: true,
+          selectedAnswer: true,
+        },
+      },
+    },
   });
 
-  return finalizeTransactionResult(result);
+  if (!completed || completed.status !== SessionStatus.COMPLETED) {
+    return { kind: "not_startable" as const };
+  }
+
+  const response = await buildCompletedResponse(
+    tx,
+    completed,
+    student,
+    true,
+    completed.attempts.map((attempt) => ({
+      microExerciseId: attempt.microExerciseId,
+      isCorrect: attempt.isCorrect,
+      selectedAnswer: attempt.selectedAnswer,
+    }))
+  );
+
+  return {
+    kind: "completed" as const,
+    response: stripAttemptsSummaryWhenProcessed(response, true),
+  };
+}
+
+function isUniqueConstraintError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+}
+
+function isCompleteContentionError(error: unknown): boolean {
+  if (isUniqueConstraintError(error)) {
+    return true;
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    return error.code === "P2028";
+  }
+
+  if (error instanceof Error) {
+    const message = error.message;
+    return (
+      message.includes("Transaction already closed") ||
+      message.includes("Transaction not found") ||
+      message.includes("Unable to start a transaction")
+    );
+  }
+
+  return false;
+}
+
+async function loadAlreadyCompletedResponse(
+  student: User,
+  sessionId: string
+): Promise<CompleteLessonSessionResponse | null> {
+  const session = await prisma.lessonSession.findUnique({
+    where: { id: sessionId },
+    include: {
+      attempts: {
+        select: {
+          microExerciseId: true,
+          isCorrect: true,
+          selectedAnswer: true,
+        },
+      },
+    },
+  });
+
+  if (!session || session.userId !== student.id) {
+    return null;
+  }
+
+  if (session.status !== SessionStatus.COMPLETED) {
+    return null;
+  }
+
+  const response = await prisma.$transaction(async (tx) =>
+    buildCompletedResponse(
+      tx,
+      session,
+      student,
+      true,
+      session.attempts.map((attempt) => ({
+        microExerciseId: attempt.microExerciseId,
+        isCorrect: attempt.isCorrect,
+        selectedAnswer: attempt.selectedAnswer,
+      }))
+    )
+  );
+
+  return stripAttemptsSummaryWhenProcessed(response, true);
 }
 
 async function upsertStreakForToday(

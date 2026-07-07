@@ -14,6 +14,19 @@ export async function acquireLessonSessionAdvisoryLock(
 }
 
 /**
+ * Bloqueo de fila por sessionId al cerrar sesiones.
+ * Más fiable que solo advisory lock con poolers que reasignan conexiones.
+ */
+export async function lockLessonSessionForComplete(
+  tx: Prisma.TransactionClient,
+  sessionId: string
+): Promise<void> {
+  await tx.$queryRaw(
+    Prisma.sql`SELECT id FROM "LessonSession" WHERE id::text = ${sessionId} FOR UPDATE`
+  );
+}
+
+/**
  * Bloqueo transaccional por sessionId al cerrar sesiones.
  * Serializa complete concurrentes para garantizar idempotencia.
  */
