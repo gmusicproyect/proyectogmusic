@@ -140,4 +140,15 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.match(registroSource, /isLoggedIn/);
     assert.match(registroSource, /secondsRemaining/);
   });
+
+  it("login-cuenta usa resolvePostLoginPage sin segundo refresh", () => {
+    assert.match(registroSource, /resolvePostLoginPage/);
+    assert.match(registroSource, /sessionOutcome/);
+    assert.match(registroSource, /resolution\.type === "navigate"/);
+    assert.equal(registroSource.includes("await refresh()"), false);
+    assert.equal(
+      registroSource.includes('outcome.type === "authenticated" ? "mi-camino" : "mi-camino-demo"'),
+      false
+    );
+  });
 });

@@ -35,8 +35,8 @@ flowchart TD
 
     TierDemo --> LoginBranch
     LoginBranch -- authenticated<br/>sub ACTIVE --> PaidPath[/mi-camino/]
-    LoginBranch -- registered_no_sub<br/>o anonymous --> DemoPath[/mi-camino-demo<br/>gate D-GOV-11]
-    LoginBranch -- error --> LoginError[Pantalla error sesión]
+    LoginBranch -- registered_no_sub --> DemoPath[/mi-camino-demo<br/>gate D-GOV-11]
+    LoginBranch -- anonymous<br/>o error --> LoginError[Pantalla error sesión<br/>sin navegar a demo]
 
     LoginBranch --> AdminDebt{{"⚠️ DEUDA T-FLOW-01:<br/>rol ADMIN no enruta a /admin<br/>desde login alumno"}}
 

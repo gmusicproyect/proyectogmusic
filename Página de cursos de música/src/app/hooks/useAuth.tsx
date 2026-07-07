@@ -20,12 +20,17 @@ import {
 } from "./usePublicStudentSession";
 import type { PublicStudentSessionOutcome } from "../services/gmusic-api/public-student-session";
 
+export interface LoginResult {
+  user: AuthUser;
+  sessionOutcome: PublicStudentSessionOutcome;
+}
+
 export interface AuthContextValue {
   session: PublicStudentSessionState;
   isLoggedIn: boolean;
   refresh: () => Promise<PublicStudentSessionOutcome>;
   register: (input: RegisterInput) => Promise<AuthUser>;
-  login: (input: LoginInput) => Promise<AuthUser>;
+  login: (input: LoginInput) => Promise<LoginResult>;
   logout: () => Promise<void>;
 }
 
@@ -47,9 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (input: LoginInput) => {
     const user = await loginAccount(input);
-    const outcome = await publicSession.refresh();
-    assertAuthSessionEstablished(outcome);
-    return user;
+    const sessionOutcome = await publicSession.refresh();
+    assertAuthSessionEstablished(sessionOutcome);
+    return { user, sessionOutcome };
   }, [publicSession]);
 
   const logout = useCallback(async () => {

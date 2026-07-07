@@ -7,6 +7,7 @@ import {
   authPrimaryButtonStyle,
 } from "../components/gmusic/DemoAuthGuard";
 import { GM_GOLD, GM_GOLD_GLOW, GM_TEXT_SEC } from "../components/gmusic/tokens";
+import { resolvePostLoginPage } from "../services/gmusic-api/resolve-post-login-page";
 import type { PublicStudentSessionState } from "../hooks/usePublicStudentSession";
 
 interface RegistroCuentaPageProps {
@@ -141,7 +142,7 @@ interface LoginCuentaPageProps {
 }
 
 export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
-  const { login, refresh } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -153,9 +154,13 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
     setLoading(true);
 
     try {
-      await login({ email, password });
-      const outcome = await refresh();
-      setPage(outcome.type === "authenticated" ? "mi-camino" : "mi-camino-demo");
+      const { sessionOutcome } = await login({ email, password });
+      const resolution = resolvePostLoginPage(sessionOutcome);
+      if (resolution.type === "navigate") {
+        setPage(resolution.page);
+      } else {
+        setError(resolution.message);
+      }
     } catch (err) {
       setError(
         formatAuthFormError(err, "No pudimos iniciar sesión. Revisa tus datos.")

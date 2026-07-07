@@ -1,6 +1,17 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **2 Jul 2026** · HEAD `2134e71`
+Última actualización: **6 Jul 2026** · HEAD local `6782136` (+ cambios piloto sin commit)
+
+## Snapshot operativo (6 Jul 2026 — noche)
+
+| Item | Estado |
+|------|--------|
+| **HEAD remoto** | `6782136` — docs(agents): trilogía protocolo ejecutor |
+| **Piloto T-LOGIN-REDIRECT** | ✅ implementado local · **sin commit** — redirect post-login `LoginCuentaPage` |
+| **Tests app** | **563/563** |
+| **npm run verify** | ⚠️ **159/160 API** — flake preexistente `phase3b2` concurrencia (**T-API-01**, backlog) |
+| **Metodología transferida** | Piloto Medio ejecutado bajo contrato; pendiente commit + auditoría GPT (JP) |
+| **Rama** | `main` · working tree dirty (piloto + `.env.example` + checklist) |
 
 ## Snapshot operativo (2 Jul 2026 — tarde)
 
