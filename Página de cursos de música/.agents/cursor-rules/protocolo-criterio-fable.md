@@ -115,7 +115,21 @@ Un ticket **real Medio** donde:
 
 Si JP corrigió a mitad de camino → transferencia aún no cerrada.
 
-**Candidato natural:** redirect de `LoginCuentaPage` (pendiente elección JP).
+**Candidato cumplido:** T-LOGIN-REDIRECT — **SUPERADA** 6 Jul 2026 (smoke 3/3, auditoría APRUEBA).
+
+---
+
+## 8. Verify rojo y reporte
+
+| Situación | Acción correcta |
+|-----------|-----------------|
+| Test flaky / deuda conocida | **A:** fix real · **B:** quarantine documentado (`it.skip` + ticket + DECISIONS + PROJECT_STATUS) |
+| Comentar/borrar test sin traza | ❌ verde falso — peor que rojo honesto |
+| Director autoriza push | No sustituye verify honesto ni cierre PROJECT_STATUS (G1 matiz) |
+
+**Reporte:** plantilla 5 puntos por defecto. **Versión corta OK** si incluye verify + diff + riesgo residual. Cero reporte = no.
+
+Fundamentos (Pólya, Agans, Gawande, etc.): `docs/agents/bibliografia-protocolo.md` · eval calibración: `docs/agents/eval-calibracion-cursor.md`.
 
 ---
 
@@ -131,4 +145,4 @@ La metodología **no depende del modelo**. Cualquier arquitecto retoma con **"Re
 
 ---
 
-*Versión 1.0 — Julio 2026 · respuestas arquitecto 6 Jul 2026*
+*Versión 1.1 — Jul 2026 · transferencia SUPERADA · verify/quarantine · bibliografía*
