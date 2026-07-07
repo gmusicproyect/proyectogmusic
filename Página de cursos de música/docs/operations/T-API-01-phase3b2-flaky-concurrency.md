@@ -58,3 +58,28 @@ Línea ~410: espera **1** respuesta con `alreadyProcessed === false` y **9** con
 
 **Cursor** — fix acotado tras brief Opus si requiere cambio de contrato de complete.  
 **No mezclar** con Comunidad C2/C3 ni tickets congelados T3/T3.5.
+
+---
+
+## Plan de ejecución (spec arquitecto — 6 Jul 2026)
+
+**Nivel inferido:** Fase 1 **Medio** (diagnóstico acotado, sin cambio de producto) · Fase 2 **Alta** si la race está en el server (bug de producción) · Fase 2 **Medio** si la race está en el test y la recomendación es quarantine documentado.
+
+La decisión fix-vs-quarantine **no se toma a ciegas** — se toma tras diagnóstico acotado.
+
+### Fase 1 — Diagnóstico (timebox 45 min)
+
+1. **Hipótesis escrita** de por qué `es idempotente bajo concurrencia` produce `2 !== 9` (antes de tocar archivos).
+2. Correr el test **10 veces seguidas** y reportar **tasa de fallo**.
+3. Identificar si la race está en el **test** (mal escrito / setup compartido) o en el **código del server** (bug real de concurrencia en `complete`).
+4. **Reporte + recomendación** a JP:
+   - **A — fix real** (idempotencia en servicio o corrección del test)
+   - **B — quarantine** con `it.skip` documentado + referencia a este ticket
+
+**Matiz obligatorio:** si la race está en el **server**, deja de ser deuda de test y pasa a ser **bug de producción** → respuesta **A (fix)**, no quarantine, aunque tome más tiempo.
+
+**Entregable Fase 1:** reporte corto (hipótesis, tasa, ubicación race, recomendación A/B). **Sin Fase 2 hasta OK explícito de JP.**
+
+### Fase 2 — Implementación (solo tras OK JP)
+
+Ejecutar la opción aprobada. **Criterio de hecho:** `npm run verify` verde **legítimo** — sin skips ocultos ni comentarios de test a secas.

@@ -24,5 +24,8 @@ secrets.json
 # Accidental duplicate repo/folder
 paginawebgmusic/
 
+# Export local para repo instruccionescursor (no versionar en Gmusic)
+export-instruccionescursor/
+
 # Cursor IDE (local skill symlinks; secrets path also listed above)
 .cursor/

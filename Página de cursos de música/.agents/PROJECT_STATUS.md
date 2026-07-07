@@ -21,6 +21,15 @@
 | **Backlog nuevo** | **T-UX-COPY-LOGIN** (Baja) — copy anonymous login vs registro · `assert-auth-session.ts:15` |
 | **Rama** | `main` · sync `origin/main` · dirty: `.env.example`, checklist |
 
+## Cola operativa (6 Jul 2026 — noche)
+
+| Orden | Item | Estado | Dependencia / nota |
+|-------|------|--------|-------------------|
+| **1** | **T-API-01** — flake `phase3b2` concurrencia | **Próximo ticket** · spec lista | Fase 1 diagnóstico 45 min → reporte A/B → Fase 2 solo con OK JP · `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
+| **2** | **Piloto B3** — validación E2E publish-to-student (admin → alumno) | **En cola** · no iniciar | **Requiere T-API-01 cerrado** (verify confiable como red) · **Requiere spec del arquitecto** antes de arrancar · ambigüedad Bloque 1 vs Bloque 3 pendiente con JP |
+
+**Regla:** no arrancar Piloto B3 mientras `npm run verify` sea gate intermitente. B3 valida el pipeline completo; construir sobre verify roto es construir sobre arena.
+
 ## Snapshot operativo (6 Jul 2026 — noche, superseded)
 
 ## Snapshot operativo (2 Jul 2026 — tarde)
