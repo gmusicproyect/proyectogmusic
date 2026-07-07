@@ -1,17 +1,27 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Jul 2026** · HEAD local `6782136` (+ cambios piloto sin commit)
+Última actualización: **6 Jul 2026** · HEAD `df842a5`
 
-## Snapshot operativo (6 Jul 2026 — noche)
+## Hito — Transferencia metodología SUPERADA (6 Jul 2026)
 
 | Item | Estado |
 |------|--------|
-| **HEAD remoto** | `6782136` — docs(agents): trilogía protocolo ejecutor |
-| **Piloto T-LOGIN-REDIRECT** | ✅ implementado local · **sin commit** — redirect post-login `LoginCuentaPage` |
+| **Piloto** | T-LOGIN-REDIRECT (Medio) — `df842a5` en prod |
+| **Smoke prod** | **3/3** — demo→`/mi-camino-demo` · QA suscriptor→`/mi-camino` (JP, captura) · offline→error en login |
+| **Auditoría GPT** | APRUEBA |
+| **Contrato ejecutor** | Trilogía desplegada; piloto sin intervención mid-flight |
+
+## Snapshot operativo (6 Jul 2026 — cierre piloto)
+
+| Item | Estado |
+|------|--------|
+| **HEAD remoto** | `df842a5` — fix(auth): redirect post-login LoginCuentaPage |
 | **Tests app** | **563/563** |
-| **npm run verify** | ⚠️ **159/160 API** — flake preexistente `phase3b2` concurrencia (**T-API-01**, backlog) |
-| **Metodología transferida** | Piloto Medio ejecutado bajo contrato; pendiente commit + auditoría GPT (JP) |
-| **Rama** | `main` · working tree dirty (piloto + `.env.example` + checklist) |
+| **npm run verify** | 🔴 **Gate muerto** — flake `phase3b2` concurrencia (**T-API-01**, prioridad **P0 ops**) |
+| **Backlog nuevo** | **T-UX-COPY-LOGIN** (Baja) — copy anonymous login vs registro · `assert-auth-session.ts:15` |
+| **Rama** | `main` · sync `origin/main` · dirty: `.env.example`, checklist |
+
+## Snapshot operativo (6 Jul 2026 — noche, superseded)
 
 ## Snapshot operativo (2 Jul 2026 — tarde)
 

@@ -1,7 +1,7 @@
 # T-API-01 — Flaky `phase3b2` concurrencia en `POST /lesson-sessions/:id/complete`
 
-**Estado:** Abierto  
-**Prioridad:** Alta (calidad de suite — no normalizar fail permanente)  
+**Estado:** Abierto — **P0 ops** (gate `npm run verify` intermitente rojo)  
+**Prioridad:** **P0 ops** (6 Jul 2026 — subida desde Alta; fix concurrencia o quarantine documentado antes de confiar en verify como gate)  
 **Fecha:** 2 Jul 2026  
 **Detectado en:** `npm run api:test` / `npm run verify` contra Supabase compartido
 
