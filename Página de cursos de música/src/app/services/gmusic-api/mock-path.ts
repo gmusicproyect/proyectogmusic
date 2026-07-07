@@ -6,7 +6,7 @@ import {
 } from "../../data/gmusic-path-data";
 import type { PathResponse } from "./types";
 
-/** Fallback explícito de desarrollo — solo cuando VITE_USE_PATH_MOCK=true. */
+/** Mock explícito de desarrollo — solo cuando VITE_USE_PATH_MOCK=true (no fallback silencioso). */
 export function getMockPathResponse(): PathResponse {
   return {
     course: {

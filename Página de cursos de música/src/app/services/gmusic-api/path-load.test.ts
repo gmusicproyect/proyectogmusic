@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { loadPathOnce } from "./path-load";
 import { mapPathToViewModel } from "./map-path";
+import { getMockPathResponse } from "./mock-path";
 import type { PathResponse } from "./types";
 import { GmusicApiError } from "./client";
 
@@ -76,6 +77,62 @@ describe("loadPathOnce", () => {
       mapPathToViewModel,
     });
     assert.equal(second.type, "success");
+  });
+
+  it("API con modules vacíos devuelve empty state real, no mock", async () => {
+    const emptyResponse: PathResponse = {
+      course: {
+        id: "course-real",
+        title: "Ruta guitarra",
+        slug: "ruta-guitarra-12-meses",
+        badge: { instrument: "Guitarra", month: "Mes 1", level: "Fundamento" },
+      },
+      modules: [],
+      activeNodeId: null,
+    };
+
+    const outcome = await loadPathOnce(new AbortController().signal, {
+      fetchPath: async () => emptyResponse,
+      isPathMockEnabled: () => false,
+      getMockPathResponse,
+      mapPathToViewModel,
+    });
+
+    assert.equal(outcome.type, "success");
+    if (outcome.type !== "success") return;
+    assert.equal(outcome.viewModel.isEmpty, true);
+    assert.equal(outcome.viewModel.modules.length, 0);
+    assert.notEqual(emptyResponse.course.id, "mock-course");
+  });
+
+  it("VITE_USE_PATH_MOCK=true sigue usando mock explícito", async () => {
+    const outcome = await loadPathOnce(new AbortController().signal, {
+      fetchPath: async () => {
+        throw new Error("fetchPath no debe llamarse con mock explícito");
+      },
+      isPathMockEnabled: () => true,
+      getMockPathResponse,
+      mapPathToViewModel,
+    });
+
+    assert.equal(outcome.type, "success");
+    if (outcome.type !== "success") return;
+    assert.equal(outcome.viewModel.isEmpty, false);
+    assert.ok(outcome.viewModel.modules.length > 0);
+  });
+
+  it("API con módulos publicados mapea respuesta real", async () => {
+    const outcome = await loadPathOnce(new AbortController().signal, {
+      fetchPath: async () => BASE_RESPONSE,
+      isPathMockEnabled: () => false,
+      getMockPathResponse,
+      mapPathToViewModel,
+    });
+
+    assert.equal(outcome.type, "success");
+    if (outcome.type !== "success") return;
+    assert.equal(outcome.viewModel.isEmpty, false);
+    assert.equal(outcome.viewModel.modules[0]?.title, "Fundamentos");
   });
 });
 

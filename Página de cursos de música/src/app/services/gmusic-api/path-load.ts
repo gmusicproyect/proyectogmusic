@@ -39,12 +39,6 @@ export async function loadPathOnce(
     const response = await deps.fetchPath({ signal });
     if (signal.aborted) return { type: "aborted" };
 
-    if (response.modules.length === 0) {
-      const viewModel = deps.mapPathToViewModel(deps.getMockPathResponse());
-      enrichMockActivePanel(viewModel);
-      return { type: "success", viewModel };
-    }
-
     return {
       type: "success",
       viewModel: deps.mapPathToViewModel(response),
