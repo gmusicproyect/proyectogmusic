@@ -50,6 +50,13 @@ export interface ApiErrorBody {
 export type PathNodeStatus = "locked" | "available" | "active" | "completed";
 export type PathContentKind = "video" | "audio_lab" | "reward";
 
+export type PathStageType =
+  | "FUNDAMENTO_UNO"
+  | "FUNDAMENTO_DOS"
+  | "TECNICA"
+  | "PRACTICA"
+  | "TOCAR";
+
 export interface PathBadgeResponse {
   instrument: string;
   month: string;
@@ -64,6 +71,11 @@ export interface PathNodeResponse {
   duration: string;
   contentKind: PathContentKind;
   videoUrl: string | null;
+  stageType: PathStageType | null;
+  guideText: string | null;
+  guidePdfUrl: string | null;
+  completionCriteria: string | null;
+  ctaLabel: string | null;
 }
 
 export interface PathModuleResponse {

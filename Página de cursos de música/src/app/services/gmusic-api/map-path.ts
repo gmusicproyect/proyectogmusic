@@ -82,10 +82,16 @@ export function mapPathToViewModel(response: PathResponse): PathViewModel {
         type,
         status,
         lane,
+        order: node.order,
         duration: node.duration,
         typeLabel: derivePathNodeTypeLabel(node.contentKind, node.duration),
         description: derivePathNodeDescription(status, module.focus),
         videoUrl: node.videoUrl ?? null,
+        stageType: node.stageType ?? null,
+        guideText: node.guideText ?? null,
+        guidePdfUrl: node.guidePdfUrl ?? null,
+        completionCriteria: node.completionCriteria ?? null,
+        ctaLabel: node.ctaLabel ?? null,
       } satisfies PathNodeData;
     }),
   }));

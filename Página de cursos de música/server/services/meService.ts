@@ -1,6 +1,7 @@
 import type { User } from "@prisma/client";
 import { config } from "../config.js";
 import { deriveContentKind } from "../lib/contentKind.js";
+import { buildPublicPathNodeFields, publicHttpsMaterialUrl } from "../lib/pathNodePublic.js";
 import { prisma } from "../lib/prisma.js";
 import {
   findActiveNodeId,
@@ -122,17 +123,21 @@ export async function buildPathResponse(student: User, courseSlug: string) {
           const exerciseTypes = node.exercises.map((exercise) => exercise.type);
           const contentKind = deriveContentKind(exerciseTypes);
 
+          const material = buildPublicPathNodeFields(node);
+
           return {
             id: node.id,
             title: node.title,
-            order: node.order,
+            order: material.order,
             status: statusByNodeId.get(node.id) ?? "locked",
             duration: `${Math.max(3, node.exercises.length * 3)} min`,
             contentKind,
-            videoUrl:
-              node.videoUrl && node.videoUrl.trim().startsWith("https://")
-                ? node.videoUrl.trim()
-                : null,
+            videoUrl: publicHttpsMaterialUrl(node.videoUrl),
+            stageType: material.stageType,
+            guideText: material.guideText,
+            guidePdfUrl: material.guidePdfUrl,
+            completionCriteria: material.completionCriteria,
+            ctaLabel: material.ctaLabel,
           };
         }),
       };

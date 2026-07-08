@@ -2,6 +2,13 @@ export type NodeStatus = "completed" | "active" | "available" | "locked";
 export type NodeType = "video" | "audio_lab" | "reward";
 export type PathLane = "left" | "center" | "right";
 
+export type PathStageType =
+  | "FUNDAMENTO_UNO"
+  | "FUNDAMENTO_DOS"
+  | "TECNICA"
+  | "PRACTICA"
+  | "TOCAR";
+
 export const NODE_TYPE_LABELS: Record<NodeType, string> = {
   video: "Lección",
   audio_lab: "Práctica guiada",
@@ -14,10 +21,16 @@ export interface PathNodeData {
   type: NodeType;
   status: NodeStatus;
   lane: PathLane;
+  order?: number;
   duration?: string;
   typeLabel?: string;
   description?: string;
   videoUrl?: string | null;
+  stageType?: PathStageType | null;
+  guideText?: string | null;
+  guidePdfUrl?: string | null;
+  completionCriteria?: string | null;
+  ctaLabel?: string | null;
 }
 
 export interface PathModuleData {

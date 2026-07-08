@@ -32,6 +32,11 @@ const BASE_RESPONSE: PathResponse = {
           duration: "8 min",
           contentKind: "video",
           videoUrl: null,
+          stageType: "FUNDAMENTO_UNO",
+          guideText: null,
+          guidePdfUrl: null,
+          completionCriteria: "Postura estable",
+          ctaLabel: null,
         },
         {
           id: "n2",
@@ -41,6 +46,11 @@ const BASE_RESPONSE: PathResponse = {
           duration: "5 min",
           contentKind: "audio_lab",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          stageType: "TECNICA",
+          guideText: "Guía de dedos",
+          guidePdfUrl: "https://cdn.example.com/am.pdf",
+          completionCriteria: null,
+          ctaLabel: null,
         },
         {
           id: "n3",
@@ -50,6 +60,11 @@ const BASE_RESPONSE: PathResponse = {
           duration: "6 min",
           contentKind: "video",
           videoUrl: null,
+          stageType: null,
+          guideText: null,
+          guidePdfUrl: null,
+          completionCriteria: null,
+          ctaLabel: null,
         },
       ],
     },
@@ -69,6 +84,11 @@ const BASE_RESPONSE: PathResponse = {
           duration: "7 min",
           contentKind: "audio_lab",
           videoUrl: null,
+          stageType: "PRACTICA",
+          guideText: null,
+          guidePdfUrl: null,
+          completionCriteria: null,
+          ctaLabel: null,
         },
       ],
     },
@@ -77,6 +97,16 @@ const BASE_RESPONSE: PathResponse = {
 };
 
 describe("mapPathToViewModel", () => {
+  it("preserva materia read-only del path API en el view model", () => {
+    const viewModel = mapPathToViewModel(BASE_RESPONSE);
+    const active = findPathNodeById(viewModel.modules, "n2");
+
+    assert.equal(active?.stageType, "TECNICA");
+    assert.equal(active?.guideText, "Guía de dedos");
+    assert.equal(active?.guidePdfUrl, "https://cdn.example.com/am.pdf");
+    assert.equal(active?.order, 2);
+  });
+
   it("mapea módulos y nodos completos", () => {
     const viewModel = mapPathToViewModel(BASE_RESPONSE);
 
