@@ -45,6 +45,12 @@ export function useStartLessonSession() {
     if (nodeId) void run(nodeId);
   }, [run]);
 
+  const reset = useCallback(() => {
+    managerRef.current.dispose();
+    lastNodeIdRef.current = null;
+    setState({ status: "idle" });
+  }, []);
+
   useEffect(() => {
     const manager = managerRef.current;
     return () => manager.dispose();
@@ -54,5 +60,6 @@ export function useStartLessonSession() {
     ...state,
     start,
     retry,
+    reset,
   };
 }

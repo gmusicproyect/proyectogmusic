@@ -96,6 +96,8 @@ describe("GmusicPath conectado a sesión", () => {
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
     assert.match(gmusicPathSource, /PathLessonRunner/);
     assert.match(gmusicPathSource, /activeRunner/);
+    assert.match(gmusicPathSource, /shouldOpenLessonRunner/);
+    assert.match(gmusicPathSource, /lessonSession\.reset/);
     assert.match(gmusicPathSource, /PathCarouselCards/);
     assert.equal(gmusicPathSource.includes("LessonSessionReadyModal"), false);
     assert.equal(gmusicPathSource.includes("resolveMatchingSuccessKey"), false);

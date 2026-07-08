@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { RefreshCw } from "lucide-react";
 import { GmusicInternalHeader, isLockedNav, LOCKED_NAV_MODAL } from "../components/gmusic/GmusicInternalHeader";
 import { GmusicPlaceholderModal } from "../components/gmusic/GmusicPlaceholderModal";
@@ -16,6 +16,10 @@ import { PathShell } from "../components/gmusic/path/PathShell";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
 import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
 import { canStartLessonFromNode } from "../components/gmusic/path/path-lesson-start";
+import {
+  resolveLessonRunnerOpen,
+  shouldOpenLessonRunner,
+} from "../components/gmusic/path/path-lesson-runner-open";
 import { GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { usePath } from "../hooks/usePath";
 import { useStartLessonSession } from "../hooks/useStartLessonSession";
@@ -38,9 +42,20 @@ interface GmusicPathProps {
 
 type ModalKind = "leveling" | "locked" | null;
 
+function lastNodeIdFromSession(
+  lessonSession: ReturnType<typeof useStartLessonSession>
+): string | null {
+  if (lessonSession.status === "loading") return lessonSession.nodeId;
+  if (lessonSession.status === "error") return lessonSession.nodeId;
+  if (lessonSession.status === "success") return lessonSession.nodeId;
+  return null;
+}
+
 export function GmusicPath({ setPage }: GmusicPathProps) {
   const [modal, setModal] = useState<ModalKind>(null);
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
+  const [sessionOpenError, setSessionOpenError] = useState<string | null>(null);
+  const lastOpenedRequestGenerationRef = useRef(0);
   const path = usePath();
   const lessonSession = useStartLessonSession();
   const { session } = useAuth();
@@ -103,16 +118,29 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     ) : undefined;
 
   useEffect(() => {
-    if (lessonSession.status !== "success") return;
-    const node = findPathNodeById(viewModel?.modules ?? [], lessonSession.nodeId);
-    if (!node) return;
+    if (!shouldOpenLessonRunner(lessonSession, lastOpenedRequestGenerationRef.current)) {
+      return;
+    }
 
+    const modules = viewModel?.modules ?? [];
+    const resolution = resolveLessonRunnerOpen(modules, lessonSession);
+    if (resolution.kind === "missing-node") {
+      if (modules.length > 0) {
+        setSessionOpenError(
+          "No pudimos abrir la lección en tu camino. Recarga la página e inténtalo de nuevo."
+        );
+      }
+      return;
+    }
+
+    lastOpenedRequestGenerationRef.current = lessonSession.requestGeneration;
+    setSessionOpenError(null);
     setActiveRunner({
       session: lessonSession.result.session,
-      nodeTitle: node.title,
-      nodeId: node.id,
-      videoUrl: node.videoUrl ?? null,
-      nodeDuration: node.duration,
+      nodeTitle: resolution.node.title,
+      nodeId: resolution.node.id,
+      videoUrl: resolution.node.videoUrl ?? null,
+      nodeDuration: resolution.node.duration,
     });
   }, [lessonSession, viewModel?.modules]);
 
@@ -120,26 +148,45 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     (nodeId: string) => {
       const node = findPathNodeById(viewModel?.modules ?? [], nodeId);
       if (!node || !canStartLessonFromNode(node)) return;
+      setSessionOpenError(null);
       lessonSession.start(nodeId);
     },
     [viewModel?.modules, lessonSession]
   );
 
   const handleRetrySession = useCallback(() => {
+    setSessionOpenError(null);
+    lastOpenedRequestGenerationRef.current = 0;
     if (lessonSession.status === "error") {
       lessonSession.retry();
+      return;
+    }
+    const nodeId = lastNodeIdFromSession(lessonSession);
+    if (nodeId) {
+      lessonSession.start(nodeId);
     }
   }, [lessonSession]);
 
   const handleCloseRunner = useCallback(() => {
     setActiveRunner(null);
+    lastOpenedRequestGenerationRef.current = 0;
+    lessonSession.reset();
     path.retry();
-  }, [path]);
+  }, [lessonSession, path]);
+
+  const loadingNodeId =
+    lessonSession.status === "loading" ? lessonSession.nodeId : null;
 
   const buildCardModels = useCallback(
     (focusedIdx: number, goTo: (idx: number) => void) =>
-      buildSubscriberPathCardModels(pathNodes, focusedIdx, goTo, handleStartNode),
-    [pathNodes, handleStartNode]
+      buildSubscriberPathCardModels(
+        pathNodes,
+        focusedIdx,
+        goTo,
+        handleStartNode,
+        loadingNodeId
+      ),
+    [pathNodes, handleStartNode, loadingNodeId]
   );
 
   /** D-022B2 — guard estático tests: Tramo actual */
@@ -212,7 +259,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
 
         {path.status === "success" && viewModel && !viewModel.isEmpty && !viewModel.isComplete && (
           <>
-            {lessonSession.status === "error" && (
+            {(lessonSession.status === "error" || sessionOpenError) && (
               <div className="path-intro-stack mb-3">
                 <div
                   className="rounded-lg border px-4 py-3 flex flex-col gap-2"
@@ -222,7 +269,8 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                   }}
                 >
                   <p className="text-xs leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-                    {lessonSession.message}
+                    {sessionOpenError ??
+                      (lessonSession.status === "error" ? lessonSession.message : "")}
                   </p>
                   <button
                     type="button"

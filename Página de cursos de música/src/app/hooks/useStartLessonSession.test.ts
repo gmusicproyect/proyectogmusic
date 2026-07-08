@@ -156,5 +156,6 @@ describe("useStartLessonSession — contrato de tipos", () => {
     assert.match(source, /status: "success", nodeId, requestGeneration, result/);
     assert.match(source, /status: "error", nodeId, requestGeneration, message/);
     assert.match(source, /requestGenerationRef/);
+    assert.match(source, /reset/);
   });
 });

@@ -38,7 +38,8 @@ export function buildSubscriberPathCardModels(
   nodes: PathNodeData[],
   focusedIdx: number,
   goTo: (idx: number) => void,
-  onStartNode: (nodeId: string) => void
+  onStartNode: (nodeId: string) => void,
+  loadingNodeId: string | null = null
 ): PathCarouselCardModel[] {
   return nodes.map((node, i) => {
     const isFocused = i === focusedIdx;
@@ -46,6 +47,7 @@ export function buildSubscriberPathCardModels(
     const isActive = node.status === "active";
     const isLocked = node.status === "locked";
     const canStart = canStartLessonFromNode(node);
+    const isStartingThisNode = loadingNodeId === node.id;
     const categoryLabel = node.typeLabel ?? "Lección";
     const gradient = pathCarouselGradientForIndex(i, isLocked);
 
@@ -70,8 +72,14 @@ export function buildSubscriberPathCardModels(
       } else {
         focusedCta = {
           kind: "action",
-          label: isActive ? "Iniciar lección" : "Continuar",
-          onClick: () => onStartNode(node.id),
+          label: isStartingThisNode
+            ? "Preparando…"
+            : isActive
+              ? "Iniciar lección"
+              : "Continuar",
+          onClick: () => {
+            if (!isStartingThisNode) onStartNode(node.id);
+          },
         };
       }
     }

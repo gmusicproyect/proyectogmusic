@@ -77,6 +77,12 @@ describe("subscriber-path-carousel", () => {
     const models = buildSubscriberPathCardModels(nodes, 0, () => {}, () => {});
     assert.equal(models[0]?.focusedCta?.label, "Completada");
   });
+
+  it("muestra Preparando… mientras la sesión carga", () => {
+    const nodes = flattenPathNodes(SAMPLE_MODULES);
+    const models = buildSubscriberPathCardModels(nodes, 1, () => {}, () => {}, "node-2");
+    assert.equal(models[1]?.focusedCta?.label, "Preparando…");
+  });
 });
 
 describe("DemoPathCards — wrapper del carrusel compartido", () => {
