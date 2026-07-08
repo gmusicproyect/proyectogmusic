@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { PathModuleData } from "../../../data/gmusic-path-types";
 import {
+  buildLessonRunnerLaunch,
   resolveLessonRunnerOpen,
   shouldOpenLessonRunner,
 } from "./path-lesson-runner-open";
@@ -21,10 +22,16 @@ const MODULES: PathModuleData[] = [
         type: "video",
         status: "active",
         lane: "center",
+        order: 1,
         duration: "6 min",
         typeLabel: "Lección · 6 min",
         description: "",
         videoUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        stageType: "FUNDAMENTO_UNO",
+        guideText: null,
+        guidePdfUrl: null,
+        completionCriteria: "Postura estable",
+        ctaLabel: null,
       },
     ],
   },
@@ -50,16 +57,35 @@ describe("path-lesson-runner-open", () => {
   });
 
   it("resuelve nodo del camino para abrir runner", () => {
-    const resolution = resolveLessonRunnerOpen(MODULES, {
-      status: "success",
+    const sessionState = {
+      status: "success" as const,
       nodeId: NODE_ID,
       requestGeneration: 1,
-      result: { kind: "created", session: { sessionId: "s1", nodeId: NODE_ID, status: "STARTED", startedAt: "", expiresAt: "", exercises: [] } },
-    });
+      result: {
+        kind: "created" as const,
+        session: {
+          sessionId: "s1",
+          nodeId: NODE_ID,
+          status: "STARTED" as const,
+          startedAt: "",
+          expiresAt: "",
+          exercises: [],
+        },
+      },
+    };
 
+    const resolution = resolveLessonRunnerOpen(MODULES, sessionState);
     assert.equal(resolution.kind, "open");
     if (resolution.kind === "open") {
       assert.equal(resolution.node.title, "Tu guitarra y postura");
+    }
+
+    const launch = buildLessonRunnerLaunch(MODULES, sessionState);
+    assert.equal(launch.kind, "open");
+    if (launch.kind === "open") {
+      assert.equal(launch.runner.nodeTitle, "Tu guitarra y postura");
+      assert.equal(launch.runner.videoUrl, "https://www.youtube.com/watch?v=jNQXAC9IVRw");
+      assert.equal(launch.runner.lessonNode.stageType, "FUNDAMENTO_UNO");
     }
   });
 

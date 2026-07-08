@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-import { VideoPlayerLesson } from "../../dashboard/VideoPlayerLesson";
 import { Button } from "../../ui/button";
+import { LessonPrepareScreen } from "../lesson/LessonPrepareScreen";
 import { LessonRunnerShell, type LessonRunnerSubmissionView } from "../lesson/LessonRunnerShell";
 import type { CompleteLessonSessionResponse, LessonSessionResponse } from "../../../services/gmusic-api/types";
 import { completeLessonSession } from "../../../services/gmusic-api/complete-lesson-session";
@@ -10,12 +10,14 @@ import type { RunnerAttemptDraft } from "../lesson/lesson-runner-state";
 import { mapRunnerAttemptsToCompleteRequest } from "./map-lesson-attempts";
 import { SubscriberLessonStepper, type SubscriberLessonPhase } from "./SubscriberLessonStepper";
 import { useBodyScrollLock } from "../../../hooks/useBodyScrollLock";
-import { isLessonVideoUrl, toYoutubeEmbedUrl } from "../../../utils/youtube-embed";
+import { isLessonVideoUrl } from "../../../utils/youtube-embed";
+import type { PathNodeData } from "../../../data/gmusic-path-types";
 import { GM_BG, GM_BORDER, GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "../tokens";
 
 export interface PathLessonRunnerProps {
   session: LessonSessionResponse;
   nodeTitle: string;
+  lessonNode: PathNodeData;
   videoUrl?: string | null;
   nodeDuration?: string;
   onExit: () => void;
@@ -36,26 +38,26 @@ function mapCompleteResponseToSummary(result: CompleteLessonSessionResponse) {
   };
 }
 
-function resolveInitialPhase(hasVideo: boolean): SubscriberLessonPhase {
-  return hasVideo ? "video" : "practice";
-}
-
 export function PathLessonRunner({
   session,
   nodeTitle,
+  lessonNode,
   videoUrl,
   nodeDuration,
   onExit,
   onSessionCompleted,
 }: PathLessonRunnerProps) {
-  const hasVideo = isLessonVideoUrl(videoUrl);
-  const embedUrl = useMemo(
-    () => (hasVideo && videoUrl ? toYoutubeEmbedUrl(videoUrl) : null),
-    [hasVideo, videoUrl]
+  const hasVideo = isLessonVideoUrl(videoUrl ?? lessonNode.videoUrl);
+  const prepareNode = useMemo(
+    () => ({
+      ...lessonNode,
+      duration: nodeDuration ?? lessonNode.duration,
+      videoUrl: videoUrl ?? lessonNode.videoUrl ?? null,
+    }),
+    [lessonNode, nodeDuration, videoUrl]
   );
 
-  const [phase, setPhase] = useState<SubscriberLessonPhase>(() => resolveInitialPhase(hasVideo));
-  const [videoComplete, setVideoComplete] = useState(false);
+  const [phase, setPhase] = useState<SubscriberLessonPhase>("video");
   const [submission, setSubmission] = useState<LessonRunnerSubmissionView>({ status: "idle" });
 
   useBodyScrollLock(true);
@@ -82,8 +84,6 @@ export function PathLessonRunner({
     },
     [session.sessionId, onSessionCompleted]
   );
-
-  const canContinueToPractice = videoComplete;
 
   return (
     <div
@@ -130,31 +130,11 @@ export function PathLessonRunner({
 
       <div className="px-4 py-6 md:px-6 md:py-8">
         <div className="mx-auto max-w-3xl space-y-6">
-          {phase === "video" && embedUrl ? (
-            <>
-              <VideoPlayerLesson
-                title={nodeTitle}
-                subtitle="Mira la lección antes de practicar"
-                duration={nodeDuration ?? "Lección"}
-                lessonLabel="Video de la clase"
-                videoUrl={embedUrl}
-                onPlaybackComplete={() => setVideoComplete(true)}
-              />
-              <Button
-                type="button"
-                disabled={!canContinueToPractice}
-                onClick={() => setPhase("practice")}
-                className="min-h-[48px] w-full font-medium tracking-wide"
-                style={{ background: GM_GOLD, color: "#0A0A0A" }}
-              >
-                Continuar al ejercicio
-              </Button>
-              <p className="text-center text-xs" style={{ color: GM_TEXT_SEC }}>
-                {canContinueToPractice
-                  ? "Listo para practicar lo visto en el video."
-                  : "Marca el video como visto para continuar."}
-              </p>
-            </>
+          {phase === "video" ? (
+            <LessonPrepareScreen
+              node={prepareNode}
+              onContinueToPractice={() => setPhase("practice")}
+            />
           ) : (
             <LessonRunnerShell
               key={session.sessionId}

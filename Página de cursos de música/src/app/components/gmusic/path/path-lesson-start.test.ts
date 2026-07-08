@@ -91,13 +91,13 @@ describe("abbreviateSessionId", () => {
 });
 
 describe("GmusicPath conectado a sesión", () => {
-  it("usa useStartLessonSession y abre PathLessonRunner (D-GOV-14 Fase A)", () => {
-    assert.match(gmusicPathSource, /useStartLessonSession/);
+  it("usa loadLessonSessionOnce y abre PathLessonRunner (D-GOV-14 Fase A)", () => {
+    assert.match(gmusicPathSource, /loadLessonSessionOnce/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
     assert.match(gmusicPathSource, /PathLessonRunner/);
     assert.match(gmusicPathSource, /activeRunner/);
-    assert.match(gmusicPathSource, /shouldOpenLessonRunner/);
-    assert.match(gmusicPathSource, /lessonSession\.reset/);
+    assert.match(gmusicPathSource, /buildLessonRunnerLaunchFromResult/);
+    assert.match(gmusicPathSource, /await loadLessonSessionOnce/);
     assert.match(gmusicPathSource, /PathCarouselCards/);
     assert.equal(gmusicPathSource.includes("LessonSessionReadyModal"), false);
     assert.equal(gmusicPathSource.includes("resolveMatchingSuccessKey"), false);

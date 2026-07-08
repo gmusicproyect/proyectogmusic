@@ -16,15 +16,13 @@ import { PathShell } from "../components/gmusic/path/PathShell";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
 import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
 import { canStartLessonFromNode } from "../components/gmusic/path/path-lesson-start";
-import {
-  resolveLessonRunnerOpen,
-  shouldOpenLessonRunner,
-} from "../components/gmusic/path/path-lesson-runner-open";
+import { buildLessonRunnerLaunchFromResult } from "../components/gmusic/path/path-lesson-runner-open";
 import { GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { usePath } from "../hooks/usePath";
-import { useStartLessonSession } from "../hooks/useStartLessonSession";
 import { findPathNodeById } from "../services/gmusic-api/map-path";
+import { loadLessonSessionOnce } from "../services/gmusic-api/lesson-session-load";
 import type { LessonSessionResponse } from "../services/gmusic-api/types";
+import type { PathNodeData } from "../data/gmusic-path-types";
 import { derivePathHeaderIdentity } from "../utils/student-zone-identity";
 import { useAuth } from "../hooks/useAuth";
 
@@ -34,6 +32,7 @@ interface ActivePathRunner {
   nodeId: string;
   videoUrl: string | null;
   nodeDuration?: string;
+  lessonNode: PathNodeData;
 }
 
 interface GmusicPathProps {
@@ -42,22 +41,19 @@ interface GmusicPathProps {
 
 type ModalKind = "leveling" | "locked" | null;
 
-function lastNodeIdFromSession(
-  lessonSession: ReturnType<typeof useStartLessonSession>
-): string | null {
-  if (lessonSession.status === "loading") return lessonSession.nodeId;
-  if (lessonSession.status === "error") return lessonSession.nodeId;
-  if (lessonSession.status === "success") return lessonSession.nodeId;
-  return null;
-}
+type LessonStartState =
+  | { status: "idle" }
+  | { status: "loading"; nodeId: string }
+  | { status: "error"; nodeId: string; message: string };
 
 export function GmusicPath({ setPage }: GmusicPathProps) {
   const [modal, setModal] = useState<ModalKind>(null);
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
   const [sessionOpenError, setSessionOpenError] = useState<string | null>(null);
-  const lastOpenedRequestGenerationRef = useRef(0);
+  const [lessonStart, setLessonStart] = useState<LessonStartState>({ status: "idle" });
+  const lessonAbortRef = useRef<AbortController | null>(null);
+  const lessonStartInFlightRef = useRef(false);
   const path = usePath();
-  const lessonSession = useStartLessonSession();
   const { session } = useAuth();
   const sessionStudentName =
     session.status === "authenticated" ? session.user.name : undefined;
@@ -75,6 +71,12 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     () => resolveCarouselActiveClass(pathNodes, viewModel?.activeNodeId ?? null),
     [pathNodes, viewModel?.activeNodeId]
   );
+
+  useEffect(() => {
+    return () => {
+      lessonAbortRef.current?.abort();
+    };
+  }, []);
 
   const openNavPlaceholder = useCallback((key: string) => {
     if (isLockedNav(key)) setModal("locked");
@@ -117,65 +119,74 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
       />
     ) : undefined;
 
-  useEffect(() => {
-    if (!shouldOpenLessonRunner(lessonSession, lastOpenedRequestGenerationRef.current)) {
-      return;
-    }
-
-    const modules = viewModel?.modules ?? [];
-    const resolution = resolveLessonRunnerOpen(modules, lessonSession);
-    if (resolution.kind === "missing-node") {
-      if (modules.length > 0) {
-        setSessionOpenError(
-          "No pudimos abrir la lección en tu camino. Recarga la página e inténtalo de nuevo."
-        );
-      }
-      return;
-    }
-
-    lastOpenedRequestGenerationRef.current = lessonSession.requestGeneration;
-    setSessionOpenError(null);
-    setActiveRunner({
-      session: lessonSession.result.session,
-      nodeTitle: resolution.node.title,
-      nodeId: resolution.node.id,
-      videoUrl: resolution.node.videoUrl ?? null,
-      nodeDuration: resolution.node.duration,
-    });
-  }, [lessonSession, viewModel?.modules]);
-
   const handleStartNode = useCallback(
-    (nodeId: string) => {
-      const node = findPathNodeById(viewModel?.modules ?? [], nodeId);
+    async (nodeId: string) => {
+      if (lessonStartInFlightRef.current) return;
+
+      const modules = viewModel?.modules ?? [];
+      const node = findPathNodeById(modules, nodeId);
       if (!node || !canStartLessonFromNode(node)) return;
+
+      lessonAbortRef.current?.abort();
+      const controller = new AbortController();
+      lessonAbortRef.current = controller;
+
+      lessonStartInFlightRef.current = true;
       setSessionOpenError(null);
-      lessonSession.start(nodeId);
+      setLessonStart({ status: "loading", nodeId });
+
+      try {
+        const outcome = await loadLessonSessionOnce(nodeId, controller.signal);
+
+        if (controller.signal.aborted) {
+          setLessonStart((prev) =>
+            prev.status === "loading" && prev.nodeId === nodeId ? { status: "idle" } : prev
+          );
+          return;
+        }
+
+        if (outcome.type === "aborted") {
+          setLessonStart({ status: "idle" });
+          return;
+        }
+
+        if (outcome.type === "error") {
+          setSessionOpenError(outcome.message);
+          setLessonStart({ status: "error", nodeId, message: outcome.message });
+          return;
+        }
+
+        const launch = buildLessonRunnerLaunchFromResult(modules, nodeId, outcome.result);
+        if (launch.kind === "open") {
+          setActiveRunner(launch.runner);
+          setLessonStart({ status: "idle" });
+          return;
+        }
+
+        const message =
+          "No pudimos abrir la lección en tu camino. Recarga la página e inténtalo de nuevo.";
+        setSessionOpenError(message);
+        setLessonStart({ status: "error", nodeId, message });
+      } finally {
+        lessonStartInFlightRef.current = false;
+      }
     },
-    [viewModel?.modules, lessonSession]
+    [viewModel?.modules]
   );
 
-  const handleRetrySession = useCallback(() => {
+  const handleRetrySession = useCallback(async () => {
     setSessionOpenError(null);
-    lastOpenedRequestGenerationRef.current = 0;
-    if (lessonSession.status === "error") {
-      lessonSession.retry();
-      return;
-    }
-    const nodeId = lastNodeIdFromSession(lessonSession);
-    if (nodeId) {
-      lessonSession.start(nodeId);
-    }
-  }, [lessonSession]);
+    const nodeId = lessonStart.status === "error" ? lessonStart.nodeId : null;
+    if (nodeId) await handleStartNode(nodeId);
+  }, [lessonStart, handleStartNode]);
 
   const handleCloseRunner = useCallback(() => {
     setActiveRunner(null);
-    lastOpenedRequestGenerationRef.current = 0;
-    lessonSession.reset();
+    setLessonStart({ status: "idle" });
     path.retry();
-  }, [lessonSession, path]);
+  }, [path]);
 
-  const loadingNodeId =
-    lessonSession.status === "loading" ? lessonSession.nodeId : null;
+  const loadingNodeId = lessonStart.status === "loading" ? lessonStart.nodeId : null;
 
   const buildCardModels = useCallback(
     (focusedIdx: number, goTo: (idx: number) => void) =>
@@ -259,7 +270,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
 
         {path.status === "success" && viewModel && !viewModel.isEmpty && !viewModel.isComplete && (
           <>
-            {(lessonSession.status === "error" || sessionOpenError) && (
+            {(lessonStart.status === "error" || sessionOpenError) && (
               <div className="path-intro-stack mb-3">
                 <div
                   className="rounded-lg border px-4 py-3 flex flex-col gap-2"
@@ -270,7 +281,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                 >
                   <p className="text-xs leading-relaxed" style={{ color: GM_TEXT_SEC }}>
                     {sessionOpenError ??
-                      (lessonSession.status === "error" ? lessonSession.message : "")}
+                      (lessonStart.status === "error" ? lessonStart.message : "")}
                   </p>
                   <button
                     type="button"
@@ -331,6 +342,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           key={activeRunner.session.sessionId}
           session={activeRunner.session}
           nodeTitle={activeRunner.nodeTitle}
+          lessonNode={activeRunner.lessonNode}
           videoUrl={activeRunner.videoUrl}
           nodeDuration={activeRunner.nodeDuration}
           onExit={handleCloseRunner}
