@@ -35,8 +35,8 @@ Ensayo **Building Effective Agents** (Schluntz & Zhang, Anthropic):
 
 | Capa | Pregunta | Obras (canon) | Artefacto Gmusic |
 |------|----------|---------------|------------------|
-| **1. Evaluación** | ¿Qué me piden de verdad? ¿Trampa? ¿Gate? | Gawande · Tetlock · Anthropic §7 | `protocolo-criterio-fable.md` · pruebas 05/06 |
-| **2. Epistemología** | ¿Cómo sé que es verdad? | Pólya · Agans · Pragmatic | `como-trabaja-claude.md` |
+| **1. Evaluación** | ¿Qué me piden de verdad? ¿Trampa? ¿Gate? | Gawande · Tetlock · Anthropic §7 | `02-protocolo-criterio-fable.md` · pruebas 05/06 |
+| **2. Epistemología** | ¿Cómo sé que es verdad? | Pólya · Agans · Pragmatic | `01-identidad-del-ejecutor.md` |
 | **3. Entrega** | ¿Cambio mínimo verificado? | Ousterhout · Pragmatic | `loop.mdc` · plantilla 5 puntos |
 
 **Effort adaptativo** no se codifica en reglas — lo compensan: nivel Bajo/Medio/Alto, verify, mini-brief + OK.
@@ -47,9 +47,11 @@ Ensayo **Building Effective Agents** (Schluntz & Zhang, Anthropic):
 
 | Archivo | Rol |
 |---------|-----|
-| `.agents/cursor-rules/loop.mdc` | Motor |
-| `.agents/cursor-rules/protocolo-criterio-fable.md` | Proceso |
-| `.agents/cursor-rules/como-trabaja-claude.md` | Identidad |
+| `.agents/cursor-rules/loop.mdc` | Motor (Gmusic: `npm run verify`) |
+| `.agents/cursor-rules/02-protocolo-criterio-fable.md` | Proceso |
+| `.agents/cursor-rules/01-identidad-del-ejecutor.md` | Identidad |
+
+Upstream portable: [instruccionesAgentes](https://github.com/gmusicproyect/instruccionesAgentes) — ver `.agents/cursor-rules/UPSTREAM.md`
 
 Sync: `./scripts/sync-cursor-rules.sh` → `.cursor/rules/`
 
@@ -103,7 +105,7 @@ Presión · READ-DO (`agent-status.sh`) · DO-CONFIRM (`verify`) · pausas G1.
 
 ## Verify rojo · reporte · hito
 
-Ver `protocolo-criterio-fable.md` §8. Hito: T-LOGIN-REDIRECT smoke 3/3 · transferencia **SUPERADA** · backlog T-UX-COPY-LOGIN · T-API-01 P0.
+Ver `02-protocolo-criterio-fable.md` §6-bis. Hito: T-LOGIN-REDIRECT smoke 3/3 · transferencia **SUPERADA** · backlog T-UX-COPY-LOGIN · T-API-01 P0.
 
 ---
 
@@ -118,7 +120,9 @@ Ver `protocolo-criterio-fable.md` §8. Hito: T-LOGIN-REDIRECT smoke 3/3 · trans
 
 ## Repo de identidad (pendiente JP)
 
-`instruccionescursor` en GitHub quedó con 5 archivos. Al actualizarlo, **incluir** `bibliografia-protocolo.md` y `eval-calibracion-cursor.md` — si diverge del canon vivo de Gmusic, “vaya al repo de identidad” instala versión stale.
+`instruccionesAgentes` en GitHub es el canon portable del ejecutor. Gmusic instala
+desde ahí en `.agents/cursor-rules/` (ver `UPSTREAM.md`). Si diverge del canon
+vivo de Gmusic, un proyecto nuevo que solo lea upstream puede recibir versión stale.
 
 ---
 

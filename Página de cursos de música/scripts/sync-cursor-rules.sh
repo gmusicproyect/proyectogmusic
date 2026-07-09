@@ -15,4 +15,13 @@ for file in "$SRC"/*; do
   echo "  ✓ $name → .cursor/rules/$name"
 done
 
+for file in "$DEST"/*; do
+  [[ -f "$file" ]] || continue
+  name="$(basename "$file")"
+  if [[ ! -f "$SRC/$name" ]]; then
+    rm "$file"
+    echo "  ✗ eliminado obsoleto: $name"
+  fi
+done
+
 echo "Listo. Reinicia Cursor si no detecta reglas nuevas."

@@ -140,7 +140,7 @@ Guía visual local: `DESIGN.md`
 
 | Tipo de Tarea | Documentos obligatorios | Skill a activar |
 | :--- | :--- | :--- |
-| **Ciclo cerrado (Cursor)** | `.agents/cursor-rules/loop.mdc` | `gmusic-agent-workflow` + `gmusic-verification` |
+| **Ciclo cerrado (Cursor)** | `.agents/cursor-rules/` (trilogía: `01`, `02`, `loop.mdc`) · `UPSTREAM.md` | `gmusic-agent-workflow` + `gmusic-verification` |
 | **Deploy / E2E producción** | `docs/deploy/checklist-track-a-t3-e2e.md` | `gmusic-ci-deploy` |
 | **Retomar sesión / handoff** | `.agents/MEMORY.md`, `DECISIONS.md` | `gmusic-session-handoff` |
 | **Currículo 6–75 / motor path largo** | `docs/agents/fcc-inspiration.md`, `learning-engine.md`, D-GOV-04 | `gmusic-learning-engine` |

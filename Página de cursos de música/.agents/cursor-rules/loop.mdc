@@ -5,8 +5,10 @@ alwaysApply: true
 
 # Protocolo de Ciclo Cerrado — Reglas para Cursor
 
-> Canónico versionado en `.agents/cursor-rules/loop.mdc`.  
-> Sincronizar a `.cursor/rules/`: `./scripts/sync-cursor-rules.sh`
+> Canónico Gmusic: `.agents/cursor-rules/loop.mdc` (especializado: `npm run verify`).  
+> Upstream plantilla: [instruccionesAgentes](https://github.com/gmusicproyect/instruccionesAgentes) `templates/loop-template.mdc` — ver `UPSTREAM.md`  
+> Sincronizar a `.cursor/rules/`: `./scripts/sync-cursor-rules.sh`  
+> Trilogía: este archivo (motor) · `02-protocolo-criterio-fable.md` (proceso) · `01-identidad-del-ejecutor.md` (identidad).
 
 ## TU ROL
 
