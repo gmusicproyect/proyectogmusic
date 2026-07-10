@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Jul 2026** · HEAD `df842a5`
+Última actualización: **10 Jul 2026** · sync pendiente push · admin reset + T-UX-LESSON-01 local
 
 ## Hito — Transferencia metodología SUPERADA (6 Jul 2026)
 
@@ -27,8 +27,11 @@
 |-------|------|--------|-------------------|
 | **1** | ~~**T-API-01**~~ — flake `phase3b2` concurrencia | ✅ **Cerrado** 7 Jul 2026 | APRUEBA GPT · FOR UPDATE + tx retry · verify verde |
 | **2** | **T-PUB-01** — Piloto Publicación (admin → alumno) | **En cola** · siguiente tras T-API-01 en remoto | **Bloque 1** (D-GOV-04) · Fase 0: inventario biblioteca admin · spec pendiente |
+| **3** | **T-UX-LESSON-01** — Pantalla lección video-first + práctica activa | **En progreso** · 01D+01A implementados localmente | Mini-brief 7 Jul 2026 · 01B/C/E pendientes · R1 resuelto provisionalmente |
 
 **Regla:** T-PUB-01 valida el **pipeline** publish-to-student, no el currículo completo. Nombre anterior "Piloto B3" **retirado** — colisionaba con Bloque 3 pedagógico y labels del admin.
+
+**T-UX-LESSON-01:** Reemplazar/evolucionar `PathLessonRunner` hacia pantalla pedagógica video-first (5 etapas D-GOV-04, tabs, checklist, CTA único, celebración D-BRAND-02). Gate G6 si checklist requiere schema nuevo. Ver mini-brief en chat / handoff sesión 7 Jul 2026.
 
 ## Cola operativa (6 Jul 2026 — noche, superseded)
 

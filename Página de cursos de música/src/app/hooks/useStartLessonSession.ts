@@ -15,34 +15,89 @@ export function useStartLessonSession() {
   const lastNodeIdRef = useRef<string | null>(null);
   const requestGenerationRef = useRef(0);
 
-  const run = useCallback(async (nodeId: string) => {
+  const run = useCallback(async (nodeId: string): Promise<StartLessonSessionHookState> => {
     lastNodeIdRef.current = nodeId;
     const requestGeneration = ++requestGenerationRef.current;
     const manager = managerRef.current;
     const { generation, signal } = manager.begin();
-    setState({ status: "loading", nodeId, requestGeneration });
+    const loadingState: StartLessonSessionHookState = {
+      status: "loading",
+      nodeId,
+      requestGeneration,
+    };
+    setState(loadingState);
 
-    const outcome = await loadLessonSessionOnce(nodeId, signal);
-    if (!manager.isCurrent(generation)) return;
+    try {
+      const outcome = await loadLessonSessionOnce(nodeId, signal);
+      if (!manager.isCurrent(generation)) {
+        setState((prev) => {
+          if (prev.status === "loading" && prev.requestGeneration === requestGeneration) {
+            return { status: "idle" };
+          }
+          return prev;
+        });
+        return { status: "idle" };
+      }
 
-    if (outcome.type === "aborted") return;
-    if (outcome.type === "success") {
-      setState({ status: "success", nodeId, requestGeneration, result: outcome.result });
-      return;
+      if (outcome.type === "aborted") {
+        setState({ status: "idle" });
+        return { status: "idle" };
+      }
+
+      if (outcome.type === "success") {
+        const nextState: StartLessonSessionHookState = {
+          status: "success",
+          nodeId,
+          requestGeneration,
+          result: outcome.result,
+        };
+        setState(nextState);
+        return nextState;
+      }
+
+      const errorState: StartLessonSessionHookState = {
+        status: "error",
+        nodeId,
+        requestGeneration,
+        message: outcome.message,
+      };
+      setState(errorState);
+      return errorState;
+    } catch (error) {
+      if (!manager.isCurrent(generation)) {
+        setState((prev) => {
+          if (prev.status === "loading" && prev.requestGeneration === requestGeneration) {
+            return { status: "idle" };
+          }
+          return prev;
+        });
+        return { status: "idle" };
+      }
+
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "No pudimos iniciar la lección. Comprueba la conexión e inténtalo de nuevo.";
+      const errorState: StartLessonSessionHookState = {
+        status: "error",
+        nodeId,
+        requestGeneration,
+        message,
+      };
+      setState(errorState);
+      return errorState;
     }
-    setState({ status: "error", nodeId, requestGeneration, message: outcome.message });
   }, []);
 
   const start = useCallback(
-    (nodeId: string) => {
-      void run(nodeId);
-    },
+    (nodeId: string) => run(nodeId),
     [run]
   );
 
   const retry = useCallback(() => {
     const nodeId = lastNodeIdRef.current;
-    if (nodeId) void run(nodeId);
+    if (nodeId) return run(nodeId);
+    return Promise.resolve({ status: "idle" as const });
   }, [run]);
 
   const reset = useCallback(() => {

@@ -152,9 +152,13 @@ describe("useStartLessonSession — contrato de tipos", () => {
       "utf8"
     );
 
-    assert.match(source, /status: "loading", nodeId, requestGeneration/);
-    assert.match(source, /status: "success", nodeId, requestGeneration, result/);
-    assert.match(source, /status: "error", nodeId, requestGeneration, message/);
+    assert.match(source, /status: "loading"/);
+    assert.match(source, /requestGeneration/);
+    assert.match(source, /status: "success"/);
+    assert.match(source, /result: outcome\.result/);
+    assert.match(source, /status: "error"/);
+    assert.match(source, /outcome\.type === "aborted"/);
+    assert.match(source, /setState\(\{ status: "idle" \}\)/);
     assert.match(source, /requestGenerationRef/);
     assert.match(source, /reset/);
   });

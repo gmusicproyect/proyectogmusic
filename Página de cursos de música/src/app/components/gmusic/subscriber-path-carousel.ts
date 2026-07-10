@@ -56,7 +56,7 @@ export function buildSubscriberPathCardModels(
         goTo(i);
         return;
       }
-      if (canStart) {
+      if (canStart && !isStartingThisNode) {
         onStartNode(node.id);
       }
     };
