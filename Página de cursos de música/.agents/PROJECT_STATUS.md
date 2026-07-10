@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **10 Jul 2026** · sync pendiente push · admin reset + T-UX-LESSON-01 local
+Última actualización: **10 Jul 2026** · HEAD `c5fe836` · admin reset + lesson session en `main`
 
 ## Hito — Transferencia metodología SUPERADA (6 Jul 2026)
 
