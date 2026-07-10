@@ -206,8 +206,15 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 
 ```bash
 # Usar .env.ci (NO editar .env principal). Ya cubierto por .gitignore L12 (.env.*)
-npx prisma migrate deploy --env-file=.env.ci
-npx prisma db seed --env-file=.env.ci
+# ⚠️ Prisma CLI NO acepta --env-file (flag de Node). Usar dotenv-cli:
+cd "Página de cursos de música"
+
+# Verificar ref/host ANTES de migrate/seed (solo imprime host, sin password):
+npx dotenv-cli -e .env.ci -- node -e "console.log(process.env.DATABASE_URL.match(/@([^.]+)/)[1])"
+# Debe ser el ref de gmusic-ci, NO prod.
+
+npx dotenv-cli -e .env.ci -- npx prisma migrate deploy
+npx dotenv-cli -e .env.ci -- npx prisma db seed
 ```
 
 **Secret:** `Settings → Secrets → Actions → DATABASE_URL` = URI Session pooler del **proyecto CI**.

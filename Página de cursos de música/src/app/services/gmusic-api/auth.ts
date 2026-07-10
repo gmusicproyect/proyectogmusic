@@ -19,6 +19,12 @@ export interface LoginInput {
   password: string;
 }
 
+export interface AdminResetPasswordInput {
+  email: string;
+  recoveryKey: string;
+  newPassword: string;
+}
+
 export async function registerAccount(input: RegisterInput): Promise<AuthUser> {
   const { data } = await apiPost<{ user: AuthUser }>(
     `${getApiBaseUrl()}/auth/register`,
@@ -35,6 +41,41 @@ export async function registerAccount(input: RegisterInput): Promise<AuthUser> {
 export async function loginAccount(input: LoginInput): Promise<AuthUser> {
   const { data } = await apiPost<{ user: AuthUser }>(`${getApiBaseUrl()}/auth/login`, input);
   return data.user;
+}
+
+export async function resetAdminPassword(input: AdminResetPasswordInput): Promise<void> {
+  const response = await runFetch(`${getApiBaseUrl()}/auth/admin/reset-password`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    let code = "INTERNAL_ERROR";
+    let message = "No pudimos restablecer la contraseña.";
+
+    try {
+      const body = (await response.json()) as { error?: { code?: string; message?: string } };
+      if (body.error?.code) code = body.error.code;
+      if (body.error?.message) message = body.error.message;
+    } catch {
+      // Respuesta no JSON; mantener mensaje genérico.
+    }
+
+    throw new GmusicApiError(message, response.status, code);
+  }
+
+  if (response.status !== 204) {
+    throw new GmusicApiError(
+      "La respuesta de recuperación no es válida.",
+      response.status,
+      "INVALID_RESPONSE"
+    );
+  }
 }
 
 export async function logoutAccount(): Promise<void> {

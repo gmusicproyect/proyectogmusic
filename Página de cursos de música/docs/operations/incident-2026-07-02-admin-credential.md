@@ -40,6 +40,8 @@ node --env-file=.env scripts/rotate-admin-password.mjs
 
 **Hasta cerrar prod:** no publicar bloques reales desde `/admin` en producción.
 
+**Recuperación admin (Jul 2026):** flujo UI + clave ops — ver [`admin-recuperacion-contrasena.md`](admin-recuperacion-contrasena.md). El script `rotate-admin-password.mjs` sigue válido como fallback local.
+
 ---
 
 ## Fix aplicado (2134e71)

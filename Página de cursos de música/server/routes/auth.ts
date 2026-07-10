@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { appendSessionClearCookie, appendSessionCookie } from "../lib/jwtSession.js";
-import { loginStudent, registerStudent } from "../services/authService.js";
+import { loginStudent, registerStudent, resetAdminPassword } from "../services/authService.js";
 
 export const authRouter = Router();
 
@@ -30,4 +30,14 @@ authRouter.post("/logout", (_req, res) => {
   res.set("Cache-Control", "no-store");
   appendSessionClearCookie(res);
   res.status(204).send();
+});
+
+authRouter.post("/admin/reset-password", async (req, res, next) => {
+  try {
+    await resetAdminPassword(req.body);
+    res.set("Cache-Control", "no-store");
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 });

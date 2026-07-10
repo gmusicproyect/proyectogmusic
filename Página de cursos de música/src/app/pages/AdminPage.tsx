@@ -38,7 +38,7 @@ import {
   TableRow,
 } from "../components/ui/table";
 import { Textarea } from "../components/ui/textarea";
-import { loginAccount, logoutAccount } from "../services/gmusic-api/auth";
+import { loginAccount, logoutAccount, resetAdminPassword } from "../services/gmusic-api/auth";
 import { GmusicApiError } from "../services/gmusic-api/client";
 import {
   createAdminModule,
@@ -85,10 +85,16 @@ function AdminLoading({ message }: { message: string }) {
 
 export function AdminPage({ setPage }: AdminPageProps) {
   const [view, setView] = useState<AdminView>({ kind: "list" });
-  const [authState, setAuthState] = useState<"checking" | "ready" | "login">("checking");
+  const [authState, setAuthState] = useState<"checking" | "ready" | "login" | "reset">("checking");
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginSuccess, setLoginSuccess] = useState<string | null>(null);
   const [loginEmail, setLoginEmail] = useState("admin@gmusic.academy");
   const [loginPassword, setLoginPassword] = useState("");
+  const [resetEmail, setResetEmail] = useState("admin@gmusic.academy");
+  const [resetRecoveryKey, setResetRecoveryKey] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState<string | null>(null);
   const [modules, setModules] = useState<AdminModuleListItem[]>([]);
   const [listError, setListError] = useState<string | null>(null);
   const [detail, setDetail] = useState<AdminModuleDetailResponse | null>(null);
@@ -223,6 +229,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     setLoginError(null);
+    setLoginSuccess(null);
     setBusy(true);
     try {
       await loginAccount({ email: loginEmail.trim(), password: loginPassword });
@@ -231,6 +238,46 @@ export function AdminPage({ setPage }: AdminPageProps) {
       setLoginError(
         error instanceof GmusicApiError ? error.message : "Correo o contraseña incorrectos."
       );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleResetPassword = async (event: FormEvent) => {
+    event.preventDefault();
+    setResetError(null);
+
+    if (resetNewPassword !== resetConfirmPassword) {
+      setResetError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await resetAdminPassword({
+        email: resetEmail.trim(),
+        recoveryKey: resetRecoveryKey.trim(),
+        newPassword: resetNewPassword,
+      });
+      setLoginEmail(resetEmail.trim());
+      setLoginPassword("");
+      setResetRecoveryKey("");
+      setResetNewPassword("");
+      setResetConfirmPassword("");
+      setLoginSuccess("Contraseña actualizada. Inicia sesión con tu nueva clave.");
+      setAuthState("login");
+    } catch (error) {
+      if (error instanceof GmusicApiError) {
+        if (error.code === "RESET_NOT_CONFIGURED") {
+          setResetError(
+            "Recuperación no configurada en este entorno. Usa el script local de rotación o contacta al operador."
+          );
+        } else {
+          setResetError(error.message);
+        }
+      } else {
+        setResetError("Clave de recuperación o correo inválidos.");
+      }
     } finally {
       setBusy(false);
     }
@@ -403,7 +450,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
                 required
               />
             </label>
-            <label style={{ display: "block", marginBottom: "1rem" }}>
+            <label style={{ display: "block", marginBottom: "0.5rem" }}>
               <span style={{ color: "#A0A0A5", fontSize: 14 }}>Contraseña</span>
               <input
                 style={authInputStyle}
@@ -414,6 +461,30 @@ export function AdminPage({ setPage }: AdminPageProps) {
                 required
               />
             </label>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setResetEmail(loginEmail);
+                  setResetError(null);
+                  setAuthState("reset");
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#C9A84C",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+            {loginSuccess ? (
+              <p style={{ color: "#86efac", marginBottom: "1rem", fontSize: 14 }}>{loginSuccess}</p>
+            ) : null}
             {loginError ? (
               <p style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{loginError}</p>
             ) : null}
@@ -426,6 +497,83 @@ export function AdminPage({ setPage }: AdminPageProps) {
               onClick={() => setPage("home")}
             >
               Volver al inicio
+            </button>
+          </form>
+        </AuthFormShell>
+        {toastNode}
+      </>
+    );
+  }
+
+  if (authState === "reset") {
+    return (
+      <>
+        <AuthFormShell
+          title="Recuperar acceso admin"
+          subtitle="Ingresa la clave de recuperación ops y define una contraseña nueva."
+        >
+          <form onSubmit={handleResetPassword}>
+            <label style={{ display: "block", marginBottom: "0.75rem" }}>
+              <span style={{ color: "#A0A0A5", fontSize: 14 }}>Correo</span>
+              <input
+                style={authInputStyle}
+                type="email"
+                value={resetEmail}
+                onChange={(event) => setResetEmail(event.target.value)}
+                autoComplete="username"
+                required
+              />
+            </label>
+            <label style={{ display: "block", marginBottom: "0.75rem" }}>
+              <span style={{ color: "#A0A0A5", fontSize: 14 }}>Clave de recuperación</span>
+              <input
+                style={authInputStyle}
+                type="password"
+                value={resetRecoveryKey}
+                onChange={(event) => setResetRecoveryKey(event.target.value)}
+                autoComplete="off"
+                required
+              />
+            </label>
+            <label style={{ display: "block", marginBottom: "0.75rem" }}>
+              <span style={{ color: "#A0A0A5", fontSize: 14 }}>Nueva contraseña</span>
+              <input
+                style={authInputStyle}
+                type="password"
+                value={resetNewPassword}
+                onChange={(event) => setResetNewPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+            <label style={{ display: "block", marginBottom: "1rem" }}>
+              <span style={{ color: "#A0A0A5", fontSize: 14 }}>Confirmar contraseña</span>
+              <input
+                style={authInputStyle}
+                type="password"
+                value={resetConfirmPassword}
+                onChange={(event) => setResetConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+            {resetError ? (
+              <p style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{resetError}</p>
+            ) : null}
+            <button type="submit" style={authPrimaryButtonStyle} disabled={busy}>
+              {busy ? "Guardando…" : "Restablecer contraseña"}
+            </button>
+            <button
+              type="button"
+              style={{ ...authPrimaryButtonStyle, marginTop: "0.75rem", background: "transparent" }}
+              onClick={() => {
+                setResetError(null);
+                setAuthState("login");
+              }}
+            >
+              Volver al login
             </button>
           </form>
         </AuthFormShell>

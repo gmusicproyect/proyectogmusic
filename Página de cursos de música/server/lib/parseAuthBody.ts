@@ -18,6 +18,12 @@ export interface LoginInput {
   password: string;
 }
 
+export interface AdminResetPasswordInput {
+  email: string;
+  recoveryKey: string;
+  newPassword: string;
+}
+
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -71,6 +77,29 @@ export function parseLoginBody(body: unknown): LoginInput {
   }
 
   return { email, password };
+}
+
+export function parseAdminResetPasswordBody(body: unknown): AdminResetPasswordInput {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new ApiError(400, "VALIDATION_ERROR", "Datos de recuperación inválidos.");
+  }
+
+  const record = body as Record<string, unknown>;
+  const email = typeof record.email === "string" ? normalizeEmail(record.email) : "";
+  const recoveryKey = typeof record.recoveryKey === "string" ? record.recoveryKey.trim() : "";
+  const newPassword = typeof record.newPassword === "string" ? record.newPassword : "";
+
+  if (!email || !EMAIL_RE.test(email)) {
+    throw new ApiError(400, "VALIDATION_ERROR", "Correo inválido.");
+  }
+  if (!recoveryKey) {
+    throw new ApiError(400, "VALIDATION_ERROR", "Clave de recuperación requerida.");
+  }
+  if (newPassword.length < MIN_PASSWORD_LENGTH) {
+    throw new ApiError(422, "WEAK_PASSWORD", "La contraseña debe tener al menos 8 caracteres.");
+  }
+
+  return { email, recoveryKey, newPassword };
 }
 
 export function toPublicAuthUser(user: { id: string; name: string; email: string }) {

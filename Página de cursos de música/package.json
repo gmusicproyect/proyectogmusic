@@ -16,7 +16,7 @@
     "deploy:verify-production": "node scripts/verify-production-t1.mjs",
     "deploy:verify-funnel": "node scripts/verify-funnel-track-a.mjs",
     "db:test-connection": "node --env-file=.env scripts/test-db-connection.mjs",
-    "api:dev": "tsx --env-file=.env --import ./sentry.server.instrument.ts server/index.ts",
+    "api:dev": "NODE_ENV=development tsx --env-file=.env --import ./sentry.server.instrument.ts server/index.ts",
     "app:typecheck": "tsc -p tsconfig.app.json --noEmit",
     "api:typecheck": "tsc -p tsconfig.server.json --noEmit",
     "typecheck": "npm run app:typecheck && npm run api:typecheck",

@@ -1,7 +1,17 @@
 import bcrypt from "bcrypt";
 import { AccountTier, Role } from "@prisma/client";
 import { ApiError } from "../lib/errors.js";
-import { parseLoginBody, parseRegisterBody, toPublicAuthUser, type RegisterInput } from "../lib/parseAuthBody.js";
+import {
+  adminRecoveryKeysMatch,
+  getConfiguredAdminPasswordResetKey,
+} from "../lib/adminPasswordResetGate.js";
+import {
+  parseAdminResetPasswordBody,
+  parseLoginBody,
+  parseRegisterBody,
+  toPublicAuthUser,
+  type RegisterInput,
+} from "../lib/parseAuthBody.js";
 import { signSessionToken } from "../lib/jwtSession.js";
 import { prisma } from "../lib/prisma.js";
 
@@ -78,4 +88,38 @@ export async function loginStudent(body: unknown) {
     user: toPublicAuthUser(user),
     token,
   };
+}
+
+export async function resetAdminPassword(body: unknown) {
+  const input = parseAdminResetPasswordBody(body);
+
+  const configuredKey = getConfiguredAdminPasswordResetKey();
+  if (!configuredKey) {
+    throw new ApiError(
+      503,
+      "RESET_NOT_CONFIGURED",
+      "La recuperación de contraseña admin no está configurada en este entorno."
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+    select: { id: true, role: true },
+  });
+
+  const keyValid = adminRecoveryKeysMatch(configuredKey, input.recoveryKey);
+  if (!user || user.role !== Role.ADMIN || !keyValid) {
+    throw new ApiError(
+      401,
+      "INVALID_RESET",
+      "Clave de recuperación o correo inválidos."
+    );
+  }
+
+  const passwordHash = await bcrypt.hash(input.newPassword, BCRYPT_ROUNDS);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash },
+  });
 }
