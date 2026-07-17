@@ -1,6 +1,30 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **10 Jul 2026** · HEAD `c5fe836` · admin reset + lesson session en `main`
+Última actualización: **16 Jul 2026** · **Gates G1–G8 APROBADOS** · **ciclo P0 completo** · sin commit
+
+## Hito — Dominio H1 / P0 (16 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Gate G1 (P0-01)** | ✅ **APROBADO** |
+| **Gate G2 (P0-02)** | ✅ **APROBADO** (API; UI/routing diferidos) |
+| **Gate G3 (P0-03)** | ✅ **APROBADO** |
+| **Gate G4 (P0-07)** | ✅ **APROBADO** — AccessViewH1 + gate práctica |
+| **Gate G5 (P0-05)** | ✅ **APROBADO** — lifecycle binario + eventos idempotentes |
+| **Gate G6 (P0-04)** | ✅ **APROBADO** — PathViewH1 / Mi Camino backend |
+| **Gate G7 (P0-06)** | ✅ **APROBADO** — ProgressViewH1 derivado de eventos |
+| **Gate G8 (P0-08)** | ✅ **APROBADO** — LibraryViewH1 / Biblioteca básica |
+| **Ciclo P0** | ✅ **CERRADO** — P0-01, 02, 03, 07, 05, 04, 06 y 08 |
+| **P0-08 verificación** | T-LIB 13/13 · typecheck/build OK · app 578/578 · verify global rojo por seed |
+| **P0-06 verificación** | T-PRG 10/10 (+2) · typecheck/build OK · app 578/578 · verify global rojo por seed |
+| **P0-04 verificación** | T-CAM 10/10 · typecheck/build OK · verify global rojo por seed |
+| **P0-05 verificación** | T-SES aislados 6/6 · typecheck/build OK · verify global rojo por seed |
+| **Schema / audio / scoring / UI** | **NO** |
+| **Evidencia final P0** | ✅ `P0_evidencia_final_ciclo_H1.md` + handoff repo 16 Jul |
+| **Commit P0** | ✅ Autorizado por Juan — alcance selectivo, sin mezclar cambios preexistentes |
+| **Push** | **NO** — no autorizado |
+| **Próxima decisión** | Persistencia durable después del cierre Git, con mandato aparte |
+
 
 ## Hito — Transferencia metodología SUPERADA (6 Jul 2026)
 

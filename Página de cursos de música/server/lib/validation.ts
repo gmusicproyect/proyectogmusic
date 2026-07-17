@@ -18,18 +18,74 @@ export function parseSessionIdParam(sessionId: string): string {
   return sessionId;
 }
 
-export function parseLessonSessionBody(body: unknown): { nodeId: string } {
+export function parseLessonSessionBody(body: unknown): {
+  nodeId: string;
+  monthIndex?: number;
+  profileId?: string;
+  tarjetaId?: string;
+  unidadId?: string;
+  slot?: 1 | 2 | 3 | 4 | 5;
+  clientRequestId?: string;
+  eventId?: string;
+  retry?: boolean;
+} {
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     throw new ApiError(400, "VALIDATION_ERROR", "nodeId es requerido.");
   }
 
-  const nodeId = (body as { nodeId?: unknown }).nodeId;
+  const record = body as Record<string, unknown>;
+  const nodeId = record.nodeId;
 
   if (typeof nodeId !== "string" || !UUID_RE.test(nodeId)) {
     throw new ApiError(400, "VALIDATION_ERROR", "nodeId debe ser un UUID válido.");
   }
 
-  return { nodeId };
+  let monthIndex: number | undefined;
+  if (record.monthIndex !== undefined && record.monthIndex !== null) {
+    if (
+      typeof record.monthIndex !== "number" ||
+      !Number.isInteger(record.monthIndex) ||
+      record.monthIndex < 1 ||
+      record.monthIndex > 12
+    ) {
+      throw new ApiError(400, "VALIDATION_ERROR", "monthIndex debe ser 1..12.");
+    }
+    monthIndex = record.monthIndex;
+  }
+
+  const optionalString = (key: string): string | undefined => {
+    const value = record[key];
+    if (value === undefined || value === null) return undefined;
+    if (typeof value !== "string" || !value.trim()) {
+      throw new ApiError(400, "VALIDATION_ERROR", `${key} debe ser string no vacío.`);
+    }
+    return value.trim();
+  };
+
+  let slot: 1 | 2 | 3 | 4 | 5 | undefined;
+  if (record.slot !== undefined && record.slot !== null) {
+    if (
+      typeof record.slot !== "number" ||
+      !Number.isInteger(record.slot) ||
+      record.slot < 1 ||
+      record.slot > 5
+    ) {
+      throw new ApiError(400, "VALIDATION_ERROR", "slot debe ser 1..5.");
+    }
+    slot = record.slot as 1 | 2 | 3 | 4 | 5;
+  }
+
+  return {
+    nodeId,
+    monthIndex,
+    profileId: optionalString("profileId"),
+    tarjetaId: optionalString("tarjetaId"),
+    unidadId: optionalString("unidadId"),
+    slot,
+    clientRequestId: optionalString("clientRequestId"),
+    eventId: optionalString("eventId"),
+    retry: record.retry === true,
+  };
 }
 
 function rejectForbiddenFields(record: Record<string, unknown>, scope: string): void {

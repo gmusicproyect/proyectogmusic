@@ -21,6 +21,9 @@ export type ApiErrorCode =
   | "INVALID_RESET"
   | "RESET_NOT_CONFIGURED"
   | "WEAK_PASSWORD"
+  | "METHOD_NOT_ALLOWED"
+  | "ENTITLEMENT"
+  | "RESOURCE_NOT_FOUND"
   | "INTERNAL_ERROR";
 
 export class ApiError extends Error {

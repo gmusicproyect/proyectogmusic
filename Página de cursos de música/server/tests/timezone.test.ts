@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   formatDateInTimezone,
+  getIsoWeekStartDateInTimezone,
   getYesterdayDateInTimezone,
   subtractCalendarDays,
 } from "../lib/timezone.js";
@@ -39,5 +40,16 @@ describe("getYesterdayDateInTimezone", () => {
     assert.equal(formatDateInTimezone(afterLongDay, timezone), "2024-11-04");
     assert.equal(getYesterdayDateInTimezone(timezone, afterLongDay), "2024-11-03");
     assert.equal(subtractCalendarDays("2024-11-04", 1), "2024-11-03");
+  });
+});
+
+describe("getIsoWeekStartDateInTimezone", () => {
+  it("devuelve lunes de la semana en America/Santiago", () => {
+    // Jueves 2026-07-16 Chile → lunes 2026-07-13
+    const thursday = new Date("2026-07-16T18:00:00.000Z");
+    assert.equal(
+      getIsoWeekStartDateInTimezone("America/Santiago", thursday),
+      "2026-07-13"
+    );
   });
 });

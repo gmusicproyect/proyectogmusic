@@ -22,3 +22,27 @@ export function getYesterdayDateInTimezone(timezone: string, from: Date = new Da
   const today = formatDateInTimezone(from, timezone);
   return subtractCalendarDays(today, 1);
 }
+
+const WEEKDAY_OFFSET_FROM_MONDAY: Record<string, number> = {
+  Mon: 0,
+  Tue: 1,
+  Wed: 2,
+  Thu: 3,
+  Fri: 4,
+  Sat: 5,
+  Sun: 6,
+};
+
+/** Lunes de la semana ISO en el calendario del timezone (YYYY-MM-DD). */
+export function getIsoWeekStartDateInTimezone(
+  timezone: string,
+  from: Date = new Date()
+): string {
+  const today = formatDateInTimezone(from, timezone);
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    weekday: "short",
+  }).format(from);
+  const offset = WEEKDAY_OFFSET_FROM_MONDAY[weekday] ?? 0;
+  return subtractCalendarDays(today, offset);
+}
