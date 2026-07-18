@@ -12,11 +12,11 @@ import {
   patchProfileSettingsH1,
   savePartialOnboardingH1,
 } from "../lib/onboardingH1.js";
+import { parseLibraryQueryH1 } from "../lib/libraryH1.js";
 import {
-  buildLibraryItemDetailH1,
-  buildLibraryViewH1,
-  parseLibraryQueryH1,
-} from "../lib/libraryH1.js";
+  buildLibraryItemDetailH1Async,
+  buildLibraryViewH1Async,
+} from "../lib/libraryCatalogBridge.js";
 import { buildPathViewH1Async } from "../lib/pathViewH1.js";
 import { buildProgressViewH1Async } from "../lib/progressViewH1.js";
 import { assertStudent, realStudentAuth } from "../middleware/realStudentAuth.js";
@@ -205,7 +205,7 @@ meRouter.get("/progress", async (req, res, next) => {
 /**
  * P0-08 H1: LibraryViewH1 — catálogo básico filtrado por Entitlements.
  * Refuerzo, no reemplazo de Mi Camino. Premium siempre locked (MVP).
- * Catálogo fixture hasta PD-4 seed.
+ * PD-4: catálogo desde DB sembrada si GMUSIC_H1_DURABLE=1; fixture si OFF.
  */
 meRouter.get("/library", async (req, res, next) => {
   try {
@@ -213,7 +213,7 @@ meRouter.get("/library", async (req, res, next) => {
     const context = await resolveLearnerContext(student);
     const accessPayload = await buildAccessResponse(student);
     const parsed = parseLibraryQueryH1(req.query);
-    const libraryViewH1 = buildLibraryViewH1({
+    const libraryViewH1 = await buildLibraryViewH1Async({
       context,
       grants: accessPayload.entitlements.grants,
       filters: parsed,
@@ -231,7 +231,7 @@ meRouter.get("/library/:id", async (req, res, next) => {
     const student = assertStudent(req);
     const context = await resolveLearnerContext(student);
     const accessPayload = await buildAccessResponse(student);
-    const item = buildLibraryItemDetailH1({
+    const item = await buildLibraryItemDetailH1Async({
       context,
       grants: accessPayload.entitlements.grants,
       resourceId: req.params.id,

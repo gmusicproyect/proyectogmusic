@@ -98,11 +98,18 @@ export type LibraryViewH1 = {
     ctaTarget: "/mi-camino";
   } | null;
   meta: {
-    /** Catálogo fixture en memoria — sin seeds/multimedia hasta mandato editorial. */
-    catalogSource: "memory_fixture_h1";
+    /**
+     * Fuente del catálogo:
+     * - `memory_fixture_h1`: fixture en memoria (P0-08, flag OFF).
+     * - `db`: filas LibraryResource sembradas (PD-4, GMUSIC_H1_DURABLE=1).
+     * Premium sigue force-OFF en ambos casos.
+     */
+    catalogSource: LibraryCatalogSourceH1;
     premiumEnabled: false;
   };
 };
+
+export type LibraryCatalogSourceH1 = "memory_fixture_h1" | "db";
 
 const RESOURCE_TYPES: ResourceTypeH1[] = [
   "song_simple",
@@ -368,6 +375,7 @@ export function buildLibraryViewH1(input: {
     level?: ResourceLevelH1 | null;
   };
   catalog?: RecursoBibliotecaH1[];
+  catalogSource?: LibraryCatalogSourceH1;
 }): LibraryViewH1 {
   const { context, grants } = input;
   const catalog = input.catalog ?? buildMvpLibraryCatalogFixtureH1();
@@ -376,7 +384,7 @@ export function buildLibraryViewH1(input: {
     profileId: context.profileId,
     currentMonth: context.currentMonth,
     meta: {
-      catalogSource: "memory_fixture_h1",
+      catalogSource: input.catalogSource ?? "memory_fixture_h1",
       premiumEnabled: false,
     },
   };

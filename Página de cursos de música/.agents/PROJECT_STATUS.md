@@ -1,6 +1,21 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **17 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` local sin push · **Persistencia Durable: PD-0…PD-3** (validación local VERDE + servicios durable con flag) · **PD-4 NO autorizado** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+Última actualización: **18 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` local sin push · **Persistencia Durable: PD-0…PD-4** (seed Biblioteca durable local VERDE) · **PD-5 NO autorizado** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+
+## Hito — Persistencia Durable H1 · PD-4 Seed Biblioteca (18 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ OK PD-4 — migrar catálogo fixture → filas reales DB local · sin UI/routing/Premium real/Comunidad/prod/push |
+| **Seed** | ✅ `librarySeedH1` (fixture → `LibraryResource`+`Link`, upsert idempotente) · CLI `scripts/ops/pd4-seed-library.ts` (guard host local) |
+| **Lectura durable** | ✅ `libraryCatalogBridge` (`buildLibraryViewH1Async` / detail) · flag OFF = fixture, ON = DB PUBLISHED |
+| **Contrato P0-08** | ✅ intacto · `meta.catalogSource` = `db` con flag ON · premium sigue **force-OFF** (locked) · DRAFT/ARCHIVED no visibles |
+| **Seed CLI (evidencia)** | ✅ 8 recursos · 6 PUBLISHED · 4 links · re-run idempotente (counts estables) |
+| **Tests** | ✅ PD-4 puro 7/7 · PD-4 integración Docker+flag 5/5 · regresión Biblioteca memoria 12/12 · typecheck/build OK |
+| **Premium real / multimedia** | ❌ fuera de alcance (mediaRef null; premium locked) |
+| **Policy en rutas (R-002)** | ❌ diferido a **PD-5** (helper ya existe) |
+| **Evidencia** | ✅ `docs/roadmap/persistencia-durable-pd4-evidencia.md` |
+| **PD-5 / commit / push** | **NO** |
 
 ## Hito — Persistencia Durable H1 · PD-3 (17 Jul 2026)
 

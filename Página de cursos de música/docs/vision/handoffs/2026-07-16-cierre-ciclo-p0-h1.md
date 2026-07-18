@@ -186,3 +186,44 @@ Juan con frase explícita. Commit/push **no** autorizados.
 
 **Pendiente humano:** autorizar PD-4 (seed Biblioteca) o commit PD-2/PD-3.
 Push sigue **sin autorizar**.
+
+---
+
+## Continuación 18 Jul 2026 — Commit local PD-2 + PD-3
+
+**Mandato autorizado:** commit local selectivo de PD-2 + PD-3 (schema/migración/
+repos/policy/helper/tests/docs/evidencia). Sin incluir cambios ajenos del árbol
+dirty. Sin push.
+
+**Hecho:**
+- Commit `ad124ac` — 32 archivos (+3518/−172), staging selectivo verificado por diff.
+- Excluidos cambios ajenos (`.env.example` con bloque DB-02, `.gitignore`,
+  `package.json`, CI, `src/app/*`, `pathPresentation`, docs no-PD, etc.).
+- `origin/main` **ahead 2**, sin push.
+
+---
+
+## Continuación 18 Jul 2026 — PD-4 Seed Biblioteca
+
+**Mandato autorizado:** migrar catálogo fixture `memory_fixture_h1` a filas reales
+en DB local, seed controlado, lectura compatible con contratos `libraryH1` y
+evidencia. Sin UI/routing, sin Premium real, sin Comunidad, sin prod ni push.
+
+**Entregado:**
+- Seed: `librarySeedH1` (fixture → `LibraryResource`+`Link`, upsert idempotente) +
+  CLI `scripts/ops/pd4-seed-library.ts` (guard host local).
+- Lectura durable: `libraryCatalogBridge` (`buildLibraryViewH1Async` / detail) —
+  flag OFF = fixture, ON = DB PUBLISHED. `meta.catalogSource` = `db` con flag ON.
+- Contrato P0-08 intacto: premium **force-OFF** (locked), DRAFT/ARCHIVED no visibles,
+  `tarjetaIds`/`unitIds` reconstruidos, `mediaRef` null.
+- Rutas `/me/library` y `/me/library/:id` usan builders async del bridge.
+- Tests: PD-4 puro **7/7** · PD-4 integración Docker+flag **5/5** · regresión
+  Biblioteca memoria **12/12** · typecheck/build OK.
+- Seed CLI (evidencia): 8 recursos · 6 PUBLISHED · 4 links · idempotente.
+- Evidencia: `docs/roadmap/persistencia-durable-pd4-evidencia.md`.
+
+**No hecho (fuera de PD-4):** Premium real, multimedia, enforcement de entitlements
+en rutas (PD-5), UI/routing, commit de PD-4, push.
+
+**Pendiente humano:** autorizar commit local selectivo PD-4 o abrir PD-5
+(enforcement R-002). Push sigue **sin autorizar**.
