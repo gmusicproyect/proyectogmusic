@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  buildMockPracticeChecklist,
+  buildVisualPracticeChecklist,
   lessonStageLabelForSlot,
   resolveLessonStageSlot,
 } from "./lesson-stage";
@@ -18,8 +18,22 @@ describe("lesson-stage", () => {
     assert.equal(lessonStageLabelForSlot(5), "Tocar");
   });
 
-  it("buildMockPracticeChecklist genera 3 microacciones", () => {
-    const items = buildMockPracticeChecklist("Técnica", "Tu guitarra y postura");
+  it("buildVisualPracticeChecklist usa completionCriteria cuando existe", () => {
+    const items = buildVisualPracticeChecklist({
+      stageLabel: "Técnica",
+      nodeTitle: "Tu guitarra y postura",
+      completionCriteria: "Postura estable al tocar Am",
+    });
+    assert.equal(items.length, 3);
+    assert.match(items[0], /Tu guitarra y postura/);
+    assert.match(items[1], /Postura estable/);
+  });
+
+  it("buildVisualPracticeChecklist cae a hints genéricos sin criteria", () => {
+    const items = buildVisualPracticeChecklist({
+      stageLabel: "Técnica",
+      nodeTitle: "Tu guitarra y postura",
+    });
     assert.equal(items.length, 3);
     assert.match(items[0], /Tu guitarra y postura/);
     assert.match(items[1], /Técnica/);

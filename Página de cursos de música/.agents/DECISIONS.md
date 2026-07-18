@@ -8,6 +8,8 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 - ChatGPT / Ser Digital usa este archivo como fuente de contexto cuando Juan lo comparte.
 - `.agents/` es la fuente oficial de verdad del proyecto.
 
+> **Puntero roadmap (14 Jul 2026):** alcance MVP Track A y reconciliación auth/Mi Progreso/Comunidad/ops → **`docs/roadmap/decisiones.md` § D-ROAD-005** + producto **`docs/product/01-mvp-gmusic.md`**. No reescribe el historial D-005/D-006 de esta tabla; para agents de implementación MVP, prevalece D-ROAD-005 sobre textos “auth pausada”.
+
 ---
 
 ## Roles y autoridades

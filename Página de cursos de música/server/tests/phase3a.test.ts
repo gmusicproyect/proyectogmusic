@@ -82,6 +82,7 @@ describe("dashboard assembly", () => {
     {
       id: "m1",
       title: "Fundamentos",
+      order: 1,
       nodes: [
         { id: "n1", title: "Nodo 1", exercises: [] },
         { id: "n2", title: "Nodo 2", exercises: [] },

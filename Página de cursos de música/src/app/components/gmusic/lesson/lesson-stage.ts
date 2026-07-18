@@ -34,13 +34,35 @@ export function lessonStageLabelForSlot(slot: number): string {
   return LESSON_STAGE_LABELS[index] ?? LESSON_STAGE_LABELS[0];
 }
 
+/**
+ * Checklist visual de preparación (local, no persistido).
+ * Preferir `completionCriteria` del PathNode (editorial DB) cuando exista;
+ * si no, hints genéricos — no inventan currículo publicado.
+ */
+export function buildVisualPracticeChecklist(input: {
+  stageLabel: string;
+  nodeTitle: string;
+  completionCriteria?: string | null;
+}): readonly string[] {
+  const criteria = input.completionCriteria?.trim();
+  if (criteria) {
+    return [
+      `Mira la clase: ${input.nodeTitle}`,
+      criteria,
+      "Cuando estés listo, continúa a la evaluación",
+    ];
+  }
+  return [
+    `Mira la clase: ${input.nodeTitle}`,
+    `Prepara la etapa «${input.stageLabel}» con calma`,
+    "Continúa a la evaluación cuando estés listo",
+  ];
+}
+
+/** @deprecated Alias — usar buildVisualPracticeChecklist */
 export function buildMockPracticeChecklist(
   stageLabel: string,
   nodeTitle: string
 ): readonly string[] {
-  return [
-    `Mira la clase completa: ${nodeTitle}`,
-    `Aplica la etapa «${stageLabel}» con calma y atención`,
-    "Repite la microacción al menos una vez antes de continuar",
-  ];
+  return buildVisualPracticeChecklist({ stageLabel, nodeTitle });
 }

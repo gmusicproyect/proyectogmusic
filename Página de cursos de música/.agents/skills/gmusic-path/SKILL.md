@@ -23,7 +23,7 @@ Pantalla de ruta pedagógica. Ruta: `mi-camino` → `/mi-camino`.
 
 - Ruta seria de guitarra, no estética videojuego infantil.
 - Mapa serpenteante vertical; solo módulo activo expandido cuando aplique.
-- Header: Mi Camino en oro; Mi Progreso y Comunidad bloqueados con candado.
+- Header: Mi Camino en oro; Comunidad bloqueada con candado hasta T-MVP-COMMUNITY (D-F6-ANTI-DEMO).
 - Copy bloqueado: "Disponible en el plan completo", no "Etapa 03/04".
 
 ## Reestructura visual (ir 1×1)

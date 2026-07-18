@@ -22,7 +22,8 @@ export function LessonPracticeChecklist({ items }: LessonPracticeChecklistProps)
         Tu práctica de hoy
       </h3>
       <p className="mt-1 text-xs leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-        Marca cada microacción cuando la completes. Este checklist es solo visual en esta fase.
+        Ayuda visual local: marca lo que completes aquí. No se guarda ni sustituye el currículo
+        publicado.
       </p>
       <ul className="mt-4 space-y-3">
         {items.map((item, index) => {

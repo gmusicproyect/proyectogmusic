@@ -24,6 +24,9 @@ secrets.json
 # Accidental duplicate repo/folder
 paginawebgmusic/
 
+# Upstream clones for analysis only (do not commit AGPL sources)
+vendor-sources/
+
 # Export local para repo instruccionescursor (no versionar en Gmusic)
 export-instruccionescursor/
 

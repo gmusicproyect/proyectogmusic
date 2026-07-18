@@ -10,9 +10,10 @@ const runnerSource = readFileSync(join(root, "../path/PathLessonRunner.tsx"), "u
 const tabsSource = readFileSync(join(root, "LessonMaterialTabs.tsx"), "utf8");
 
 describe("T-UX-LESSON-01A — pantalla prepare", () => {
-  it("LessonPrepareScreen usa barras de etapa y checklist mock", () => {
+  it("LessonPrepareScreen usa barras de etapa y checklist visual local", () => {
     assert.match(prepareSource, /LessonStageIndicator/);
     assert.match(prepareSource, /LessonPracticeChecklist/);
+    assert.match(prepareSource, /buildVisualPracticeChecklist/);
     assert.match(prepareSource, /Continuar a la práctica/);
     assert.equal(prepareSource.includes("Completar clase"), false);
     assert.equal(prepareSource.includes("completeLessonSession"), false);

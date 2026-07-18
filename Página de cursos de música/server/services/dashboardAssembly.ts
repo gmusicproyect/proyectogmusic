@@ -1,10 +1,13 @@
 import type { PathNodeStatus } from "../lib/nodeStatus.js";
 import { deriveContentKind, deriveTypeLabel } from "../lib/contentKind.js";
+import { resolvePathProgressLabel } from "../lib/pathPresentation.js";
 import type { ExerciseType } from "@prisma/client";
 
 interface ModuleLike {
   id: string;
   title: string;
+  /** Module.order Prisma — fuente de "Mes N" (anti-demo: no usar index del array). */
+  order?: number;
   nodes: Array<{ id: string; title: string; exercises: Array<{ type: ExerciseType }> }>;
 }
 
@@ -51,7 +54,11 @@ export function resolveModuleProgress(
       completedNodes: completedInModule,
       totalNodes: activeContext.nodesTotal,
       currentNodeTitle: activeContext.node.title,
-      pathLabel: `Mes ${activeContext.moduleIndex + 1} · Nodo ${activeContext.nodeIndex + 1} de ${activeContext.nodesTotal}`,
+      pathLabel: resolvePathProgressLabel({
+        moduleOrder: activeContext.module.order,
+        nodeOrdinal: activeContext.nodeIndex + 1,
+        nodesTotal: activeContext.nodesTotal,
+      }),
     };
   }
 
@@ -72,7 +79,12 @@ export function resolveModuleProgress(
         completedNodes,
         totalNodes,
         currentNodeTitle: lastNode.title,
-        pathLabel: `Mes ${index + 1} · Camino completado`,
+        pathLabel: resolvePathProgressLabel({
+          moduleOrder: module.order,
+          nodeOrdinal: totalNodes,
+          nodesTotal: totalNodes,
+          completed: true,
+        }),
       };
     }
   }
@@ -84,7 +96,11 @@ export function resolveModuleProgress(
     completedNodes: 0,
     totalNodes: firstModule.nodes.length,
     currentNodeTitle: firstModule.nodes[0]?.title ?? "",
-    pathLabel: `Mes 1 · Nodo 1 de ${firstModule.nodes.length || 1}`,
+    pathLabel: resolvePathProgressLabel({
+      moduleOrder: firstModule.order,
+      nodeOrdinal: 1,
+      nodesTotal: firstModule.nodes.length || 1,
+    }),
   };
 }
 

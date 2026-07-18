@@ -22,7 +22,9 @@
     "typecheck": "npm run app:typecheck && npm run api:typecheck",
     "test": "npm run app:test && npm run api:test",
     "verify": "npm run typecheck && npm run test && npm run build",
-    "api:test": "NODE_ENV=test node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
+    "api:test": "NODE_ENV=test node scripts/ops/run-api-tests.mjs",
+    "api:test:docker": "NODE_ENV=test GMUSIC_API_TEST_DB=docker node scripts/ops/run-api-tests.mjs",
+    "ops:test-db-guard": "node --test scripts/ops/db-env-guard.test.mjs",
     "app:test": "node --import tsx --test 'src/**/*.test.ts'"
   },
   "dependencies": {

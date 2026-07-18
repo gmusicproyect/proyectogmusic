@@ -64,16 +64,16 @@ describe("student-zone-identity", () => {
   });
 });
 
-describe("GmusicInternalHeader — modal próximamente", () => {
-  it("LOCKED_NAV_MODAL no suena a upsell de plan", () => {
+describe("GmusicInternalHeader — modal comunidad OUT MVP", () => {
+  it("LOCKED_NAV_MODAL marca Comunidad como fuera del MVP (no upsell de plan)", () => {
     assert.equal(headerSource.includes("Disponible en el plan completo"), false);
-    assert.match(headerSource, /Próximamente en tu academia/);
+    assert.match(headerSource, /Comunidad — fuera del MVP actual/);
   });
 
-  it("Comunidad navega a community sin candado", () => {
-    assert.match(headerSource, /id:\s*"comunidad"[\s\S]*page:\s*"community"/);
-    assert.equal(headerSource.includes('locked: true'), false);
-    assert.equal(headerSource.includes("isLockedNav(id)"), false);
+  it("Comunidad queda bloqueada en header hasta datos reales (anti-demo)", () => {
+    assert.match(headerSource, /id:\s*"comunidad"[\s\S]*locked:\s*true/);
+    assert.equal(headerSource.includes('page: "community"'), false);
+    assert.match(headerSource, /GmusicLockedNavId\s*=\s*"comunidad"/);
   });
 });
 

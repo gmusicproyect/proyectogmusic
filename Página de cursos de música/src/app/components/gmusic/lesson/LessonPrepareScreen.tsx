@@ -4,7 +4,7 @@ import { LessonMaterialTabs } from "./LessonMaterialTabs";
 import { LessonPracticeChecklist } from "./LessonPracticeChecklist";
 import { LessonStageIndicator } from "./LessonStageIndicator";
 import {
-  buildMockPracticeChecklist,
+  buildVisualPracticeChecklist,
   lessonStageLabelForSlot,
   resolveLessonStageSlot,
 } from "./lesson-stage";
@@ -40,8 +40,13 @@ export function LessonPrepareScreen({ node, onContinueToPractice }: LessonPrepar
   );
 
   const checklistItems = useMemo(
-    () => buildMockPracticeChecklist(stageLabel, node.title),
-    [stageLabel, node.title]
+    () =>
+      buildVisualPracticeChecklist({
+        stageLabel,
+        nodeTitle: node.title,
+        completionCriteria: node.completionCriteria,
+      }),
+    [stageLabel, node.title, node.completionCriteria]
   );
 
   const description =

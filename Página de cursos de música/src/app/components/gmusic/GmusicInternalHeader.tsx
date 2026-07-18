@@ -5,17 +5,21 @@ import { deriveStudentInitials } from "../../utils/student-zone-identity";
 
 export type GmusicNavId = "estudio" | "camino" | "comunidad";
 
-/** Reservado para futuros ítems bloqueados en el nav interno. */
-export type GmusicLockedNavId = never;
+/**
+ * Comunidad bloqueada en header hasta feed/peers reales de launch
+ * (T-F6-ANTI-DEMO-01 / T-MVP-COMMUNITY). Feed API existe; mocks curated ≠ launch.
+ */
+export type GmusicLockedNavId = "comunidad";
 
 export const LOCKED_NAV_MODAL = {
-  title: "Próximamente en tu academia",
-  subtitle: "Estamos preparando esta sección para alumnos con acceso activo.",
+  title: "Comunidad — fuera del MVP actual",
+  subtitle:
+    "Esta sección no forma parte del producto de launch hasta que haya feed y peers reales.",
   footer: "Mientras tanto, continúa en Mi Camino y Mi Estudio.",
 } as const;
 
-export function isLockedNav(_id: string): _id is GmusicLockedNavId {
-  return false;
+export function isLockedNav(id: string): id is GmusicLockedNavId {
+  return id === "comunidad";
 }
 
 interface GmusicInternalHeaderProps {
@@ -34,7 +38,7 @@ const NAV_ITEMS: {
 }[] = [
   { id: "camino", label: "Mi Camino", page: "mi-camino" },
   { id: "estudio", label: "Mi Estudio", page: "mi-estudio" },
-  { id: "comunidad", label: "Comunidad", page: "community" },
+  { id: "comunidad", label: "Comunidad", locked: true },
 ];
 
 const HEADER_BORDER = "rgba(255, 255, 255, 0.08)";

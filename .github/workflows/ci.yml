@@ -47,17 +47,17 @@ jobs:
       - name: API tests
         working-directory: ${{ env.PROJECT_DIR }}
         env:
-          # ⚠️ NUNCA usar la connection string de producción (alumnos reales).
-          # api:test escribe en la BD vía Prisma (sesiones, XP, posts, usuarios de prueba).
-          # No hay schema aislado ni rollback global — solo cleanup parcial por test.
-          # Usar: proyecto Supabase dedicado a CI/staging + migrate deploy + seed.
-          # Ver: docs/operations/checklist-seguridad-pre-lanzamiento.md § CI DATABASE_URL
+          # DB-02 fail-closed: secret SOLO CI (ref+host canónicos). NUNCA producción.
+          # Si falta DATABASE_URL → exit 1 (CI no verde). run-api-tests valida antes de Prisma.
+          # Ver: docs/operations/DB-02-blindaje-entorno-pruebas.md
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GITHUB_ACTIONS: "true"
         run: |
           if [ -z "${DATABASE_URL:-}" ]; then
-            echo "Skipping API tests — DATABASE_URL secret not configured in repo."
-            exit 0
+            echo "[DB-02] Falta secret DATABASE_URL (proyecto CI). CI no puede quedar verde sin él."
+            exit 1
           fi
+          # No imprimir DATABASE_URL. El runner solo emite resumen redactado.
           npm run api:test
 
       - name: Build

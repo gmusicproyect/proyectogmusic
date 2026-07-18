@@ -184,7 +184,11 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 
 ### CI — secret `DATABASE_URL` (⚠️ leer antes de configurar)
 
-**Respuesta canónica (6 Jul 2026):** `api:test` **no** usa base efímera, schema aislado ni transacciones con rollback global. Usa **directamente** la BD apuntada por `DATABASE_URL` vía Prisma (`server/lib/prisma.js`).
+> **DB-02 (11 Jul 2026):** `.env` = **producción** (`tosbwmqijmtxchvcgrkj`).
+> `npm run api:test` carga **`.env.ci`** (no `.env`) y rechaza prod fail-closed.
+> Doc: `docs/operations/DB-02-blindaje-entorno-pruebas.md`.
+
+**Respuesta canónica (6 Jul 2026, actualizada DB-02):** `api:test` **no** usa base efímera, schema aislado ni transacciones con rollback global. Usa **directamente** la BD apuntada por `DATABASE_URL` vía Prisma (`server/lib/prisma.js`) — tras el runner, esa URL debe ser **CI o Docker**, nunca producción.
 
 | Aspecto | Realidad en repo |
 |---------|------------------|

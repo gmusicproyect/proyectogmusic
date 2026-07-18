@@ -31,9 +31,11 @@ export function PathModuleDivider({
         <h2 className="text-lg font-medium mb-1" style={{ color: GM_TEXT }}>
           {title}
         </h2>
-        <p className="text-sm mb-2 max-w-sm mx-auto leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-          {focus}
-        </p>
+        {focus.trim() ? (
+          <p className="text-sm mb-2 max-w-sm mx-auto leading-relaxed" style={{ color: GM_TEXT_SEC }}>
+            {focus}
+          </p>
+        ) : null}
         <p className="text-[11px] tracking-wide" style={{ color: "rgba(160,160,165,0.65)" }}>
           {completedInModule} de {totalInModule} lecciones recorridas
         </p>

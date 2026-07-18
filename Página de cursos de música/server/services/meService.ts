@@ -1,6 +1,14 @@
 import type { User } from "@prisma/client";
 import { config } from "../config.js";
 import { deriveContentKind } from "../lib/contentKind.js";
+import {
+  PATH_LABEL_NEUTRAL,
+  resolveModuleFocus,
+  resolveNodeDurationLabel,
+  resolvePathBadgeLevel,
+  resolvePathBadgeMonth,
+  resolvePathInstrument,
+} from "../lib/pathPresentation.js";
 import { buildPublicPathNodeFields, publicHttpsMaterialUrl } from "../lib/pathNodePublic.js";
 import { prisma } from "../lib/prisma.js";
 import {
@@ -59,8 +67,8 @@ export async function buildDashboardResponse(student: User) {
       id: student.id,
       name: student.name,
       timezone: student.timezone,
-      levelLabel: "Fundamento",
-      pathLabel: moduleProgressSnapshot?.pathLabel ?? "Mes 1 · Nodo 1 de 1",
+      levelLabel: resolvePathBadgeLevel(moduleProgressSnapshot?.module.title ?? null),
+      pathLabel: moduleProgressSnapshot?.pathLabel ?? PATH_LABEL_NEUTRAL,
     },
     streak: {
       currentDays: latestStreak?.currentStreak ?? 0,
@@ -92,6 +100,8 @@ export async function buildPathResponse(student: User, courseSlug: string) {
   const activeModuleIndex = modules.findIndex((module) =>
     module.nodes.some((node) => node.id === activeNodeId)
   );
+  const badgeModule =
+    activeModuleIndex >= 0 ? modules[activeModuleIndex] : (modules[0] ?? null);
 
   return {
     course: {
@@ -99,9 +109,9 @@ export async function buildPathResponse(student: User, courseSlug: string) {
       title: course.title,
       slug: course.slug,
       badge: {
-        instrument: "Guitarra",
-        month: `Mes ${Math.max(1, activeModuleIndex + 1)}`,
-        level: "Fundamento",
+        instrument: resolvePathInstrument(course.slug, course.title),
+        month: resolvePathBadgeMonth(badgeModule?.order),
+        level: resolvePathBadgeLevel(badgeModule?.title, course.title),
       },
     },
     modules: modules.map((module, index) => {
@@ -113,10 +123,7 @@ export async function buildPathResponse(student: User, courseSlug: string) {
         id: module.id,
         index: index + 1,
         title: module.title,
-        focus:
-          index === 0
-            ? "Postura, primeros acordes y escucha del instrumento"
-            : "Formación de acordes y cambios limpios entre posiciones",
+        focus: resolveModuleFocus(module),
         nodesCompleted,
         nodesTotal: module.nodes.length,
         nodes: module.nodes.map((node) => {
@@ -130,7 +137,7 @@ export async function buildPathResponse(student: User, courseSlug: string) {
             title: node.title,
             order: material.order,
             status: statusByNodeId.get(node.id) ?? "locked",
-            duration: `${Math.max(3, node.exercises.length * 3)} min`,
+            duration: resolveNodeDurationLabel(node),
             contentKind,
             videoUrl: publicHttpsMaterialUrl(node.videoUrl),
             stageType: material.stageType,

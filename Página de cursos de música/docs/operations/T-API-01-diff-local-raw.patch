@@ -1,0 +1,320 @@
+diff --git "a/P\303\241gina de cursos de m\303\272sica/.agents/PROJECT_STATUS.md" "b/P\303\241gina de cursos de m\303\272sica/.agents/PROJECT_STATUS.md"
+index 433bb5a..c3fd5a6 100644
+--- "a/P\303\241gina de cursos de m\303\272sica/.agents/PROJECT_STATUS.md"	
++++ "b/P\303\241gina de cursos de m\303\272sica/.agents/PROJECT_STATUS.md"	
+@@ -17,18 +17,20 @@
+ |------|--------|
+ | **HEAD remoto** | `df842a5` — fix(auth): redirect post-login LoginCuentaPage |
+ | **Tests app** | **563/563** |
+-| **npm run verify** | 🔴 **Gate muerto** — flake `phase3b2` concurrencia (**T-API-01**, prioridad **P0 ops**) |
++| **npm run verify** | ⏸ **Fix local verde** — commit T-API-01 pendiente auditoría GPT + push |
+ | **Backlog nuevo** | **T-UX-COPY-LOGIN** (Baja) — copy anonymous login vs registro · `assert-auth-session.ts:15` |
+ | **Rama** | `main` · sync `origin/main` · dirty: `.env.example`, checklist |
+ 
+-## Cola operativa (6 Jul 2026 — noche)
++## Cola operativa (7 Jul 2026)
+ 
+ | Orden | Item | Estado | Dependencia / nota |
+ |-------|------|--------|-------------------|
+-| **1** | **T-API-01** — flake `phase3b2` concurrencia | **Próximo ticket** · spec lista | Fase 1 diagnóstico 45 min → reporte A/B → Fase 2 solo con OK JP · `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
+-| **2** | **Piloto B3** — validación E2E publish-to-student (admin → alumno) | **En cola** · no iniciar | **Requiere T-API-01 cerrado** (verify confiable como red) · **Requiere spec del arquitecto** antes de arrancar · ambigüedad Bloque 1 vs Bloque 3 pendiente con JP |
++| **1** | ~~**T-API-01**~~ — flake `phase3b2` concurrencia | ⏸ **Fix local** · commit pendiente auditoría GPT independiente | Medio-Alto · `completeLessonSessionService` + `advisoryLock` |
++| **2** | **T-PUB-01** — Piloto Publicación (admin → alumno) | **En cola** · siguiente tras T-API-01 en remoto | **Bloque 1** (D-GOV-04) · Fase 0: inventario biblioteca admin · spec pendiente |
+ 
+-**Regla:** no arrancar Piloto B3 mientras `npm run verify` sea gate intermitente. B3 valida el pipeline completo; construir sobre verify roto es construir sobre arena.
++**Regla:** T-PUB-01 valida el **pipeline** publish-to-student, no el currículo completo. Nombre anterior "Piloto B3" **retirado** — colisionaba con Bloque 3 pedagógico y labels del admin.
++
++## Cola operativa (6 Jul 2026 — noche, superseded)
+ 
+ ## Snapshot operativo (6 Jul 2026 — noche, superseded)
+ 
+diff --git "a/P\303\241gina de cursos de m\303\272sica/docs/operations/T-API-01-phase3b2-flaky-concurrency.md" "b/P\303\241gina de cursos de m\303\272sica/docs/operations/T-API-01-phase3b2-flaky-concurrency.md"
+index fcea9a5..38c00d8 100644
+--- "a/P\303\241gina de cursos de m\303\272sica/docs/operations/T-API-01-phase3b2-flaky-concurrency.md"	
++++ "b/P\303\241gina de cursos de m\303\272sica/docs/operations/T-API-01-phase3b2-flaky-concurrency.md"	
+@@ -1,6 +1,6 @@
+ # T-API-01 — Flaky `phase3b2` concurrencia en `POST /lesson-sessions/:id/complete`
+ 
+-**Estado:** Abierto — **P0 ops** (gate `npm run verify` intermitente rojo)  
++**Estado:** Fix local aplicado — **cierre pendiente** auditoría GPT independiente + commit/push (7 Jul 2026)  
+ **Prioridad:** **P0 ops** (6 Jul 2026 — subida desde Alta; fix concurrencia o quarantine documentado antes de confiar en verify como gate)  
+ **Fecha:** 2 Jul 2026  
+ **Detectado en:** `npm run api:test` / `npm run verify` contra Supabase compartido
+@@ -37,8 +37,8 @@ Línea ~410: espera **1** respuesta con `alreadyProcessed === false` y **9** con
+ 
+ ## Criterio de cierre
+ 
+-- [ ] Test `es idempotente bajo concurrencia` pasa **10/10** en 3 corridas consecutivas de `npm run api:test -- server/tests/phase3b2.test.ts` contra Supabase staging/prod.
+-- [ ] Opción A: **corregir idempotencia** en servicio (lock pesimista, `ON CONFLICT`, o serialización explícita por `sessionId`).
++- [x] Opción A: **corregir idempotencia** en servicio — implementado localmente; verificar en auditoría GPT.
++- [ ] **Cierre en remoto:** auditoría GPT APRUEBA → commit 4 archivos → push → verify en `origin/main`.
+ - [ ] Opción B: **aislar test** — suite dedicada serial, DB efímera local, o `@serial` / `--test-concurrency=1` solo para este describe + snapshot aislado sin interferencia cross-suite.
+ - [ ] Documentar en `gmusic-verification` si el test queda marcado como integración pesada.
+ 
+diff --git "a/P\303\241gina de cursos de m\303\272sica/server/lib/advisoryLock.ts" "b/P\303\241gina de cursos de m\303\272sica/server/lib/advisoryLock.ts"
+index 7fbc40e..2832ac5 100644
+--- "a/P\303\241gina de cursos de m\303\272sica/server/lib/advisoryLock.ts"	
++++ "b/P\303\241gina de cursos de m\303\272sica/server/lib/advisoryLock.ts"	
+@@ -13,6 +13,19 @@ export async function acquireLessonSessionAdvisoryLock(
+   );
+ }
+ 
++/**
++ * Bloqueo de fila por sessionId al cerrar sesiones.
++ * Más fiable que solo advisory lock con poolers que reasignan conexiones.
++ */
++export async function lockLessonSessionForComplete(
++  tx: Prisma.TransactionClient,
++  sessionId: string
++): Promise<void> {
++  await tx.$queryRaw(
++    Prisma.sql`SELECT id FROM "LessonSession" WHERE id::text = ${sessionId} FOR UPDATE`
++  );
++}
++
+ /**
+  * Bloqueo transaccional por sessionId al cerrar sesiones.
+  * Serializa complete concurrentes para garantizar idempotencia.
+diff --git "a/P\303\241gina de cursos de m\303\272sica/server/services/completeLessonSessionService.ts" "b/P\303\241gina de cursos de m\303\272sica/server/services/completeLessonSessionService.ts"
+index 4daff36..a2df40f 100644
+--- "a/P\303\241gina de cursos de m\303\272sica/server/services/completeLessonSessionService.ts"	
++++ "b/P\303\241gina de cursos de m\303\272sica/server/services/completeLessonSessionService.ts"	
+@@ -1,7 +1,8 @@
+-import { SessionStatus, type User } from "@prisma/client";
++import { Prisma, SessionStatus, type User } from "@prisma/client";
+ import { isAnswerCorrect } from "../lib/answerValidation.js";
+ import {
+   acquireSessionCompleteAdvisoryLock,
++  lockLessonSessionForComplete,
+ } from "../lib/advisoryLock.js";
+ import { ApiError } from "../lib/errors.js";
+ import { prisma } from "../lib/prisma.js";
+@@ -40,6 +41,12 @@ type TransactionResult =
+   | { kind: "expired" }
+   | { kind: "not_startable" };
+ 
++/** Waiters block on pg_advisory_xact_lock; default Prisma 5s timeout caused 500s under burst. */
++const COMPLETE_SESSION_TX_OPTIONS = {
++  maxWait: 30_000,
++  timeout: 90_000,
++} as const;
++
+ export async function completeLessonSession(
+   student: User,
+   sessionIdParam: string,
+@@ -61,10 +68,44 @@ export async function completeLessonSession(
+     throw new ApiError(403, "FORBIDDEN", "No puedes cerrar una sesión de otro alumno.");
+   }
+ 
+-  const result = await prisma.$transaction(async (tx) => {
+-    await acquireSessionCompleteAdvisoryLock(tx, sessionId);
++  for (let attempt = 0; attempt < 2; attempt++) {
++    try {
++      const result = await prisma.$transaction(
++        async (tx) => executeCompleteLessonSessionTransaction(tx, student, sessionId, attempts),
++        COMPLETE_SESSION_TX_OPTIONS
++      );
++      return finalizeTransactionResult(result);
++    } catch (error) {
++      if (!isUniqueConstraintError(error) && !isCompleteContentionError(error)) {
++        throw error;
++      }
++
++      const idempotent = await loadAlreadyCompletedResponse(student, sessionId);
++      if (idempotent) {
++        return idempotent;
++      }
+ 
+-    const session = await tx.lessonSession.findUnique({
++      if (attempt === 0) {
++        continue;
++      }
++
++      throw error;
++    }
++  }
++
++  throw new ApiError(500, "INTERNAL_ERROR", "No se pudo completar la sesión.");
++}
++
++async function executeCompleteLessonSessionTransaction(
++  tx: Prisma.TransactionClient,
++  student: User,
++  sessionId: string,
++  attempts: CompleteAttemptInput[]
++): Promise<TransactionResult> {
++  await acquireSessionCompleteAdvisoryLock(tx, sessionId);
++  await lockLessonSessionForComplete(tx, sessionId);
++
++  const session = await tx.lessonSession.findUnique({
+       where: { id: sessionId },
+       include: {
+         attempts: {
+@@ -203,18 +244,27 @@ export async function completeLessonSession(
+     }
+ 
+     if (xpEarned > 0) {
+-      await tx.xpEvent.create({
+-        data: {
+-          userId: student.id,
+-          sessionId,
+-          amount: xpEarned,
+-          reason: "SESSION_COMPLETED",
+-        },
+-      });
++      try {
++        await tx.xpEvent.create({
++          data: {
++            userId: student.id,
++            sessionId,
++            amount: xpEarned,
++            reason: "SESSION_COMPLETED",
++          },
++        });
++      } catch (error) {
++        if (!isUniqueConstraintError(error)) {
++          throw error;
++        }
++      }
+     }
+ 
+-    const updatedSession = await tx.lessonSession.update({
+-      where: { id: sessionId },
++    const { count: completedCount } = await tx.lessonSession.updateMany({
++      where: {
++        id: sessionId,
++        status: SessionStatus.STARTED,
++      },
+       data: {
+         status: SessionStatus.COMPLETED,
+         accuracy,
+@@ -224,6 +274,14 @@ export async function completeLessonSession(
+       },
+     });
+ 
++    if (completedCount === 0) {
++      return loadCompletedTransactionResult(tx, session, student);
++    }
++
++    const updatedSession = await tx.lessonSession.findUniqueOrThrow({
++      where: { id: sessionId },
++    });
++
+     const response = await buildCompletedResponse(
+       tx,
+       { ...updatedSession, nodeId: session.nodeId },
+@@ -233,9 +291,113 @@ export async function completeLessonSession(
+     );
+ 
+     return { kind: "completed" as const, response };
++}
++
++async function loadCompletedTransactionResult(
++  tx: Prisma.TransactionClient,
++  session: { id: string; nodeId: string },
++  student: User
++): Promise<TransactionResult> {
++  const completed = await tx.lessonSession.findUnique({
++    where: { id: session.id },
++    include: {
++      attempts: {
++        select: {
++          microExerciseId: true,
++          isCorrect: true,
++          selectedAnswer: true,
++        },
++      },
++    },
+   });
+ 
+-  return finalizeTransactionResult(result);
++  if (!completed || completed.status !== SessionStatus.COMPLETED) {
++    return { kind: "not_startable" as const };
++  }
++
++  const response = await buildCompletedResponse(
++    tx,
++    completed,
++    student,
++    true,
++    completed.attempts.map((attempt) => ({
++      microExerciseId: attempt.microExerciseId,
++      isCorrect: attempt.isCorrect,
++      selectedAnswer: attempt.selectedAnswer,
++    }))
++  );
++
++  return {
++    kind: "completed" as const,
++    response: stripAttemptsSummaryWhenProcessed(response, true),
++  };
++}
++
++function isUniqueConstraintError(error: unknown): boolean {
++  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
++}
++
++function isCompleteContentionError(error: unknown): boolean {
++  if (isUniqueConstraintError(error)) {
++    return true;
++  }
++
++  if (error instanceof Prisma.PrismaClientKnownRequestError) {
++    return error.code === "P2028";
++  }
++
++  if (error instanceof Error) {
++    const message = error.message;
++    return (
++      message.includes("Transaction already closed") ||
++      message.includes("Transaction not found") ||
++      message.includes("Unable to start a transaction")
++    );
++  }
++
++  return false;
++}
++
++async function loadAlreadyCompletedResponse(
++  student: User,
++  sessionId: string
++): Promise<CompleteLessonSessionResponse | null> {
++  const session = await prisma.lessonSession.findUnique({
++    where: { id: sessionId },
++    include: {
++      attempts: {
++        select: {
++          microExerciseId: true,
++          isCorrect: true,
++          selectedAnswer: true,
++        },
++      },
++    },
++  });
++
++  if (!session || session.userId !== student.id) {
++    return null;
++  }
++
++  if (session.status !== SessionStatus.COMPLETED) {
++    return null;
++  }
++
++  const response = await prisma.$transaction(async (tx) =>
++    buildCompletedResponse(
++      tx,
++      session,
++      student,
++      true,
++      session.attempts.map((attempt) => ({
++        microExerciseId: attempt.microExerciseId,
++        isCorrect: attempt.isCorrect,
++        selectedAnswer: attempt.selectedAnswer,
++      }))
++    )
++  );
++
++  return stripAttemptsSummaryWhenProcessed(response, true);
+ }
+ 
+ async function upsertStreakForToday(
