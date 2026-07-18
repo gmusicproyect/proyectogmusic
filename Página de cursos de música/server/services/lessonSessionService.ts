@@ -15,13 +15,14 @@ import {
   resolveEntitlementsH1,
 } from "../lib/entitlementsH1.js";
 import { assertProfileAccess } from "../lib/learnerContextH1.js";
-import { getProfileProjectionH1 } from "../lib/profileProjectionH1Store.js";
+import { getProfileProjection } from "../lib/learnerProjectionBridge.js";
+import { captureLessonContentSnapshot } from "../lib/lessonContentSnapshot.js";
 import {
-  appendLearningEventH1,
-  assertFtcSequenceH1,
-  registerPracticeSessionH1,
-  type LearningEventH1,
-} from "../lib/practiceEventsH1.js";
+  appendLearningEvent,
+  assertFtcSequence,
+  registerPracticeSession,
+} from "../lib/practiceEventsBridge.js";
+import type { LearningEventH1 } from "../lib/practiceEventsH1.js";
 import { loadPublishedCoursePath } from "./coursePath.js";
 
 export interface LessonSessionResponse {
@@ -74,7 +75,7 @@ export async function createOrReuseLessonSession(
 
   // P0-07 E3: monthIndex explícito, o currentMonth onboarding, o default M1.
   // No usar Module.order como mes (Track A Module ≈ UnidadFTC, no MesRuta).
-  const projection = getProfileProjectionH1(student.id);
+  const projection = await getProfileProjection(student.id);
   const monthIndex =
     bodyMonth ?? projection?.result?.currentMonth ?? 1;
   const slot = input.slot ?? nodeContext.nodeOrder;
@@ -84,7 +85,7 @@ export async function createOrReuseLessonSession(
   const tarjetaId = input.tarjetaId ?? nodeId;
   const unidadId = input.unidadId ?? nodeContext.moduleId;
   if (h1EventFlow) {
-    assertFtcSequenceH1(student.id, unidadId, slot as 1 | 2 | 3 | 4 | 5);
+    await assertFtcSequence(student.id, unidadId, slot as 1 | 2 | 3 | 4 | 5);
   }
 
   const subscriptions = await prisma.subscription.findMany({
@@ -127,11 +128,20 @@ export async function createOrReuseLessonSession(
       return { session: reusableSession, created: false };
     }
 
+    // R-001 / PD-3: snapshot de contenido al iniciar (secureAnswer solo en DB).
+    const { snapshot, contentVersion } = await captureLessonContentSnapshot(
+      tx,
+      nodeId,
+      { now }
+    );
+
     const createdSession = await tx.lessonSession.create({
       data: {
         userId: student.id,
         nodeId,
         status: SessionStatus.STARTED,
+        contentSnapshot: snapshot,
+        contentVersion,
       },
     });
 
@@ -146,7 +156,7 @@ export async function createOrReuseLessonSession(
 
   let practiceEvent: LearningEventH1 | undefined;
   if (h1EventFlow) {
-    registerPracticeSessionH1({
+    await registerPracticeSession({
       sessionId: session.id,
       accountId: student.id,
       profileId: student.id,
@@ -157,18 +167,20 @@ export async function createOrReuseLessonSession(
       slot: slot as 1 | 2 | 3 | 4 | 5,
       clientRequestId: input.clientRequestId ?? null,
     });
-    practiceEvent = appendLearningEventH1({
-      eventId: input.eventId,
-      eventType: "practice_started",
-      profileId: student.id,
-      sessionId: session.id,
-      tarjetaId,
-      unidadId,
-      monthIndex,
-      slot: slot as 1 | 2 | 3 | 4 | 5,
-      payload: { source: "practice_flow" },
-      causationCommandId: input.clientRequestId ?? null,
-    }).event;
+    practiceEvent = (
+      await appendLearningEvent({
+        eventId: input.eventId,
+        eventType: "practice_started",
+        profileId: student.id,
+        sessionId: session.id,
+        tarjetaId,
+        unidadId,
+        monthIndex,
+        slot: slot as 1 | 2 | 3 | 4 | 5,
+        payload: { source: "practice_flow" },
+        causationCommandId: input.clientRequestId ?? null,
+      })
+    ).event;
   }
 
   const payload: LessonSessionResponse = {

@@ -17,10 +17,13 @@ import {
   type TarjetaFTC,
   type UnidadFTC,
 } from "./rutaFtcDomainH1.js";
+import { h1EventSourceMeta, type H1EventSourceMeta } from "./h1DurableFlag.js";
 import {
-  getPracticeProjectionH1,
-  listLearningEventsH1,
-} from "./practiceEventsH1.js";
+  getPracticeProjection,
+  listLearningEvents,
+} from "./practiceEventsBridge.js";
+import type { LearningEventH1 } from "./practiceEventsH1.js";
+import { getPracticeProjectionH1, listLearningEventsH1 } from "./practiceEventsH1.js";
 
 export type PathBlockerCodeH1 =
   | "ONBOARDING"
@@ -100,6 +103,7 @@ export type PathViewH1 = {
   meta: {
     weeklyGoalMinutes: number | null;
     learningGoal: string | null;
+    eventSource: H1EventSourceMeta;
   };
 };
 
@@ -154,8 +158,7 @@ function toEntitlementBlocker(monthIndex: number): PathBlockerH1 {
   };
 }
 
-function latestOpenSessionByCard(profileId: string): Map<string, string> {
-  const events = listLearningEventsH1(profileId);
+function latestOpenSessionByCard(events: LearningEventH1[]): Map<string, string> {
   const open = new Map<string, string>();
   for (const event of events) {
     if (!event.tarjetaId || !event.sessionId) continue;
@@ -184,13 +187,23 @@ function sortedCards(unit: UnidadFTC): TarjetaFTC[] {
 export function buildPathViewH1(input: {
   context: LearnerContextH1;
   access: Pick<AccessViewH1, "grants">;
+  /** Overrides para tests / PD-3 async loader. */
+  projection?: {
+    completedCards: string[];
+    completedUnits: string[];
+    completedSlotsByUnit: Record<string, FtcSlot[]>;
+  };
+  events?: LearningEventH1[];
+  eventSource?: H1EventSourceMeta;
 }): PathViewH1 {
   const { context, access } = input;
   const ruta = buildMvpRutaGuitarraFundamentosFixture();
-  const projection = getPracticeProjectionH1(context.profileId);
+  const projection =
+    input.projection ?? getPracticeProjectionH1(context.profileId);
+  const events = input.events ?? listLearningEventsH1(context.profileId);
   const completedCards = new Set(projection.completedCards);
   const completedUnits = new Set(projection.completedUnits);
-  const openSessions = latestOpenSessionByCard(context.profileId);
+  const openSessions = latestOpenSessionByCard(events);
 
   const blockers: PathBlockerH1[] = [];
   if (!context.onboardingCompleted) {
@@ -349,6 +362,24 @@ export function buildPathViewH1(input: {
     meta: {
       weeklyGoalMinutes: context.weeklyGoalMinutes,
       learningGoal: context.learningGoal,
+      eventSource: input.eventSource ?? h1EventSourceMeta(),
     },
   };
+}
+
+/** PD-3: carga proyección/eventos vía bridge (DB si GMUSIC_H1_DURABLE=1). */
+export async function buildPathViewH1Async(input: {
+  context: LearnerContextH1;
+  access: Pick<AccessViewH1, "grants">;
+}): Promise<PathViewH1> {
+  const [projection, events] = await Promise.all([
+    getPracticeProjection(input.context.profileId),
+    listLearningEvents(input.context.profileId),
+  ]);
+  return buildPathViewH1({
+    ...input,
+    projection,
+    events,
+    eventSource: h1EventSourceMeta(),
+  });
 }

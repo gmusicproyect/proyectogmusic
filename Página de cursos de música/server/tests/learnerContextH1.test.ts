@@ -33,9 +33,9 @@ describe("P0-01 LearnerContextH1 (unit)", () => {
     assert.equal(toAccountId("abc"), "abc");
   });
 
-  it("T-H1-02: resolveLearnerContext setea profileId = accountId = user.id", () => {
+  it("T-H1-02: resolveLearnerContext setea profileId = accountId = user.id", async () => {
     const user = fakeUser();
-    const ctx = resolveLearnerContext(user);
+    const ctx = await resolveLearnerContext(user);
     assert.equal(ctx.profileId, user.id);
     assert.equal(ctx.accountId, user.id);
     assert.equal(ctx.email, user.email);
@@ -57,8 +57,8 @@ describe("P0-01 LearnerContextH1 (unit)", () => {
     assert.doesNotThrow(() => assertProfileAccess("user-h1-001", "user-h1-001"));
   });
 
-  it("toImplicitProfileH1 expone id = profileId", () => {
-    const profile = toImplicitProfileH1(resolveLearnerContext(fakeUser()));
+  it("toImplicitProfileH1 expone id = profileId", async () => {
+    const profile = toImplicitProfileH1(await resolveLearnerContext(fakeUser()));
     assert.equal(profile.id, "user-h1-001");
     assert.equal(profile.accountId, "user-h1-001");
   });

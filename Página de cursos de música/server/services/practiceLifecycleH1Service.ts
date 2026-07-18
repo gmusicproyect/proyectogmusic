@@ -1,6 +1,7 @@
 /**
  * P0-05 lifecycle binario H1 sobre LessonSession.
  * Separado del complete legacy con scoring: este flujo no calcula accuracy/XP.
+ * PD-3: eventos vía practiceEventsBridge (memoria o DB según flag).
  */
 import { SessionStatus, type User } from "@prisma/client";
 import { ApiError } from "../lib/errors.js";
@@ -11,13 +12,13 @@ import {
 import { assertProfileAccess } from "../lib/learnerContextH1.js";
 import { prisma } from "../lib/prisma.js";
 import {
-  appendLearningEventH1,
-  assertFtcSequenceH1,
-  getPracticeProjectionH1,
-  getPracticeSessionMetadataH1,
-  listLearningEventsH1,
-  type LearningEventH1,
-} from "../lib/practiceEventsH1.js";
+  appendLearningEvent,
+  assertFtcSequence,
+  getPracticeProjection,
+  getPracticeSessionMetadata,
+  listLearningEvents,
+} from "../lib/practiceEventsBridge.js";
+import type { LearningEventH1 } from "../lib/practiceEventsH1.js";
 import { parseSessionIdParam } from "../lib/validation.js";
 
 type CommandBodyH1 = {
@@ -125,7 +126,7 @@ export type CompletePracticeH1Response = {
   cardCompleted: boolean;
   unitCompleted: boolean;
   events: LearningEventH1[];
-  projection: ReturnType<typeof getPracticeProjectionH1>;
+  projection: Awaited<ReturnType<typeof getPracticeProjection>>;
 };
 
 export async function completePracticeH1(
@@ -144,7 +145,7 @@ export async function completePracticeH1(
     );
   }
 
-  const metadata = getPracticeSessionMetadataH1(sessionId);
+  const metadata = await getPracticeSessionMetadata(sessionId);
   if (!metadata) {
     throw new ApiError(
       409,
@@ -154,10 +155,10 @@ export async function completePracticeH1(
   }
   assertProfileAccess(student.id, metadata.profileId);
   await assertCurrentEntitlement(student, metadata.monthIndex);
-  assertFtcSequenceH1(student.id, metadata.unidadId, metadata.slot);
+  await assertFtcSequence(student.id, metadata.unidadId, metadata.slot);
 
   const session = await loadOwnedSession(student, sessionId);
-  const priorEvents = listLearningEventsH1(student.id);
+  const priorEvents = await listLearningEvents(student.id);
   const priorPracticeComplete = priorEvents.find(
     (event) =>
       event.sessionId === sessionId && event.eventType === "practice_completed"
@@ -178,7 +179,6 @@ export async function completePracticeH1(
         data: {
           status: SessionStatus.COMPLETED,
           completedAt,
-          // Flujo binario H1: no score/accuracy/XP.
           accuracy: null,
           xpEarned: 0,
           streakUpdated: false,
@@ -205,7 +205,7 @@ export async function completePracticeH1(
     });
   }
 
-  const practiceCompleted = appendLearningEventH1({
+  const practiceCompleted = await appendLearningEvent({
     eventId: command.eventId,
     eventType: "practice_completed",
     profileId: student.id,
@@ -224,7 +224,7 @@ export async function completePracticeH1(
     causationCommandId: command.clientRequestId ?? null,
   });
 
-  const cardCompleted = appendLearningEventH1({
+  const cardCompleted = await appendLearningEvent({
     eventType: "ftc_card_completed",
     profileId: student.id,
     sessionId,
@@ -238,11 +238,11 @@ export async function completePracticeH1(
       : null,
   });
 
-  const projectionAfterCard = getPracticeProjectionH1(student.id);
+  const projectionAfterCard = await getPracticeProjection(student.id);
   const unitSlots = projectionAfterCard.completedSlotsByUnit[metadata.unidadId] ?? [];
   let unitCompletedInserted = false;
   if ([1, 2, 3, 4, 5].every((slot) => unitSlots.includes(slot as 1 | 2 | 3 | 4 | 5))) {
-    const unit = appendLearningEventH1({
+    const unit = await appendLearningEvent({
       eventType: "unit_completed",
       profileId: student.id,
       sessionId,
@@ -258,6 +258,7 @@ export async function completePracticeH1(
     unitCompletedInserted = unit.inserted;
   }
 
+  const allEvents = await listLearningEvents(student.id);
   return {
     sessionId,
     status: "COMPLETED",
@@ -266,10 +267,8 @@ export async function completePracticeH1(
     binaryComplete: true,
     cardCompleted: cardCompleted.inserted,
     unitCompleted: unitCompletedInserted,
-    events: listLearningEventsH1(student.id).filter(
-      (event) => event.sessionId === sessionId
-    ),
-    projection: getPracticeProjectionH1(student.id),
+    events: allEvents.filter((event) => event.sessionId === sessionId),
+    projection: await getPracticeProjection(student.id),
   };
 }
 
@@ -286,7 +285,7 @@ export async function abandonPracticeH1(
   const sessionId = parseSessionIdParam(sessionIdParam);
   const command = parseCommandBodyH1(body);
   if (command.profileId) assertProfileAccess(student.id, command.profileId);
-  const metadata = getPracticeSessionMetadataH1(sessionId);
+  const metadata = await getPracticeSessionMetadata(sessionId);
   if (!metadata) {
     throw new ApiError(409, "VALIDATION_ERROR", "Sesión sin metadata FTC H1.");
   }
@@ -300,7 +299,7 @@ export async function abandonPracticeH1(
       data: { status: SessionStatus.ABANDONED },
     });
   }
-  const appended = appendLearningEventH1({
+  const appended = await appendLearningEvent({
     eventId: command.eventId,
     eventType: "practice_abandoned",
     profileId: student.id,

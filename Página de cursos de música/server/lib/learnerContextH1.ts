@@ -2,11 +2,11 @@
  * P0-01 / D-DOM-001 — puente H1 (temporal).
  * profileId === userId hasta mandato H2 (tabla Profile).
  * No crear tabla Profile ni cambiar FKs en esta fase.
- * P0-02: campos pedagógicos vienen de profileProjectionH1Store (sin schema).
+ * P0-02: campos pedagógicos vienen de proyección H1 (memoria o DB vía bridge PD-3).
  */
 import type { AccountTier, Role, User } from "@prisma/client";
 import { ApiError } from "./errors.js";
-import { getProfileProjectionH1 } from "./profileProjectionH1Store.js";
+import { getProfileProjection } from "./learnerProjectionBridge.js";
 
 /** H1: profileId = userId (puente temporal, D-DOM-001). */
 export function toProfileId(userId: string): string {
@@ -41,12 +41,11 @@ export type LearnerContextH1 = {
 /**
  * Resuelve el contexto de alumno bajo H1.
  * Cuenta = User; Perfil = proyección 1:1 (profileId = userId).
- * Consumidores futuros: siempre partir de aquí (no inventar IDs).
+ * PD-3: async — lee memoria o LearnerProjectionH1 durable según flag.
  */
-export function resolveLearnerContext(user: User): LearnerContextH1 {
-  // H1: profileId === userId (temporal, D-DOM-001)
+export async function resolveLearnerContext(user: User): Promise<LearnerContextH1> {
   const profileId = toProfileId(user.id);
-  const projection = getProfileProjectionH1(profileId);
+  const projection = await getProfileProjection(profileId);
   const result = projection?.result ?? null;
   const completed = projection?.onboardingStatus === "completed" && result !== null;
 

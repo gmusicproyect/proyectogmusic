@@ -1,5 +1,6 @@
 import { Prisma, SessionStatus, type User } from "@prisma/client";
 import { isAnswerCorrect } from "../lib/answerValidation.js";
+import { secureAnswersFromSnapshot } from "../lib/lessonContentSnapshot.js";
 import {
   acquireSessionCompleteAdvisoryLock,
   lockLessonSessionForComplete,
@@ -163,9 +164,25 @@ async function executeCompleteLessonSessionTransaction(
       return { kind: "expired" as const };
     }
 
+    // R-001: preferir secureAnswer del snapshot de sesión si existe.
+    const snapshotAnswers = secureAnswersFromSnapshot(session.contentSnapshot);
     const exerciseById = new Map(
-      session.node.exercises.map((exercise) => [exercise.id, exercise])
+      session.node.exercises.map((exercise) => [
+        exercise.id,
+        {
+          id: exercise.id,
+          secureAnswer:
+            snapshotAnswers?.get(exercise.id) ?? exercise.secureAnswer,
+        },
+      ])
     );
+    if (snapshotAnswers) {
+      for (const [id, secureAnswer] of snapshotAnswers) {
+        if (!exerciseById.has(id)) {
+          exerciseById.set(id, { id, secureAnswer });
+        }
+      }
+    }
 
     for (const attempt of attempts) {
       if (!exerciseById.has(attempt.microExerciseId)) {
@@ -177,7 +194,10 @@ async function executeCompleteLessonSessionTransaction(
       }
     }
 
-    const totalExercises = session.node.exercises.length;
+    const totalExercises = Math.max(
+      session.node.exercises.length,
+      exerciseById.size
+    );
     if (totalExercises === 0) {
       throw new ApiError(
         400,

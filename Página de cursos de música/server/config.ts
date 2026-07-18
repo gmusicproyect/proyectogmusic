@@ -31,6 +31,14 @@ export const config = {
   get jwtSecret(): string | undefined {
     return resolveJwtSecret();
   },
+  /**
+   * PD-3: cuando true, H1 lee/escribe PracticeEvent + proyecciones en DB.
+   * Activar solo local/Docker: GMUSIC_H1_DURABLE=1. Prod OFF (R-OPS-01).
+   */
+  get h1Durable(): boolean {
+    const raw = (process.env.GMUSIC_H1_DURABLE ?? "").trim().toLowerCase();
+    return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+  },
 };
 
 export function assertJwtSecretConfigured(): void {

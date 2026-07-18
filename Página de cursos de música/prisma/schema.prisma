@@ -86,29 +86,56 @@ enum ExternalLinkProvider {
   other
 }
 
-model User {
-  id            String          @id @default(uuid())
-  email         String          @unique
-  name          String
-  role          Role            @default(STUDENT)
-  accountTier   AccountTier     @default(DEMO)
-  passwordHash  String?
-  phone         String?
-  timezone      String          @default("America/Santiago")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+// PD-2 Persistencia Durable H1 — tipos de evento de práctica (append-only).
+enum PracticeEventType {
+  practice_started
+  practice_completed
+  practice_abandoned
+  ftc_card_completed
+  unit_completed
+}
 
-  studentLinks  GuardianLink[]  @relation("StudentToGuardian")
-  guardianLinks GuardianLink[]  @relation("GuardianToStudent")
-  sessions      LessonSession[]
-  progress      UserProgress[]
-  xpEvents      XpEvent[]
-  streakEvents  StreakEvent[]
-  subscriptions Subscription[]
+// PD-2 Persistencia Durable H1 — tipo de recurso de Biblioteca.
+enum LibraryResourceType {
+  song_simple
+  exercise
+  video_guide
+  backing_track
+  support_material
+}
+
+// PD-2 Persistencia Durable H1 — nivel de acceso del recurso (premium force-OFF MVP).
+enum ResourceAccessTier {
+  basic
+  premium
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  name         String
+  role         Role        @default(STUDENT)
+  accountTier  AccountTier @default(DEMO)
+  passwordHash String?
+  phone        String?
+  timezone     String      @default("America/Santiago")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  studentLinks        GuardianLink[]         @relation("StudentToGuardian")
+  guardianLinks       GuardianLink[]         @relation("GuardianToStudent")
+  sessions            LessonSession[]
+  progress            UserProgress[]
+  xpEvents            XpEvent[]
+  streakEvents        StreakEvent[]
+  subscriptions       Subscription[]
   onboardingAnalytics OnboardingAnalytics[]
-  demoProgress  DemoProgress[]
+  demoProgress        DemoProgress[]
   communityEnrollment CommunityEnrollment?
   communityPosts      CommunityPost[]
+  practiceEvents      PracticeEvent[]
+  ftcProjection       FtcProgressProjection?
+  learnerProjection   LearnerProjectionH1?
 }
 
 model DemoProgress {
@@ -224,15 +251,18 @@ model MicroExercise {
 }
 
 model LessonSession {
-  id            String        @id @default(uuid())
-  userId        String
-  nodeId        String
-  status        SessionStatus @default(STARTED)
-  accuracy      Float?
-  xpEarned      Int           @default(0)
-  streakUpdated Boolean       @default(false)
-  startedAt     DateTime      @default(now())
-  completedAt   DateTime?
+  id              String        @id @default(uuid())
+  userId          String
+  nodeId          String
+  status          SessionStatus @default(STARTED)
+  accuracy        Float?
+  xpEarned        Int           @default(0)
+  streakUpdated   Boolean       @default(false)
+  startedAt       DateTime      @default(now())
+  completedAt     DateTime?
+  // PD-2 R-001: snapshot de contenido al iniciar; complete valida contra este, no contra MicroExercise vivo.
+  contentSnapshot Json?         @map("content_snapshot")
+  contentVersion  Int?          @map("content_version")
 
   attempts ExerciseAttempt[]
   user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -307,23 +337,23 @@ model StreakEvent {
 }
 
 model OnboardingAnalytics {
-  id                    String           @id @default(uuid())
-  sessionId             String           @unique @map("session_id")
-  userId                String?          @map("user_id")
-  calculatedTemperament TemperamentType  @map("calculated_temperament")
+  id                    String          @id @default(uuid())
+  sessionId             String          @unique @map("session_id")
+  userId                String?         @map("user_id")
+  calculatedTemperament TemperamentType @map("calculated_temperament")
   scores                Json
-  isTie                 Boolean          @default(false) @map("is_tie")
-  totalDurationMs       Int              @map("total_duration_ms")
-  totalAnswerChanges    Int              @default(0) @map("total_answer_changes")
-  questionsAnswered     Int              @default(6) @map("questions_answered") @db.SmallInt
-  questionEvents        Json             @map("question_events")
-  instrumentSlug        String?          @map("instrument_slug")
-  referrerPath          String?          @map("referrer_path")
-  email                 String?          @map("email")
-  leadCapturedAt        DateTime?        @map("lead_captured_at")
-  selectedPlanId        String?          @map("selected_plan_id")
-  completedAt           DateTime         @map("completed_at")
-  createdAt             DateTime         @default(now()) @map("created_at")
+  isTie                 Boolean         @default(false) @map("is_tie")
+  totalDurationMs       Int             @map("total_duration_ms")
+  totalAnswerChanges    Int             @default(0) @map("total_answer_changes")
+  questionsAnswered     Int             @default(6) @map("questions_answered") @db.SmallInt
+  questionEvents        Json            @map("question_events")
+  instrumentSlug        String?         @map("instrument_slug")
+  referrerPath          String?         @map("referrer_path")
+  email                 String?         @map("email")
+  leadCapturedAt        DateTime?       @map("lead_captured_at")
+  selectedPlanId        String?         @map("selected_plan_id")
+  completedAt           DateTime        @map("completed_at")
+  createdAt             DateTime        @default(now()) @map("created_at")
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -368,4 +398,101 @@ model CommunityPost {
   @@index([level, createdAt(sort: Desc)])
   @@index([userId])
   @@map("community_posts")
+}
+
+// ---------------------------------------------------------------------------
+// PD-2 Persistencia Durable H1 — eventos, proyecciones, catálogo Biblioteca.
+// profileId H1 = userId (D-DOM-001). Sin tabla Profile. Premium force-OFF MVP.
+// ---------------------------------------------------------------------------
+
+// D-PD-01/02 — log append-only de práctica; fuente de verdad de las proyecciones.
+model PracticeEvent {
+  id                 String            @id @default(uuid())
+  userId             String            @map("user_id")
+  eventType          PracticeEventType @map("event_type")
+  occurredAt         DateTime          @map("occurred_at")
+  sessionId          String?           @map("session_id")
+  tarjetaId          String?           @map("tarjeta_id")
+  unidadId           String?           @map("unidad_id")
+  monthIndex         Int?              @map("month_index")
+  slot               Int?
+  payload            Json
+  causationCommandId String?           @map("causation_command_id")
+  naturalKey         String?           @unique @map("natural_key")
+  createdAt          DateTime          @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Postgres trata NULLs como distintos → retry por comando único cuando causation NOT NULL.
+  @@unique([userId, eventType, causationCommandId], name: "practice_event_command_uq")
+  @@index([userId, occurredAt])
+  @@index([sessionId])
+  @@map("practice_events")
+}
+
+// D-PD-02 — proyección de progreso FTC; recalculable desde PracticeEvent.
+model FtcProgressProjection {
+  userId           String   @id @map("user_id")
+  completedCardIds Json     @map("completed_card_ids")
+  completedUnitIds Json     @map("completed_unit_ids")
+  slotsByUnit      Json     @map("slots_by_unit")
+  rebuiltAt        DateTime @map("rebuilt_at")
+  rebuildSource    String   @map("rebuild_source")
+  schemaVersion    Int      @default(1) @map("schema_version")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ftc_progress_projections")
+}
+
+// PD-1 §3.3 — proyección onboarding/contexto durable; reemplaza store en memoria. Sin Profile.
+model LearnerProjectionH1 {
+  userId                    String   @id @map("user_id")
+  onboardingStatus          String   @map("onboarding_status")
+  partialAnswers            Json?    @map("partial_answers")
+  result                    Json?
+  learningGoalOverride      String?  @map("learning_goal_override")
+  weeklyGoalMinutesOverride Int?     @map("weekly_goal_minutes_override")
+  updatedAt                 DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("learner_projections_h1")
+}
+
+// D-PD-03 — catálogo Biblioteca propio; NO reutiliza PathNode. Seed controlado en PD-4.
+model LibraryResource {
+  id               String              @id
+  titleInternal    String              @map("title_internal")
+  titlePublic      String?             @map("title_public")
+  instrument       String
+  level            String
+  suggestedMonth   Int?                @map("suggested_month")
+  skillKey         String?             @map("skill_key")
+  type             LibraryResourceType
+  estimatedMinutes Int                 @map("estimated_minutes")
+  accessTier       ResourceAccessTier  @map("access_tier")
+  status           PublishStatus       @default(DRAFT)
+  mediaRef         String?             @map("media_ref")
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+
+  links LibraryResourceLink[]
+
+  @@index([status, instrument, suggestedMonth])
+  @@map("library_resources")
+}
+
+model LibraryResourceLink {
+  id         String  @id @default(uuid())
+  resourceId String  @map("resource_id")
+  tarjetaId  String? @map("tarjeta_id")
+  unidadId   String? @map("unidad_id")
+  monthIndex Int?    @map("month_index")
+
+  resource LibraryResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId])
+  @@map("library_resource_links")
 }

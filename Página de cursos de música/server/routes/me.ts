@@ -17,8 +17,8 @@ import {
   buildLibraryViewH1,
   parseLibraryQueryH1,
 } from "../lib/libraryH1.js";
-import { buildPathViewH1 } from "../lib/pathViewH1.js";
-import { buildProgressViewH1 } from "../lib/progressViewH1.js";
+import { buildPathViewH1Async } from "../lib/pathViewH1.js";
+import { buildProgressViewH1Async } from "../lib/progressViewH1.js";
 import { assertStudent, realStudentAuth } from "../middleware/realStudentAuth.js";
 import { buildAccessResponse } from "../services/accessService.js";
 import { buildDashboardResponse, buildPathResponse } from "../services/meService.js";
@@ -28,10 +28,10 @@ export const meRouter = Router();
 meRouter.use(realStudentAuth);
 
 /** P0-01 H1: LearnerContextH1 (profileId = userId, puente temporal D-DOM-001). */
-meRouter.get("/", (req, res, next) => {
+meRouter.get("/", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({ context });
   } catch (error) {
@@ -43,10 +43,10 @@ meRouter.get("/", (req, res, next) => {
  * P0-01 H1: exactamente 1 perfil implícito (id = userId).
  * Multi-perfil (H2+) no implementado.
  */
-meRouter.get("/profiles", (req, res, next) => {
+meRouter.get("/profiles", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({ profiles: [toImplicitProfileH1(context)] });
   } catch (error) {
@@ -54,11 +54,11 @@ meRouter.get("/profiles", (req, res, next) => {
   }
 });
 
-meRouter.get("/profiles/:profileId", (req, res, next) => {
+meRouter.get("/profiles/:profileId", async (req, res, next) => {
   try {
     const student = assertStudent(req);
     assertProfileAccess(student.id, req.params.profileId);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({ profile: toImplicitProfileH1(context) });
   } catch (error) {
@@ -78,11 +78,11 @@ meRouter.post("/profiles", (_req, _res, next) => {
 });
 
 /** H1: activate solo es no-op si profileId = session.userId. */
-meRouter.post("/profiles/:profileId/activate", (req, res, next) => {
+meRouter.post("/profiles/:profileId/activate", async (req, res, next) => {
   try {
     const student = assertStudent(req);
     assertProfileAccess(student.id, req.params.profileId);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({
       activated: true,
@@ -94,12 +94,12 @@ meRouter.post("/profiles/:profileId/activate", (req, res, next) => {
   }
 });
 
-/** P0-02: estado onboarding (H1 proyección en store). */
-meRouter.get("/onboarding", (req, res, next) => {
+/** P0-02: estado onboarding (H1 proyección — memoria o DB vía PD-3). */
+meRouter.get("/onboarding", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const state = getOnboardingStateH1(student.id);
-    const context = resolveLearnerContext(student);
+    const state = await getOnboardingStateH1(student.id);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({
       status: state.status,
@@ -113,11 +113,11 @@ meRouter.get("/onboarding", (req, res, next) => {
 });
 
 /** P0-02: guardar parcial → in_progress. */
-meRouter.put("/onboarding", (req, res, next) => {
+meRouter.put("/onboarding", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const projection = savePartialOnboardingH1(student.id, req.body);
-    const context = resolveLearnerContext(student);
+    const projection = await savePartialOnboardingH1(student.id, req.body);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({
       status: projection.onboardingStatus,
@@ -130,11 +130,11 @@ meRouter.put("/onboarding", (req, res, next) => {
 });
 
 /** P0-02: completar diagnóstico → escribe Perfil H1. */
-meRouter.post("/onboarding/complete", (req, res, next) => {
+meRouter.post("/onboarding/complete", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const { result } = completeOnboardingH1(student.id, req.body);
-    const context = resolveLearnerContext(student);
+    const { result } = await completeOnboardingH1(student.id, req.body);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.status(200).json({ result, context });
   } catch (error) {
@@ -143,11 +143,11 @@ meRouter.post("/onboarding/complete", (req, res, next) => {
 });
 
 /** P0-02: edición ligera meta/goal (sin reabrir wizard). */
-meRouter.patch("/profile", (req, res, next) => {
+meRouter.patch("/profile", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    patchProfileSettingsH1(student.id, req.body);
-    const context = resolveLearnerContext(student);
+    await patchProfileSettingsH1(student.id, req.body);
+    const context = await resolveLearnerContext(student);
     res.set("Cache-Control", "no-store");
     res.json({ context, profile: toImplicitProfileH1(context) });
   } catch (error) {
@@ -178,15 +178,14 @@ meRouter.get("/dashboard", async (req, res, next) => {
 
 /**
  * P0-06 H1: ProgressViewH1 — evidencia derivada de eventos P0-05.
- * Sin UI/routing nuevo; contrato backend para render futuro.
- * Fuente de eventos: memory bridge temporal (meta.eventSource).
+ * PD-3: meta.eventSource = db | memory_bridge_h1 según GMUSIC_H1_DURABLE.
  */
 meRouter.get("/progress", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     const accessPayload = await buildAccessResponse(student);
-    const progressViewH1 = buildProgressViewH1({
+    const progressViewH1 = await buildProgressViewH1Async({
       context,
       access: accessPayload.entitlements,
       timezone: student.timezone || "America/Santiago",
@@ -206,12 +205,12 @@ meRouter.get("/progress", async (req, res, next) => {
 /**
  * P0-08 H1: LibraryViewH1 — catálogo básico filtrado por Entitlements.
  * Refuerzo, no reemplazo de Mi Camino. Premium siempre locked (MVP).
- * Fuente de reglas: grants de /me/access; frontend solo renderiza.
+ * Catálogo fixture hasta PD-4 seed.
  */
 meRouter.get("/library", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     const accessPayload = await buildAccessResponse(student);
     const parsed = parseLibraryQueryH1(req.query);
     const libraryViewH1 = buildLibraryViewH1({
@@ -230,7 +229,7 @@ meRouter.get("/library", async (req, res, next) => {
 meRouter.get("/library/:id", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     const accessPayload = await buildAccessResponse(student);
     const item = buildLibraryItemDetailH1({
       context,
@@ -248,7 +247,7 @@ meRouter.get("/library/:id", async (req, res, next) => {
 meRouter.get("/path", async (req, res, next) => {
   try {
     const student = assertStudent(req);
-    const context = resolveLearnerContext(student);
+    const context = await resolveLearnerContext(student);
     const courseSlug =
       typeof req.query.courseSlug === "string" && req.query.courseSlug.length > 0
         ? req.query.courseSlug
@@ -257,7 +256,7 @@ meRouter.get("/path", async (req, res, next) => {
     const payload = await buildPathResponse(student, courseSlug);
     const accessPayload = await buildAccessResponse(student);
     const grants = accessPayload.entitlements.grants;
-    const pathViewH1 = buildPathViewH1({
+    const pathViewH1 = await buildPathViewH1Async({
       context,
       access: accessPayload.entitlements,
     });

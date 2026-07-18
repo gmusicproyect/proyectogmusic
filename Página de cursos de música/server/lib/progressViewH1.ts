@@ -5,12 +5,14 @@
  * Misma proyección de cards/units que PathViewH1 (vía eventos P0-05).
  * nextPracticeHint se alinea con PathViewH1.nextPractice.
  *
- * Fuente de eventos: store en memoria P0-05 — puente temporal H1 hasta
- * autorización de persistencia durable. Sin schema, UI, audio ni scoring.
+ * Fuente de eventos: bridge PD-3 (memoria o DB según GMUSIC_H1_DURABLE).
+ * Sin UI, audio ni scoring.
  */
 import type { AccessViewH1 } from "./entitlementsH1.js";
+import { h1EventSourceMeta, type H1EventSourceMeta } from "./h1DurableFlag.js";
 import type { LearnerContextH1 } from "./learnerContextH1.js";
 import { buildPathViewH1, type NextPracticeH1 } from "./pathViewH1.js";
+import { listLearningEvents } from "./practiceEventsBridge.js";
 import {
   listLearningEventsH1,
   type LearningEventH1,
@@ -76,8 +78,8 @@ export type ProgressViewH1 = {
   monthStatus: Record<number, "completed" | "in_progress" | "not_started">;
 
   meta: {
-    /** Store P0-05 en memoria: temporal hasta persistencia durable. */
-    eventSource: "memory_bridge_h1";
+    /** Memoria P0 o DB durable (PD-3) según flag. */
+    eventSource: H1EventSourceMeta;
     timezone: string;
     computedAt: string;
   };
@@ -85,10 +87,12 @@ export type ProgressViewH1 = {
 
 const DEFAULT_TIMEZONE = "America/Santiago";
 
-function sortedEvents(profileId: string): LearningEventH1[] {
-  return listLearningEventsH1(profileId).sort((a, b) =>
-    a.occurredAt.localeCompare(b.occurredAt)
-  );
+function sortedEvents(
+  profileId: string,
+  override?: LearningEventH1[]
+): LearningEventH1[] {
+  const events = override ?? listLearningEventsH1(profileId);
+  return [...events].sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
 }
 
 function deriveCompletedSets(events: LearningEventH1[]): {
@@ -172,13 +176,15 @@ export function buildProgressViewH1(input: {
   access: Pick<AccessViewH1, "grants">;
   timezone?: string;
   now?: Date;
+  events?: LearningEventH1[];
+  eventSource?: H1EventSourceMeta;
 }): ProgressViewH1 {
   const timezone = input.timezone ?? DEFAULT_TIMEZONE;
   const now = input.now ?? new Date();
   const computedAt = now.toISOString();
   const { context, access } = input;
 
-  const events = sortedEvents(context.profileId);
+  const events = sortedEvents(context.profileId, input.events);
   const { cards, units, cardMeta } = deriveCompletedSets(events);
   const ruta = buildMvpRutaGuitarraFundamentosFixture();
 
@@ -254,7 +260,12 @@ export function buildProgressViewH1(input: {
     };
   }
 
-  const pathView = buildPathViewH1({ context, access });
+  const pathView = buildPathViewH1({
+    context,
+    access,
+    events,
+    eventSource: input.eventSource ?? h1EventSourceMeta(),
+  });
   const nextPracticeHint = pathView.nextPractice;
 
   const cardStatus: Record<string, "completed"> = {};
@@ -315,7 +326,7 @@ export function buildProgressViewH1(input: {
     unitStatus,
     monthStatus,
     meta: {
-      eventSource: "memory_bridge_h1",
+      eventSource: input.eventSource ?? h1EventSourceMeta(),
       timezone,
       computedAt,
     },
@@ -327,4 +338,19 @@ export function rebuildProgressViewH1(
   input: Parameters<typeof buildProgressViewH1>[0]
 ): ProgressViewH1 {
   return buildProgressViewH1(input);
+}
+
+/** PD-3: carga eventos vía bridge (DB si GMUSIC_H1_DURABLE=1). */
+export async function buildProgressViewH1Async(input: {
+  context: LearnerContextH1;
+  access: Pick<AccessViewH1, "grants">;
+  timezone?: string;
+  now?: Date;
+}): Promise<ProgressViewH1> {
+  const events = await listLearningEvents(input.context.profileId);
+  return buildProgressViewH1({
+    ...input,
+    events,
+    eventSource: h1EventSourceMeta(),
+  });
 }

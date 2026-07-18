@@ -1,6 +1,60 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **16 Jul 2026** · **Gates G1–G8 APROBADOS** · **ciclo P0 completo** · sin commit
+Última actualización: **17 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` local sin push · **Persistencia Durable: PD-0…PD-3** (validación local VERDE + servicios durable con flag) · **PD-4 NO autorizado** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+
+## Hito — Persistencia Durable H1 · PD-3 (17 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ OK PD-3 — servicios H1 leen/escriben durable en local · sin UI/Premium/Comunidad/Profile/prod/push |
+| **Flag** | ✅ `GMUSIC_H1_DURABLE=1` (`.env.docker`) · OFF = memoria (tests P0) |
+| **Bridges** | ✅ `practiceEventsBridge` · `learnerProjectionBridge` |
+| **Snapshot R-001** | ✅ write al crear sesión · complete Track A lee snapshot si existe |
+| **Rutas `/me/*` + lifecycle** | ✅ async · `meta.eventSource` = `db` cuando flag ON |
+| **Biblioteca seed** | ❌ diferido a **PD-4** (sigue fixture) |
+| **Policy en rutas (R-002)** | ❌ diferido a **PD-5** (helper ya existe) |
+| **Tests** | ✅ PD-3 integración 3/3 (Docker+flag) · memoria P0 verde · typecheck/build OK |
+| **Evidencia** | ✅ `docs/roadmap/persistencia-durable-pd3-evidencia.md` |
+| **PD-4 / commit / push** | **NO** |
+
+## Hito — Validación local post-PD-2 (17 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ OK validación local — Docker + migrate + smoke · sin cablear · sin UI/prod/commit/push |
+| **Docker** | ✅ `gmusic_postgres_local` Up · `pg_isready` · `localhost:5432` |
+| **`migrate deploy`** | ✅ `20260717120000_pd2_durable_persistence_h1` aplicada · schema **up to date** (8/8) |
+| **SQL smoke** | ✅ 5 tablas · 3 enums · snapshot cols · índices practice_events |
+| **Prisma Client smoke** | ✅ `scripts/ops/pd2-local-smoke.mjs` · counts 0 (esperado) · models OK |
+| **Typecheck / PD-2 tests** | ✅ OK · 15/15 |
+| **Informe** | ✅ `docs/roadmap/persistencia-durable-pd2-validacion-local.md` |
+| **PD-3** | ✅ autorizado y entregado (ver hito superior) |
+| **Commit / push** | **NO** |
+
+## Hito — Persistencia Durable H1 · PD-2 (17 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ OK PD-2 — schema + migración solo local/Docker; sin UI/Premium/Comunidad/Profile/prod/push |
+| **Schema Prisma** | ✅ enums `PracticeEventType` / `LibraryResourceType` / `ResourceAccessTier` · modelos `PracticeEvent`, `FtcProgressProjection`, `LearnerProjectionH1`, `LibraryResource`(+`Link`) · snapshot `LessonSession.content_snapshot/version` (R-001) |
+| **`prisma validate` / `generate`** | ✅ schema válido · cliente generado |
+| **Migración** | ✅ SQL en repo · **aplicada en Docker local** (validación post-PD-2) |
+| **Repos** | ✅ `practiceEventRepo` · `ftcProjectionRepo` · `learnerProjectionRepo` · `libraryResourceRepo` |
+| **Policy backend entitlements (D-PD-05/R-002)** | ✅ `entitlementsPolicyH1` — **entregado, NO cableado** |
+| **Tests PD-2** | ✅ 15/15 lógica pura · typecheck OK · build OK |
+| **Evidencia** | ✅ `docs/roadmap/persistencia-durable-pd2-evidencia.md` |
+| **Validación local** | ✅ verde — ver hito superior |
+| **PD-3 (servicios leen/escriben durable)** | ✅ entregado 17 Jul — ver hito PD-3 |
+| **UI / Premium / Comunidad / Profile / prod / push** | **NO** |
+
+## Hito — Persistencia Durable H1 · PD-0/PD-1 (17 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Brief supervisor** | ✅ `docs/roadmap/persistencia-durable-brief-supervisor.md` |
+| **PD-0 inventario** | ✅ `docs/roadmap/persistencia-durable-pd0-inventario.md` |
+| **PD-1 diseño** | ✅ `docs/roadmap/persistencia-durable-pd1-diseno.md` — **firmado** (apertura PD-2) |
+| **Baseline** | D-PD-01…06 + LearnerProjectionH1 (sin Profile) |
 
 ## Hito — Dominio H1 / P0 (16 Jul 2026)
 
@@ -23,8 +77,353 @@
 | **Evidencia final P0** | ✅ `P0_evidencia_final_ciclo_H1.md` + handoff repo 16 Jul |
 | **Commit P0** | ✅ Autorizado por Juan — alcance selectivo, sin mezclar cambios preexistentes |
 | **Push** | **NO** — no autorizado |
-| **Próxima decisión** | Persistencia durable después del cierre Git, con mandato aparte |
+| **Próxima decisión** | Firmar PD-1 y autorizar o no PD-2 (schema local); persistencia durable en curso documental |
 
+## Hito — Brief Fase 8 Comunidad (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Instrucción** | ✅ `docs/roadmap/fase-8-instruccion.md` |
+| **Brief supervisor** | ✅ `docs/roadmap/fase-8-brief-supervisor.md` |
+| **`08-comunidad.md`** | ❌ no creado (espera OK ejecución) |
+| **Ejecución F8** | **NO** |
+| **Ticket** | **T-MVP-COMMUNITY** (MUST si en nav · D-ROAD-005 C) |
+| **Regla clave** | mocks visibles ≠ launch · nav bloqueada hasta feed real |
+| **F9 / código / DB / commit** | **NO** |
+
+## Hito — D-F7-001 · Fase 7 TERMINADA documental (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Decisión** | ✅ **D-F7-001** · **D-F7-WIP** supersedido |
+| **Canónico** | ✅ `docs/features/07-mi-progreso.md` v1.0 |
+| **Informe** | ✅ `fase-7-informe-supervisor.md` (cerrado) |
+| **Veredicto** | **F7 DOCUMENTAL CERRADA** |
+| **Launch-ready** | **NO** (capa C abierta) |
+| **Course / T-PUB / T-UX** | BRIDGE · DONE LOCAL · frontera |
+| **F8 / código / DB / commit** | **NO** |
+| **Higiene satélite** | ✅ H1–H3 (revisión + hitos brief) |
+
+## Hito — D-F7-WIP · Fase 7 docs EN PRUEBAS (15 Jul 2026) — **SUPERSEDIDO por D-F7-001**
+
+| Item | Estado |
+|------|--------|
+| **Decisión** | **SUPERSEDIDO** → **D-F7-001** |
+| **Canónico** | ~~v0.1 EN PRUEBAS~~ → ✅ **v1.0** (**D-F7-001**) |
+| **Informe** | ✅ `fase-7-informe-supervisor.md` |
+| **Veredicto histórico** | ~~listo firma §15~~ → **cumplido** (**D-F7-001**) |
+| **Launch-ready** | **NO** (capa C abierta) |
+| **F8 / código / DB / commit** | **NO** |
+
+## Hito — Brief F7 actualizado opción C (15 Jul 2026) — **histórico / SUPERSEDIDO por D-F7-001**
+
+| Item | Estado |
+|------|--------|
+| **Instrucción / supervisor** | ✅ actualizados con auditoría Admin **C** |
+| **Veredicto brief (histórico)** | ~~listo para ejecución documental~~ → ejecución docs cerrada (**D-F7-001**) |
+| **`07-mi-progreso.md`** | ~~❌ no creado~~ → ✅ **v1.0** (**D-F7-001**) |
+| **Ejecución F7** | ~~**NO**~~ → **TERMINADA** documental |
+| **Launch-ready Progreso** | **NO** (capa C abierta) |
+| **Course Admin** | BRIDGE documentado |
+| **T-PUB** | DONE LOCAL · no productiva |
+| **F8 / código / commit** | **NO** |
+
+## Hito — Auditoría Admin/editorial pre-F7 (15 Jul 2026) — **histórico** (opción C vigente en `07`)
+
+| Item | Estado |
+|------|--------|
+| **Informe** | ✅ `docs/roadmap/auditoria-admin-editorial-pre-f7.md` |
+| **Veredicto** | Estructura Module→PathNode→Camino **definida** · Course = BRIDGE seed · T-PUB **DONE LOCAL** ≠ prod |
+| **F7 (histórico del hito)** | ~~Brief · avance pausado · ejecución NO~~ → F7 docs **TERMINADA** (**D-F7-001**) |
+| **Recomendación** | **C** — frontera Admin vigente; launch Progreso = capa C (env medible) |
+| **Código / DB / commit** | **NO** |
+
+## Hito — Brief Fase 7 Mi Progreso (15 Jul 2026) — **histórico / SUPERSEDIDO por D-F7-001**
+
+| Item | Estado |
+|------|--------|
+| **Instrucción** | ✅ `docs/roadmap/fase-7-instruccion.md` (cerrada · D-F7-001) |
+| **Brief supervisor** | ✅ `docs/roadmap/fase-7-brief-supervisor.md` (cerrado) |
+| **`07-mi-progreso.md`** | ~~❌ no creado~~ → ✅ **v1.0** (**D-F7-001**) |
+| **Ejecución F7** | ~~**NO**~~ → **TERMINADA** documental |
+| **Ticket** | **T-MVP-PROGRESS** permanece abierto (**capa C** / UI · mandato aparte) |
+| **T-UX / F8 / prod / commit** | frontera · **NO** · NO · NO |
+
+## Hito — Fase 6 TERMINADA (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Decisión** | ✅ **D-F6-001** (cierre formal Juan §14) |
+| **Canónico** | ✅ `docs/features/06-mi-camino.md` v1.0 |
+| **T-PUB-01** | DONE LOCAL (**D-TPUB-01**) — no validación productiva |
+| **T-F6-ANTI-DEMO-01** | CERRADO (**D-F6-ANTI-DEMO-001**) |
+| **F7** | **NO INICIADA** / no autorizada |
+| **Prod / commit / push** | **NO** en cierre F6 |
+
+## Hito — T-F6-ANTI-DEMO-01 CERRADO (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Decisión** | ✅ **D-F6-ANTI-DEMO-001** (cierre formal Juan) |
+| **Auditoría** | ✅ `coherente` · `t-f6-anti-demo-01-auditoria-final.md` |
+| **Badge / focus** | ✅ `pathPresentation` · sin pedagogía inventada |
+| **pathLabel / Mes** | ✅ `Module.order` · **no** índice de array |
+| **node.duration** | ✅ vacío (sin minutos inventados por exercises) |
+| **Comunidad header** | ✅ bloqueada · modal **fuera del MVP actual** → T-MVP-COMMUNITY |
+| **Checklist lección** | ✅ visual local + criteria DB |
+| **Seeds / mock path** | ✅ local-only ≠ evidencia productiva · `VITE_USE_PATH_MOCK=false` |
+| **Docs** | ✅ `06` § anti-demo · backlog · changelog · deuda DT-12 |
+| **F6 cerrada** | ✅ **D-F6-001** (2026-07-15) |
+| **F7 / prod DB / commit / push** | **NO** |
+| **Verify** | typecheck OK · app **578/578** · path-presentation **7/7** · header 19/19 · phase3a 8/8 · lesson-stage 4/4 · build OK · `api:test` integración puede fallar seed (`getDevStudent`) — preexistente/entorno · separar app vs api en CI |
+
+## Hito — D-F6-WIP · Fase 6 docs EN PRUEBAS (15 Jul 2026) — **SUPERSEDIDO por D-F6-001**
+
+| Item | Estado |
+|------|--------|
+| **D-F1…D-F5-001 · D-TPUB-01** | ✅ Prerreqs cerrados |
+| **OK Juan ejecución F6** | ✅ solo documental (sin código · sin DB · sin F7 · sin commit/push · T-UX OUT) |
+| **D-F6-WIP** | ~~EN PRUEBAS · pendiente §14 · NO TERMINADA~~ → **SUPERSEDIDO** por **D-F6-001** |
+| **`06-mi-camino.md`** | ✅ **v1.0** canónico (**D-F6-001**) |
+| **Informe** | ✅ `docs/roadmap/fase-6-informe-supervisor.md` |
+| **Veredicto** | ~~listo revisión §14~~ → **TERMINADA** (**D-F6-001**) |
+| **T-UX-LESSON-01** | Frontera · **OUT** salvo mandato aparte |
+| **F7 / código / DB / commit / push** | **NO** en cierre F6 |
+| **Siguiente** | OK Juan para brief F7 u otros tickets |
+
+## Hito — Brief Fase 6 Mi Camino (15 Jul 2026) — SUPERSEDIDO por D-F6-WIP
+
+| Item | Estado |
+|------|--------|
+| **Instrucción** | ✅ `docs/roadmap/fase-6-instruccion.md` |
+| **Supervisor brief** | ✅ `docs/roadmap/fase-6-brief-supervisor.md` |
+| **Veredicto** | ~~`brief listo` · ejecución NO~~ → **ejecución docs EN PRUEBAS** (**D-F6-WIP**) |
+| **`06-mi-camino.md`** | ~~❌ No creado~~ → ✅ creado (ver hito D-F6-WIP) |
+| **Prerreqs** | D-F1…D-F5-001 · **D-TPUB-01** |
+| **Frontera T-UX-LESSON-01** | Documentada · OUT mandato docs-only |
+| **Código / DB / F7 / commit / push** | **NO** |
+| **Siguiente (histórico)** | ~~OK Juan “ejecuta Fase 6”~~ → supersedido |
+
+## Hito — T-PUB-01 cierre formal DONE LOCAL (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Decisión** | ✅ **D-TPUB-01** — `docs/roadmap/decisiones.md` |
+| **Veredicto Juan** | ✅ **DONE LOCAL** |
+| **Evidencia** | ✅ `docs/roadmap/t-pub-01-evidencia-local.md` |
+| **Course** | `ruta-guitarra-12-meses` PUBLISHED · `d6fdc6fe-3415-4cce-9480-9a9b9b18ea92` |
+| **Module piloto** | `f816fee7-2b72-4dea-af66-a5bbbe53ba29` · 5 PathNode PUBLISHED vía Admin |
+| **Alumno** | `carlos@gmusic.academy` · ACTIVE · ve bloque en `GET /me/path` |
+| **Alcance** | LOCAL · **no** prod DB · **no** launch staging |
+| **F6 / código producto / commit / push** | En cierre T-PUB: F6 aún NO · (mismo día: ejecución docs **D-F6-WIP**) |
+| **Deuda ops** | **R-OPS-MIGRATE-UUID** · **T-PUB-01-UI** (screenshot FE opcional) — backlog separado |
+| **Siguiente (histórico)** | ~~Detenerse · F6 NO~~ → brief → **D-F6-WIP** (hito superior) |
+
+## Hito — T-PUB-01 ejecución LOCAL DONE (15 Jul 2026) — supersedido por D-TPUB-01
+
+| Item | Estado |
+|------|--------|
+| **Mandato** | ✅ OK Juan — LOCAL controlado |
+| **Evidencia** | ✅ `docs/roadmap/t-pub-01-evidencia-local.md` |
+| **Veredicto** | ~~`DONE` local · pendiente cierre formal~~ → **DONE LOCAL formal** (**D-TPUB-01**) |
+| **F6 / prod DB / código producto / commit** | **NO** |
+| **Nota ops** | `migrate deploy` fresh local falló (UUID FK); workaround `db push` solo Docker |
+| **Siguiente (histórico)** | ~~Cierre formal Juan~~ → cerrado |
+
+## Hito — T-PUB-01 brief listo · ejecución NO (15 Jul 2026) — supersedido por DONE local
+
+| Item | Estado |
+|------|--------|
+| **Brief** | ✅ `docs/roadmap/t-pub-01-brief.md` |
+| **Supervisor** | ✅ `docs/roadmap/t-pub-01-supervisor.md` |
+| **Veredicto** | ~~`brief listo`~~ → ejecución local DONE → **D-TPUB-01** |
+| **Piloto** | ~~NO ejecutado~~ → ejecutado LOCAL · cerrado formal |
+| **Umbral usable** | D-F5-001 = validator (título + `completionCriteria` + 5 `StageType`); media/micro SHOULD |
+| **F6 / publish prod / commit** | **NO** |
+| **Siguiente (histórico)** | ~~Mandato Juan pasos 1–8~~ → supersedido |
+
+## Hito — D-F5-001 · Fase 5 TERMINADA documental (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **D-F1…D-F4-001** | ✅ Prerreqs cerrados |
+| **OK Juan §13** | ✅ aprueba `05` como canónico Academia/Cursos Track A · Fase 5 TERMINADA (documental) · Fase 6 **NO** |
+| **D-F5-001** | ✅ Fase 5 **TERMINADA** (documental) |
+| **D-F5-WIP** | ~~EN PRUEBAS~~ → **SUPERSEDIDO** |
+| **`05-academia-cursos.md`** | ✅ canónico Academia/Cursos Track A (v1.0) · pointer **T-PUB-01 DONE LOCAL** |
+| **Informe** | ✅ `docs/roadmap/fase-5-informe-supervisor.md` |
+| **T-PUB-01** | ~~MUST abierto~~ → **DONE LOCAL** (**D-TPUB-01**) |
+| **Umbral usable** | ✅ = validator (título + `completionCriteria` + 5 `StageType`); media/micro **SHOULD** |
+| **F6 / LessonRunner / Track B** | **NO** |
+| **Código / DB / publish prod** | Sin cambios · sin migraciones · sin commit/push |
+| **Siguiente** | F6 **NO** hasta OK Juan · deuda ops separada |
+
+
+## Hito — D-F5-WIP · Fase 5 docs EN PRUEBAS (15 Jul 2026) — SUPERSEDIDO por D-F5-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1…D-F4-001** | ✅ Prerreqs cerrados |
+| **OK Juan ejecución F5** | ✅ solo documental (sin código · sin T-PUB-01 código · sin F6 · sin commit) |
+| **D-F5-WIP** | ~~EN PRUEBAS · pendiente firma Juan §13 · **NO TERMINADA**~~ → supersedido por D-F5-001 |
+| **`05-academia-cursos.md`** | ✅ creado → aprobado (ver hito D-F5-001) |
+| **Informe** | ✅ `docs/roadmap/fase-5-informe-supervisor.md` |
+| **T-PUB-01** | **MUST abierto** — criterio N=1 documentado; piloto **no** ejecutado |
+| **Umbral usable** | ~~Propuesta / pendiente §13~~ → firmado en D-F5-001 |
+| **F6 / LessonRunner / Track B** | **NO** |
+| **Código / DB / publish prod** | Sin cambios · sin migraciones · sin commit/push |
+| **Siguiente (histórico)** | ~~Firma Juan §13 → **D-F5-001**~~ → supersedido |
+
+## Hito — Brief Fase 5 Academia/Cursos (15 Jul 2026) — SUPERSEDIDO por D-F5-WIP / D-F5-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1…D-F4-001** | ✅ Prerreqs cerrados |
+| **Fase 5 brief** | ✅ `docs/roadmap/fase-5-instruccion.md` · `fase-5-brief-supervisor.md` |
+| **Ejecución Fase 5** | ~~❌ NO INICIADA~~ → EN PRUEBAS → **TERMINADA** (D-F5-001) |
+| **`05-academia-cursos.md`** | ~~❌ No creado~~ → canónico v1.0 (ver hito D-F5-001) |
+| **T-PUB-01** | MUST abierto — N=1 bloque usable admin→`/mi-camino` |
+| **Auditoría** | Onboarding + Admin R-008 + filtros PUBLISHED **shipped**; gap = dato/piloto + Course ops BRIDGE |
+| **Código / DB / publish prod** | Sin cambios · sin migraciones · sin commit/push |
+| **Fases 6–9 / Track B** | NO |
+| **Siguiente (histórico)** | ~~OK Juan “ejecuta Fase 5”~~ → supersedido |
+
+## Hito — D-F4-001 · Fase 4 TERMINADA (15 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001 / D-F2-001 / D-F3-001** | ✅ Prerreqs cerrados |
+| **OK Juan §14** | ✅ aprueba `04` como canónico Auth Track A · Fase 4 TERMINADA · Fase 5 NO |
+| **D-F4-001** | ✅ Fase 4 **TERMINADA** |
+| **D-F4-WIP** | ~~EN PRUEBAS~~ → **SUPERSEDIDO** |
+| **`04-auth-usuarios.md`** | ✅ canónico Auth Track A (v1.0) |
+| **Recovery alumno** | ✅ **BRIDGE** documentado (WA/ops) — sin implementación |
+| **Email verify / NextAuth / Fase 5** | WON'T / NO · respetado |
+| **Deuda docs** | Lista en `04` §10 — sin reescritura masiva |
+| **Bugs P0 auth nuevos** | Ninguno · ops P0 preexistentes enlazados |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente** | Fase 5 **NO INICIADA** / no autorizada · cola MVP-anclada intacta |
+
+## Hito — D-F4-WIP · Fase 4 docs EN PRUEBAS (15 Jul 2026) — SUPERSEDIDO por D-F4-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001 / D-F2-001 / D-F3-001** | ✅ Prerreqs cerrados |
+| **OK Juan ejecución F4** | ✅ “OK, ejecuta Fase 4” (recovery BRIDGE · higiene lista · perfil OUT) |
+| **D-F4-WIP** | ~~EN PRUEBAS · pendiente firma Juan §14 · no TERMINADA~~ → supersedido por D-F4-001 |
+| **`04-auth-usuarios.md`** | ✅ creado → aprobado (ver hito D-F4-001) |
+| **Recovery alumno** | ✅ **BRIDGE** documentado (WA/ops) — sin implementación |
+| **Email verify / NextAuth / Fase 5** | WON'T / NO · respetado |
+| **Deuda docs** | Lista en `04` §10 (CLAUDE/skills “auth pausada” / skill misnamed) — sin reescritura masiva |
+| **Bugs P0 auth nuevos** | Ninguno · ops P0 preexistentes enlazados |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~Firma Juan §14 → D-F4-001~~ → supersedido |
+
+## Hito — Brief Fase 4 Auth (15 Jul 2026) — SUPERSEDIDO por D-F4-WIP / D-F4-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001 / D-F2-001 / D-F3-001** | ✅ Prerreqs cerrados |
+| **Fase 4 brief** | ✅ `docs/roadmap/fase-4-instruccion.md` · `fase-4-brief-supervisor.md` |
+| **Ejecución Fase 4** | ~~❌ NO INICIADA~~ → supersedido: EN PRUEBAS (D-F4-WIP) |
+| **`04-auth-usuarios.md`** | ~~❌ No creado~~ → creado (ver hito D-F4-WIP) |
+| **Auth código** | JWT registro/login/logout/guards/D-017 **preexistentes** (D-ROAD-005 A) — sin cambios esta pasada |
+| **Gaps brief** | Recovery alumno = SHOULD/BRIDGE · email verify = WON'T · docs “auth pausada” desfasados |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~OK Juan “ejecuta Fase 4”~~ → supersedido |
+
+## Hito — D-F3-001 · Fase 3 TERMINADA (14 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001** | ✅ Fase 1 APROBADA · MVP Track A **congelado** |
+| **D-F2-001** | ✅ Fase 2 TERMINADA · arquitectura/modelo Track A aprobados |
+| **D-F3-001** | ✅ Fase 3 **TERMINADA** — `03-entorno-desarrollo.md` guía oficial entorno Track A (§18 Juan) |
+| **D-F3-WIP** | ~~borrador / EN REVISIÓN~~ → **SUPERSEDIDO** por D-F3-001 |
+| **Revisión coherencia** | ✅ `docs/roadmap/fase-3-revision-coherencia.md` → **`coherente`** (pre-cierre) |
+| **Fase 3 docs** | ✅ `03` + informe supervisor · §18 **firmado** Juan 2026-07-14 |
+| **DoD permanente** | ✅ `docs/quality/definition-of-done.md` |
+| **P0 ops** | Documentados en `03` §15 (INC-admin-cred · R-OPS-01) — **no** rotados |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~Fase 4 no abierta~~ → supersedido: brief F4 listo 15 Jul · ejecución sigue **NO** |
+| **Cola MVP-anclada** | T-PUB-01 · T-UX-LESSON-01 · T-MVP-PROGRESS · T-MVP-COMMUNITY · P0 admin/Prisma |
+
+## Hito — D-F3-WIP · Fase 3 docs EN REVISIÓN (14 Jul 2026) — SUPERSEDIDO por D-F3-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001** | ✅ Fase 1 APROBADA · MVP Track A **congelado** |
+| **D-F2-001** | ✅ Fase 2 TERMINADA · arquitectura/modelo Track A aprobados |
+| **D-F3-WIP** | ~~Fase 3 borrador / EN REVISIÓN · NO TERMINADA~~ → supersedido por D-F3-001 |
+| **Revisión coherencia** | ✅ `docs/roadmap/fase-3-revision-coherencia.md` → **`coherente`** |
+| **Fase 3 docs** | ~~§18 sin firma~~ → firmado vía D-F3-001 |
+| **DoD permanente** | ✅ `docs/quality/definition-of-done.md` |
+| **P0 ops** | Documentados en `03` §15 (INC-admin-cred · R-OPS-01) — **no** rotados |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~Juan aprueba §18~~ → supersedido |
+| **Cola MVP-anclada** | T-PUB-01 · T-UX-LESSON-01 · T-MVP-PROGRESS · T-MVP-COMMUNITY · P0 admin/Prisma |
+
+## Hito — D-F3-WIP · Fase 3 ejecución docs (14 Jul 2026) — SUPERSEDIDO por revisión coherencia
+
+| Item | Estado |
+|------|--------|
+| **D-F3-WIP** | ~~EN PRUEBAS~~ → supersedido: borrador / EN REVISIÓN → luego D-F3-001 |
+| **Fase 3 docs** | `03` + informe · §18 firmado (D-F3-001) |
+| **Código producto** | Sin cambios · sin commit/push |
+
+## Hito — D-F2-001 + brief Fase 3 (14 Jul 2026) — SUPERSEDIDO por D-F3-WIP
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001** | ✅ Fase 1 APROBADA · MVP Track A **congelado** |
+| **D-F2-001** | ✅ Fase 2 TERMINADA · arquitectura/modelo Track A aprobados |
+| **Fase 2 docs** | ✅ `02-modelo-datos.md` · `02-arquitectura-sistema.md` · informe supervisor (firma Juan) |
+| **DoD permanente** | ✅ `docs/quality/definition-of-done.md` |
+| **Fase 3** | ~~Brief listo · ejecución NO INICIADA~~ → supersedido por hito D-F3-WIP |
+| **Manual Operativo** | Idea en backlog (alta gobernanza) · **no** escrito completo |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~OK ejecutar Fase 3~~ → supersedido |
+| **Cola MVP-anclada** | T-PUB-01 · T-UX-LESSON-01 · T-MVP-PROGRESS · T-MVP-COMMUNITY · P0 admin/Prisma |
+
+## Hito — D-F1-001 + Fase 2 abierta (14 Jul 2026) — SUPERSEDIDO por D-F2-001
+
+| Item | Estado |
+|------|--------|
+| **D-F1-001** | ✅ Fase 1 APROBADA · MVP Track A **congelado** |
+| **MVP §12** | ✅ Firmado Juan 2026-07-14 · ref. D-F1-001 |
+| **DoD permanente** | ✅ `docs/quality/definition-of-done.md` |
+| **Fase 2 docs** | ✅ aprobados — ver hito D-F2-001 arriba |
+| **Manual Operativo** | Idea en backlog (alta gobernanza) · **no** escrito completo |
+| **Código producto** | Sin cambios · sin commit/push |
+| **Siguiente (histórico)** | ~~OK Juan Fase 2~~ → supersedido |
+| **Cola MVP-anclada** | T-PUB-01 · T-UX-LESSON-01 · T-MVP-PROGRESS · T-MVP-COMMUNITY · P0 admin/Prisma |
+
+## Hito — Fase 1 DEFINIR Y PLANEAR (14 Jul 2026) — CERRADO
+
+| Item | Estado |
+|------|--------|
+| **Validación arquitecto** | ✅ `docs/roadmap/fase-1-validacion-arquitecto.md` → **APROBADA** |
+| **Decisiones A–D** | ✅ **D-ROAD-005** (`docs/roadmap/decisiones.md`) |
+| **MVP** | ✅ `docs/product/01-mvp-gmusic.md` v1.0 — **APROBADO / congelado (D-F1-001)** |
+| **Academia canónica** | `/onboarding-academia` (código confirmado) |
+| **Código producto** | Sin cambios · sin commit |
+| **Siguiente (histórico)** | ~~Firma §12~~ → supersedido por hito D-F1-001 arriba |
+| **Cola MVP-anclada** | T-PUB-01 · T-UX-LESSON-01 · T-MVP-PROGRESS · T-MVP-COMMUNITY · P0 admin/Prisma |
+
+## Hito — Protocolo maestro ETAPA 0 (14 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Inventario** | ✅ `docs/project-status/00-inventario-actual.md` |
+| **Roadmap control** | ✅ `docs/roadmap/*` (`etapa-actual`, backlog, decisiones…) |
+| **Estructura canónica** | **D-ROAD-003** — 10 fases del diagrama (1 DEFINIR → 10 PULIR/LANZAR); protocolo 0–15 subordinado; Track A, no stack del cartel |
+| **Código producto** | Sin cambios en esta pasada |
+| **Siguiente (histórico)** | ~~Fase 1 NO INICIADA~~ → supersedido por hito Fase 1 arriba |
+| **Cola T-* intacta** | T-PUB-01 · T-UX-LESSON-01 · ops admin/Prisma |
+
+---
+
+Última actualización previa: **10 Jul 2026** · HEAD `c5fe836` · admin reset + lesson session en `main`
 
 ## Hito — Transferencia metodología SUPERADA (6 Jul 2026)
 

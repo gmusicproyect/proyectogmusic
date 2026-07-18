@@ -5,10 +5,10 @@
  */
 import { ApiError } from "./errors.js";
 import {
-  getProfileProjectionH1,
-  upsertProfileProjectionH1,
-  type ProfileProjectionH1,
-} from "./profileProjectionH1Store.js";
+  getProfileProjection,
+  upsertProfileProjection,
+} from "./learnerProjectionBridge.js";
+import type { ProfileProjectionH1 } from "./profileProjectionH1Store.js";
 import { assertProfileAccess, toProfileId } from "./learnerContextH1.js";
 import {
   RUTA_GUITARRA_FUNDAMENTOS_SLUG,
@@ -250,13 +250,13 @@ export function buildOnboardingResultH1(
   };
 }
 
-export function getOnboardingStateH1(profileId: string): {
+export async function getOnboardingStateH1(profileId: string): Promise<{
   status: OnboardingStatusH1;
   partialAnswers: PartialOnboardingAnswersH1 | null;
   result: OnboardingResultH1 | null;
   projection: ProfileProjectionH1 | null;
-} {
-  const projection = getProfileProjectionH1(profileId);
+}> {
+  const projection = await getProfileProjection(profileId);
   if (!projection) {
     return {
       status: "not_started",
@@ -273,10 +273,10 @@ export function getOnboardingStateH1(profileId: string): {
   };
 }
 
-export function savePartialOnboardingH1(
+export async function savePartialOnboardingH1(
   sessionUserId: string,
   body: unknown
-): ProfileProjectionH1 {
+): Promise<ProfileProjectionH1> {
   const profileId = toProfileId(sessionUserId);
   if (
     body &&
@@ -292,7 +292,7 @@ export function savePartialOnboardingH1(
       ? (body as PartialOnboardingAnswersH1)
       : {};
 
-  const prev = getProfileProjectionH1(profileId);
+  const prev = await getProfileProjection(profileId);
   if (prev?.onboardingStatus === "completed") {
     throw new ApiError(
       409,
@@ -301,16 +301,16 @@ export function savePartialOnboardingH1(
     );
   }
 
-  return upsertProfileProjectionH1(profileId, {
+  return upsertProfileProjection(profileId, {
     onboardingStatus: "in_progress",
     partialAnswers: { ...prev?.partialAnswers, ...partial },
   });
 }
 
-export function completeOnboardingH1(
+export async function completeOnboardingH1(
   sessionUserId: string,
   body: unknown
-): { result: OnboardingResultH1; projection: ProfileProjectionH1 } {
+): Promise<{ result: OnboardingResultH1; projection: ProfileProjectionH1 }> {
   const answers = parseOnboardingAnswersH1(body);
   const profileId = toProfileId(sessionUserId);
 
@@ -320,7 +320,7 @@ export function completeOnboardingH1(
 
   try {
     const result = buildOnboardingResultH1(profileId, answers);
-    const projection = upsertProfileProjectionH1(profileId, {
+    const projection = await upsertProfileProjection(profileId, {
       onboardingStatus: "completed",
       partialAnswers: null,
       result,
@@ -330,7 +330,7 @@ export function completeOnboardingH1(
     return { result, projection };
   } catch (error) {
     if (error instanceof ApiError && error.status === 400) {
-      upsertProfileProjectionH1(profileId, {
+      await upsertProfileProjection(profileId, {
         onboardingStatus: "needs_review",
         partialAnswers: answers,
       });
@@ -339,10 +339,10 @@ export function completeOnboardingH1(
   }
 }
 
-export function patchProfileSettingsH1(
+export async function patchProfileSettingsH1(
   sessionUserId: string,
   body: unknown
-): ProfileProjectionH1 {
+): Promise<ProfileProjectionH1> {
   if (!body || typeof body !== "object") {
     throw new ApiError(400, "VALIDATION_ERROR", "Body inválido.");
   }
@@ -352,7 +352,7 @@ export function patchProfileSettingsH1(
   }
 
   const profileId = toProfileId(sessionUserId);
-  const prev = getProfileProjectionH1(profileId);
+  const prev = await getProfileProjection(profileId);
   if (!prev?.result || prev.onboardingStatus !== "completed") {
     throw new ApiError(
       409,
@@ -395,7 +395,7 @@ export function patchProfileSettingsH1(
       weeklyGoalMinutesOverride ?? prev.result.weeklyGoalMinutes,
   };
 
-  return upsertProfileProjectionH1(profileId, {
+  return upsertProfileProjection(profileId, {
     learningGoalOverride,
     weeklyGoalMinutesOverride,
     result: nextResult,
