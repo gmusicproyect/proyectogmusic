@@ -223,7 +223,39 @@ evidencia. Sin UI/routing, sin Premium real, sin Comunidad, sin prod ni push.
 - Evidencia: `docs/roadmap/persistencia-durable-pd4-evidencia.md`.
 
 **No hecho (fuera de PD-4):** Premium real, multimedia, enforcement de entitlements
-en rutas (PD-5), UI/routing, commit de PD-4, push.
+en rutas (PD-5), UI/routing, push.
 
-**Pendiente humano:** autorizar commit local selectivo PD-4 o abrir PD-5
-(enforcement R-002). Push sigue **sin autorizar**.
+**Commit:** local `ef6333d` (sin push). 3 commits locales ahead de `origin/main`.
+
+---
+
+## Continuación 18 Jul 2026 — PD-5 Enforcement entitlements R-002
+
+**Mandato autorizado:** cablear policy backend en endpoints privados H1, mantener
+contratos P0 y DEMO vía grants, tests de autorización y evidencia. Sin
+UI/routing, Premium real, Comunidad, prod ni push.
+
+**Hecho:**
+- Policy única `assertStudentLearningAccess` (helper PD-2) cableada en:
+  - `lessonSessionService.createOrReuseLessonSession` (start práctica).
+  - `practiceLifecycleH1Service.assertCurrentEntitlement` (complete H1).
+  - Requisito: `requireZone + allowDemoGrant + monthIndex` — reemplaza
+    `assertMonthPlayableForPractice` (checks ad-hoc dispersos).
+- `requireZone` cierra el hueco R-002; `allowDemoGrant` preserva DEMO
+  (grant `canStartPractice`); mes fuera de plan → 403 ENTITLEMENT.
+- Contratos P0 intactos: `/me/path` y `/me/progress` con blockers amables,
+  `/me/library` lista `NO_LIBRARY_ACCESS` (no 403), detalle premium ya 403,
+  complete legacy solo gate de propiedad.
+- Tests: PD-5 puro **7/7** · API `me-entitlements-h1` **2/2** (T-ENT-03 mes5→403)
+  · `practiceLifecycleH1` **1/1** (T-SES-09) · `pathViewH1` **10/10** ·
+  typecheck/build OK.
+- Evidencia: `docs/roadmap/persistencia-durable-pd5-evidencia.md`.
+
+**Nota de entorno:** tests con dev student requieren
+`GMUSIC_DEV_USER_EMAIL=carlos@gmusic.academy` alineado al seed; un valor ambiente
+no sembrado hace fallar `getDevStudent` antes de la lógica (deuda de entorno, no PD-5).
+
+**No hecho (fuera de PD-5):** Premium real, Comunidad, UI/routing, commit PD-5, push.
+
+**Pendiente humano:** autorizar commit local selectivo PD-5. Con PD-5 cierra la
+serie **PD-0…PD-5** de Persistencia Durable H1 en local. Push sigue **sin autorizar**.

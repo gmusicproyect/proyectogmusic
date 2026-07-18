@@ -5,10 +5,8 @@
  */
 import { SessionStatus, type User } from "@prisma/client";
 import { ApiError } from "../lib/errors.js";
-import {
-  assertMonthPlayableForPractice,
-  resolveEntitlementsH1,
-} from "../lib/entitlementsH1.js";
+import { resolveEntitlementsH1 } from "../lib/entitlementsH1.js";
+import { assertStudentLearningAccess } from "../lib/entitlementsPolicyH1.js";
 import { assertProfileAccess } from "../lib/learnerContextH1.js";
 import { prisma } from "../lib/prisma.js";
 import {
@@ -112,9 +110,10 @@ async function assertCurrentEntitlement(student: User, monthIndex: number): Prom
     where: { userId: student.id },
     select: { id: true, status: true, planId: true, endsAt: true },
   });
-  assertMonthPlayableForPractice(
+  // PD-5 (R-002): misma policy backend que el start (zona + mes; DEMO vía grant).
+  assertStudentLearningAccess(
     resolveEntitlementsH1({ user: student, subscriptions }),
-    monthIndex
+    { requireZone: true, allowDemoGrant: true, monthIndex }
   );
 }
 

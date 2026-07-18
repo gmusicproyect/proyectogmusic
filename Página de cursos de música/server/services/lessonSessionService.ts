@@ -10,10 +10,8 @@ import type { PathNodeStatus } from "../lib/nodeStatus.js";
 import { prisma } from "../lib/prisma.js";
 import { isSessionExpired, sessionExpiresAt } from "../lib/sessionTtl.js";
 import { parseLessonSessionBody } from "../lib/validation.js";
-import {
-  assertMonthPlayableForPractice,
-  resolveEntitlementsH1,
-} from "../lib/entitlementsH1.js";
+import { resolveEntitlementsH1 } from "../lib/entitlementsH1.js";
+import { assertStudentLearningAccess } from "../lib/entitlementsPolicyH1.js";
 import { assertProfileAccess } from "../lib/learnerContextH1.js";
 import { getProfileProjection } from "../lib/learnerProjectionBridge.js";
 import { captureLessonContentSnapshot } from "../lib/lessonContentSnapshot.js";
@@ -96,7 +94,13 @@ export async function createOrReuseLessonSession(
     user: student,
     subscriptions,
   });
-  assertMonthPlayableForPractice(entitlements, monthIndex);
+  // PD-5 (R-002): policy backend única — zona + mes. DEMO pasa vía grant
+  // (canStartPractice) sin ACTIVE; mes fuera de monthsPlayable → 403 ENTITLEMENT.
+  assertStudentLearningAccess(entitlements, {
+    requireZone: true,
+    allowDemoGrant: true,
+    monthIndex,
+  });
 
   const { session, created } = await prisma.$transaction(async (tx) => {
     await acquireLessonSessionAdvisoryLock(tx, student.id, nodeId);

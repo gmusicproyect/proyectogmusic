@@ -1,6 +1,20 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **18 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` local sin push · **Persistencia Durable: PD-0…PD-4** (seed Biblioteca durable local VERDE) · **PD-5 NO autorizado** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+Última actualización: **18 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` + PD-4 `ef6333d` local sin push · **Persistencia Durable: PD-0…PD-5** (enforcement R-002 en endpoints privados H1, VERDE local) · **PD-5 commit NO autorizado aún** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+
+## Hito — Persistencia Durable H1 · PD-5 Enforcement entitlements R-002 (18 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ OK PD-5 — cablear policy backend en endpoints privados H1 · mantener contratos P0 y DEMO vía grants · sin UI/routing/Premium real/Comunidad/prod/push |
+| **Policy única (R-002)** | ✅ `assertStudentLearningAccess` cableado en start (`lessonSessionService`) y complete H1 (`practiceLifecycleH1Service`) — reemplaza checks ad-hoc dispersos |
+| **Requisito** | `requireZone + allowDemoGrant + monthIndex` — cierra hueco de zona sin romper DEMO (grant `canStartPractice`) |
+| **Contratos P0** | ✅ `/me/path` y `/me/progress` siguen con blockers amables · `/me/library` lista `NO_LIBRARY_ACCESS` (no 403) · detalle premium ya 403 · complete legacy solo propiedad |
+| **Gate de mes** | ✅ fuera de `monthsPlayable` → 403 ENTITLEMENT · monthIndex inválido → 400 VALIDATION_ERROR |
+| **Tests** | ✅ PD-5 puro 7/7 · API `me-entitlements-h1` 2/2 (T-ENT-03 mes5→403) · `practiceLifecycleH1` 1/1 (T-SES-09) · `pathViewH1` 10/10 · typecheck/build OK |
+| **Premium real / Comunidad** | ❌ fuera de alcance (grants force-OFF) |
+| **Evidencia** | ✅ `docs/roadmap/persistencia-durable-pd5-evidencia.md` |
+| **Commit / push** | **NO** (pendiente OK) |
 
 ## Hito — Persistencia Durable H1 · PD-4 Seed Biblioteca (18 Jul 2026)
 
@@ -13,9 +27,9 @@
 | **Seed CLI (evidencia)** | ✅ 8 recursos · 6 PUBLISHED · 4 links · re-run idempotente (counts estables) |
 | **Tests** | ✅ PD-4 puro 7/7 · PD-4 integración Docker+flag 5/5 · regresión Biblioteca memoria 12/12 · typecheck/build OK |
 | **Premium real / multimedia** | ❌ fuera de alcance (mediaRef null; premium locked) |
-| **Policy en rutas (R-002)** | ❌ diferido a **PD-5** (helper ya existe) |
+| **Policy en rutas (R-002)** | ✅ resuelto en **PD-5** |
 | **Evidencia** | ✅ `docs/roadmap/persistencia-durable-pd4-evidencia.md` |
-| **PD-5 / commit / push** | **NO** |
+| **Commit** | ✅ local `ef6333d` (sin push) |
 
 ## Hito — Persistencia Durable H1 · PD-3 (17 Jul 2026)
 
