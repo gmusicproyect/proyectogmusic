@@ -1,11 +1,22 @@
+# Página de cursos de música (Gmusic Estudio)
 
-  # Página de cursos de música
+App principal del monorepo [`proyectogmusic`](https://github.com/gmusicproyect/proyectogmusic).
 
-  This is a code bundle for Página de cursos de música. The original project is available at https://www.figma.com/design/kh0L0uqcCpqKNoe81iGg3Y/P%C3%A1gina-de-cursos-de-m%C3%BAsica.
+Frontend Vite/React · API Node/TS · Prisma/PostgreSQL.
 
-  ## Running the code
+## Desarrollo
 
-  Run `npm i` to install the dependencies.
+```bash
+cp .env.example .env
+npm install
+npm run prisma:generate
+npm run api:dev    # API
+npm run dev        # UI
+```
 
-  Run `npm run dev` to start the development server.
-  
+Contexto de producto: `.agents/PROJECT_STATUS.md`.
+
+Diseño de origen (Figma):  
+https://www.figma.com/design/kh0L0uqcCpqKNoe81iGg3Y/Página-de-cursos-de-música
+
+Licencia: ver `../LICENSE` (todos los derechos reservados).
