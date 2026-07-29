@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Lock, Star } from "lucide-react";
 import type { PathNodeData } from "../../data/gmusic-path-types";
@@ -178,14 +178,21 @@ export function PathCarouselCards({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  const goTo = (idx: number) => setFocusedIdx(Math.max(0, Math.min(nodes.length - 1, idx)));
+  /** E4: identidad estable para memoizar los card models (perf, cero cambio visual). */
+  const goTo = useCallback(
+    (idx: number) => setFocusedIdx(Math.max(0, Math.min(nodes.length - 1, idx))),
+    [nodes.length]
+  );
 
   const carouselPadding = fullBleed
     ? "12px max(5vw, 40px) 16px"
     : isStage
       ? "8px 0 12px"
       : "12px 56px 16px";
-  const cardModels = buildCardModels(focusedIdx, goTo);
+  const cardModels = useMemo(
+    () => buildCardModels(focusedIdx, goTo),
+    [buildCardModels, focusedIdx, goTo]
+  );
   const footerText = buildFooterText?.(focusedIdx, nodes) ?? null;
 
   const carouselItems = nodes.map((node, i) => {

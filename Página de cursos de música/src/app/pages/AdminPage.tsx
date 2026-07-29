@@ -491,10 +491,10 @@ export function AdminPage({ setPage }: AdminPageProps) {
               </button>
             </div>
             {loginSuccess ? (
-              <p style={{ color: "#86efac", marginBottom: "1rem", fontSize: 14 }}>{loginSuccess}</p>
+              <p role="status" style={{ color: "#86efac", marginBottom: "1rem", fontSize: 14 }}>{loginSuccess}</p>
             ) : null}
             {loginError ? (
-              <p style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{loginError}</p>
+              <p role="alert" style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{loginError}</p>
             ) : null}
             <button type="submit" style={authPrimaryButtonStyle} disabled={busy}>
               {busy ? "Entrando…" : "Entrar al admin"}
@@ -568,7 +568,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
               />
             </label>
             {resetError ? (
-              <p style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{resetError}</p>
+              <p role="alert" style={{ color: "#f87171", marginBottom: "1rem", fontSize: 14 }}>{resetError}</p>
             ) : null}
             <button type="submit" style={authPrimaryButtonStyle} disabled={busy}>
               {busy ? "Guardando…" : "Restablecer contraseña"}

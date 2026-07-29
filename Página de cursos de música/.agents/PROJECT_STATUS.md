@@ -1,6 +1,18 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **28 Jul 2026 (Oleada D)** · base **`main@94471a3` en origin** · en máquina Juan: B → C → guard-fix aplicados, **610/610**, guard intacto · **Oleadas B+C+fix+D LOCAL SIN COMMIT — orden B → C → guard-fix → D · OK commit pendiente de Juan**
+Última actualización: **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
+
+## Hito — Oleada E · Higiene de ingeniería (28 Jul 2026 · final del plan de oleadas)
+
+| Item | Estado |
+|------|--------|
+| **E1 T-API-01** | CERRADO por sincronización documental: el fix vive en `main` desde 7 Jul (ops doc «auditoría APRUEBA») + `api:test` serializado (`--test-concurrency=1`); la fila P0 de DECISIONS estaba desincronizada → corregida |
+| **E2 Typecheck/CI** | Verificado sin cambios: `ci.yml` ↔ `package.json` consistentes (typecheck · app:test · api:test · build, todos existen) — cero riesgo de romper Actions |
+| **E3 a11y auth** | CERRADO — `role="alert"`/`role="status"` en mensajes del login embebido admin (labels ya eran implícitos válidos; registro/login público ya cumplían) · solo atributos, sin regresión visual |
+| **E4 perf carrusel** | Micro-fix obvio aplicado: `goTo` useCallback + `cardModels` useMemo (identidades estables, cero cambio visual) · resto ligado a receta T-FLOW-05 ya entregada |
+| **E5 plan rename** | Solo plan: `docs/operations/plan-rename-app-folder.md` (pasos, riesgos, rollback) — **cero moves** |
+| **Tests** | +2 guard (a11y/perf) · suite en informe |
+| **Commit / push** | NO — `gmusic-oleada-e.patch` (aplica tras D) + mensaje propuesto en informe |
 
 ## Hito — Oleada D · Admin publish UX (28 Jul 2026)
 

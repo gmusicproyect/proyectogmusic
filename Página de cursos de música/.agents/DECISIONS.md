@@ -190,7 +190,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 
 | ID | Título | Prioridad | Doc |
 |----|--------|-----------|-----|
-| T-API-01 | Flaky `phase3b2` concurrencia — **P0 ops** (gate verify muerto) | P0 ops | `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
+| T-API-01 | Flaky `phase3b2` concurrencia — **CERRADO 7 Jul 2026** (fix en `origin/main` + `api:test` con `--test-concurrency=1`; auditoría aprueba — ver doc) · fila desincronizada corregida 28 Jul (Oleada E) | Cerrado | `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` |
 | T-UX-COPY-LOGIN | Copy anonymous en login usa texto de registro (`assert-auth-session.ts:15`) — **CERRADO 28 Jul 2026** (Oleada A, contexto register/login, pendiente commit) | Baja | `docs/operations/T-UX-COPY-LOGIN-anonymous-register-copy.md` |
 | T-UX-01 | StudentZoneGuard copy genérico en 403 (sesión admin) — **CERRADO 28 Jul 2026** (Oleada A, pendiente commit) | Media | `docs/operations/T-UX-01-student-zone-guard-403-admin-session.md` |
 | T-FLOW-01 | Post-auth routing login (demo / suscriptor / **ADMIN** → `/admin`) | Media | `docs/flows/01-funnel-auth-landing.md` |
