@@ -4,6 +4,7 @@
 **Auditoría:** 6 Jul 2026 · alineación propuesta 20 Jul 2026 (prod `d48d163`) · **CANON CANDIDATO — PARCIALMENTE DESACTUALIZADO** hasta lote aplicado  
 **T-FLOW-02:** RESUELTO EN PRODUCCIÓN (`d48d163`), **PENDIENTE DE ACTUALIZACIÓN DOCUMENTAL** en Laboratorio — no declarar cierre formal aquí  
 **PD-5 / entitlements:** pendientes de documentación explícita en este diagrama (gate técnico existe; no declara flujo «completo»)
+**T-FLOW-04 (28 Jul 2026):** CERRADO — al completarse todo lo publicado, `CompletedPathPanel` muestra «Completaste lo publicado» + «No hay más clases publicadas por ahora.» con CTA «Ir a Mi Estudio» y «Seguir en Mi Camino» (revisión de nodos completed sin replay; tarjetas completed inertes).  
 
 ```mermaid
 flowchart TD

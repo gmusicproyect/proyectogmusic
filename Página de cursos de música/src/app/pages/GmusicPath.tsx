@@ -72,6 +72,9 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     [pathNodes, viewModel?.activeNodeId]
   );
 
+  /** T-FLOW-04: revisar nodos completed sin replay forzado. */
+  const [reviewCompletedPath, setReviewCompletedPath] = useState(false);
+
   useEffect(() => {
     return () => {
       lessonAbortRef.current?.abort();
@@ -255,7 +258,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
 
         {path.status === "success" && viewModel?.isComplete && (
           <div className="path-intro-stack pb-4">
-            <CompletedPathPanel />
+            <CompletedPathPanel setPage={setPage} onReviewPath={() => setReviewCompletedPath(true)} />
           </div>
         )}
 
@@ -268,7 +271,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           </div>
         )}
 
-        {path.status === "success" && viewModel && !viewModel.isEmpty && !viewModel.isComplete && (
+        {path.status === "success" && viewModel && !viewModel.isEmpty && (!viewModel.isComplete || reviewCompletedPath) && (
           <>
             {(lessonStart.status === "error" || sessionOpenError) && (
               <div className="path-intro-stack mb-3">

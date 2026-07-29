@@ -195,9 +195,9 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | T-UX-01 | StudentZoneGuard copy genérico en 403 (sesión admin) | Media | `docs/operations/T-UX-01-student-zone-guard-403-admin-session.md` |
 | T-FLOW-01 | Post-auth routing login (demo / suscriptor / **ADMIN** → `/admin`) | Media | `docs/flows/01-funnel-auth-landing.md` |
 | T-FLOW-02 | Exponer `guidePdfUrl` en path API + UI alumno | Media | `docs/flows/02-mi-camino-suscriptor.md` |
-| T-FLOW-03 | Badge «Publicado legacy» admin UI (D-GOV-17 Opción B) | Baja | `docs/flows/03-admin-contenido.md` |
-| T-FLOW-04 | Pantalla fin de camino / fin de nivel (contenido agotado) | Baja | `docs/flows/02-mi-camino-suscriptor.md` |
-| T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) | Baja | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |
+| T-FLOW-03 | Badge «Publicado legacy» admin UI (D-GOV-17 Opción B) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/03-admin-contenido.md` |
+| T-FLOW-04 | Pantalla fin de camino / fin de nivel (contenido agotado) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/02-mi-camino-suscriptor.md` |
+| T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) — sin repro estático 28 Jul, ver `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` | Baja | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |
 
 **Observaciones sin ticket** (repro formal pendiente): scroll flicker iPhone landing — ver `docs/flows/README.md`.
 

@@ -61,8 +61,8 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 | PD-5 entitlements en práctica (documentar) | 02 | Deuda documental / gate técnico presente |
 | Retry ejercicios sin límite ni feedback pedagógico al fallar | 02 | Deuda confirmada |
 | Re-render / update depth GmusicPath | 02 | **T-FLOW-05** |
-| Pantalla fin de nivel / fin de todo el contenido | 02 | **T-FLOW-04** |
-| Badge «Publicado legacy» (D-GOV-17 Opción B) | 03 | **T-FLOW-03** |
+| Pantalla fin de nivel / fin de todo el contenido | 02 | **T-FLOW-04 — CERRADO 28 Jul 2026** |
+| Badge «Publicado legacy» (D-GOV-17 Opción B) | 03 | **T-FLOW-03 — CERRADO 28 Jul 2026** |
 | Multi-curso (hardcoded `ruta-guitarra-12-meses`) | 03 | Post-piloto |
 | CRM usuarios + email admin | 04 | Fase F; PROPUESTA — NO IMPLEMENTADO |
 | Reengagement automatizado | 04 | D-PROD-03 Fase 2 |
@@ -96,8 +96,8 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 |----|--------|------------------------------|
 | T-FLOW-01 | Post-auth routing login (demo / suscriptor / admin) | **Fix implementado 28 Jul 2026** (lote flujos): `role` expuesto en `/me/access` + rama ADMIN → `/admin` en `resolve-post-login-page` · pendiente OK Juan + `app:test`/`api:test` en máquina local |
 | T-FLOW-02 | `guidePdfUrl` path API + UI alumno | **Resuelto técnicamente en producción `d48d163`** · formalización Lab pendiente · PENDIENTE-LAB: incorporar ID, ruta, commit y firma después de la aprobación formal |
-| T-FLOW-03 | Badge «Publicado legacy» admin UI | Abierto (UI) |
-| T-FLOW-04 | Pantalla fin de camino / fin de nivel | Abierto |
-| T-FLOW-05 | Maximum update depth `GmusicPath` | Abierto · **sin repro estático 28 Jul 2026** (revisión de effects/memos sin hallazgo); repro runtime pendiente en dev |
+| T-FLOW-03 | Badge «Publicado legacy» admin UI | **Cerrado 28 Jul 2026** — `adminModuleStatusLabel` (D-GOV-17 Opción B) en chip de detalle y listado admin · pendiente OK Juan + commit |
+| T-FLOW-04 | Pantalla fin de camino / fin de nivel | **Cerrado 28 Jul 2026** — `CompletedPathPanel` al spec (título/frase/CTA Mi Estudio + revisión sin replay); detector `isComplete` ya existente con tests · pendiente OK Juan + commit |
+| T-FLOW-05 | Maximum update depth `GmusicPath` | Abierto · **sin repro estático 28 Jul 2026** — evidencia y receta de repro: `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` |
 
 Proyección operativa posterior (no autoridad): `.agents/DECISIONS.md` *Backlog operativo* — solo tras decisión Lab firmada.

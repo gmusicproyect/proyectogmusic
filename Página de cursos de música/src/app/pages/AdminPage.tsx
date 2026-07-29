@@ -52,6 +52,7 @@ import {
   type AdminModuleListItem,
   type AdminNodeAttemptsResponse,
 } from "../services/gmusic-api/admin";
+import { adminModuleStatusLabel } from "../services/gmusic-api/admin-legacy-badge";
 import "./admin-page.css";
 
 interface AdminPageProps {
@@ -781,7 +782,11 @@ export function AdminPage({ setPage }: AdminPageProps) {
                       </TableCell>
                       <TableCell>
                         <Badge variant={listStatusBadgeVariant(module.listStatus)}>
-                          {statusLabel(module.listStatus)}
+                          {adminModuleStatusLabel({
+                      published: module.listStatus === "published",
+                      completeSlots: module.completeSlots,
+                      totalSlots: module.totalSlots,
+                    })}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -839,7 +844,11 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </p>
           </div>
           <Badge variant={detail.module.status === "PUBLISHED" ? "default" : "secondary"}>
-            {detail.module.status === "PUBLISHED" ? "Publicado" : "Borrador"}
+            {adminModuleStatusLabel({
+              published: detail.module.status === "PUBLISHED",
+              completeSlots: detail.completeSlots,
+              totalSlots: detail.totalSlots,
+            })}
           </Badge>
         </header>
 

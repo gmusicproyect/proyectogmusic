@@ -2,6 +2,7 @@
 
 **Zona:** `/admin` · bloques 5 etapas  
 **Auditoría:** 6 Jul 2026 · alineación propuesta 20 Jul 2026 · canon candidato · alineado Admin Phase B
+**T-FLOW-03 (28 Jul 2026):** CERRADO — chips de estado (detalle y listado) usan `adminModuleStatusLabel`: PUBLISHED con `completeSlots < totalSlots` (seed B1 3/5 · B2 2/5) ⇒ «Publicado legacy» (D-GOV-17 Opción B). Alumno no ve el badge.  
 
 ```mermaid
 flowchart TD

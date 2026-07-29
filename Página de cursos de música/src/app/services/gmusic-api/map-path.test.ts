@@ -153,6 +153,20 @@ describe("mapPathToViewModel", () => {
     assert.equal(viewModel.defaultPanelNodeId, null);
   });
 
+  it("T-FLOW-04: nodo available sin active ⇒ isComplete false", () => {
+    const response = structuredClone(BASE_RESPONSE);
+    response.activeNodeId = null;
+    for (const module of response.modules) {
+      for (const node of module.nodes) node.status = "completed";
+    }
+    const lastModule = response.modules[response.modules.length - 1];
+    if (lastModule?.nodes[0]) lastModule.nodes[0].status = "available";
+
+    const viewModel = mapPathToViewModel(response);
+    assert.equal(viewModel.isComplete, false);
+    assert.equal(viewModel.isEmpty, false);
+  });
+
   it("marca camino vacío sin módulos", () => {
     const viewModel = mapPathToViewModel({
       ...BASE_RESPONSE,

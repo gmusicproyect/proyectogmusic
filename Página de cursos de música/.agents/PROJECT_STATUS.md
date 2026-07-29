@@ -1,6 +1,21 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **28 Jul 2026** · Lote flujos 28 Jul (patch v2 docs/flows + 00-mapa-maestro + T-FLOW-01) LOCAL **SIN COMMIT** · anterior: 18 Jul 2026 · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` + PD-4 `ef6333d` local sin push · **Persistencia Durable: PD-0…PD-5** (enforcement R-002 en endpoints privados H1, VERDE local) · **PD-5 commit NO autorizado aún** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+Última actualización: **28 Jul 2026 (noche)** · base **`main@7f70cfd` en origin** (lote flujos + T-FLOW-01 + `realStudentAuth` ADMIN commiteado y pusheado · smoke ADMIN OK) · **Lote noche (T-FLOW-03 + T-FLOW-04 + evidencia T-FLOW-05) LOCAL SIN COMMIT — pendiente OK Juan**
+
+## Hito — Página completa · T-FLOW-04 + T-FLOW-03 + evidencia T-FLOW-05 (28 Jul 2026 · noche)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ INSTRUCCIÓN «Terminar la página» 2026-07-28 noche · Fases 1–5 + 7 · sin Next.js/pagos/Comunidad/rename · **sin commit/push** |
+| **Fase 1 auditoría** | ✅ sha256 ZIP verificado · único delta vs lote: `realStudentAuth` ADMIN (causa raíz del «cookies» en login ADMIN) + `start-smoke-local.sh` |
+| **Fase 2 alumno** | ✅ cadena idéntica al árbol auditado · baseline 519/522 (3 fails = react ausente en sandbox) |
+| **T-FLOW-04** | ✅ CERRADO — `CompletedPathPanel` al spec (título/frase/CTA «Ir a Mi Estudio» + «Seguir en Mi Camino» con carrusel en revisión; tarjetas completed inertes ⇒ sin replay) · detector `isComplete` preexistente + caso borde nuevo |
+| **T-FLOW-03** | ✅ CERRADO — `adminModuleStatusLabel` (D-GOV-17 Opción B): PUBLISHED con `completeSlots < totalSlots` ⇒ «Publicado legacy» en chip de detalle y listado |
+| **T-FLOW-05** | Sin repro estático — evidencia + receta runtime: `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` · fix solo si se confirma |
+| **T-UX-01 / Fase 6** | ❌ No tocado (presupuesto del lote); funnel sin regresiones (resolver 8/8 en baseline) |
+| **Docs** | ✅ flows 00/02/03/README + DECISIONS backlog al día |
+| **Tests** | ✅ targeted verdes (map-path 12 · t-flow-04 3 · admin-legacy-badge 5) · suite y patch en informe |
+| **Commit / push** | **NO** — patch `gmusic-pagina-completa.patch` + mensaje propuesto en `INFORME-CIERRE-PAGINA-COMPLETA-2026-07-28.md` |
 
 ## Hito — Ordenamiento de flujos · patch v2 + mapa maestro + T-FLOW-01 (28 Jul 2026)
 

@@ -1,7 +1,7 @@
 # 00 — Mapa maestro · Academia GMusic
 
 **Host prod:** `proyectogmusic.vercel.app` (SPA Track A)
-**Base:** `main` ~`0705032` · prod FE/BE `d48d163` · verificación código 28 Jul 2026
+**Base:** `main@7f70cfd` (en origin) · verificación código 28 Jul 2026 (noche)
 **Roles:** `DEMO` (registered_no_sub) · `ACTIVE` (suscriptor) · `ADMIN`
 **Cierre comercial Track A:** WhatsApp (`/inscripcion` → `wa.me`) — J-FLOW-01. Checkout = legacy.
 
@@ -66,8 +66,7 @@ flowchart TD
     Runner --> Complete[POST complete → XP / racha → unlock siguiente]
     Runner --> PDF[guidePdfUrl en materiales · T-FLOW-02 resuelto en prod]
     Complete --> PD5[Entitlements H1 en start/complete · PD-5]
-    FinCamino[["Pantalla fin de contenido · T-FLOW-04"]]
-    style FinCamino fill:#3a1a1a,stroke:#ff5555,color:#fff
+    Complete -->|todo lo publicado completado| FinCamino[Pantalla fin de contenido · Ir a Mi Estudio / Seguir en Mi Camino]
 
     %% ── ADMIN (detalle en 03) ──
     AdminHome --> AdminAuth[Login embebido AdminPage + requireAdmin server]
@@ -77,8 +76,7 @@ flowchart TD
     Publish -->|5/5| Published[PUBLISHED · visible en path alumno]
     Publish -->|incompleto| Err400[400 MODULE_INCOMPLETE]
     CRUD -->|delete publicado| Err409[409 MODULE_NOT_DELETABLE]
-    BadgeLegacy{{Badge Publicado legacy · T-FLOW-03}}
-    style BadgeLegacy fill:#3a2a1a,stroke:#ffaa55,color:#fff
+    Published --> BadgeLegacy[Chip estado: Publicado / Publicado legacy · D-GOV-17]
 
     %% ── FUERA DE SPRINT ──
     Comunidad{{Comunidad · API C2 lista · launch OFF · ver 05}}
@@ -100,9 +98,9 @@ XP / acierto: **solo servidor** (el runner no puntúa en cliente).
 
 | ID | Estado 28 Jul 2026 |
 |----|--------------------|
-| T-FLOW-01 | **Fix implementado en este lote** (role en `/me/access` + rama ADMIN en resolver) — pendiente OK Juan + tests en su máquina |
+| T-FLOW-01 | **Cerrado en prod `7f70cfd`** — role en `/me/access` + ADMIN→`/admin` + `realStudentAuth` tolera ADMIN · smoke Juan OK |
 | T-FLOW-02 | Resuelto técnicamente en prod `d48d163` · formalización Lab pendiente |
-| T-FLOW-03 | Abierto — badge legacy admin sin UI |
-| T-FLOW-04 | Abierto — sin pantalla fin de contenido |
-| T-FLOW-05 | Sin repro estático 28 Jul · repro runtime pendiente |
+| T-FLOW-03 | **Cerrado 28 Jul 2026** — chip «Publicado legacy» en detalle+listado (D-GOV-17) |
+| T-FLOW-04 | **Cerrado 28 Jul 2026** — `CompletedPathPanel` spec + revisión sin replay |
+| T-FLOW-05 | Abierto · sin repro estático — evidencia: `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` |
 | T-UX-01 | Abierto — mensaje 403 genérico |
