@@ -194,7 +194,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | T-UX-COPY-LOGIN | Copy anonymous en login usa texto de registro (`assert-auth-session.ts:15`) — **CERRADO 28 Jul 2026** (Oleada A, contexto register/login, pendiente commit) | Baja | `docs/operations/T-UX-COPY-LOGIN-anonymous-register-copy.md` |
 | T-UX-01 | StudentZoneGuard copy genérico en 403 (sesión admin) — **CERRADO 28 Jul 2026** (Oleada A, pendiente commit) | Media | `docs/operations/T-UX-01-student-zone-guard-403-admin-session.md` |
 | T-FLOW-01 | Post-auth routing login (demo / suscriptor / **ADMIN** → `/admin`) | Media | `docs/flows/01-funnel-auth-landing.md` |
-| T-FLOW-02 | Exponer `guidePdfUrl` en path API + UI alumno | Media | `docs/flows/02-mi-camino-suscriptor.md` |
+| T-FLOW-02 | Exponer `guidePdfUrl` en path API + UI alumno — **Resuelto técnicamente en producción `d48d163`** · formalización Lab pendiente (PENDIENTE-LAB: ID/ruta/commit/firma tras aprobación de Juan) | Media | `docs/flows/02-mi-camino-suscriptor.md` |
 | T-FLOW-03 | Badge «Publicado legacy» admin UI (D-GOV-17 Opción B) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/03-admin-contenido.md` |
 | T-FLOW-04 | Pantalla fin de camino / fin de nivel (contenido agotado) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/02-mi-camino-suscriptor.md` |
 | T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) — sin repro estático 28 Jul, ver `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` | Baja | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |

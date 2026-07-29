@@ -55,7 +55,7 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 | Camino | Diagrama | Backlog / nota |
 |--------|----------|----------------|
 | Login post-auth: suscriptor vs demo vs **ADMIN sin ruta `/admin`** | 01 | **T-FLOW-01** — fix en lote 28 Jul, ver Backlog |
-| Registro prod / CORS / formulario liviano | 01 | **D-GOV-16 / T-REG-01** |
+| Registro prod / CORS / formulario liviano | 01 | **D-GOV-16 / T-REG-01** — verificado 28 Jul (C2): sigue «pendiente aprobación Juan»; **sin implementar por mandato** |
 | Checkout / pago real | 01 | Fase 5 congelada; **no** es cierre comercial actual (WhatsApp sí, J-FLOW-01) |
 | `guidePdfUrl` alumno — formalización Lab | 02 | **T-FLOW-02 — RESUELTO TÉCNICAMENTE EN PRODUCCIÓN `d48d163`, PENDIENTE FORMALIZACIÓN DOCUMENTAL** |
 | PD-5 entitlements en práctica (documentar) | 02 | Deuda documental / gate técnico presente |
@@ -73,7 +73,7 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 
 | Observación | Diagrama | Condición para ticket |
 |-------------|----------|------------------------|
-| Scroll flicker iPhone en landing | 01 | Repro en dispositivo + pasos en `docs/operations/` |
+| Scroll flicker iPhone en landing | 01 | Checklist de dispositivo lista: `docs/operations/flicker-iphone-checklist.md` (C4 · 28 Jul 2026) — repro o cierre en 2 dispositivos |
 
 *(Re-render GmusicPath → **T-FLOW-05**, no observación suelta.)*
 

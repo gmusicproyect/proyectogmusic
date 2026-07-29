@@ -53,6 +53,7 @@ import {
   type AdminNodeAttemptsResponse,
 } from "../services/gmusic-api/admin";
 import { adminModuleStatusLabel } from "../services/gmusic-api/admin-legacy-badge";
+import { buildMissingStagesMessage } from "../services/gmusic-api/admin-publish-feedback";
 import "./admin-page.css";
 
 interface AdminPageProps {
@@ -370,9 +371,15 @@ export function AdminPage({ setPage }: AdminPageProps) {
       await loadList();
       showToast("¡Bloque publicado! Ya visible en Mi Camino.");
     } catch (error) {
-      setDetailError(
-        error instanceof GmusicApiError ? error.message : "No pudimos publicar el bloque."
-      );
+      /** D1: MODULE_INCOMPLETE legible — nombrar las etapas que faltan. */
+      if (error instanceof GmusicApiError && error.code === "MODULE_INCOMPLETE") {
+        const missing = buildMissingStagesMessage(detail.slots);
+        setDetailError(missing ?? error.message);
+      } else {
+        setDetailError(
+          error instanceof GmusicApiError ? error.message : "No pudimos publicar el bloque."
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -1210,6 +1217,9 @@ export function AdminPage({ setPage }: AdminPageProps) {
 
             <Card className="admin-panel-card">
               <CardContent className="admin-table-wrap" style={{ paddingTop: "1.25rem" }}>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Se muestran como máximo las últimas 200 respuestas del nodo (D2); para análisis mayores, exportes futuros — sin CRM.
+                </p>
                 {attemptsData.attempts.length === 0 ? (
                   <p className="admin-empty__text">Aún no hay respuestas en esta etapa.</p>
                 ) : (

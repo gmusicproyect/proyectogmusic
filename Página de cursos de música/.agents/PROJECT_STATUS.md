@@ -1,6 +1,39 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **28 Jul 2026 (Oleada A)** · base **`main@77e3a0c` en origin** (lote noche commiteado + pusheado · app:test 590/590 en máquina Juan) · **Oleada A (T-UX-01 + T-UX-COPY-LOGIN + smoke tooling + receta T-FLOW-05) LOCAL SIN COMMIT — pendiente OK Juan**
+Última actualización: **28 Jul 2026 (Oleada D)** · base **`main@94471a3` en origin** · en máquina Juan: B → C → guard-fix aplicados, **610/610**, guard intacto · **Oleadas B+C+fix+D LOCAL SIN COMMIT — orden B → C → guard-fix → D · OK commit pendiente de Juan**
+
+## Hito — Oleada D · Admin publish UX (28 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **D1 publish legible** | CERRADO — `buildMissingStagesMessage` deriva de `detail.slots` qué etapas faltan; el catch de publish con `MODULE_INCOMPLETE` muestra «Para publicar el bloque completa estas etapas: …» en vez del reason crudo · sin tocar contrato server |
+| **D2 attempts** | CERRADO (vía copy, opción del mandato) — la vista de respuestas declara el límite de 200 del reporte; sin CRM, sin filtros nuevos |
+| **D3 multi-curso** | Constatado: nota ya presente en `00-mapa-maestro.md` («multi-curso = post-piloto») — nada que agregar |
+| **Guard incident** | Resuelto en la entrega anterior: rename (no excepción); guard a fuerza completa; 610/610 en máquina Juan |
+| **Tests** | +5 (helper D1 4 + copy D2 1) · suite en informe |
+| **Commit / push** | NO — `gmusic-oleada-d.patch` (aplica tras guard-fix) + mensaje propuesto en informe |
+
+## Hito — Oleada C · Funnel sin callejones (28 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **C1 dead-ends** | CERRADO — auditoría estática completa: 0 targets huérfanos (literales + `demo-clase-${n}` dinámico cae en el regex de App.tsx) · nuevo guard test `funnel-navigation-targets.test.ts` (11 casos) impide huérfanos futuros |
+| **C2 T-REG-01 / D-GOV-16** | Verificado: sigue «Propuesta — pendiente aprobación (Juan)» ⇒ **sin implementar** (mandato); bloqueo constatado con fecha en flows README |
+| **C3 demo 1–5** | Verificado sin roturas (`gmusic:demo_v1`, salidas de DemoLessonPage, upsell) — **sin cambios** |
+| **C4 flicker iPhone** | Checklist de dispositivo entregada: `docs/operations/flicker-iphone-checklist.md` (repro o cierre en 2 dispositivos) — sin fix a ciegas |
+| **Tests** | +11 guard funnel · suite en informe |
+| **Commit / push** | NO — `gmusic-oleada-c.patch` (aplica tras B) + mensaje propuesto en informe |
+
+## Hito — Oleada B · UX pedagógica mínima (28 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **B1 retry feedback** | CERRADO — `buildLessonResultFeedback` (server-graded): no completado => «Inténtalo de nuevo»; completado con errores => aviso de repaso; 100% => copy actual · sin límite, sin scoring cliente, sin motor |
+| **B2 PDF docs** | CERRADO — DECISIONS T-FLOW-02 = resuelto técnicamente en prod; firma Lab reservada a Juan |
+| **B3 PD-5 docs** | CERRADO — header de 02 declara PD-5 documentado (nodo EntH1 + tabla existían por patch v2) |
+| **B4 empty/error** | CERRADO — Mi Camino isEmpty con CTA Reintentar (patrón casa) · Mi Estudio ya tenía error+retry; éxito-con-ceros no es pantalla muda (sin cambios) |
+| **Tests** | +5 helper/wiring · suite en informe |
+| **Commit / push** | NO — `gmusic-oleada-b.patch` + mensaje propuesto en informe |
 
 ## Hito — Oleada A · Calidad runtime (28 Jul 2026)
 

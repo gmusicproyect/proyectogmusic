@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, type ReactNode } from "react";
+import { buildLessonResultFeedback } from "./lesson-result-feedback";
 import { X } from "lucide-react";
 import { Button } from "../../ui/button";
 import { GmusicApiError } from "../../../services/gmusic-api/client";
@@ -260,15 +261,9 @@ function LessonRunnerFinishedState({
         <p className="text-sm mb-4" style={{ color: GM_TEXT_SEC }}>
           +{summary.points} XP · Racha {summary.streakDays} días · {summary.precisionPercent}% precisión
         </p>
-        {summary.stepCompleted ? (
-          <p className="text-xs mb-6" style={{ color: GM_TEXT_SEC }}>
-            Paso del camino marcado como completado.
-          </p>
-        ) : (
-          <p className="text-xs mb-6" style={{ color: GM_TEXT_SEC }}>
-            Sigue avanzando en tu camino.
-          </p>
-        )}
+        <p role="status" className="text-xs mb-6" style={{ color: GM_TEXT_SEC }}>
+          {buildLessonResultFeedback(summary)}
+        </p>
         <Button
           type="button"
           onClick={onExit}

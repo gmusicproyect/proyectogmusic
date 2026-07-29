@@ -253,6 +253,19 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
             <p className="text-sm leading-relaxed">
               Tu camino todavía no tiene módulos publicados. Vuelve más tarde para ver tu ruta.
             </p>
+            <button
+              type="button"
+              onClick={() => void path.retry()}
+              className="mt-4 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] transition-colors hover:bg-[#C9A84C]/20 cursor-pointer"
+              style={{
+                color: GM_GOLD,
+                border: "1px solid rgba(201, 168, 76, 0.35)",
+                background: "rgba(201, 168, 76, 0.08)",
+              }}
+            >
+              <RefreshCw className="w-3 h-3" />
+              Reintentar
+            </button>
           </div>
         )}
 
