@@ -127,11 +127,19 @@ export function assertValidAccessResponse(data: unknown): AccessResponse {
     );
   }
 
+  const role =
+    userRecord.role === "STUDENT" ||
+    userRecord.role === "GUARDIAN" ||
+    userRecord.role === "ADMIN"
+      ? userRecord.role
+      : undefined;
+
   return {
     user: {
       id: userRecord.id,
       name: userRecord.name,
       email: userRecord.email,
+      ...(role ? { role } : {}),
     },
     access: {
       canAccessStudentZone: accessRecord.canAccessStudentZone,

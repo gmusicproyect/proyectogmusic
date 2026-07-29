@@ -1,6 +1,20 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **18 Jul 2026** · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` + PD-4 `ef6333d` local sin push · **Persistencia Durable: PD-0…PD-5** (enforcement R-002 en endpoints privados H1, VERDE local) · **PD-5 commit NO autorizado aún** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+Última actualización: **28 Jul 2026** · Lote flujos 28 Jul (patch v2 docs/flows + 00-mapa-maestro + T-FLOW-01) LOCAL **SIN COMMIT** · anterior: 18 Jul 2026 · **Gates G1–G8 APROBADOS** · P0 `1ad047d` + PD-2/PD-3 `ad124ac` + PD-4 `ef6333d` local sin push · **Persistencia Durable: PD-0…PD-5** (enforcement R-002 en endpoints privados H1, VERDE local) · **PD-5 commit NO autorizado aún** · handoff: `docs/vision/handoffs/2026-07-16-cierre-ciclo-p0-h1.md`
+
+## Hito — Ordenamiento de flujos · patch v2 + mapa maestro + T-FLOW-01 (28 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ INSTRUCCIÓN COMPLETA 2026-07-28 — Fase A docs fieles + Fase B código mínimo + Fase C verificación · sin Fase F, Comunidad launch, pagos, Next.js · **sin commit/push** |
+| **Fase A — patch v2** | ✅ `docs-flows-correccion-completa-v2.patch` aplicado limpio sobre `main` ~`0705032` (01/02/03/05/README) · host, CTA «Comenzar mi camino», cadena registro→exito→quiz→onboarding-academia→demo, WA = cierre Track A (J-FLOW-01), Checkout legacy |
+| **Fase A — mapa maestro** | ✅ `docs/flows/00-mapa-maestro.md` definitivo — nodos verificados contra código (registro-exito, onboarding-quiz/academia, demo-clase-1..5 + `gmusic:demo_v1`, inscripción→wa.me, guards, PD-5, MODULE_INCOMPLETE, bloque 5 etapas) · indexado en README flows |
+| **Fase B — T-FLOW-01** | ✅ Código: `role` en `/me/access` (`accessService`) · `AccessUser.role?` + parser tolerante (`types.ts`, `access.ts`) · rama ADMIN → `/admin` en `resolve-post-login-page` (authenticated y registered_no_sub) · guards intactos (AdminPage revalida con `requireAdmin`) · **pendiente OK Juan** |
+| **Fase B — demo/alumno** | ✅ Verificación estática de cadena demo 1–5 y video→ejercicios→complete→unlock: sin roturas halladas · no se tocó código |
+| **T-FLOW-05** | Sin repro estático 28 Jul (effects/memos revisados) · repro runtime pendiente en dev — anotado en README flows |
+| **T-FLOW-04 / 03** | ❌ No implementados (gate de prioridad: requieren verificación runtime previa de 2–3) — siguen en deuda |
+| **Tests** | ✅ app: 519/522 pass en sandbox (8/8 resolver con 3 casos ADMIN nuevos · 10/10 access · 111/111 gmusic-api) · 3 fails = `react` no instalado (entorno sin node_modules, sin red) — re-correr `npm run app:test` y `npm run api:test` en máquina local |
+| **Commit / push** | **NO** (pendiente OK Juan) — mensaje propuesto en informe de cierre |
 
 ## Hito — Persistencia Durable H1 · PD-5 Enforcement entitlements R-002 (18 Jul 2026)
 

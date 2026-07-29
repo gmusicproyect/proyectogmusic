@@ -28,6 +28,8 @@ export async function buildAccessResponse(student: User) {
       id: student.id,
       name: student.name,
       email: student.email,
+      /** T-FLOW-01: rol para routing post-login (ADMIN → /admin). */
+      role: student.role,
     },
     /** Legacy zone gate (ACTIVE subscription). */
     access: {

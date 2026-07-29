@@ -39,6 +39,38 @@ describe("resolvePostLoginPage", () => {
     });
   });
 
+  it("ADMIN authenticated → admin (T-FLOW-01)", () => {
+    assert.deepEqual(
+      resolvePostLoginPage({
+        type: "authenticated",
+        user: { id: "1", name: "A", email: "a@test.com", role: "ADMIN" },
+        subscription: { status: "ACTIVE", planId: "plan", endsAt: null },
+      }),
+      { type: "navigate", page: "admin" }
+    );
+  });
+
+  it("ADMIN registered_no_sub → admin (T-FLOW-01)", () => {
+    assert.deepEqual(
+      resolvePostLoginPage({
+        type: "registered_no_sub",
+        user: { id: "1", name: "A", email: "a@test.com", role: "ADMIN" },
+      }),
+      { type: "navigate", page: "admin" }
+    );
+  });
+
+  it("role STUDENT no altera destino authenticated (T-FLOW-01)", () => {
+    assert.deepEqual(
+      resolvePostLoginPage({
+        type: "authenticated",
+        user: { id: "1", name: "A", email: "a@test.com", role: "STUDENT" },
+        subscription: { status: "ACTIVE", planId: "plan", endsAt: null },
+      }),
+      { type: "navigate", page: "mi-camino" }
+    );
+  });
+
   it("aborted → stay con mensaje genérico", () => {
     const result = resolvePostLoginPage({ type: "aborted" });
     assert.equal(result.type, "stay");

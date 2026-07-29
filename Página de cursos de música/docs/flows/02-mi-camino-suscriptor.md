@@ -1,7 +1,9 @@
 # Flujo 02 — Mi Camino suscriptor
 
 **Zona:** `/mi-camino` · alumno con suscripción ACTIVE  
-**Auditoría:** 6 Jul 2026 · canon `docs/flows/`
+**Auditoría:** 6 Jul 2026 · alineación propuesta 20 Jul 2026 (prod `d48d163`) · **CANON CANDIDATO — PARCIALMENTE DESACTUALIZADO** hasta lote aplicado  
+**T-FLOW-02:** RESUELTO EN PRODUCCIÓN (`d48d163`), **PENDIENTE DE ACTUALIZACIÓN DOCUMENTAL** en Laboratorio — no declarar cierre formal aquí  
+**PD-5 / entitlements:** pendientes de documentación explícita en este diagrama (gate técnico existe; no declara flujo «completo»)
 
 ```mermaid
 flowchart TD
@@ -26,18 +28,19 @@ flowchart TD
     Watched -- No --> Video
     Watched -- Sí --> Ejercicio
 
-    HasVideo -- "No (legacy B1/B2 seed)" --> Ejercicio[Ejercicios<br/>2 por nodo MCQ/TAP]
+    HasVideo -- "No (legacy B1/B2 seed)" --> Ejercicio[Ejercicios por nodo<br/>p.ej. MCQ / RHYTHM_TAP / otros]
 
     Ejercicio --> RetryDebt{{"⚠️ DEUDA CONFIRMADA:<br/>sin límite de intentos;<br/>cliente no valida acierto<br/>en caliente (solo al complete)"}}
     RetryDebt --> Ejercicio
-    Ejercicio --> CompleteFlow[Finalizar práctica → POST complete]
+    Ejercicio --> EntH1{{"PD-5 / entitlements H1:<br/>assertStudentLearningAccess<br/>en start + complete<br/>(zona + mes; DEMO vía grant)<br/>≠ completitud general del flujo"}}
+    EntH1 --> CompleteFlow[Finalizar práctica → POST complete]
     CompleteFlow --> Exito["Pantalla éxito XP/racha<br/>(no overlay D-BRAND-02 completo)"]
     Exito --> SaveProgress[Guardar progreso + unlock]
     SaveProgress --> Carrusel
 
     Carrusel --> ReRender{{"⚠️ T-FLOW-05:<br/>Maximum update depth<br/>R-009 A2 runtime"}}
 
-    Carrusel --> PDF[["NO EXPUESTO:<br/>guidePdfUrl en admin DB<br/>pero NO en buildPathResponse<br/>→ T-FLOW-02"]]
+    Carrusel --> PDF["guidePdfUrl en path API + UI alumno<br/>si URL https presente<br/>T-FLOW-02 RESUELTO EN PRODUCCIÓN d48d163<br/>PENDIENTE ACTUALIZACIÓN DOCUMENTAL Lab"]
 
     Carrusel --> FinModulo{¿Completó nodos del bloque?}
     FinModulo -- Sí --> NextBlock{¿Hay siguiente bloque publicado?}
@@ -47,8 +50,9 @@ flowchart TD
     style T-UX-01 fill:#3a2a1a,stroke:#ffaa55,color:#fff
     style RetryDebt fill:#3a2a1a,stroke:#ffaa55,color:#fff
     style ReRender fill:#3a2a1a,stroke:#ffaa55,color:#fff
+    style EntH1 fill:#3a2a1a,stroke:#ffaa55,color:#fff
     style NoReplay fill:#3a1a1a,stroke:#ff5555,color:#fff
-    style PDF fill:#3a1a1a,stroke:#ff5555,color:#fff
+    style PDF fill:#1a3a1a,stroke:#55aa55,color:#fff
     style FinCamino fill:#3a1a1a,stroke:#ff5555,color:#fff
 ```
 
@@ -56,7 +60,10 @@ flowchart TD
 
 | Nodo | Código / decisión |
 |------|-------------------|
-| Path API | `meService.buildPathResponse` expone `videoUrl`; no `guidePdfUrl` |
+| Path API | `meService.buildPathResponse` + `pathNodePublic.buildPublicPathNodeFields` exponen `videoUrl` y **`guidePdfUrl`** (prod `d48d163`). |
+| PDF UI | `LessonMaterialTabs` / `LessonPrepareScreen`: enlace «Ver guía PDF» si hay URL. Función disponible ≠ siempre visible (sin URL) ≠ bypass entitlements. |
+| T-FLOW-02 | **RESUELTO EN PRODUCCIÓN, PENDIENTE DE ACTUALIZACIÓN DOCUMENTAL** — cierre formal pendiente de registro y firma en el Laboratorio (aún no registrado). |
+| PD-5 | `assertStudentLearningAccess` en `lessonSessionService` / `practiceLifecycleH1Service` (`d48d163`). Separado de T-FLOW-02. |
 | Legacy | D-GOV-17 Opción B: seed 3+2 nodos jugables |
 | Celebración | `LessonRunnerFinishedState`: XP + racha + precisión; D-BRAND-02 overlay reservado hitos mayores |
 | Replay | `path-lesson-start.ts` → `completed` no inicia sesión |

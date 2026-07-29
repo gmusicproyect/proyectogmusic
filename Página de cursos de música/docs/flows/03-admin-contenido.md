@@ -1,7 +1,7 @@
 # Flujo 03 — Admin Academia (contenido)
 
 **Zona:** `/admin` · bloques 5 etapas  
-**Auditoría:** 6 Jul 2026 · canon `docs/flows/` · alineado Admin Phase B
+**Auditoría:** 6 Jul 2026 · alineación propuesta 20 Jul 2026 · canon candidato · alineado Admin Phase B
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ flowchart TD
     Validar -- Sí --> Published[PUBLISHED<br/>visible en /mi-camino]
 
     Detalle --> Legacy{¿Es bloque legacy B1/B2?}
-    Legacy -- Sí --> BadgeLegacy{{"⚠️ T-FLOW-03:<br/>D-GOV-17 Opción B firmada;<br/>badge UI pendiente"}}
+    Legacy -- Sí --> BadgeLegacy{{"⚠️ T-FLOW-03 DEUDA UI:<br/>D-GOV-17 Opción B documentada — aprobación o firma por verificar;<br/>badge «Publicado legacy» pendiente<br/>(no altera CRUD canónico)"}}
 
     Accion -- Eliminar --> EsDraft{¿DRAFT sin progreso<br/>de alumnos?}
     EsDraft -- Sí --> Confirm[Confirmación roja inline]
@@ -58,4 +58,5 @@ flowchart TD
 |------|-------------------|
 | Publish | `server/services/curriculum.ts` |
 | Attempts | `server/services/adminReports.ts` + `AdminPage.tsx` |
-| PDF admin | `guidePdfUrl` en PathNode; alumno vía T-FLOW-02 |
+| PDF admin | `guidePdfUrl` en PathNode (edición admin). Alumno: expuesto en path API + UI (`d48d163`); ver flujo 02 / T-FLOW-02 documental pendiente Lab. |
+| Badge legacy | **T-FLOW-03** — deuda UI lateral; no forma parte del recorrido publish canónico. |

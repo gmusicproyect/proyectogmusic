@@ -33,8 +33,12 @@ export async function realStudentAuth(req: Request, res: Response, next: NextFun
       return res.status(401).json(errorBody("UNAUTHORIZED", "Usuario no encontrado."));
     }
 
-    if (user.role !== Role.STUDENT) {
-      return res.status(403).json(errorBody("FORBIDDEN", "Solo alumnos pueden acceder."));
+    // T-FLOW-01: ADMIN también necesita GET /me/access (role → post-login /admin).
+    // Rutas pedagógicas bajo /me/* toleran ADMIN; el panel admin sigue gated por requireAdmin.
+    if (user.role !== Role.STUDENT && user.role !== Role.ADMIN) {
+      return res.status(403).json(
+        errorBody("FORBIDDEN", "Solo alumnos o administradores pueden acceder.")
+      );
     }
 
     req.student = user;

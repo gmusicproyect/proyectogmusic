@@ -157,10 +157,14 @@ export interface CompleteLessonSessionResponse {
 
 export type AccessReason = "ACTIVE_SUBSCRIPTION" | "NO_ACTIVE_SUBSCRIPTION";
 
+export type AccessUserRole = "STUDENT" | "GUARDIAN" | "ADMIN";
+
 export interface AccessUser {
   id: string;
   name: string;
   email: string;
+  /** T-FLOW-01: opcional para tolerar respuestas de servidor previas al campo. */
+  role?: AccessUserRole;
 }
 
 export interface AccessInfo {
