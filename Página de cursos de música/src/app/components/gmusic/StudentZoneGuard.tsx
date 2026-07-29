@@ -64,9 +64,11 @@ export function StudentZoneGuard({
 
   useEffect(() => {
     if (access.status !== "denied" || deniedRedirectRef.current) return;
+    /** T-UX-01: sesión ADMIN no se redirige en silencio; ve panel con CTA /admin. */
+    if (access.user.role === "ADMIN") return;
     deniedRedirectRef.current = true;
     navigateDeniedToHomePlans(setPage, currentPage);
-  }, [access.status, setPage, currentPage]);
+  }, [access, setPage, currentPage]);
 
   if (access.status === "loading") {
     return (
@@ -101,6 +103,30 @@ export function StudentZoneGuard({
   }
 
   if (access.status === "denied") {
+    if (access.user.role === "ADMIN") {
+      return (
+        <div style={guardShellStyle}>
+          <div style={panelStyle} role="alert">
+            <p style={{ margin: 0, fontSize: "1.05rem" }}>Esta zona es del alumno</p>
+            <p style={{ margin: "10px 0 0", color: GM_TEXT_SEC, fontSize: "0.9rem" }}>
+              Tu sesión es de administrador. El panel de creación de contenido vive en /admin.
+            </p>
+            <button type="button" style={primaryButtonStyle} onClick={() => setPage("admin")}>
+              Ir al panel admin
+            </button>
+            <div>
+              <button
+                type="button"
+                style={secondaryButtonStyle}
+                onClick={() => navigateStudentZoneAware("home", setPage, currentPage)}
+              >
+                Volver al inicio
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
     return null;
   }
 

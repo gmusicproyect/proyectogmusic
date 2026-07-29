@@ -98,6 +98,6 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 | T-FLOW-02 | `guidePdfUrl` path API + UI alumno | **Resuelto técnicamente en producción `d48d163`** · formalización Lab pendiente · PENDIENTE-LAB: incorporar ID, ruta, commit y firma después de la aprobación formal |
 | T-FLOW-03 | Badge «Publicado legacy» admin UI | **Cerrado 28 Jul 2026** — `adminModuleStatusLabel` (D-GOV-17 Opción B) en chip de detalle y listado admin · pendiente OK Juan + commit |
 | T-FLOW-04 | Pantalla fin de camino / fin de nivel | **Cerrado 28 Jul 2026** — `CompletedPathPanel` al spec (título/frase/CTA Mi Estudio + revisión sin replay); detector `isComplete` ya existente con tests · pendiente OK Juan + commit |
-| T-FLOW-05 | Maximum update depth `GmusicPath` | Abierto · **sin repro estático 28 Jul 2026** — evidencia y receta de repro: `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` |
+| T-FLOW-05 | Maximum update depth `GmusicPath` | Abierto · **sin repro estático 28 Jul 2026** — evidencia estática + **receta runtime lista para Juan**: `docs/operations/t-flow-05-repro-runtime.md` |
 
 Proyección operativa posterior (no autoridad): `.agents/DECISIONS.md` *Backlog operativo* — solo tras decisión Lab firmada.

@@ -1,6 +1,18 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **28 Jul 2026 (noche)** · base **`main@7f70cfd` en origin** (lote flujos + T-FLOW-01 + `realStudentAuth` ADMIN commiteado y pusheado · smoke ADMIN OK) · **Lote noche (T-FLOW-03 + T-FLOW-04 + evidencia T-FLOW-05) LOCAL SIN COMMIT — pendiente OK Juan**
+Última actualización: **28 Jul 2026 (Oleada A)** · base **`main@77e3a0c` en origin** (lote noche commiteado + pusheado · app:test 590/590 en máquina Juan) · **Oleada A (T-UX-01 + T-UX-COPY-LOGIN + smoke tooling + receta T-FLOW-05) LOCAL SIN COMMIT — pendiente OK Juan**
+
+## Hito — Oleada A · Calidad runtime (28 Jul 2026)
+
+| Item | Estado |
+|------|--------|
+| **Mandato Juan** | ✅ INSTRUCCIÓN MÁXIMA (oleadas) — Oleada A completa · sin commit/push |
+| **T-UX-01** | ✅ CERRADO — `StudentZoneGuard` denied + role ADMIN: panel «Esta zona es del alumno» + CTA «Ir al panel admin» (sin redirect mudo); resto de denied intacto |
+| **T-UX-COPY-LOGIN** | ✅ CERRADO — `assertAuthSessionEstablished(outcome, context)` con copy propio de login; registro sin cambios (default) |
+| **T-FLOW-05** | Receta runtime cero-deps para Juan: `docs/operations/t-flow-05-repro-runtime.md` (snippet consola + criterio de cierre) · fix solo con repro |
+| **Smoke tooling** | ✅ `start-smoke-local.sh` autolocalizado (`GMUSIC_APP_DIR` override) + checklist `docs/operations/smoke-track-a.md` (7 smokes) |
+| **Tests** | ✅ nuevos: guard admin (2) + copy login (2) · suite completa en informe |
+| **Commit / push** | **NO** — patch `gmusic-oleada-a.patch` + mensaje propuesto en informe |
 
 ## Hito — Página completa · T-FLOW-04 + T-FLOW-03 + evidencia T-FLOW-05 (28 Jul 2026 · noche)
 

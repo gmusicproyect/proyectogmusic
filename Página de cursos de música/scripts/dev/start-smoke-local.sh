@@ -3,7 +3,9 @@
 set -euo pipefail
 export PATH="/Applications/Docker.app/Contents/Resources/bin:$HOME/.docker/bin:/opt/homebrew/bin:$PATH"
 
-APP="/Volumes/Juan lizama h/Academia GMusic/01-Producto/proyectogmusic/Página de cursos de música"
+# Autolocalizado desde la posición del script; override: export GMUSIC_APP_DIR=/ruta/a/la/app
+SCRIPT_DIR="${0:A:h}"
+APP="${GMUSIC_APP_DIR:-${SCRIPT_DIR}/../..}"
 cd "$APP"
 
 echo "==> Postgres Docker"
@@ -100,3 +102,9 @@ while true; do
   fi
   sleep 2
 done
+
+echo ""
+echo "==> Smoke checklist: docs/operations/smoke-track-a.md"
+echo "    1) ADMIN login publico -> /admin   2) ACTIVE -> completar nodo"
+echo "    3) DEMO clase -> upsell WhatsApp   4) Fin de camino (T-FLOW-04)"
+echo "    5) Badge Publicado legacy (T-FLOW-03)"

@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (input: LoginInput) => {
     const user = await loginAccount(input);
     const sessionOutcome = await publicSession.refresh();
-    assertAuthSessionEstablished(sessionOutcome);
+    assertAuthSessionEstablished(sessionOutcome, "login");
     return { user, sessionOutcome };
   }, [publicSession]);
 
