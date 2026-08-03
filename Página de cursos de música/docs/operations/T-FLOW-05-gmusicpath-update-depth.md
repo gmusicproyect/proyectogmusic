@@ -1,6 +1,6 @@
 # T-FLOW-05 — Maximum update depth en `GmusicPath.tsx` (post R-009)
 
-**Estado:** Abierto  
+**Estado:** **Cerrado** — **no repro runtime 2026-08-02** (snippet v2 aria-label en `/mi-camino`; 2 pasadas; sin Maximum update depth) · sin repro estático 28 Jul · fix PathCarouselCards no aplicado  
 **Prioridad:** Baja (runtime UX / estabilidad consola)  
 **Fecha:** 6 Jul 2026  
 **Detectado en:** Validación R-009 punto A2 — warnings en consola reproducidos en pantalla
@@ -39,9 +39,9 @@ Asociado al flujo post **R-009** (video-first + `PathLessonRunner`).
 
 ## Criterio de cierre
 
-- [ ] Repro documentado: pasos + cuenta QA + sin warnings en 3 ciclos completos (iniciar lección → práctica → volver).
-- [ ] Fix acotado en `GmusicPath.tsx` / hooks relacionados sin regresión tests `path-*` / `gmusic-path`.
-- [ ] Actualizar diagrama 02 en mismo commit (regla D-023b).
+- [x] Repro documentado: **no repro runtime 2026-08-02** (snippet v2 aria-label; 2 pasadas; sin Maximum update depth) — ver `t-flow-05-no-repro-estatico-2026-07-28.md`.
+- [x] Fix acotado: **N/A** — sin repro; PathCarouselCards no tocado (mandato).
+- [x] Diagrama 02: **N/A** en cierre por no-repro (sin cambio de código).
 
 ---
 

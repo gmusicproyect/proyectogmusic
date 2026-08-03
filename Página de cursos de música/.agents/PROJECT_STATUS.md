@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
+Última actualización: **2 Ago 2026** (T-FLOW-05 no-repro runtime cerrado) · previo **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
 
 ## Hito — Oleada E · Higiene de ingeniería (28 Jul 2026 · final del plan de oleadas)
 
@@ -9,7 +9,7 @@
 | **E1 T-API-01** | CERRADO por sincronización documental: el fix vive en `main` desde 7 Jul (ops doc «auditoría APRUEBA») + `api:test` serializado (`--test-concurrency=1`); la fila P0 de DECISIONS estaba desincronizada → corregida |
 | **E2 Typecheck/CI** | Verificado sin cambios: `ci.yml` ↔ `package.json` consistentes (typecheck · app:test · api:test · build, todos existen) — cero riesgo de romper Actions |
 | **E3 a11y auth** | CERRADO — `role="alert"`/`role="status"` en mensajes del login embebido admin (labels ya eran implícitos válidos; registro/login público ya cumplían) · solo atributos, sin regresión visual |
-| **E4 perf carrusel** | Micro-fix obvio aplicado: `goTo` useCallback + `cardModels` useMemo (identidades estables, cero cambio visual) · resto ligado a receta T-FLOW-05 ya entregada |
+| **E4 perf carrusel** | Micro-fix obvio aplicado: `goTo` useCallback + `cardModels` useMemo (identidades estables, cero cambio visual) · T-FLOW-05 **CERRADO** no-repro runtime 2026-08-02 (fix stage-fit no aplicado) |
 | **E5 plan rename** | Solo plan: `docs/operations/plan-rename-app-folder.md` (pasos, riesgos, rollback) — **cero moves** |
 | **Tests** | +2 guard (a11y/perf) · suite en informe |
 | **Commit / push** | NO — `gmusic-oleada-e.patch` (aplica tras D) + mensaje propuesto en informe |
@@ -54,7 +54,7 @@
 | **Mandato Juan** | ✅ INSTRUCCIÓN MÁXIMA (oleadas) — Oleada A completa · sin commit/push |
 | **T-UX-01** | ✅ CERRADO — `StudentZoneGuard` denied + role ADMIN: panel «Esta zona es del alumno» + CTA «Ir al panel admin» (sin redirect mudo); resto de denied intacto |
 | **T-UX-COPY-LOGIN** | ✅ CERRADO — `assertAuthSessionEstablished(outcome, context)` con copy propio de login; registro sin cambios (default) |
-| **T-FLOW-05** | Receta runtime cero-deps para Juan: `docs/operations/t-flow-05-repro-runtime.md` (snippet consola + criterio de cierre) · fix solo con repro |
+| **T-FLOW-05** | ✅ **CERRADO** — **no repro runtime 2026-08-02** (snippet v2 aria-label; 2 pasadas; sin Maximum update depth) · fix no aplicado · `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` |
 | **Smoke tooling** | ✅ `start-smoke-local.sh` autolocalizado (`GMUSIC_APP_DIR` override) + checklist `docs/operations/smoke-track-a.md` (7 smokes) |
 | **Tests** | ✅ nuevos: guard admin (2) + copy login (2) · suite completa en informe |
 | **Commit / push** | **NO** — patch `gmusic-oleada-a.patch` + mensaje propuesto en informe |
@@ -68,7 +68,7 @@
 | **Fase 2 alumno** | ✅ cadena idéntica al árbol auditado · baseline 519/522 (3 fails = react ausente en sandbox) |
 | **T-FLOW-04** | ✅ CERRADO — `CompletedPathPanel` al spec (título/frase/CTA «Ir a Mi Estudio» + «Seguir en Mi Camino» con carrusel en revisión; tarjetas completed inertes ⇒ sin replay) · detector `isComplete` preexistente + caso borde nuevo |
 | **T-FLOW-03** | ✅ CERRADO — `adminModuleStatusLabel` (D-GOV-17 Opción B): PUBLISHED con `completeSlots < totalSlots` ⇒ «Publicado legacy» en chip de detalle y listado |
-| **T-FLOW-05** | Sin repro estático — evidencia + receta runtime: `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` · fix solo si se confirma |
+| **T-FLOW-05** | ✅ **CERRADO** — sin repro estático 28 Jul + **no repro runtime 2026-08-02** · `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` · fix no aplicado |
 | **T-UX-01 / Fase 6** | ❌ No tocado (presupuesto del lote); funnel sin regresiones (resolver 8/8 en baseline) |
 | **Docs** | ✅ flows 00/02/03/README + DECISIONS backlog al día |
 | **Tests** | ✅ targeted verdes (map-path 12 · t-flow-04 3 · admin-legacy-badge 5) · suite y patch en informe |
@@ -83,7 +83,7 @@
 | **Fase A — mapa maestro** | ✅ `docs/flows/00-mapa-maestro.md` definitivo — nodos verificados contra código (registro-exito, onboarding-quiz/academia, demo-clase-1..5 + `gmusic:demo_v1`, inscripción→wa.me, guards, PD-5, MODULE_INCOMPLETE, bloque 5 etapas) · indexado en README flows |
 | **Fase B — T-FLOW-01** | ✅ Código: `role` en `/me/access` (`accessService`) · `AccessUser.role?` + parser tolerante (`types.ts`, `access.ts`) · rama ADMIN → `/admin` en `resolve-post-login-page` (authenticated y registered_no_sub) · guards intactos (AdminPage revalida con `requireAdmin`) · **pendiente OK Juan** |
 | **Fase B — demo/alumno** | ✅ Verificación estática de cadena demo 1–5 y video→ejercicios→complete→unlock: sin roturas halladas · no se tocó código |
-| **T-FLOW-05** | Sin repro estático 28 Jul (effects/memos revisados) · repro runtime pendiente en dev — anotado en README flows |
+| **T-FLOW-05** | ✅ **CERRADO** — sin repro estático 28 Jul · **no repro runtime 2026-08-02** — anotado en ops + DECISIONS |
 | **T-FLOW-04 / 03** | ❌ No implementados (gate de prioridad: requieren verificación runtime previa de 2–3) — siguen en deuda |
 | **Tests** | ✅ app: 519/522 pass en sandbox (8/8 resolver con 3 casos ADMIN nuevos · 10/10 access · 111/111 gmusic-api) · 3 fails = `react` no instalado (entorno sin node_modules, sin red) — re-correr `npm run app:test` y `npm run api:test` en máquina local |
 | **Commit / push** | **NO** (pendiente OK Juan) — mensaje propuesto en informe de cierre |

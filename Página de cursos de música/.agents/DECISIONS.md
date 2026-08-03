@@ -197,7 +197,7 @@ Registro oficial de decisiones de producto, pedagogía y arquitectura.
 | T-FLOW-02 | Exponer `guidePdfUrl` en path API + UI alumno — **Resuelto técnicamente en producción `d48d163`** · formalización Lab pendiente (PENDIENTE-LAB: ID/ruta/commit/firma tras aprobación de Juan) | Media | `docs/flows/02-mi-camino-suscriptor.md` |
 | T-FLOW-03 | Badge «Publicado legacy» admin UI (D-GOV-17 Opción B) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/03-admin-contenido.md` |
 | T-FLOW-04 | Pantalla fin de camino / fin de nivel (contenido agotado) — **CERRADO 28 Jul 2026** (lote noche, pendiente commit) | Baja | `docs/flows/02-mi-camino-suscriptor.md` |
-| T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) — sin repro estático 28 Jul, ver `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` | Baja | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |
+| T-FLOW-05 | Maximum update depth / re-render `GmusicPath.tsx` (R-009 A2) — **CERRADO 2 Ago 2026** (**no repro runtime 2026-08-02**; sin repro estático 28 Jul; fix no aplicado) · `docs/operations/t-flow-05-no-repro-estatico-2026-07-28.md` | Cerrado | `docs/operations/T-FLOW-05-gmusicpath-update-depth.md` |
 
 **Observaciones sin ticket** (repro formal pendiente): scroll flicker iPhone landing — ver `docs/flows/README.md`.
 

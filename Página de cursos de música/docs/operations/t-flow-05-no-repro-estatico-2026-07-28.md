@@ -38,4 +38,10 @@ En `updateFit`: comparar contra el valor actual antes de `setStageDesktopFit`
 (functional update con bail explícito) y/o desacoplar con `requestAnimationFrame`
 + histéresis de ±14px en el umbral para impedir el cruce oscilante.
 
-**Estado:** ABIERTO · sin repro estático 28 Jul 2026 · runtime pendiente.
+## Resultado runtime (Juan · 2 Ago 2026)
+
+**no repro runtime 2026-08-02** (snippet v2 aria-label en `/mi-camino`; 2 pasadas; sin Maximum update depth).
+
+Nota: el snippet original del doc de receta (`buttons` + `svg`) clickeaba nav; se usó **v2** por `aria-label` «Clase anterior» / «Clase siguiente».
+
+**Estado:** CERRADO · sin repro estático 28 Jul 2026 · **no repro runtime 2026-08-02** · fix PathCarouselCards **no aplicado**.
