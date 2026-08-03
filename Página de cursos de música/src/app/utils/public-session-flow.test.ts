@@ -141,6 +141,22 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.match(registroSource, /secondsRemaining/);
   });
 
+  it("registro liviano D-GOV-16: sin campo teléfono y payload sin phone", () => {
+    assert.equal(registroSource.includes("registro-phone"), false);
+    assert.equal(registroSource.includes("Celular"), false);
+    assert.equal(registroSource.includes("WhatsApp"), false);
+    assert.doesNotMatch(registroSource, /phone:/);
+    assert.doesNotMatch(registroSource, /setPhone/);
+  });
+
+  it("registro liviano D-GOV-16: copy de acceso gratis en registro y login", () => {
+    assert.match(registroSource, /Crea tu acceso gratis/);
+    assert.match(registroSource, /Te regalamos tus primeras 5 clases/);
+    assert.match(registroSource, /Crear mi acceso gratis/);
+    assert.match(registroSource, /Tu acceso gratis está listo\./);
+    assert.equal(registroSource.includes("Crea tu cuenta"), false);
+  });
+
   it("login-cuenta usa resolvePostLoginPage sin segundo refresh", () => {
     assert.match(registroSource, /resolvePostLoginPage/);
     assert.match(registroSource, /sessionOutcome/);

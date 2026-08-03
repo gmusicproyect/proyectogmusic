@@ -20,7 +20,6 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
   const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +37,10 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
     setLoading(true);
 
     try {
+      // D-GOV-16: registro liviano — sin `phone` (datos formales viven en inscripción/compra).
       await register({
         name,
         email,
-        phone: phone.trim() || undefined,
         password,
       });
       setPage("registro-exito");
@@ -56,8 +55,8 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
 
   return (
     <AuthFormShell
-      title="Crea tu cuenta"
-      subtitle="Regístrate para acceder a tus 5 clases de regalo."
+      title="Crea tu acceso gratis"
+      subtitle="Te regalamos tus primeras 5 clases para que descubras tu camino musical."
     >
       <form onSubmit={(event) => void onSubmit(event)}>
         <label htmlFor="registro-name">Nombre</label>
@@ -105,16 +104,6 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
           autoComplete="new-password"
         />
 
-        <label htmlFor="registro-phone">Celular / WhatsApp (opcional)</label>
-        <input
-          id="registro-phone"
-          type="tel"
-          style={authInputStyle}
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          autoComplete="tel"
-        />
-
         {error ? (
           <p style={{ color: "#f87171", fontSize: "13px", marginTop: "12px" }} role="alert">
             {error}
@@ -122,7 +111,7 @@ export function RegistroCuentaPage({ setPage }: RegistroCuentaPageProps) {
         ) : null}
 
         <button type="submit" style={authPrimaryButtonStyle} disabled={loading}>
-          {loading ? "Creando cuenta…" : "Crear cuenta"}
+          {loading ? "Creando tu acceso…" : "Crear mi acceso gratis"}
         </button>
 
         <button
@@ -171,7 +160,7 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
   }
 
   return (
-    <AuthFormShell title="Inicia sesión" subtitle="Accede a tus clases de regalo.">
+    <AuthFormShell title="Inicia sesión" subtitle="Entra a tu acceso gratis y tus clases.">
       <form onSubmit={(event) => void onSubmit(event)}>
         <label htmlFor="login-email">Correo</label>
         <input
@@ -210,7 +199,7 @@ export function LoginCuentaPage({ setPage }: LoginCuentaPageProps) {
           style={{ ...authPrimaryButtonStyle, background: "transparent", color: "#F5F5F7", border: "1px solid #222" }}
           onClick={() => setPage("registro-cuenta")}
         >
-          Crear cuenta
+          Crear mi acceso gratis
         </button>
       </form>
     </AuthFormShell>
@@ -281,7 +270,7 @@ export function RegistroExitoPage({ setPage }: { setPage: (page: string) => void
   }, [isLoggedIn, session.status, advance]);
 
   return (
-    <AuthFormShell title={title} subtitle="Tu cuenta fue creada correctamente.">
+    <AuthFormShell title={title} subtitle="Tu acceso gratis está listo.">
       <div
         style={{
           border: "1px solid rgba(212, 175, 55, 0.32)",
