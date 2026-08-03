@@ -224,7 +224,7 @@
 | Item | Estado |
 |------|--------|
 | **Decisión** | ✅ **D-F7-001** · **D-F7-WIP** supersedido |
-| **Canónico** | ✅ `docs/features/07-mi-progreso.md` v1.0 |
+| **Canónico** | docs/features/07-mi-progreso.md — ausente en main; histórico en cuarentena trabajo/wip-2026-07-18 @ bf986db (90-Legado/repos-git/_cuarentena-originales-2026-07-31/) |
 | **Informe** | ✅ `fase-7-informe-supervisor.md` (cerrado) |
 | **Veredicto** | **F7 DOCUMENTAL CERRADA** |
 | **Launch-ready** | **NO** (capa C abierta) |
@@ -282,7 +282,7 @@
 | Item | Estado |
 |------|--------|
 | **Decisión** | ✅ **D-F6-001** (cierre formal Juan §14) |
-| **Canónico** | ✅ `docs/features/06-mi-camino.md` v1.0 |
+| **Canónico** | docs/features/06-mi-camino.md — ausente en main; histórico en cuarentena trabajo/wip-2026-07-18 @ bf986db (90-Legado/repos-git/_cuarentena-originales-2026-07-31/) |
 | **T-PUB-01** | DONE LOCAL (**D-TPUB-01**) — no validación productiva |
 | **T-F6-ANTI-DEMO-01** | CERRADO (**D-F6-ANTI-DEMO-001**) |
 | **F7** | **NO INICIADA** / no autorizada |
