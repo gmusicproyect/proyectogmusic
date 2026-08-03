@@ -59,26 +59,11 @@ export const DEFAULT_MENTORSHIP_PROGRESS: CommunityMentorshipProgress = {
 
 export const MOCK_COMMUNITY_PEERS: CommunityPeer[] = [];
 
-export const MOCK_ADMIN_CURATED: CommunityAdminCurated[] = [
-  {
-    id: "curated-song-basic",
-    kind: "song_of_month",
-    level: "BASIC",
-    title: "Canción del mes — nivel Básico",
-    description: "Referencia curada por Gmusic para escuchar, aprender y practicar.",
-    externalUrl: "https://www.youtube.com/watch?v=example-basic",
-    externalProvider: "youtube",
-  },
-  {
-    id: "curated-song-advanced",
-    kind: "song_of_month",
-    level: "ADVANCED",
-    title: "Canción del mes",
-    description: "Apoyemos este lanzamiento — selección Gmusic.",
-    externalUrl: "https://open.spotify.com/track/example",
-    externalProvider: "spotify",
-  },
-];
+/**
+ * Curado admin vacío en producción (D-F6-ANTI-DEMO / B+ 2026-08-02).
+ * Tipos y panel listos para feed real; cero «Canción del mes» ni URLs example.
+ */
+export const MOCK_ADMIN_CURATED: CommunityAdminCurated[] = [];
 
 export function resolveWeeklyChallenge(_input: {
   instrument: string;

@@ -24,8 +24,9 @@ export function CommunityPeersPanel({ level, peers, loading }: CommunityPeersPan
       {loading ? (
         <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>Cargando…</p>
       ) : peers.length === 0 ? (
-        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
-          Aún no hay actividad reciente en este nivel.
+        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.5 }}>
+          Aún no hay compañeros visibles en este nivel. La lista se llenará con actividad real —
+          sin perfiles de demostración.
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

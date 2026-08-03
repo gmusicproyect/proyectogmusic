@@ -232,9 +232,7 @@ export function CommunityPage({
             </p>
           ) : null}
 
-          {!postsLoading &&
-          visiblePosts.length === 0 &&
-          !(curatedPlacement === "bottom" && curatedItems.length > 0) ? (
+          {!postsLoading && visiblePosts.length === 0 ? (
             <div
               style={{
                 border: "1px solid rgba(255,255,255,0.08)",
@@ -265,8 +263,8 @@ export function CommunityPage({
             </div>
           )}
 
-          {curatedPlacement === "bottom" && curatedItems.length > 0 && (
-            <div style={{ marginTop: visiblePosts.length > 0 ? 28 : 0 }}>
+          {curatedPlacement === "bottom" && (
+            <div style={{ marginTop: 28 }}>
               <CommunityAdminCuratedPanel items={curatedItems} />
             </div>
           )}

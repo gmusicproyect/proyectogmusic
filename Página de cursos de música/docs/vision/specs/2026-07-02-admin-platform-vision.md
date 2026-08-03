@@ -81,7 +81,7 @@ Sidebar futuro (una sola app `/admin`, módulos por fase):
 | PDF / descargables | ❌ | ❌ | — |
 | MicroExercise / quizzes | ✅ schema + lesson runner | ❌ sin editor admin | Prisma seed |
 | Quién acertó/falló | ✅ `ExerciseAttempt` en DB | ❌ sin panel | Solo API interna |
-| Comunidad curada | ❌ | ❌ mock en `mock-community-data.ts` | Frontend mock |
+| Comunidad curada | ❌ | ❌ vacío / «próximamente» (B+ 2026-08-02; sin mocks demo) | Frontend UI parcial · **NO LANZADA** |
 | Posts comunidad | ✅ CRUD alumno | ❌ moderación admin | `CommunityPost` |
 | Landing novedades | ❌ | ❌ hardcoded en TSX | Código |
 | Planes landing | ❌ | ❌ hardcoded `PlanesSection` | Código |

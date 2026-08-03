@@ -6,6 +6,14 @@ interface CommunityMentorshipPanelProps {
   progress: CommunityMentorshipProgress;
 }
 
+function hasTrackedProgress(progress: CommunityMentorshipProgress): boolean {
+  return (
+    progress.progressSubmissions > 0 ||
+    progress.helpfulFeedbacksGiven > 0 ||
+    progress.weeklyChallengesCompleted > 0
+  );
+}
+
 function ProgressLine({ label, current, target }: { label: string; current: number; target: number }) {
   return (
     <div style={{ marginBottom: 8 }}>
@@ -18,6 +26,8 @@ function ProgressLine({ label, current, target }: { label: string; current: numb
 }
 
 export function CommunityMentorshipPanel({ progress }: CommunityMentorshipPanelProps) {
+  const showCounters = hasTrackedProgress(progress);
+
   return (
     <div
       style={{
@@ -38,18 +48,26 @@ export function CommunityMentorshipPanel({ progress }: CommunityMentorshipPanelP
           color: GOLD,
         }}
       >
-        Progreso hacia mentoría en vivo
+        Mentoría en vivo
       </p>
-      <ProgressLine
-        label="Progresos enviados"
-        current={progress.progressSubmissions}
-        target={progress.progressSubmissionsTarget}
-      />
-      <ProgressLine
-        label="Feedbacks útiles dados"
-        current={progress.helpfulFeedbacksGiven}
-        target={progress.helpfulFeedbacksTarget}
-      />
+      {showCounters ? (
+        <>
+          <ProgressLine
+            label="Progresos enviados"
+            current={progress.progressSubmissions}
+            target={progress.progressSubmissionsTarget}
+          />
+          <ProgressLine
+            label="Feedbacks útiles dados"
+            current={progress.helpfulFeedbacksGiven}
+            target={progress.helpfulFeedbacksTarget}
+          />
+        </>
+      ) : (
+        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.5 }}>
+          Próximamente — el progreso hacia mentoría se activará con actividad real de la comunidad.
+        </p>
+      )}
     </div>
   );
 }

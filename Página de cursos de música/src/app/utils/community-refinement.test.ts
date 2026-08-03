@@ -6,7 +6,11 @@ import {
   communityPostActionLabel,
 } from "../data/community-post-types";
 import { MOCK_COMMUNITY_POSTS, SAMPLE_COMMUNITY_POSTS } from "../data/mock-community-posts";
-import { resolveWeeklyChallenge } from "../data/mock-community-data";
+import {
+  curatedForLevel,
+  MOCK_ADMIN_CURATED,
+  resolveWeeklyChallenge,
+} from "../data/mock-community-data";
 import {
   detectExternalLinkProvider,
   externalLinkCardCopy,
@@ -103,5 +107,21 @@ describe("resolveWeeklyChallenge", () => {
       lessonNumber: 3,
     });
     assert.equal(challenge, null);
+  });
+});
+
+describe("MOCK_ADMIN_CURATED / curatedForLevel", () => {
+  it("producción sin curado simulado (B+ / D-F6-ANTI-DEMO)", () => {
+    assert.equal(MOCK_ADMIN_CURATED.length, 0);
+    assert.equal(curatedForLevel("BASIC").length, 0);
+    assert.equal(curatedForLevel("ADVANCED").length, 0);
+    assert.equal(
+      MOCK_ADMIN_CURATED.some((item) => /example/i.test(item.externalUrl)),
+      false
+    );
+    assert.equal(
+      MOCK_ADMIN_CURATED.some((item) => /canci[oó]n del mes/i.test(item.title)),
+      false
+    );
   });
 });

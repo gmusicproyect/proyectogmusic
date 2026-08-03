@@ -42,7 +42,7 @@ En GitHub/Cursor el render puede variar; la leyenda de cada diagrama repite la c
 | 2 | [02-mi-camino-suscriptor.md](./02-mi-camino-suscriptor.md) | Alumno pagante `/mi-camino` | Candidato · T-FLOW-02 resuelto técnicamente en prod; formalización Lab pendiente · PD-5 documentar | Piloto materia |
 | 3 | [03-admin-contenido.md](./03-admin-contenido.md) | Admin Academia bloques 5 etapas | Candidato · alineado CRUD · deuda UI/legacy (T-FLOW-03) separada | Post Phase B |
 | 4 | [04-usuarios-comunicacion-fase-f.md](./04-usuarios-comunicacion-fase-f.md) | Usuarios + comunicación | **PROPUESTA — NO IMPLEMENTADO** · **SIN CAMBIOS** en este lote | **No siguiente sprint** |
-| 5 | [05-comunidad-resumen.md](./05-comunidad-resumen.md) | Comunidad C2 | **NO LANZADO** · construido (API/persistencia) · no habilitado · UI parcial | Referencia |
+| 5 | [05-comunidad-resumen.md](./05-comunidad-resumen.md) | Comunidad C2 | **NO LANZADO** · construido (API/persistencia) · **nav habilitada** (tab sin candado) · UI parcial · mocks demo saneados (B+ 2026-08-02) | Referencia |
 
 **Orden aprobado admin-platform-vision:** Academia → Evaluación / Captación (Fase E) → Comunidad (Fase C) → Landing (Fase D) → **Usuarios/Comunicación (Fase F, propuesta)**.
 
@@ -66,7 +66,7 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 | Multi-curso (hardcoded `ruta-guitarra-12-meses`) | 03 | Post-piloto |
 | CRM usuarios + email admin | 04 | Fase F; PROPUESTA — NO IMPLEMENTADO |
 | Reengagement automatizado | 04 | D-PROD-03 Fase 2 |
-| Moderación admin de posts / lanzamiento Comunidad | 05 | PRODUCTO NO LANZADO |
+| Moderación admin de posts / lanzamiento Comunidad | 05 | PRODUCTO NO LANZADO (nav abierta ≠ lanzada; B+) |
 | Mensaje 403 rol incorrecto | 02 | **T-UX-01** |
 
 ### Observaciones (no ticket hasta repro formal)
@@ -84,7 +84,7 @@ Caminos que el producto **no resuelve aún** — o con cierre documental pendien
 | Confianza | Ítems |
 |-----------|--------|
 | **Alta** | Admin CRUD publish/delete; path suscriptor; guards; WhatsApp como cierre Track A actual en código `d48d163`; `guidePdfUrl` en path API+UI `d48d163`; `communityAccess: false` |
-| **Media** | Flicker iPhone; fin de camino UX; registro prod estable; UI Comunidad parcial |
+| **Media** | Flicker iPhone; fin de camino UX; registro prod estable; UI Comunidad parcial (nav habilitada · NO LANZADA) |
 | **Baja (ticket)** | T-FLOW-05 update depth GmusicPath |
 | **No usar como cifra actual** | tests **557/557** (6 Jul histórico) |
 

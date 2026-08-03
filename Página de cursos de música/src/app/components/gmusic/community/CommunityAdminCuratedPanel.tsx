@@ -14,7 +14,36 @@ interface CommunityAdminCuratedPanelProps {
 }
 
 export function CommunityAdminCuratedPanel({ items }: CommunityAdminCuratedPanelProps) {
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <div
+        style={{
+          marginBottom: 20,
+          background: "rgba(201,168,76,0.04)",
+          border: "1px solid rgba(201,168,76,0.12)",
+          borderRadius: 14,
+          padding: 18,
+        }}
+      >
+        <p
+          style={{
+            margin: "0 0 6px",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: GOLD,
+          }}
+        >
+          Curado por Gmusic
+        </p>
+        <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
+          Próximamente — selecciones curadas (canción del mes y referencias) cuando haya
+          contenido real. No hay enlaces de demostración.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginBottom: 20 }}>

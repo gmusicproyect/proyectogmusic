@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-02
 **Para:** Juan
-**Estado:** DICTAMEN ENMENDADO — cero implementación hasta frase de control §9
+**Estado:** FRASE RECIBIDA — `OK Comunidad: formalizar abierta` → **B+ en implementación** (local · sin commit hasta OK commit)
 **Verificación:** Cursor cotejó la v1 contra `main` (2026-08-02): **coincide**. Mocks confirmados en Comunidad: panel curado con links `example` y «Canción del mes» falsa, visibles a suscriptores.
 **Enmienda clave:** **B puro queda descartado** — mantener la tab abierta sin tocar los mocks choca con D-F6-ANTI-DEMO-001 (zona real sin mocks de demo). B pasa a ser **B+**.
 

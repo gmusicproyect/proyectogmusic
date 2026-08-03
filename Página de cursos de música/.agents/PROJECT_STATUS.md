@@ -1,6 +1,19 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **2 Ago 2026** (T-FLOW-05 no-repro runtime cerrado) · previo **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
+Última actualización: **2 Ago 2026** (Comunidad B+ formalizar abierta · T-FLOW-05 no-repro) · previo **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
+
+## Hito — Comunidad B+ · formalizar abierta (2 Ago 2026)
+
+| Item | Estado |
+|------|--------|
+| **Frase Juan** | ✅ `OK Comunidad: formalizar abierta` → **B+** (no B puro) |
+| **Decisión** | ✅ **D-COMM-BPLUS-001** |
+| **Nav** | Tab Comunidad **sin candado** (ya abierta; no re-lock) |
+| **Mocks** | `MOCK_ADMIN_CURATED = []` · peers vacíos · mentoría «próximamente» · cero «Canción del mes» / URLs example |
+| **Producto** | **NO LANZADO** — UI parcial habilitada en nav ≠ Comunidad lanzada |
+| **Backend / communityAccess** | **NO tocado** |
+| **Docs** | `flows/05` · `flows/README` · handoff · DECISIONS |
+| **Commit / push** | **NO** — pendiente `OK commit` Juan |
 
 ## Hito — Oleada E · Higiene de ingeniería (28 Jul 2026 · final del plan de oleadas)
 
@@ -284,7 +297,7 @@
 | **Badge / focus** | ✅ `pathPresentation` · sin pedagogía inventada |
 | **pathLabel / Mes** | ✅ `Module.order` · **no** índice de array |
 | **node.duration** | ✅ vacío (sin minutos inventados por exercises) |
-| **Comunidad header** | ✅ bloqueada · modal **fuera del MVP actual** → T-MVP-COMMUNITY |
+| **Comunidad header** | ✅ **nav habilitada** (sin candado) · UI parcial · **NO LANZADA** (**D-COMM-BPLUS-001** / B+ 2 Ago 2026) · mocks demo saneados |
 | **Checklist lección** | ✅ visual local + criteria DB |
 | **Seeds / mock path** | ✅ local-only ≠ evidencia productiva · `VITE_USE_PATH_MOCK=false` |
 | **Docs** | ✅ `06` § anti-demo · backlog · changelog · deuda DT-12 |
@@ -594,7 +607,7 @@
 | **Tests app** | **550/550** |
 | **Rama** | `main` · sync con `origin/main` |
 | **Visual D-022C** | ✅ stage demo + suscriptor (paridad microciclo) |
-| **Comunidad MVP** | ✅ mergeado (`d171c20`) · C2/API pendiente |
+| **Comunidad MVP** | ✅ mergeado (`d171c20`) · nav abierta + mocks saneados (**D-COMM-BPLUS-001**) · producto **NO LANZADO** · C2/feed real pendiente |
 | **Rewrites SPA prod** | ✅ `vercel.json` commiteado (`75332fd`) · smoke **2 Jul 2026** |
 
 ### Smoke deploy prod (2 Jul 2026)
@@ -736,7 +749,7 @@ Páginas montadas en `App.tsx` que **no** están detrás de `DEV_LEGACY`:
 | `CourseDetailPage.tsx` | `course-detail` | 🗂️ Legacy activo | Catálogo legacy |
 | `AlbumCoursesPages.tsx` | `album`, `courses` | 🗂️ Legacy activo | Catálogo legacy |
 | `InstrumentCoursesPage.tsx` | `instrument-selector`, `instrument-courses` | 🗂️ Legacy activo | Selector instrumento legacy |
-| `CommunityPage.tsx` | `community` | 🔴 Placeholder | Montada; alcance producto no verificado |
+| `CommunityPage.tsx` | `community` | 🟡 UI parcial | Nav habilitada · empty/próximamente honestos · **NO LANZADA** (B+ 2026-08-02) |
 
 **Solo en `import.meta.env.DEV` (`DEV_LEGACY`):**
 
