@@ -198,9 +198,9 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
   }, [demoFinished, freeCompleted, setPage]);
 
   const handleTabChange = useCallback(
-    (tab: "inicio" | "mi-camino" | "mi-estudio" | "mi-progreso") => {
+    (tab: "inicio" | "mi-camino" | "inscripcion") => {
       if (tab === "inicio") setPage("home");
-      if (tab === "mi-estudio") setPage("inscripcion-gate");
+      if (tab === "inscripcion") setPage("inscripcion-gate");
     },
     [setPage]
   );
@@ -239,7 +239,6 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
     <div className="min-h-screen flex flex-col" style={{ background: GM_BG, color: GM_TEXT }}>
       <DemoAcademyNav
         activeTab="mi-camino"
-        completedCount={completedLessons.length}
         onTabChange={handleTabChange}
       />
 

@@ -13,6 +13,10 @@ import {
 const root = dirname(fileURLToPath(import.meta.url));
 const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
 const demoPageSource = readFileSync(join(root, "./PathDemoPage.tsx"), "utf8");
+const demoNavSource = readFileSync(
+  join(root, "../components/gmusic/DemoAcademyNav.tsx"),
+  "utf8"
+);
 const selectorSource = readFileSync(
   join(root, "../components/music/InteractiveLevelSelector.tsx"),
   "utf8"
@@ -92,6 +96,21 @@ describe("PathDemoPage — camino demo público", () => {
   it("PathDemoPage usa solo DemoAcademyNav (Visual C — sin GmusicInternalHeader)", () => {
     assert.equal(demoPageSource.includes("GmusicInternalHeader"), false);
     assert.equal(demoPageSource.includes("DemoAcademyNav"), true);
+  });
+
+  it("DemoAcademyNav: Inicio · Mi Camino · Inscribirme (sin Mi Progreso ni Mi Estudio falso)", () => {
+    assert.equal(demoNavSource.includes('label: "Inicio"'), true);
+    assert.equal(demoNavSource.includes('label: "Mi Camino"'), true);
+    assert.equal(demoNavSource.includes('label: "Inscribirme"'), true);
+    assert.equal(demoNavSource.includes('label: "Mi Progreso"'), false);
+    assert.equal(demoNavSource.includes('label: "Mi Estudio"'), false);
+    assert.equal(demoNavSource.includes("mi-progreso"), false);
+    assert.equal(demoNavSource.includes('"mi-estudio"'), false);
+    assert.equal(demoNavSource.includes('"inscripcion"'), true);
+    assert.equal(demoPageSource.includes('tab === "inscripcion"'), true);
+    assert.equal(demoPageSource.includes('setPage("inscripcion-gate")'), true);
+    assert.equal(demoPageSource.includes("mi-progreso"), false);
+    assert.equal(demoPageSource.includes('tab === "mi-estudio"'), false);
   });
 
   it("layout teaser: carrusel acotado, banner post-5/5 y FAB secundario", () => {

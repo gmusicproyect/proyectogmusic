@@ -1,23 +1,21 @@
-import { Home, Map, GraduationCap, BarChart2 } from "lucide-react";
+import { Home, Map, UserPlus } from "lucide-react";
 
 const GOLD = "#C9A84C";
 
-type DemoTab = "inicio" | "mi-camino" | "mi-estudio" | "mi-progreso";
+type DemoTab = "inicio" | "mi-camino" | "inscripcion";
 
 interface DemoAcademyNavProps {
   activeTab: DemoTab;
-  completedCount: number;
   onTabChange: (tab: DemoTab) => void;
 }
 
 const TABS = [
   { id: "inicio" as DemoTab, label: "Inicio", Icon: Home },
   { id: "mi-camino" as DemoTab, label: "Mi Camino", Icon: Map },
-  { id: "mi-estudio" as DemoTab, label: "Mi Estudio", Icon: GraduationCap },
-  { id: "mi-progreso" as DemoTab, label: "Mi Progreso", Icon: BarChart2 },
+  { id: "inscripcion" as DemoTab, label: "Inscribirme", Icon: UserPlus },
 ] as const;
 
-export function DemoAcademyNav({ activeTab, completedCount, onTabChange }: DemoAcademyNavProps) {
+export function DemoAcademyNav({ activeTab, onTabChange }: DemoAcademyNavProps) {
   return (
     <nav
       style={{
@@ -34,7 +32,6 @@ export function DemoAcademyNav({ activeTab, completedCount, onTabChange }: DemoA
     >
       {TABS.map(({ id, label, Icon }) => {
         const isActive = activeTab === id;
-        const showBadge = id === "mi-progreso" && completedCount > 0;
         return (
           <button
             key={id}
@@ -60,24 +57,6 @@ export function DemoAcademyNav({ activeTab, completedCount, onTabChange }: DemoA
             <span style={{ fontSize: 10, letterSpacing: "0.8px", textTransform: "uppercase" }}>
               {label}
             </span>
-            {showBadge && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: 8,
-                  right: 12,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: GOLD,
-                  fontFamily: "Inter,sans-serif",
-                  background: "rgba(201,168,76,0.15)",
-                  borderRadius: 8,
-                  padding: "1px 5px",
-                }}
-              >
-                {completedCount}/5
-              </span>
-            )}
           </button>
         );
       })}
