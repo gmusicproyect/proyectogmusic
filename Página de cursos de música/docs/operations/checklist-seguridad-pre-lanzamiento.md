@@ -1,9 +1,9 @@
 # Checklist de seguridad pre-lanzamiento — Gmusic Track A
 
-**Versión:** 1.2 (parcial — B7 prod verificado; A8/A9/CI pendientes)  
-**Fecha:** 2026-07-06  
+**Versión:** 1.3 (SEC-PRELAUNCH 2026-08-03 — A9/B7/15/F4 verificados; audit fix aplicado)
+**Fecha:** 2026-08-03
 **Owner:** Juan (Director) · ejecución auditoría: Cursor  
-**Base repo auditada:** `origin/main` @ `9440e45`
+**Base repo auditada:** `origin/main` @ `d438f84`
 
 ---
 
@@ -32,7 +32,7 @@ Checklist canónico para auditorías read-only antes del lanzamiento público. C
 
 | ID | Criterio | Estado | Evidencia / notas |
 |----|----------|--------|-------------------|
-| **A1** | Archivos `.env` no trackeados en git | **OK** | Solo `.env.example` en `git ls-files`; `.gitignore` L11–22 |
+| **A1** | Archivos `.env` reales no trackeados en git | **OK** | Solo `.env.example` y `.env.test` local/Docker trivial en `git ls-files`; `.gitignore` cubre `.env`/`.env.*` con esas dos excepciones explícitas |
 | **A2** | Perímetro CI: gitleaks, env, keys | **OK** | `.github/workflows/security-scan.yml` activo en remoto |
 | **A3** | `.env.example` con placeholders, sin secretos reales | **OK** | `.env.example` L10, L18 — `change-me-*` |
 | **A4** | `JWT_SECRET` no en bundle cliente | **OK** | `src/vite-env.d.ts`; `semestral-checkout-flow.test.ts` L125–133 |
@@ -40,7 +40,7 @@ Checklist canónico para auditorías read-only antes del lanzamiento público. C
 | **A6** | `passwordHash` excluido de respuestas auth | **OK** | `server/services/authService.ts` L33–37 |
 | **A7** | `secureAnswer` filtrado en API lección | **OK** | `server/lib/exercisePublic.ts` L3–11, L60–68 |
 | **A8** | Rotación credenciales Supabase/Render/JWT post-incidente P0 | **NO VERIFICABLE** | Ver [Verificación manual A8](#verificación-manual-a8) |
-| **A9** | Password admin prod distinta de credencial quemada | **NO VERIFICABLE** | Ver [Verificación manual A9](#verificación-manual-a9); incidente `docs/operations/incident-2026-07-02-admin-credential.md` |
+| **A9** | Password admin prod distinta de credencial quemada | **OK** (prod 3 Ago 2026) | 1 fila `role=ADMIN`; comparación bcrypt read-only confirma hash distinto; probe único con clave quemada → 401. Sin imprimir hash ni secretos. Incidente cerrado por adendo. |
 
 ### Verificación manual A8
 
@@ -65,10 +65,10 @@ JP en dashboards (no asumir “creo que sí”):
 
 | Campo | Valor |
 |-------|-------|
-| Verificado por | _pendiente Juan_ |
-| Fecha | _pendiente_ |
-| Login clave nueva OK | ☐ |
-| Login clave vieja rechazado | ☐ |
+| Verificado por | Cursor (consulta read-only + probe prod; autorización Juan «hazlo tu») |
+| Fecha | **2026-08-03** |
+| Fila ADMIN con hash distinto | ☑ |
+| Login clave vieja rechazado | ☑ (401 `INVALID_CREDENTIALS`, 2.2 s) |
 
 ---
 
@@ -82,7 +82,7 @@ JP en dashboards (no asumir “creo que sí”):
 | **B4** | Registro no crea Subscription automática | **OK** | `authService.ts` L24–38 |
 | **B5** | CORS allowlist explícito | **OK** | `server/lib/cors.ts` L20–28 |
 | **B6** | Rate limiting / brute-force en auth | **HALLAZGO** (medio) | Sin `rateLimit`/`helmet` en `server/` — **backlog**, fuera de bloque F19 |
-| **B7** | Endpoints `/api/v1/dev/*` bloqueados en producción | **OK** | Código: `devActivationGate.ts` L28–31. Prod: curl 6 Jul 2026 → **404** (ver abajo) |
+| **B7** | Endpoints `/api/v1/dev/*` bloqueados en producción | **OK** | Código: `devActivationGate.ts` L28–31. Prod revalidado 3 Ago 2026: `POST /api/v1/dev/activate-semestral` → **404** |
 
 ### Verificación manual B7
 
@@ -97,8 +97,8 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 |-------|-------|
 | HTTP code observado | **404** |
 | Body | `{"error":{"code":"INTERNAL_ERROR","message":"Ruta no encontrada."}}` |
-| Verificado por | Cursor (curl prod) · confirmado JP |
-| Fecha | **2026-07-06** |
+| Verificado por | Cursor (curl prod) |
+| Fecha | **2026-08-03** (revalidación) |
 | Resultado | ☑ OK (404) · ☐ HALLAZGO |
 
 **Observación (no seguridad):** el body usa `"code":"INTERNAL_ERROR"` para un 404; semánticamente sería `NOT_FOUND`. El mensaje genérico es deseable (no revela rutas existentes); solo inconsistencia de código de error — **sin ticket**.
@@ -113,7 +113,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 |----|----------|--------|-------------------|
 | **10** | **IDOR:** alumno no puede leer/escribir progreso de otro manipulando IDs en API | **OK** | Ver [Anexo B — ítem 10](#anexo-b--auditoría-complementaria-2026-07-06-ciclo-2) |
 | **13** | **XSS almacenado Comunidad:** posts sanitizan/escapan HTML | **OK** (post-fix Ciclo 3) | `parseCreateCommunityPostBody.ts` + `normalizeMaterialUrl`; test `parse-create-community-post.test.ts` |
-| **15** | **Errores prod:** respuestas no filtran stack traces | **OK** (código) · **NO VERIFICABLE** (prod) | Ver Anexo B — ítem 15 |
+| **15** | **Errores prod:** respuestas no filtran stack traces | **OK** (código + prod 3 Ago 2026) | Ruta API inexistente → 404 con JSON genérico; sin `stack`, rutas locales ni `node_modules`. Ver Anexo B — ítem 15 |
 | **18** | **Postgres:** cliente no accede directo; todo vía API | **OK** | Ver Anexo B — ítem 18 |
 
 ---
@@ -148,7 +148,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 | ID | Criterio | Estado | Evidencia / notas |
 |----|----------|--------|-------------------|
 | **E1** | `security-scan.yml` en GitHub | **OK** | Remoto: workflow activo |
-| **E2** | `npm audit --omit=dev --audit-level=high` limpio | **HALLAZGO** (medio) | 4 high en cadena `vite` (devDependency) — **backlog** |
+| **E2** | Dependencias auditadas y riesgo runtime atendido | **OK con residual conocido** | `d438f84`: npm audit 12 → 1; Express 4.22.2, React Router 7.18.2 y Vite 6.4.3 (no-major). Residual high: React Router RSC, no importado; eliminación separada T-DEPS-REACT-ROUTER-01. Suite 621/621, build OK, guards exactos 75/75. |
 | **E3** | `package-lock.json` versionado | **OK** (post-fix Ciclo 3) | Lockfile en repo; removido de `.gitignore` |
 | **E4** | Doc/skill alineado con workflows reales | **HALLAZGO** (bajo) | `gmusic-ci-deploy/SKILL.md` vs remoto sin `ci.yml` |
 
@@ -161,7 +161,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST \
 | **F1** | Deploy Vercel + Render auto on push | **OK** (operativo) | Histórico smoke prod JWT OK |
 | **F2** | Prisma baseline prod (R-OPS-01) | **HALLAZGO** (medio) | `.agents/DECISIONS.md` R-OPS-01 |
 | **F3** | Sentry configurado en prod | **NO VERIFICABLE** | JP: env `SENTRY_DSN`, `VITE_SENTRY_DSN` |
-| **F4** | `x-powered-by` deshabilitado | **OK** | `server/app.ts` L17 |
+| **F4** | `x-powered-by` deshabilitado | **OK** | `server/app.ts` L17 + prod revalidado 3 Ago 2026: header ausente; HSTS presente |
 | **F19** | **CI verify** (typecheck → tests → build) en GitHub antes de deploy | **OK** (post-fix Ciclo 3) | `.github/workflows/ci.yml` — CI-on-push; sin branch protection (decisión JP 6 Jul) |
 
 ### F19 — Implicación deploy actual
@@ -233,7 +233,7 @@ Referencia flake: `docs/operations/T-API-01-phase3b2-flaky-concurrency.md` (“B
 | **13** | **Medio** | ~~`external_url` sin http(s)~~ | **Cerrado Ciclo 3** — `normalizeMaterialUrl` |
 | **E3** | **Medio** | ~~Lockfile gitignored~~ | **Cerrado Ciclo 3** — lockfile versionado |
 | **B6** | **Medio** | Sin rate limit auth | Backlog ticket |
-| **E2** | **Medio** | 4 high vite (dev) | Backlog ticket |
+| **E2** | **Medio** | ~~12 vulnerabilidades (1 crítica/7 altas sin clasificar)~~ | **Cerrado en lo sustantivo @ `d438f84`** — 12→1; residual React Router no usado → T-DEPS-REACT-ROUTER-01 |
 | **F2** | **Medio** | R-OPS-01 Prisma baseline | Ops |
 | **E4** | **Bajo** | Doc drift ci.yml | Sync skill |
 | **D4** | **Bajo** | Rewrites SPA no verificados | Smoke deploy JP |
@@ -361,6 +361,7 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 | 1.0 | 2026-07-06 | Checklist versionado + Anexo A (auditoría inicial) + Anexo B (ítems 10, 13, 15, 18) + F19 |
 | 1.1 | 2026-07-06 | Ciclo 3: F19 + E3 + fix 13c (`normalizeMaterialUrl` Comunidad) |
 | 1.2 | 2026-07-06 | B7 prod verificado (404, 6 Jul); observación código error 404; `.env.ci` vía `.gitignore` `.env.*` |
+| 1.3 | 2026-08-03 | SEC-PRELAUNCH: A9/B7/15/F4 prod verificados; INC admin cerrado; audit fix `d438f84` 12→1; acta guards aclara 11 por glob incompleto y reejecución exacta 75/75 post-push |
 
 ---
 
@@ -368,8 +369,9 @@ curl -sS https://gmusic-api.onrender.com/api/v1/ruta-inexistente | jq .
 
 | Ticket | Estado |
 |--------|--------|
-| B6 rate limit | Backlog |
-| E2 npm audit vite | Backlog |
+| B6 rate limit | **Elevado** → T-SEC-RATE-LIMIT-01 (alta pre-lanzamiento; `/auth/*` público) |
+| E2 npm audit | ✅ Cerrado en lo sustantivo @ `d438f84`; residual React Router → micro-ticket de eliminación |
+| Guards focales | T-GUARD-COUNT-01 — lista exacta + assert `total === 75` |
 | Deploy gating Vercel/Render post-CI | Mejora futura |
 | Verificaciones manuales A8, A9, CI BD, 15-prod | Juan — sesión dedicada |
 | B7 curl prod | ✅ Cerrado 2026-07-06 (404) |

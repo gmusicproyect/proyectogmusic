@@ -59,3 +59,19 @@ node --env-file=.env scripts/rotate-admin-password.mjs
 Marcar **CERRADO** cuando Juan confirme: *«rotada y login OK»*.
 
 Próximo paso autorizado tras cierre: **Piloto Bloque 1** — ver `docs/operations/piloto-bloque-1-admin.md`.
+
+---
+
+## Adendo de cierre — 2026-08-03
+
+**Estado vigente:** ✅ **INCIDENTE CERRADO**
+**Frase de acta:** «INC verificado: rotada».
+
+Evidencia read-only ejecutada por Cursor con autorización de Juan («hazlo tu»):
+
+1. Consulta directa a prod: existe exactamente **1** fila `User` con `role=ADMIN`.
+2. Comparación bcrypt en memoria: su `passwordHash` **no corresponde** a la credencial quemada. El hash no se imprimió ni salió del proceso.
+3. Probe único previo contra `POST /api/v1/auth/login` usando la credencial ya pública: **401 `INVALID_CREDENTIALS`** en 2.2 s.
+4. Scan SEC-PRELAUNCH: ningún secreto real nuevo en árbol o historial; `.env` productivo no está trackeado.
+
+El adendo supersede el estado «Base de datos prod 🔴 ABIERTO» de la tabla histórica superior. R-008 permanece vigente: credenciales admin solo en variables de entorno/flujo operativo seguro; nunca en git, UI ni `seed.ts`.

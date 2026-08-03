@@ -1,6 +1,21 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **2 Ago 2026** (Comunidad B+ formalizar abierta · T-FLOW-05 no-repro) · previo **28 Jul 2026 (Oleada E — final)** · base **`main@94471a3` en origin** · en máquina Juan: B→C→guard-fix→D aplicados, **615/615** · **Oleadas B..E LOCAL SIN COMMIT — orden B → C → guard-fix → D → E · OK commit pendiente de Juan**
+Última actualización: **3 Ago 2026** (D-500 cerrado · T-REG-01 prod · SEC-PRELAUNCH · keep-alive) · base **`origin/main@d438f84`** · `app:test` **621/621** · build OK · guards focales exactos **75/75**.
+
+## Hito — Cierre operativo 3 Ago 2026
+
+| Item | Estado |
+|------|--------|
+| **D-500-REGISTER** | ✅ **CERRADO** — Supabase prod pausado → restore → QA prod PASS. Registro: `docs/operations/D-500-REGISTER-2026-08-03.md` @ `fa78a7a`; corrección `RegistroExitoPage` viva @ `57d2d50`. PD-2 continúa bloqueada en prod por R-OPS-01. |
+| **T-REG-01 / D-GOV-16** | ✅ **IMPLEMENTADO Y VERIFICADO EN PROD** @ `2b706a3` — formulario de 4 campos, payload sin `phone`, copy de acceso gratis; server/landing/guards intactos. Flujo registro → éxito → quiz/onboarding → demo y persistencia PASS. |
+| **D-INFRA-DB-01** | ✅ **ACTIVO** @ `78e5c2b` — Vercel cron diario `0 11 * * *` a `/api/v1/health` (`SELECT 1` vía Render/Supabase). Primera corrida programada pendiente de confirmar el **4 Ago 2026 ~11:00 UTC**. Mantiene activa Supabase; **no** garantiza Render caliente (spin-down free tier esperado; primer request puede tardar ~30 s). |
+| **INC-2026-07-02 admin** | ✅ **CERRADO** — prod tiene 1 fila `role=ADMIN`; comparación bcrypt read-only confirma hash distinto de la credencial quemada; probe con clave vieja → 401. Cero hashes/secretos expuestos. |
+| **SEC-PRELAUNCH / audit fix** | ✅ `d438f84` desplegado READY — vulnerabilidades npm **12 → 1**; residual único `react-router` high requiere major y la dependencia no se importa. Pre-push: `app:test` **621/621**, build OK. Guards: el primer comando focal contó **11** por glob incompleto; reejecución exacta post-push **75/75 PASS** (valida la punta acumulada de `main`). Prod: login inexistente 401 en 4.48 s; health caliente 200/DB connected en 0.72 s. |
+| **Backlog seguridad próximo** | **T-SEC-RATE-LIMIT-01** — F-ADITIVA con `express-rate-limit` sobre `/auth/*` (registro/login públicos; B6 elevado). |
+| **Backlog técnico menor** | **T-DEPS-REACT-ROUTER-01** — eliminar dependencia directa no utilizada con verificación propia. **T-GUARD-COUNT-01** — comando de guards con lista exacta + assert que falle si `total !== 75` (evitar falso-verde por glob incompleto). |
+| **Pendientes manuales / producto** | WS4 Mi Estudio (SPEC antes de código) · flicker iPhone en 2 dispositivos · ordenamiento padre + 3C · `connect_timeout` Render · D4/F3 dashboards · URL real video Clase 3. Comunidad/feed, username DB y Supabase Pro siguen estacionados. |
+
+**Nota histórica:** los hitos fechados debajo conservan el estado que era verdadero en su fecha; este bloque superior los supersede como snapshot vigente.
 
 ## Hito — Comunidad B+ · formalizar abierta (2 Ago 2026)
 
