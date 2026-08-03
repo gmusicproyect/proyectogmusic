@@ -1,6 +1,6 @@
 # D-GOV-16 — Registro gratuito liviano; datos formales en inscripción/compra
 
-**Estado:** Propuesta — pendiente aprobación (Juan)  
+**Estado:** Aprobada — 2026-08-02 (Juan)  
 **Fecha:** 2026-06-27  
 **Área:** Producto / UX / Auth / Funnel  
 **Ticket de implementación propuesto:** **T-REG-01** (copy + formulario registro gratis)  
@@ -104,3 +104,13 @@ Archivos futuros (post aprobación): `RegistroCuentaPage.tsx`, tests `public-ses
 1. ¿Aprobar D-GOV-16 como dirección de producto?  
 2. ¿Username en v1 usando solo `name`, o esperar migración `username`?  
 3. ¿Actualizar también `RegistroExitoPage` / login copy para decir «acceso gratis»?
+
+---
+
+## Resolución 2026-08-02
+
+- **Aprobada** como dirección de producto (Juan).
+- **Q2:** `name` como nombre visible interim; **sin campo username** en UI v1. Migración Prisma `username` = ticket futuro aparte (spec + OK explícito).
+- **Q3:** actualizar copy en `RegistroExitoPage` + cadenas propias del login; **sin tocar** copy de landing (D-GOV-15).
+- **T-REG-01** sigue bloqueado por **gate 2**: QA registro en **prod** (incógnito: registro → regalo → quiz → demo). El V1 smoke 2026-08-02 **no** sustituye ese QA.
+- Sin implementación hasta frase explícita de Juan tras QA prod PASS.
