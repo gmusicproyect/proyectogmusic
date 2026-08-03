@@ -140,3 +140,9 @@ Cuarentena y `src`/API **intactos** en este runbook.
 **Schema sync:** `prisma db push` (no `migrate deploy`) por FK UUID/TEXT en migración histórica — documentado en prerrequisitos.
 
 **Commit:** pendiente de `OK commit` / `OK push`.
+
+---
+
+## Nota al pie 2026-08-03 (D-500-REGISTER)
+
+El `ENOTFOUND tenant/user postgres.tosbwmqijmtxchvcgrkj not found` de este GAP era el mismo síntoma del incidente **D-500-REGISTER** (`docs/operations/D-500-REGISTER-2026-08-03.md`): el proyecto Supabase de prod estaba **pausado** (free tier), no un problema exclusivo de la config local. La clasificación (a) «entorno local» queda **incompleta en la causa** — el tenant no respondía para nadie, tampoco para Render en prod. El veredicto D3 (**no regresión de la misión**) permanece **intacto**, y el fix F-ADITIVA `api:test:local` sigue siendo válido y recomendado para tests locales.
