@@ -23,7 +23,9 @@
     "test": "npm run app:test && npm run api:test",
     "verify": "npm run typecheck && npm run test && npm run build",
     "api:test": "NODE_ENV=test node --env-file-if-exists=.env --import tsx --test --test-concurrency=1 server/tests/**/*.test.ts",
-    "app:test": "node --import tsx --test 'src/**/*.test.ts'"
+    "app:test": "node --import tsx --test 'src/**/*.test.ts'",
+    "api:test:local": "bash scripts/api-test-local.sh",
+    "api:test:local:down": "docker compose -f docker-compose.test.yml down -v"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

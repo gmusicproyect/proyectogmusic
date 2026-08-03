@@ -108,3 +108,35 @@ Cuarentena y `src`/API **intactos** en este runbook.
 - [x] Veredicto preexistente vs regresión con evidencia `eb8605e..cff182a`
 - [x] Clasificación (a) + plan marcado como propuesta
 - [x] Único archivo nuevo de diagnóstico; informe de cierre no editado
+
+---
+
+## Resolución 2026-08-02 (tras `OK fix`)
+
+**Ejecutor:** Cursor · **Cita:** Juan pegó exactamente `OK fix`.  
+**Variante F1:** **F-ADITIVA** — CI sí inyecta `secrets.DATABASE_URL`, pero el default del runbook + frase sin `repoint` → script nuevo; `api:test` intacto.
+
+### Cambios (sin tocar `src`/misión/tests existentes)
+
+- `docker-compose.test.yml` — Postgres 16 efímero `:54329`
+- `.env.test` — URI trivial local + pines de alumno ancla
+- `scripts/api-test-local.sh` + `npm run api:test:local` / `:down`
+- `scripts/seed-api-test-local-fixtures.mjs` — ACTIVE sub para fixtures
+- `docs/operations/API-TEST-LOCAL-PRERREQUISITOS.md`
+- `.gitignore` — excepción `!.env.test` (y `!.env.example`)
+
+### Evidencia re-run
+
+| Check | Resultado |
+|---|---|
+| ENOTFOUND / tenant pooler | **0** menciones |
+| `npm run api:test:local` | **297** tests · **296** pass · **1** fail · 0 cancelled |
+| Fail residual | `JWT de ADMIN responde 403` vs producto T-FLOW-01 (ADMIN permitido en `/me/access`) — fuera de alcance GAP |
+| `app:test` | **619/619** |
+| `build` | exit **0** |
+| Guards focales lesson-runner / student-zone | **75/75** |
+| `.env` real | **no tocado** (mtime/size invariantes) |
+
+**Schema sync:** `prisma db push` (no `migrate deploy`) por FK UUID/TEXT en migración histórica — documentado en prerrequisitos.
+
+**Commit:** pendiente de `OK commit` / `OK push`.
