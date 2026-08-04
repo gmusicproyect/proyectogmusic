@@ -1,0 +1,56 @@
+{
+  "ticket": "T-PUB-02 Fase B",
+  "account": "qa-alumno-prod-001@gmusic.test",
+  "nodeId": "d367555e-ba3e-4bb7-a096-ddd5ca6e1d6b",
+  "nodeTitle": "Diagrama de Am: dedos, trastes, cuerdas",
+  "exerciseType": "CHORD_SHAPE",
+  "steps": [
+    {
+      "name": "login",
+      "ok": true,
+      "http": 200
+    },
+    {
+      "name": "path-before-node2",
+      "ok": true,
+      "statusBefore": "active",
+      "title": "Diagrama de Am: dedos, trastes, cuerdas"
+    },
+    {
+      "name": "lesson-session-start",
+      "ok": true,
+      "http": 200,
+      "sessionId": "662b88ec-d28f-491c-8e2b-fc866418d481",
+      "exCount": 1,
+      "exType": "CHORD_SHAPE"
+    },
+    {
+      "name": "attempts-built",
+      "ok": true,
+      "count": 1,
+      "selectedAnswer": "a"
+    },
+    {
+      "name": "lesson-session-complete",
+      "ok": true,
+      "http": 200,
+      "nodeCompleted": true,
+      "xpEarned": 100,
+      "accuracy": 1
+    },
+    {
+      "name": "re-complete-idempotent",
+      "ok": true,
+      "http": 200,
+      "alreadyProcessed": true,
+      "xpEarned": 100
+    },
+    {
+      "name": "path-after-node2-completed",
+      "ok": true,
+      "statusAfter": "completed"
+    }
+  ],
+  "pass": true,
+  "delegatedSmoke": "Juan OK hazlo tu — API E2E prod B3 nodo 2"
+}
