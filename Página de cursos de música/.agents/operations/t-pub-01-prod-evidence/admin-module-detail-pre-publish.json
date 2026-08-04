@@ -1,0 +1,100 @@
+{
+  "module": {
+    "id": "6b36c6ea-db8e-4c0b-addd-e31abdca6290",
+    "order": 4,
+    "title": "Mi menor",
+    "status": "DRAFT",
+    "course": {
+      "id": "d0164f24-079e-4521-b825-460e60ca9024",
+      "slug": "ruta-guitarra-12-meses",
+      "title": "Ruta de Guitarra de 12 Meses"
+    }
+  },
+  "slots": [
+    {
+      "order": 1,
+      "stageType": "FUNDAMENTO_UNO",
+      "stageLabel": "Fundamento uno",
+      "node": {
+        "id": "20324e6f-11cb-4d27-ae6e-dcdf7e2fdadf",
+        "title": "Por qué Em: el acorde de dos dedos",
+        "status": "DRAFT",
+        "videoUrl": null,
+        "guidePdfUrl": null,
+        "guideText": null,
+        "completionCriteria": "El alumno explica por qué Em es el acorde de dos dedos",
+        "ctaLabel": null,
+        "complete": true
+      }
+    },
+    {
+      "order": 2,
+      "stageType": "FUNDAMENTO_DOS",
+      "stageLabel": "Fundamento dos",
+      "node": {
+        "id": "a03cb051-de4a-4e09-91c9-db5a28cae39e",
+        "title": "Diagrama de Em y relación visual con Am",
+        "status": "DRAFT",
+        "videoUrl": null,
+        "guidePdfUrl": null,
+        "guideText": null,
+        "completionCriteria": "Identifica el diagrama de Em y su relación con Am",
+        "ctaLabel": null,
+        "complete": true
+      }
+    },
+    {
+      "order": 3,
+      "stageType": "TECNICA",
+      "stageLabel": "Técnica",
+      "node": {
+        "id": "135068c2-1ba8-407c-8221-146cc6ff0125",
+        "title": "Dos dedos precisos — limpieza de las cuerdas al aire",
+        "status": "DRAFT",
+        "videoUrl": null,
+        "guidePdfUrl": null,
+        "guideText": null,
+        "completionCriteria": "Cada cuerda suena clara al pulsar Em",
+        "ctaLabel": null,
+        "complete": true
+      }
+    },
+    {
+      "order": 4,
+      "stageType": "PRACTICA",
+      "stageLabel": "Práctica",
+      "node": {
+        "id": "a4025b37-515e-472e-801a-57471e05df2c",
+        "title": "Alternar Am / Em lento, sin metrónomo",
+        "status": "DRAFT",
+        "videoUrl": null,
+        "guidePdfUrl": null,
+        "guideText": null,
+        "completionCriteria": "Alterna Am y Em 3 veces seguidas sin ayuda visual",
+        "ctaLabel": null,
+        "complete": true
+      }
+    },
+    {
+      "order": 5,
+      "stageType": "TOCAR",
+      "stageLabel": "Tocar",
+      "node": {
+        "id": "196c9917-df87-4629-8bcb-d7d0d059b394",
+        "title": "Em limpio al pulso + reconocer ambos acordes",
+        "status": "DRAFT",
+        "videoUrl": null,
+        "guidePdfUrl": null,
+        "guideText": null,
+        "completionCriteria": "Em suena limpio 4 tiempos al pulso",
+        "ctaLabel": null,
+        "complete": true
+      }
+    }
+  ],
+  "canPublish": true,
+  "publishBlockReason": null,
+  "completeSlots": 5,
+  "totalSlots": 5,
+  "percentComplete": 100
+}

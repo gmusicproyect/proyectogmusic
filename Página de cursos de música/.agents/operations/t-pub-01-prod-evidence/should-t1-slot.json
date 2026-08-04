@@ -1,0 +1,21 @@
+{
+  "slot": {
+    "node": {
+      "id": "20324e6f-11cb-4d27-ae6e-dcdf7e2fdadf",
+      "moduleId": "6b36c6ea-db8e-4c0b-addd-e31abdca6290",
+      "title": "Por qué Em: el acorde de dos dedos",
+      "order": 1,
+      "status": "DRAFT",
+      "stageType": "FUNDAMENTO_UNO",
+      "videoUrl": null,
+      "guidePdfUrl": "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-pdf/admin/b4/slot-1/pilot-fundamento-1.pdf",
+      "guideText": null,
+      "completionCriteria": "El alumno explica por qué Em es el acorde de dos dedos",
+      "ctaLabel": null,
+      "createdAt": "2026-08-04T17:16:56.818Z",
+      "updatedAt": "2026-08-04T17:19:45.539Z"
+    }
+  },
+  "materialUrl": "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-pdf/admin/b4/slot-1/pilot-fundamento-1.pdf",
+  "objectPath": "admin/b4/slot-1/pilot-fundamento-1.pdf"
+}

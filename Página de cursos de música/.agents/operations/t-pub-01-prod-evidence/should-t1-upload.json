@@ -1,0 +1,10 @@
+{
+  "uploadStatus": 201,
+  "uploadBody": {
+    "kind": "pdf",
+    "bucket": "clases-pdf",
+    "objectPath": "admin/b4/slot-1/pilot-fundamento-1.pdf",
+    "materialUrl": "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-pdf/admin/b4/slot-1/pilot-fundamento-1.pdf"
+  },
+  "prefix": "admin/b4/slot-1"
+}

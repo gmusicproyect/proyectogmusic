@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **4 Ago 2026** (T-URL-FUNNEL-01 cerrado · D-GOV-19 en prod) · base **`origin/main@deee235`** · `app:test` **614/614** · build OK
+Última actualización: **4 Ago 2026** (T-PUB-01 prod 6/6 · T-URL-FUNNEL-01 · T1) · base **`origin/main@ee468b2`** · `app:test` **614/614**
 
 ## Hito — Cierre operativo 3 Ago 2026
 
@@ -21,10 +21,11 @@
 |-------|------|--------|------|
 | ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
 | ~~**2**~~ | ~~**T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**)~~ | ✅ **CERRADO 6/6** @ `deee235` · smoke Juan 4 Ago 2026 | `/clase-gratuita`, `/clase-gratuita/1…5`; redirects **308/301** legacy; `app:test` **614/614** (−8: consolidación tests gate, ver nota cierre) |
-| **3** | **T-PUB-01** | **Siguiente en cola** | Ver `docs/roadmap/t-pub-01-brief.md` · sin reordenar |
+| ~~**3**~~ | ~~**T-PUB-01** — Piloto publicación prod (admin → alumno)~~ | ✅ **CERRADO 6/6** · OK smoke Juan 4 Ago 2026 | Modo B · B4 «Mi menor» (mapa Bloque 2) · path 3→4 · SHOULD T1 slot 1 PDF · `docs/operations/T-PUB-01-prod-cierre-evidencia.md` |
+| **4** | **T-PUB-02** — MicroExercise practicabilidad | **Siguiente en cola** | Spec: `docs/operations/T-PUB-02-fase2a-spec.md` · post T-PUB-01 |
 | ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
-**Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md` · T-URL-FUNNEL-01: criterio binario **6/6** (redirects **308/301**); smoke browser 4 Ago 2026 — `/clase-gratuita`, `/clase-gratuita/1`, `/inscripcion`, `/mi-camino-demo`→`/clase-gratuita` en barra OK; suite **622→614** (−8): 8 tests parametrizados `anonymous-gate-navigation` + 2 duplicados `demo-auth-gate` consolidados al renombrar rutas, +1 `clase-gratuita-routing`, +1 guard `parseClaseGratuitaLessonPage`.
+**Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md` · T-URL-FUNNEL-01 **6/6** · **T-PUB-01 prod** `docs/operations/T-PUB-01-prod-cierre-evidencia.md` **6/6** (B4 «Mi menor», path 3→4, SHOULD T1 `admin/b4/slot-1/`)
 
 **Nota histórica:** los hitos fechados debajo conservan el estado que era verdadero en su fecha; este bloque superior los supersede como snapshot vigente.
 

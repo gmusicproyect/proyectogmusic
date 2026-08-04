@@ -1,0 +1,153 @@
+{
+  "ticket": "T-PUB-01",
+  "mode": "B",
+  "entorno": "prod",
+  "studentEmail": "carlos@gmusic.academy",
+  "adminEmail": "admin@gmusic.academy",
+  "timestamp": "2026-08-04T17:16:54.034Z",
+  "steps": [
+    {
+      "name": "health",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "student-login",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "me-path-before",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "admin-login",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "admin-list-modules",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "create-module",
+      "ok": true,
+      "status": 201
+    },
+    {
+      "name": "draft-invisible-by-id",
+      "ok": true,
+      "draftVisible": false
+    },
+    {
+      "name": "slot-1",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "slot-2",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "slot-3",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "slot-4",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "slot-5",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "can-publish",
+      "ok": true,
+      "canPublish": true,
+      "reason": null
+    },
+    {
+      "name": "publish",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "me-path-after",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "name": "module-visible-after",
+      "ok": true,
+      "moduleCount": 4,
+      "titles": [
+        "Fundamentos",
+        "Acordes abiertos",
+        "Tu primer acorde: La menor",
+        "Mi menor"
+      ]
+    },
+    {
+      "name": "not-mock",
+      "ok": true,
+      "courseId": "d0164f24-079e-4521-b825-460e60ca9024"
+    },
+    {
+      "name": "anonymous-blocked",
+      "ok": true,
+      "status": 401
+    }
+  ],
+  "ids": {
+    "courseIdBefore": "d0164f24-079e-4521-b825-460e60ca9024",
+    "moduleId": "6b36c6ea-db8e-4c0b-addd-e31abdca6290",
+    "moduleOrder": 4,
+    "pathNodeIds": [
+      {
+        "order": 1,
+        "id": "20324e6f-11cb-4d27-ae6e-dcdf7e2fdadf",
+        "title": "Por qué Em: el acorde de dos dedos"
+      },
+      {
+        "order": 2,
+        "id": "a03cb051-de4a-4e09-91c9-db5a28cae39e",
+        "title": "Diagrama de Em y relación visual con Am"
+      },
+      {
+        "order": 3,
+        "id": "135068c2-1ba8-407c-8221-146cc6ff0125",
+        "title": "Dos dedos precisos — limpieza de las cuerdas al aire"
+      },
+      {
+        "order": 4,
+        "id": "a4025b37-515e-472e-801a-57471e05df2c",
+        "title": "Alternar Am / Em lento, sin metrónomo"
+      },
+      {
+        "order": 5,
+        "id": "196c9917-df87-4629-8bcb-d7d0d059b394",
+        "title": "Em limpio al pulso + reconocer ambos acordes"
+      }
+    ],
+    "courseIdAfter": "d0164f24-079e-4521-b825-460e60ca9024"
+  },
+  "modulesBefore": [
+    "Fundamentos",
+    "Acordes abiertos",
+    "Tu primer acorde: La menor"
+  ],
+  "existingModulesSameTitle": [],
+  "modulesAfter": [
+    "Fundamentos",
+    "Acordes abiertos",
+    "Tu primer acorde: La menor",
+    "Mi menor"
+  ],
+  "coursePublished": true
+}

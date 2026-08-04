@@ -1,0 +1,39 @@
+{
+  "course": {
+    "id": "d0164f24-079e-4521-b825-460e60ca9024",
+    "slug": "ruta-guitarra-12-meses",
+    "title": "Ruta de Guitarra de 12 Meses"
+  },
+  "modules": [
+    {
+      "id": "fef87e39-843a-40b0-9afc-4d2d87d00521",
+      "order": 1,
+      "title": "Fundamentos",
+      "status": "PUBLISHED",
+      "listStatus": "published",
+      "completeSlots": 1,
+      "totalSlots": 5,
+      "percentComplete": 20
+    },
+    {
+      "id": "8a4c8dea-613c-4fc7-a7d1-f42ec14e7544",
+      "order": 2,
+      "title": "Acordes abiertos",
+      "status": "PUBLISHED",
+      "listStatus": "published",
+      "completeSlots": 0,
+      "totalSlots": 5,
+      "percentComplete": 0
+    },
+    {
+      "id": "3e98b3f7-be8f-4a62-b267-429829e97008",
+      "order": 3,
+      "title": "Tu primer acorde: La menor",
+      "status": "PUBLISHED",
+      "listStatus": "published",
+      "completeSlots": 5,
+      "totalSlots": 5,
+      "percentComplete": 100
+    }
+  ]
+}

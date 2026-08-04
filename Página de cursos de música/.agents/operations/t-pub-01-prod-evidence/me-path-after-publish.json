@@ -1,0 +1,589 @@
+{
+  "course": {
+    "id": "d0164f24-079e-4521-b825-460e60ca9024",
+    "title": "Ruta de Guitarra de 12 Meses",
+    "slug": "ruta-guitarra-12-meses",
+    "badge": {
+      "instrument": "Guitarra",
+      "month": "Mes 4",
+      "level": "Fundamento"
+    }
+  },
+  "modules": [
+    {
+      "id": "fef87e39-843a-40b0-9afc-4d2d87d00521",
+      "index": 1,
+      "title": "Fundamentos",
+      "focus": "Postura, primeros acordes y escucha del instrumento",
+      "nodesCompleted": 3,
+      "nodesTotal": 3,
+      "nodes": [
+        {
+          "id": "94d0f47c-f493-4ba9-aed4-67aa6f13a5f0",
+          "title": "Tu guitarra y postura",
+          "order": 1,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "video",
+          "videoUrl": "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-video/tu-guitarra-y-postura.mp4",
+          "stageType": "FUNDAMENTO_UNO",
+          "guideText": null,
+          "guidePdfUrl": "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-pdf/tu-guitarra-y-postura.pdf",
+          "completionCriteria": "Completa los ejercicios de postura y partes de la guitarra.",
+          "ctaLabel": null
+        },
+        {
+          "id": "79dd26f6-6831-4fd8-af3c-b5b909394c53",
+          "title": "Primer acorde Am",
+          "order": 2,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": null,
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": null,
+          "ctaLabel": null
+        },
+        {
+          "id": "767d42f1-9c1a-4953-8807-353ab6fedc23",
+          "title": "Escucha el pulso",
+          "order": 3,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": null,
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": null,
+          "ctaLabel": null
+        }
+      ]
+    },
+    {
+      "id": "8a4c8dea-613c-4fc7-a7d1-f42ec14e7544",
+      "index": 2,
+      "title": "Acordes abiertos",
+      "focus": "Formación de acordes y cambios limpios entre posiciones",
+      "nodesCompleted": 2,
+      "nodesTotal": 2,
+      "nodes": [
+        {
+          "id": "2e9bb1ab-5595-4af4-ba9f-f567584c93e4",
+          "title": "Acorde G mayor",
+          "order": 1,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": null,
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": null,
+          "ctaLabel": null
+        },
+        {
+          "id": "61d4126c-12e1-4251-a84b-f29fe7ba01e1",
+          "title": "Progresión Am–Em",
+          "order": 2,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": null,
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": null,
+          "ctaLabel": null
+        }
+      ]
+    },
+    {
+      "id": "3e98b3f7-be8f-4a62-b267-429829e97008",
+      "index": 3,
+      "title": "Tu primer acorde: La menor",
+      "focus": "Formación de acordes y cambios limpios entre posiciones",
+      "nodesCompleted": 5,
+      "nodesTotal": 5,
+      "nodes": [
+        {
+          "id": "5ae7cfd7-d767-450e-883a-7683e3959f75",
+          "title": "Qué es un acorde y por qué Am es la puerta",
+          "order": 1,
+          "status": "completed",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "FUNDAMENTO_UNO",
+          "guideText": "Un acorde es cuando suenan varias cuerdas juntas. Am (La menor) es el primer acorde que aprenderás: suena suave y es ideal para empezar.",
+          "guidePdfUrl": null,
+          "completionCriteria": "El alumno puede explicar con sus palabras qué es un acorde",
+          "ctaLabel": "Continuar"
+        },
+        {
+          "id": "d367555e-ba3e-4bb7-a096-ddd5ca6e1d6b",
+          "title": "Diagrama de Am: dedos, trastes, cuerdas",
+          "order": 2,
+          "status": "completed",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "FUNDAMENTO_DOS",
+          "guideText": "Observa el diagrama de Am: dedo 1 en traste 1 cuerda 2, dedo 2 en traste 2 cuerda 4, dedo 3 en traste 2 cuerda 3. Cuerdas 1 y 5 suenan al aire. Compara con tu mano antes de tocar.",
+          "guidePdfUrl": null,
+          "completionCriteria": "Identifica dedos y trastes del diagrama Am",
+          "ctaLabel": "Continuar"
+        },
+        {
+          "id": "f841a6d3-ea29-4ffb-92bb-4143623c8483",
+          "title": "Presión limpia sin trasteo",
+          "order": 3,
+          "status": "completed",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "TECNICA",
+          "guideText": "Coloca Am y pulsa cada cuerda una por una, de la 6 a la 1. Si alguna suena apagada o zumbida, corrige presión o acerca el dedo al traste.",
+          "guidePdfUrl": null,
+          "completionCriteria": "Cada cuerda suena clara al pulsar el acorde",
+          "ctaLabel": "Continuar"
+        },
+        {
+          "id": "70fd3e41-16bc-4a5b-841b-070d487cc687",
+          "title": "Armar el acorde por cuerdas",
+          "order": 4,
+          "status": "completed",
+          "duration": "3 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": "PRACTICA",
+          "guideText": "Quita la mano del mástil. Vuelve a colocar los dedos en este orden: 3 → 2 → 1. Comprueba que Am suena antes de repetir. Hazlo 3 veces seguidas.",
+          "guidePdfUrl": null,
+          "completionCriteria": "Arma Am 3 veces seguidas sin ayuda visual",
+          "ctaLabel": "Continuar"
+        },
+        {
+          "id": "c89cc269-a28e-4089-8b76-3ecc0cc85b35",
+          "title": "Am al pulso",
+          "order": 5,
+          "status": "completed",
+          "duration": "6 min",
+          "contentKind": "audio_lab",
+          "videoUrl": null,
+          "stageType": "TOCAR",
+          "guideText": "Toca Am con rasgueo hacia abajo, un golpe por tiempo. Mantén el pulso constante durante 4 tiempos. Si alguna cuerda falla, para, corrige y vuelve a intentar.",
+          "guidePdfUrl": null,
+          "completionCriteria": "Am suena limpio 4 tiempos al pulso",
+          "ctaLabel": "Continuar"
+        }
+      ]
+    },
+    {
+      "id": "6b36c6ea-db8e-4c0b-addd-e31abdca6290",
+      "index": 4,
+      "title": "Mi menor",
+      "focus": "Formación de acordes y cambios limpios entre posiciones",
+      "nodesCompleted": 0,
+      "nodesTotal": 5,
+      "nodes": [
+        {
+          "id": "20324e6f-11cb-4d27-ae6e-dcdf7e2fdadf",
+          "title": "Por qué Em: el acorde de dos dedos",
+          "order": 1,
+          "status": "active",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "FUNDAMENTO_UNO",
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": "El alumno explica por qué Em es el acorde de dos dedos",
+          "ctaLabel": null
+        },
+        {
+          "id": "a03cb051-de4a-4e09-91c9-db5a28cae39e",
+          "title": "Diagrama de Em y relación visual con Am",
+          "order": 2,
+          "status": "locked",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "FUNDAMENTO_DOS",
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": "Identifica el diagrama de Em y su relación con Am",
+          "ctaLabel": null
+        },
+        {
+          "id": "135068c2-1ba8-407c-8221-146cc6ff0125",
+          "title": "Dos dedos precisos — limpieza de las cuerdas al aire",
+          "order": 3,
+          "status": "locked",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "TECNICA",
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": "Cada cuerda suena clara al pulsar Em",
+          "ctaLabel": null
+        },
+        {
+          "id": "a4025b37-515e-472e-801a-57471e05df2c",
+          "title": "Alternar Am / Em lento, sin metrónomo",
+          "order": 4,
+          "status": "locked",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "PRACTICA",
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": "Alterna Am y Em 3 veces seguidas sin ayuda visual",
+          "ctaLabel": null
+        },
+        {
+          "id": "196c9917-df87-4629-8bcb-d7d0d059b394",
+          "title": "Em limpio al pulso + reconocer ambos acordes",
+          "order": 5,
+          "status": "locked",
+          "duration": "3 min",
+          "contentKind": "video",
+          "videoUrl": null,
+          "stageType": "TOCAR",
+          "guideText": null,
+          "guidePdfUrl": null,
+          "completionCriteria": "Em suena limpio 4 tiempos al pulso",
+          "ctaLabel": null
+        }
+      ]
+    }
+  ],
+  "activeNodeId": "20324e6f-11cb-4d27-ae6e-dcdf7e2fdadf",
+  "onboarding": {
+    "required": true,
+    "completed": false,
+    "currentMonth": null,
+    "firstUnitId": null,
+    "nextCardId": null,
+    "instrument": null,
+    "activeRutaSlug": null
+  },
+  "learnerContext": {
+    "accountId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+    "profileId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+    "email": "carlos@gmusic.academy",
+    "displayName": "Carlos",
+    "role": "STUDENT",
+    "accountTier": "DEMO",
+    "instrument": null,
+    "currentMonth": null,
+    "weeklyGoalMinutes": null,
+    "activeRutaSlug": null,
+    "activeRutaVersion": null,
+    "onboardingCompleted": false,
+    "firstUnitId": null,
+    "nextCardId": null,
+    "learningGoal": null
+  },
+  "entitlements": {
+    "accountId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+    "profileId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+    "billingStatus": "active",
+    "catalogPlanId": "subscriber",
+    "grants": {
+      "monthsPlayable": [
+        1,
+        2
+      ],
+      "monthsVisible": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "libraryTier": "basic",
+      "communityAccess": false,
+      "maxProfiles": 1,
+      "canStartPractice": true,
+      "features": {
+        "premiumLibrary": false,
+        "community": false
+      }
+    },
+    "derecho": {
+      "id": "derecho:d20b005e-7a93-43d4-b0f0-dc8609da49f5:subscriber",
+      "accountId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+      "profileScope": "account_default_h1",
+      "source": "purchase",
+      "planId": "subscriber",
+      "grants": {
+        "monthsPlayable": [
+          1,
+          2
+        ],
+        "monthsVisible": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "libraryTier": "basic",
+        "communityAccess": false,
+        "maxProfiles": 1,
+        "canStartPractice": true,
+        "features": {
+          "premiumLibrary": false,
+          "community": false
+        }
+      },
+      "validFrom": null,
+      "validUntil": "2027-01-09T16:22:33.377Z",
+      "status": "ACTIVE"
+    }
+  },
+  "pathViewH1": {
+    "profileId": "d20b005e-7a93-43d4-b0f0-dc8609da49f5",
+    "ruta": {
+      "slug": "guitarra-fundamentos",
+      "version": 1,
+      "title": "Guitarra fundamentos"
+    },
+    "months": [
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m01",
+        "monthIndex": 1,
+        "title": "Mes 1 deep",
+        "depth": "deep",
+        "status": "available",
+        "percentCompleted": 0,
+        "blocker": null
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m02",
+        "monthIndex": 2,
+        "title": "Mes 2 deep",
+        "depth": "deep",
+        "status": "available",
+        "percentCompleted": 0,
+        "blocker": null
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m03",
+        "monthIndex": 3,
+        "title": "Mes 3 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 3",
+          "reason": "El Mes 3 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m04",
+        "monthIndex": 4,
+        "title": "Mes 4 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 4",
+          "reason": "El Mes 4 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m05",
+        "monthIndex": 5,
+        "title": "Mes 5 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 5",
+          "reason": "El Mes 5 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m06",
+        "monthIndex": 6,
+        "title": "Mes 6 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 6",
+          "reason": "El Mes 6 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m07",
+        "monthIndex": 7,
+        "title": "Mes 7 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 7",
+          "reason": "El Mes 7 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m08",
+        "monthIndex": 8,
+        "title": "Mes 8 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 8",
+          "reason": "El Mes 8 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m09",
+        "monthIndex": 9,
+        "title": "Mes 9 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 9",
+          "reason": "El Mes 9 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m10",
+        "monthIndex": 10,
+        "title": "Mes 10 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 10",
+          "reason": "El Mes 10 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m11",
+        "monthIndex": 11,
+        "title": "Mes 11 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 11",
+          "reason": "El Mes 11 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      },
+      {
+        "id": "ruta:guitarra-fundamentos:v1/m12",
+        "monthIndex": 12,
+        "title": "Mes 12 summary",
+        "depth": "summary",
+        "status": "locked",
+        "percentCompleted": 0,
+        "blocker": {
+          "code": "DEPTH_SUMMARY",
+          "requirement": "Contenido deep del Mes 12",
+          "reason": "El Mes 12 está visible como mapa anual, pero aún no está jugable en MVP.",
+          "actionLabel": "Ver mes actual",
+          "actionTarget": null
+        }
+      }
+    ],
+    "activeMonthIndex": null,
+    "activeUnit": null,
+    "cards": [],
+    "nextPractice": null,
+    "blockers": [
+      {
+        "code": "ONBOARDING",
+        "requirement": "Completar diagnóstico inicial",
+        "reason": "Mi Camino necesita tu punto de partida antes de recomendar una práctica.",
+        "actionLabel": "Completar diagnóstico",
+        "actionTarget": "/onboarding"
+      }
+    ],
+    "links": {
+      "progress": "/mi-progreso",
+      "library": "/biblioteca"
+    },
+    "meta": {
+      "weeklyGoalMinutes": null,
+      "learningGoal": null,
+      "eventSource": "memory_bridge_h1"
+    }
+  },
+  "entitlementBlockers": [
+    {
+      "code": "ENTITLEMENT",
+      "monthIndex": 3,
+      "requirement": "Plan que incluye el Mes 3",
+      "reason": "Mes 3 visible pero no jugable con tu acceso actual.",
+      "actionLabel": "Ver planes",
+      "actionTarget": "/#planes"
+    },
+    {
+      "code": "ENTITLEMENT",
+      "monthIndex": 4,
+      "requirement": "Plan que incluye el Mes 4",
+      "reason": "Mes 4 visible pero no jugable con tu acceso actual.",
+      "actionLabel": "Ver planes",
+      "actionTarget": "/#planes"
+    },
+    {
+      "code": "ENTITLEMENT",
+      "monthIndex": 5,
+      "requirement": "Plan que incluye el Mes 5",
+      "reason": "Mes 5 visible pero no jugable con tu acceso actual.",
+      "actionLabel": "Ver planes",
+      "actionTarget": "/#planes"
+    }
+  ]
+}
