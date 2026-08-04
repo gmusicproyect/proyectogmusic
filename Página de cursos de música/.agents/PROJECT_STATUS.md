@@ -1,6 +1,19 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **4 Ago 2026** (T-PUB-01 prod 6/6 · T-URL-FUNNEL-01 · T1) · base **`origin/main@ee468b2`** · `app:test` **614/614**
+Última actualización: **4 Ago 2026** (hito columna vertebral prod · T-PUB-01 6/6) · base **`origin/main@795d348`** · `app:test` **614/614**
+
+## Hito — 4 Ago 2026 · columna vertebral prod
+
+| Cierre | Qué quedó en prod |
+|--------|-------------------|
+| **T1 Storage** | Buckets privados · signed URL · upload `/admin` · demo PDF |
+| **Rediseño demo** | Vista «Conoce tu guitarra» pulida |
+| **T-URL-FUNNEL-01** | URLs producto `/clase-gratuita` · redirects 308 legacy |
+| **T-PUB-01** | Pipeline publish certificado · B4 «Mi menor» (mapa Bloque 2) · path 3→4 · SHOULD T1 `admin/b4/slot-1/` |
+
+**Estado:** academia como servicio — suscriptor ve contenido protegido; funnel con URLs de producto; admin publica → alumno ve en `/mi-camino`. Esqueleto certificado; material real entra por `/admin` (placeholders reemplazables sin código).
+
+**Ops pendiente:** `ADMIN_PASSWORD_RESET_KEY` en Render (manual · post-cierre). **Siguiente ticket:** T-PUB-02 (handoff bajo demanda).
 
 ## Hito — Cierre operativo 3 Ago 2026
 
