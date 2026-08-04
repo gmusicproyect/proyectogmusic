@@ -1,0 +1,54 @@
+{
+  "ticket": "T-PUB-02 Fase A",
+  "incident": "INC-2026-08-04-schema-drift-pd2",
+  "timestampUtc": "2026-08-04T17:32:18Z",
+  "authorization": "OK migrate prod PD-2 — Juan 2026-08-04",
+  "backup": {
+    "method": "pg_dump -Fc --no-owner --no-acl",
+    "client": "postgresql@17.10 (Homebrew)",
+    "path": "/Users/juanlizamah/gmusic-prod-backups/gmusic-prod-full-20260804T173107Z.dump",
+    "sizeBytes": 279552,
+    "outsideRepo": true,
+    "note": "Supabase Free — no dashboard snapshot assumed"
+  },
+  "migrateStatusBefore": {
+    "appliedCount": 7,
+    "pending": ["20260717120000_pd2_durable_persistence_h1"],
+    "pendingAssessment": "additive only — ADD COLUMN nullable, CREATE TABLE, no DROP"
+  },
+  "migrateDeploy": {
+    "command": "npx prisma migrate deploy",
+    "exitCode": 0,
+    "applied": ["20260717120000_pd2_durable_persistence_h1"]
+  },
+  "migrateStatusAfter": "Database schema is up to date! (8/8)",
+  "lessonSessionColumnsAfter": [
+    "id",
+    "userId",
+    "nodeId",
+    "status",
+    "accuracy",
+    "xpEarned",
+    "streakUpdated",
+    "startedAt",
+    "completedAt",
+    "content_snapshot",
+    "content_version"
+  ],
+  "verification": {
+    "account": "qa-alumno-prod-001@gmusic.test",
+    "nodeId": "d367555e-ba3e-4bb7-a096-ddd5ca6e1d6b",
+    "nodeTitle": "Diagrama de Am: dedos, trastes, cuerdas",
+    "module": "Tu primer acorde: La menor (B3)",
+    "loginHttp": 200,
+    "lessonSessionHttp": 201,
+    "sessionId": "662b88ec-d28f-491c-8e2b-fc866418d481",
+    "exercisesLength": 1,
+    "exerciseType": "CHORD_SHAPE",
+    "pass": true
+  },
+  "findings": {
+    "b3Node1CompletedAnomaly": "qa-alumno B3 nodo 1 status completed — not investigated this ticket",
+    "phaseB": "UI smoke nodo 2 — Juan — no progress reset"
+  }
+}

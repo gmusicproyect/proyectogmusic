@@ -13,7 +13,7 @@
 
 **Estado:** academia como servicio — suscriptor ve contenido protegido; funnel con URLs de producto; admin publica → alumno ve en `/mi-camino`. Esqueleto certificado; material real entra por `/admin` (placeholders reemplazables sin código).
 
-**Ops pendiente:** `ADMIN_PASSWORD_RESET_KEY` en Render (manual · post-cierre). **Siguiente ticket:** T-PUB-02 (handoff bajo demanda).
+**Ops pendiente:** `ADMIN_PASSWORD_RESET_KEY` en Render (manual · post-cierre). **T-PUB-02:** Fase A PD-2 migrate ✅ 4 Ago 2026 · Fase B smoke UI Juan pendiente.
 
 ## Hito — Cierre operativo 3 Ago 2026
 
@@ -35,7 +35,7 @@
 | ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
 | ~~**2**~~ | ~~**T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**)~~ | ✅ **CERRADO 6/6** @ `deee235` · smoke Juan 4 Ago 2026 | `/clase-gratuita`, `/clase-gratuita/1…5`; redirects **308/301** legacy; `app:test` **614/614** (−8: consolidación tests gate, ver nota cierre) |
 | ~~**3**~~ | ~~**T-PUB-01** — Piloto publicación prod (admin → alumno)~~ | ✅ **CERRADO 6/6** · OK smoke Juan 4 Ago 2026 | Modo B · B4 «Mi menor» (mapa Bloque 2) · path 3→4 · SHOULD T1 slot 1 PDF · `docs/operations/T-PUB-01-prod-cierre-evidencia.md` |
-| **4** | **T-PUB-02** — MicroExercise practicabilidad | **Siguiente en cola** | Spec: `docs/operations/T-PUB-02-fase2a-spec.md` · post T-PUB-01 |
+| **4** | **T-PUB-02** — MicroExercise practicabilidad | **Fase A ✅ · Fase B smoke UI pendiente** | PD-2 prod migrate 4 Ago · `INC-2026-08-04-schema-drift-pd2.md` · lesson-sessions 201 verificado API |
 | ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
 **Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md` · T-URL-FUNNEL-01 **6/6** · **T-PUB-01 prod** `docs/operations/T-PUB-01-prod-cierre-evidencia.md` **6/6** (B4 «Mi menor», path 3→4, SHOULD T1 `admin/b4/slot-1/`)
