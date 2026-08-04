@@ -14,6 +14,8 @@ interface VideoPlayerLessonProps {
   videoUrl?: string;
   /** MP4 u otro video nativo (p. ej. URL firmada de Supabase Storage). */
   nativeVideoSrc?: string;
+  /** Oculta el CTA interno de “He terminado…” (p. ej. demo con CTAs externos). */
+  hideWatchButton?: boolean;
   cinemaMode?: boolean;
   onCinemaToggle?: () => void;
   onPlaybackComplete?: () => void;
@@ -25,7 +27,7 @@ function formatTime(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
-export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, videoUrl, nativeVideoSrc, cinemaMode, onCinemaToggle, onPlaybackComplete }: VideoPlayerLessonProps) {
+export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, videoUrl, nativeVideoSrc, hideWatchButton = false, cinemaMode, onCinemaToggle, onPlaybackComplete }: VideoPlayerLessonProps) {
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0-100
   const [hovered, setHovered] = useState(false);
@@ -354,7 +356,7 @@ export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, vide
       {/* Video title bar */}
       <div style={{
         background: "#0D0D0D", border: `1px solid ${BORDER}`, borderTop: "none",
-        borderRadius: videoUrl || nativeVideoSrc ? "0" : "0 0 4px 4px", padding: "14px 18px",
+        borderRadius: videoUrl || nativeVideoSrc ? (hideWatchButton ? "0 0 4px 4px" : "0") : "0 0 4px 4px", padding: "14px 18px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
         <div>
@@ -372,7 +374,7 @@ export function VideoPlayerLesson({ title, subtitle, duration, lessonLabel, vide
       </div>
 
       {/* Watch confirmation button — only shown in YouTube iframe mode */}
-      {(videoUrl || nativeVideoSrc) && (
+      {!hideWatchButton && (videoUrl || nativeVideoSrc) && (
         <button
           type="button"
           onClick={handleWatchConfirm}

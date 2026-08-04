@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
-import { LessonMaterialTabs } from "../components/gmusic/lesson/LessonMaterialTabs";
+import { Check, FileText, X } from "lucide-react";
+import { VideoPlayerLesson } from "../components/dashboard/VideoPlayerLesson";
 import { MultipleChoiceExercise } from "../components/gmusic/lesson/MultipleChoiceExercise";
 import { Ex1Cuerdas } from "../components/dashboard/exercises/Ex1Cuerdas";
 import { ExPulsoAire } from "../components/dashboard/exercises/ExPulsoAire";
@@ -11,8 +11,11 @@ import { DEMO_LESSONS } from "../data/demo-lessons";
 import { playFreeFundamentoSuccessFeedback } from "../utils/free-fundamento-lesson";
 import { analytics } from "../utils/analytics";
 import { isPrivateSupabaseStorageMaterialUrl } from "../utils/supabase-storage";
+import { toYoutubeNocookieEmbedUrl } from "../utils/youtube-embed";
 import type { ParsedExerciseView } from "../components/gmusic/lesson/lesson-runner-types";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
+
+const DEMO_BORDER = "rgba(255,255,255,0.08)";
 
 type DemoPhase = "video" | "exercise" | "success";
 
@@ -154,6 +157,10 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
     ? null
     : lesson?.guidePdfUrl ?? null;
   const resolvedPdfUrl = signedPdf.resolvedUrl ?? publicPdfUrl;
+  const demoEmbedUrl = useMemo(
+    () => toYoutubeNocookieEmbedUrl(lesson?.videoUrl ?? "") ?? lesson?.videoUrl ?? "",
+    [lesson?.videoUrl]
+  );
 
   useEffect(() => {
     if (!lesson) setPage("mi-camino-demo");
@@ -206,8 +213,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
     (phase === "video" && videoComplete) ||
     (phase === "exercise" && isMcq && mcqResolved);
 
-  const showFooter =
-    phase !== "success" && !(phase === "exercise" && !isMcq);
+  const showFooter = phase === "exercise" && isMcq;
 
   return (
     <div
@@ -319,34 +325,176 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
+                style={{
+                  border: `1px solid ${DEMO_BORDER}`,
+                  borderRadius: 4,
+                  overflow: "hidden",
+                  background: "#0A0A0A",
+                }}
               >
-                {signedPdf.error ? (
-                  <p
+                <VideoPlayerLesson
+                  title={lesson.videoTitle}
+                  subtitle={lesson.videoSubtitle}
+                  duration={lesson.videoDuration}
+                  lessonLabel={`Clase ${lessonId} · Fundamento`}
+                  videoUrl={demoEmbedUrl}
+                  hideWatchButton
+                  onPlaybackComplete={() => setVideoComplete(true)}
+                />
+
+                <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+                  {signedPdf.error ? (
+                    <p
+                      style={{
+                        margin: 0,
+                        padding: "12px 14px",
+                        borderRadius: 4,
+                        border: "1px solid rgba(248,113,113,0.25)",
+                        background: "rgba(40,18,18,0.55)",
+                        color: TEXT_SEC,
+                        fontSize: 14,
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      {signedPdf.error}
+                    </p>
+                  ) : null}
+
+                  {resolvedPdfUrl && !signedPdf.loading ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 16,
+                        padding: "14px 16px",
+                        borderRadius: 4,
+                        border: `1px solid ${DEMO_BORDER}`,
+                        background: "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                        <FileText
+                          size={18}
+                          strokeWidth={1.75}
+                          color={GOLD}
+                          aria-hidden="true"
+                          style={{ flexShrink: 0 }}
+                        />
+                        <span
+                          style={{
+                            fontSize: 13,
+                            lineHeight: 1.45,
+                            color: "rgba(245,240,232,0.82)",
+                            fontFamily: "Inter, sans-serif",
+                          }}
+                        >
+                          También tienes la guía PDF de esta clase
+                        </span>
+                      </div>
+                      <a
+                        href={resolvedPdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          flexShrink: 0,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: 40,
+                          padding: "0 16px",
+                          borderRadius: 2,
+                          border: `1px solid rgba(201,168,76,0.45)`,
+                          background: "transparent",
+                          color: GOLD,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          letterSpacing: "0.12em",
+                          textTransform: "uppercase",
+                          fontFamily: "Inter, sans-serif",
+                          textDecoration: "none",
+                        }}
+                      >
+                        Ver guía PDF
+                      </a>
+                    </div>
+                  ) : signedPdf.loading ? (
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 13,
+                        color: TEXT_SEC,
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      Preparando la guía PDF…
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => setVideoComplete(true)}
+                    disabled={videoComplete}
                     style={{
-                      margin: "0 0 12px",
-                      padding: "12px 14px",
-                      borderRadius: 8,
-                      border: "1px solid rgba(248,113,113,0.25)",
-                      background: "rgba(40,18,18,0.55)",
-                      color: TEXT_SEC,
-                      fontSize: 14,
+                      width: "100%",
+                      minHeight: 48,
+                      borderRadius: 2,
+                      border: `1px solid ${videoComplete ? "rgba(88,204,2,0.35)" : "rgba(255,255,255,0.14)"}`,
+                      background: videoComplete ? "rgba(88,204,2,0.06)" : "transparent",
+                      color: videoComplete ? "rgba(88,204,2,0.85)" : WHITE_WARM,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
                       fontFamily: "Inter, sans-serif",
+                      cursor: videoComplete ? "default" : "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
                     }}
                   >
-                    {signedPdf.error}
-                  </p>
-                ) : null}
-                <LessonMaterialTabs
-                  nodeTitle={lesson.videoTitle}
-                  nodeDescription={lesson.subtitle}
-                  stageLabel={`Clase ${lessonId} · Fundamento`}
-                  durationLabel={lesson.videoDuration}
-                  videoUrl={lesson.videoUrl}
-                  embedUrl={lesson.videoUrl}
-                  guidePdfUrl={resolvedPdfUrl}
-                  pdfLoading={signedPdf.loading}
-                  onVideoPlaybackComplete={() => setVideoComplete(true)}
-                />
+                    <Check size={16} strokeWidth={2} aria-hidden="true" />
+                    {videoComplete ? "Video marcado como visto" : "He terminado de ver este video"}
+                  </button>
+
+                  {!videoComplete ? (
+                    <p
+                      style={{
+                        margin: 0,
+                        textAlign: "center",
+                        fontSize: 12,
+                        lineHeight: 1.5,
+                        color: "rgba(255,255,255,0.38)",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      Marca el video como visto para continuar
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    disabled={!videoComplete}
+                    onClick={handleContinue}
+                    style={{
+                      width: "100%",
+                      minHeight: 48,
+                      borderRadius: 2,
+                      border: "none",
+                      background: GOLD,
+                      color: "#080808",
+                      opacity: videoComplete ? 1 : 0.4,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      fontFamily: "Inter, sans-serif",
+                      cursor: videoComplete ? "pointer" : "not-allowed",
+                    }}
+                  >
+                    Continuar al ejercicio →
+                  </button>
+                </div>
               </motion.div>
             )}
 

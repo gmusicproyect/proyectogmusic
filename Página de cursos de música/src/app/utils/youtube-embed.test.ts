@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isLessonVideoUrl, toYoutubeEmbedUrl } from "./youtube-embed";
+import { isLessonVideoUrl, toYoutubeEmbedUrl, toYoutubeNocookieEmbedUrl } from "./youtube-embed";
 
 describe("youtube-embed", () => {
   it("convierte watch URL a embed", () => {
@@ -14,6 +14,13 @@ describe("youtube-embed", () => {
     assert.equal(
       toYoutubeEmbedUrl("https://www.youtube.com/embed/abc123XYZ12"),
       "https://www.youtube.com/embed/abc123XYZ12"
+    );
+  });
+
+  it("convierte embed demo a youtube-nocookie", () => {
+    assert.equal(
+      toYoutubeNocookieEmbedUrl("https://www.youtube.com/embed/abc123XYZ12"),
+      "https://www.youtube-nocookie.com/embed/abc123XYZ12"
     );
   });
 
