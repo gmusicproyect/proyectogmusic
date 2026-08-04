@@ -4,6 +4,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 import {
+  CLASE_GRATUITA_MAP_PAGE,
+  claseGratuitaLessonPage,
+} from "./clase-gratuita-routing";
+import {
   getInitialPageFromPath,
   initStudentZoneRouting,
   navigateStudentZoneAware,
@@ -22,12 +26,12 @@ const AUTH_PAGES = [
 
 const DEMO_PAGES = [
   ["onboarding-quiz", "/quiz-temperamento"],
-  ["mi-camino-demo", "/mi-camino-demo"],
-  ["demo-clase-1", "/demo-clase-1"],
-  ["demo-clase-2", "/demo-clase-2"],
-  ["demo-clase-3", "/demo-clase-3"],
-  ["demo-clase-4", "/demo-clase-4"],
-  ["demo-clase-5", "/demo-clase-5"],
+  [CLASE_GRATUITA_MAP_PAGE, "/clase-gratuita"],
+  [claseGratuitaLessonPage(1), "/clase-gratuita/1"],
+  [claseGratuitaLessonPage(2), "/clase-gratuita/2"],
+  [claseGratuitaLessonPage(3), "/clase-gratuita/3"],
+  [claseGratuitaLessonPage(4), "/clase-gratuita/4"],
+  [claseGratuitaLessonPage(5), "/clase-gratuita/5"],
   ["inscripcion-gate", "/inscripcion"],
 ] as const;
 
@@ -170,11 +174,11 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
     });
   });
 
-  it("carga directa /demo-clase-3 → demo-clase-3", () => {
-    const result = withMockLocation("/demo-clase-3", () => {
-      assert.equal(getInitialPageFromPath(), "demo-clase-3");
+  it("carga directa /clase-gratuita/3 → clase-gratuita-3", () => {
+    const result = withMockLocation("/clase-gratuita/3", () => {
+      assert.equal(getInitialPageFromPath(), claseGratuitaLessonPage(3));
     });
-    assert.equal(result.pathname, "/demo-clase-3");
+    assert.equal(result.pathname, "/clase-gratuita/3");
   });
 
   it("carga directa /onboarding-academia y fundamento-free-lesson", () => {
@@ -189,12 +193,12 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
 
   it("initStudentZoneRouting aplica resolvePage al cargar pathname", () => {
     let nextPage = "home";
-    withMockLocation("/mi-camino-demo", () => {
+    withMockLocation("/clase-gratuita", () => {
       const cleanup = initStudentZoneRouting(
         (page) => {
           nextPage = page;
         },
-        (page) => (page === "mi-camino-demo" ? "registro-cuenta" : page)
+        (page) => (page === CLASE_GRATUITA_MAP_PAGE ? "registro-cuenta" : page)
       );
       cleanup();
     });
@@ -203,25 +207,25 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
 });
 
 describe("student-zone-routing — navigateStudentZoneAware", () => {
-  it("navega demo-clase-2 con pushState", () => {
+  it("navega clase-gratuita-2 con pushState", () => {
     let nextPage = "home";
     const result = withMockLocation("/", () => {
-      navigateStudentZoneAware("demo-clase-2", (page) => {
+      navigateStudentZoneAware(claseGratuitaLessonPage(2), (page) => {
         nextPage = page;
       }, "home");
     });
 
-    assert.equal(nextPage, "demo-clase-2");
-    assert.equal(result.pathname, "/demo-clase-2");
-    assert.deepEqual(result.pushCalls, ["/demo-clase-2"]);
+    assert.equal(nextPage, claseGratuitaLessonPage(2));
+    assert.equal(result.pathname, "/clase-gratuita/2");
+    assert.deepEqual(result.pushCalls, ["/clase-gratuita/2"]);
   });
 
   it("salida demo → home deja URL en /", () => {
-    let nextPage = "mi-camino-demo";
-    const result = withMockLocation("/mi-camino-demo", () => {
+    let nextPage = CLASE_GRATUITA_MAP_PAGE;
+    const result = withMockLocation("/clase-gratuita", () => {
       navigateStudentZoneAware("home", (page) => {
         nextPage = page;
-      }, "mi-camino-demo");
+      }, CLASE_GRATUITA_MAP_PAGE);
     });
 
     assert.equal(nextPage, "home");

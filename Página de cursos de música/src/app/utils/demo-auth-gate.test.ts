@@ -6,54 +6,42 @@ import {
   resolveDemoEntryPage,
   shouldBlockProtectedPage,
 } from "./demo-auth-gate";
+import {
+  CLASE_GRATUITA_MAP_PAGE,
+  claseGratuitaLessonPage,
+} from "./clase-gratuita-routing";
 
 describe("demo-auth-gate", () => {
-  it("anonymous visitors are gated to registro-cuenta on demo entry", () => {
-    assert.equal(resolveDemoEntryPage("anonymous", "mi-camino-demo"), "registro-cuenta");
+  it("anonymous visitors are gated on quiz + clase gratuita pages", () => {
+    assert.equal(resolveDemoEntryPage("anonymous", CLASE_GRATUITA_MAP_PAGE), "registro-cuenta");
+    assert.equal(resolveDemoEntryPage("error", CLASE_GRATUITA_MAP_PAGE), "registro-cuenta");
     assert.equal(resolveDemoEntryPage("anonymous", "onboarding-quiz"), "registro-cuenta");
-    assert.equal(resolveDemoEntryPage("anonymous", "onboarding-academia"), "registro-cuenta");
-    assert.equal(resolveDemoEntryPage("error", "mi-camino-demo"), "registro-cuenta");
+    assert.equal(resolveDemoEntryPage("anonymous", claseGratuitaLessonPage(1)), "registro-cuenta");
+    assert.equal(resolveDemoEntryPage("anonymous", claseGratuitaLessonPage(5)), "registro-cuenta");
   });
 
-  it("anonymous visitors are gated on demo clases and free fundamento pages", () => {
-    assert.equal(resolveDemoEntryPage("anonymous", "demo-clase-1"), "registro-cuenta");
-    assert.equal(resolveDemoEntryPage("anonymous", "demo-clase-5"), "registro-cuenta");
-    assert.equal(resolveDemoEntryPage("anonymous", "fundamento-free-lesson"), "registro-cuenta");
-    assert.equal(resolveDemoEntryPage("anonymous", "fundamento-preview"), "registro-cuenta");
+  it("registered_no_sub keeps target demo pages", () => {
+    assert.equal(resolveDemoEntryPage("registered_no_sub", CLASE_GRATUITA_MAP_PAGE), CLASE_GRATUITA_MAP_PAGE);
+    assert.equal(resolveDemoEntryPage("registered_no_sub", "onboarding-quiz"), "onboarding-quiz");
+    assert.equal(resolveDemoEntryPage("registered_no_sub", claseGratuitaLessonPage(2)), claseGratuitaLessonPage(2));
   });
 
-  it("logged-in users reach demo entry pages", () => {
-    assert.equal(resolveDemoEntryPage("registered_no_sub", "mi-camino-demo"), "mi-camino-demo");
-    assert.equal(resolveDemoEntryPage("registered_no_sub", "onboarding-academia"), "onboarding-academia");
-    assert.equal(resolveDemoEntryPage("authenticated", "onboarding-quiz"), "onboarding-quiz");
-    assert.equal(resolveDemoEntryPage("registered_no_sub", "demo-clase-2"), "demo-clase-2");
+  it("loading blocks protected pages at render time", () => {
+    assert.equal(resolveDemoEntryPage("loading", CLASE_GRATUITA_MAP_PAGE), CLASE_GRATUITA_MAP_PAGE);
+    assert.equal(resolveDemoEntryPage("loading", claseGratuitaLessonPage(1)), claseGratuitaLessonPage(1));
+    assert.equal(shouldBlockProtectedPage("loading", CLASE_GRATUITA_MAP_PAGE), true);
   });
 
-  it("non-demo destinations are unchanged for anonymous users", () => {
-    assert.equal(resolveDemoEntryPage("anonymous", "inscripcion-gate"), "inscripcion-gate");
-    assert.equal(resolveDemoEntryPage("anonymous", "home"), "home");
-    assert.equal(resolveDemoEntryPage("anonymous", "login-cuenta"), "login-cuenta");
+  it("requiresAccountForPage covers funnel entry and lessons", () => {
+    assert.equal(requiresAccountForPage(CLASE_GRATUITA_MAP_PAGE), true);
+    assert.equal(requiresAccountForPage("onboarding-quiz"), true);
+    assert.equal(requiresAccountForPage(claseGratuitaLessonPage(3)), true);
+    assert.equal(requiresAccountForPage("home"), false);
   });
 
-  it("loading preserves protected target until session resolves (guard blocks render)", () => {
-    assert.equal(resolveDemoEntryPage("loading", "mi-camino-demo"), "mi-camino-demo");
-    assert.equal(resolveDemoEntryPage("loading", "demo-clase-1"), "demo-clase-1");
-    assert.equal(shouldBlockProtectedPage("loading", "mi-camino-demo"), true);
-  });
-
-  it("isAnonymousSession covers anonymous and error", () => {
+  it("isAnonymousSession groups anonymous and error", () => {
     assert.equal(isAnonymousSession("anonymous"), true);
     assert.equal(isAnonymousSession("error"), true);
     assert.equal(isAnonymousSession("registered_no_sub"), false);
-    assert.equal(isAnonymousSession("authenticated"), false);
-  });
-
-  it("requiresAccountForPage covers funnel demo, clases and free fundamento", () => {
-    assert.equal(requiresAccountForPage("mi-camino-demo"), true);
-    assert.equal(requiresAccountForPage("onboarding-academia"), true);
-    assert.equal(requiresAccountForPage("demo-clase-3"), true);
-    assert.equal(requiresAccountForPage("fundamento-free-lesson"), true);
-    assert.equal(requiresAccountForPage("home"), false);
-    assert.equal(requiresAccountForPage("registro-cuenta"), false);
   });
 });

@@ -13,7 +13,7 @@ describe("TemperamentQuizPage — post-quiz hacia onboarding-academia", () => {
   it("tras completar o saltar el quiz navega a onboarding-academia, no al demo directo", () => {
     assert.match(quizSource, /setPage\("onboarding-academia"\)/);
     assert.equal(quizSource.includes('navigateToHomeSection(setPage, "academia")'), false);
-    assert.equal(quizSource.includes('setPage("mi-camino-demo")'), false);
+    assert.equal(quizSource.includes('setPage("clase-gratuita")'), false);
   });
 });
 

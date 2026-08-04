@@ -134,7 +134,7 @@ describe("academia-track-matrix — modelo 3x3", () => {
 describe("HeroSection — funnel público v4 (Visual D threshold)", () => {
   it("CTA del demo vive en Academia, no en el hero de marca", () => {
     assert.equal(heroSource.includes("Ver clase gratuita"), false);
-    assert.equal(heroSource.includes('setPage("mi-camino-demo")'), false);
+    assert.equal(heroSource.includes('setPage("clase-gratuita")'), false);
   });
 
   it("no usa Probar gratis ni rutas prohibidas", () => {
@@ -239,7 +239,7 @@ describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
   it("Fundamento Básico abre el quiz de onboarding o el camino demo", () => {
     assert.equal(selectorSource.includes("shouldShowTemperamentQuiz"), true);
     assert.equal(selectorSource.includes('"onboarding-quiz"'), true);
-    assert.equal(selectorSource.includes('"mi-camino-demo"'), true);
+    assert.equal(selectorSource.includes("CLASE_GRATUITA_MAP_PAGE"), true);
     assert.equal(selectorSource.includes("isFreeClassTrack"), true);
     assert.equal(selectorSource.includes("resolveDemoEntryPage"), true);
     assertNoForbiddenNavigation(selectorSource, "InteractiveLevelSelector");
@@ -248,8 +248,9 @@ describe("InteractiveLevelSelector — Academia 3x3 A2.2", () => {
   it("onboarding usa CTA de configuración sin copy promocional gratis", () => {
     assert.equal(selectorSource.includes("Continuar con este nivel"), true);
     assert.equal(selectorSource.includes("Ver clase gratuita"), false);
-    assert.equal(selectorSource.includes("gratis"), false);
-    assert.equal(selectorSource.includes("gratuita"), false);
+    const copyOnly = selectorSource.replace(/import[\s\S]*?from[\s\S]*?;[\n\r]*/g, "");
+    assert.equal(copyOnly.includes("gratis"), false);
+    assert.equal(copyOnly.includes("gratuita"), false);
     assert.equal(selectorSource.includes("Sin tarjeta"), false);
     assert.equal(selectorSource.includes("7 min"), false);
   });

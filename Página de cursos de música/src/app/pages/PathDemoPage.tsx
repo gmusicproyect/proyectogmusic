@@ -16,6 +16,7 @@ import { useDemoProgress } from "../hooks/useDemoProgress";
 import { GM_BG, GM_BORDER, GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
 import { navigateToHomeSection } from "../utils/public-home-navigation";
 import { ANONYMOUS_FUNNEL_RESET_EVENT } from "../utils/anonymous-funnel-storage";
+import { claseGratuitaLessonPage } from "../utils/clase-gratuita-routing";
 import { buildDemoModules, countFreeDemoCompleted } from "./demo-path-build";
 
 export { buildDemoModules } from "./demo-path-build";
@@ -194,7 +195,7 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
       return;
     }
     const nextFree = Math.min(freeCompleted + 1, DEMO_FREE_LESSON_COUNT);
-    setPage(`demo-clase-${nextFree}`);
+    setPage(claseGratuitaLessonPage(nextFree));
   }, [demoFinished, freeCompleted, setPage]);
 
   const handleTabChange = useCallback(
@@ -208,7 +209,7 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
   const handleStartLesson = useCallback(
     (lessonNumber: number) => {
       if (isFreeDemoLesson(lessonNumber)) {
-        setPage(`demo-clase-${lessonNumber}`);
+        setPage(claseGratuitaLessonPage(lessonNumber));
       }
     },
     [setPage]

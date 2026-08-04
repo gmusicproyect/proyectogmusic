@@ -1,5 +1,6 @@
 import { getDemoUserState, hasDemoProgress, isDemoFullyCompleted } from "../hooks/useDemoUserState";
 import type { PublicStudentSessionState } from "../hooks/usePublicStudentSession";
+import { CLASE_GRATUITA_MAP_PAGE } from "./clase-gratuita-routing";
 
 export interface AcademiaPublicCta {
   label: string;
@@ -38,7 +39,7 @@ export function resolveAcademiaPublicCta(
     if (hasDemoProgress()) {
       return {
         label: "Continuar mi camino",
-        destination: "mi-camino-demo",
+        destination: CLASE_GRATUITA_MAP_PAGE,
       };
     }
     return {

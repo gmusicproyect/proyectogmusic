@@ -1,3 +1,5 @@
+import { CLASE_GRATUITA_MAP_PAGE } from "../utils/clase-gratuita-routing";
+
 const DEMO_STORAGE_KEY = "gmusic:demo_v1";
 
 export type DemoUserState =
@@ -75,13 +77,13 @@ export function getDemoUserState(
       return {
         state: "demo_started",
         label: "Continuar clase gratuita",
-        destination: "mi-camino-demo",
+        destination: CLASE_GRATUITA_MAP_PAGE,
       };
     }
     return {
       state: "demo_started",
       label: "Iniciar mis clases gratis",
-      destination: "mi-camino-demo",
+      destination: CLASE_GRATUITA_MAP_PAGE,
     };
   }
 

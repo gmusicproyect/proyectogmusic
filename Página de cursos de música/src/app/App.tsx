@@ -32,6 +32,10 @@ import { OnboardingAcademiaPage } from "./pages/OnboardingAcademiaPage";
 import { FreeFundamentoLessonPage } from "./pages/FreeFundamentoLessonPage";
 import { AuthModal } from "./components/music/AuthModal";
 import { isPublicFreeLessonPage } from "./utils/academia-track-matrix";
+import {
+  CLASE_GRATUITA_MAP_PAGE,
+  parseClaseGratuitaLessonPage,
+} from "./utils/clase-gratuita-routing";
 import { SEMESTRAL_CHECKOUT_COURSE, isSemestralCheckoutCourse } from "./utils/public-subscription-flow";
 import { activateSemestralWithAccessVerification } from "./services/gmusic-api/activate-semestral";
 import { shouldAcceptLogoutSubmission } from "./services/gmusic-api/public-logout";
@@ -268,14 +272,11 @@ export default function App() {
     }
   }, [publicSession.status, currentPage, handlePageChange]);
 
-  const demoLessonId = (() => {
-    const m = /^demo-clase-([1-5])$/.exec(currentPage);
-    return m && m[1] ? parseInt(m[1], 10) : null;
-  })();
+  const demoLessonId = parseClaseGratuitaLessonPage(currentPage);
 
   return (
     <div style={{ fontFamily:"'Inter','Outfit',sans-serif", background:"#080808", minHeight:"100vh", color:"#fff" }}>
-      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","community","admin","mi-camino-demo","onboarding-quiz","onboarding-academia","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
+      {!["curriculum","lesson","dashboard","welcome","mi-estudio","mi-camino","community","admin",CLASE_GRATUITA_MAP_PAGE,"onboarding-quiz","onboarding-academia","inscripcion-gate","inscripcion-registro","registro-cuenta","login-cuenta","registro-exito"].includes(currentPage) &&
         !isPublicFreeLessonPage(currentPage) &&
         demoLessonId === null && (
         <Navbar
@@ -340,7 +341,7 @@ export default function App() {
         </DemoAuthGuard>
       )}
 
-      {currentPage === "mi-camino-demo" && (
+      {currentPage === CLASE_GRATUITA_MAP_PAGE && (
         <DemoAuthGuard setPage={handlePageChange}>
           <PathDemoPage setPage={handlePageChange} />
         </DemoAuthGuard>
@@ -468,7 +469,7 @@ export default function App() {
         registrationOnly={pendingSemestralCheckout}
       />
 
-      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && currentPage !== "community" && currentPage !== "admin" && currentPage !== "mi-camino-demo" && currentPage !== "onboarding-quiz" && currentPage !== "inscripcion-gate" && currentPage !== "inscripcion-registro" && currentPage !== "registro-cuenta" && currentPage !== "login-cuenta" && currentPage !== "registro-exito" && !isPublicFreeLessonPage(currentPage) && demoLessonId === null && (
+      {currentPage !== "home" && currentPage !== "probar" && currentPage !== "dashboard" && currentPage !== "lesson" && currentPage !== "curriculum" && currentPage !== "welcome" && currentPage !== "mi-estudio" && currentPage !== "mi-camino" && currentPage !== "community" && currentPage !== "admin" && currentPage !== CLASE_GRATUITA_MAP_PAGE && currentPage !== "onboarding-quiz" && currentPage !== "inscripcion-gate" && currentPage !== "inscripcion-registro" && currentPage !== "registro-cuenta" && currentPage !== "login-cuenta" && currentPage !== "registro-exito" && !isPublicFreeLessonPage(currentPage) && demoLessonId === null && (
         <MusicPlayer
           track={currentTrack}
           playlist={playlist}

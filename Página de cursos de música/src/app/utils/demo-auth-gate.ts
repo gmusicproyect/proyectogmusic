@@ -1,14 +1,16 @@
 import type { PublicStudentSessionState } from "../hooks/usePublicStudentSession";
 import { isPublicFreeLessonPage } from "./academia-track-matrix";
+import {
+  CLASE_GRATUITA_LESSON_PAGE_PATTERN,
+  CLASE_GRATUITA_MAP_PAGE,
+} from "./clase-gratuita-routing";
 
 /** Demo funnel entry pages that require an account (PR2). */
 const DEMO_ENTRY_PAGES = new Set([
-  "mi-camino-demo",
+  CLASE_GRATUITA_MAP_PAGE,
   "onboarding-quiz",
   "onboarding-academia",
 ]);
-
-const DEMO_LESSON_PAGE_PATTERN = /^demo-clase-[1-5]$/;
 
 export function isAnonymousSession(
   status: PublicStudentSessionState["status"]
@@ -25,7 +27,7 @@ export function isLoggedInSession(
 /** Pages that require registered_no_sub or authenticated — never anonymous. */
 export function requiresAccountForPage(page: string): boolean {
   if (DEMO_ENTRY_PAGES.has(page)) return true;
-  if (DEMO_LESSON_PAGE_PATTERN.test(page)) return true;
+  if (CLASE_GRATUITA_LESSON_PAGE_PATTERN.test(page)) return true;
   if (isPublicFreeLessonPage(page)) return true;
   return false;
 }

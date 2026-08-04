@@ -14,6 +14,7 @@ import { isPrivateSupabaseStorageMaterialUrl } from "../utils/supabase-storage";
 import { toYoutubeNocookieEmbedUrl } from "../utils/youtube-embed";
 import type { ParsedExerciseView } from "../components/gmusic/lesson/lesson-runner-types";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
+import { CLASE_GRATUITA_MAP_PAGE, claseGratuitaLessonPage } from "../utils/clase-gratuita-routing";
 
 const DEMO_BORDER = "rgba(255,255,255,0.08)";
 
@@ -163,7 +164,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
   );
 
   useEffect(() => {
-    if (!lesson) setPage("mi-camino-demo");
+    if (!lesson) setPage(CLASE_GRATUITA_MAP_PAGE);
   }, [lesson, setPage]);
 
   if (!lesson) return null;
@@ -205,7 +206,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       analytics.demoCompleted();
       setPage("inscripcion-gate");
     } else {
-      setPage("mi-camino-demo");
+      setPage(CLASE_GRATUITA_MAP_PAGE);
     }
   };
 
@@ -278,7 +279,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
 
           <button
             type="button"
-            onClick={() => setPage("mi-camino-demo")}
+            onClick={() => setPage(CLASE_GRATUITA_MAP_PAGE)}
             aria-label="Salir de la clase"
             style={{
               width: 36,

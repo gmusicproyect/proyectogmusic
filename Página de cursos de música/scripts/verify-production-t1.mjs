@@ -15,8 +15,8 @@ const API = (process.env.GMUSIC_API_URL ?? "https://gmusic-api.onrender.com").re
 
 const FRONTEND_ROUTES = [
   "/",
-  "/mi-camino-demo",
-  "/demo-clase-3",
+  "/clase-gratuita",
+  "/clase-gratuita/3",
   "/inscripcion",
   "/alumno",
   "/mi-camino",

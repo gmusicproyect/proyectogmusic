@@ -2,6 +2,7 @@ import {
   clearTemperamentQuizLocalStorage,
   shouldShowTemperamentQuiz,
 } from "./temperament-quiz-storage";
+import { CLASE_GRATUITA_MAP_PAGE } from "./clase-gratuita-routing";
 
 /** Evento interno: funnel anónimo reiniciado (p. ej. tras captura de lead sin suscripción). */
 export const ANONYMOUS_FUNNEL_RESET_EVENT = "gmusic-anonymous-funnel-reset";
@@ -33,8 +34,8 @@ export function resetAnonymousFunnelAfterLeadCapture(): void {
 }
 
 /** Tras reset, página de entrada del nuevo ciclo (quiz primero si aplica). */
-export function anonymousFunnelRestartPage(): "onboarding-quiz" | "mi-camino-demo" {
+export function anonymousFunnelRestartPage(): "onboarding-quiz" | typeof CLASE_GRATUITA_MAP_PAGE {
   return shouldShowTemperamentQuiz({ isSubscribedStudent: false })
     ? "onboarding-quiz"
-    : "mi-camino-demo";
+    : CLASE_GRATUITA_MAP_PAGE;
 }

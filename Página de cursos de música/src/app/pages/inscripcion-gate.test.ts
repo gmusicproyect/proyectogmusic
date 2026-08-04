@@ -100,7 +100,7 @@ describe("InscripcionGatePage — puerta de inscripción", () => {
   });
 
   it("permite volver al mapa demo", () => {
-    assert.equal(gateSource.includes("mi-camino-demo"), true);
+    assert.equal(gateSource.includes("CLASE_GRATUITA_MAP_PAGE"), true);
   });
 });
 

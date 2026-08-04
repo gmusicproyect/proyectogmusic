@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { CLASE_GRATUITA_MAP_PAGE } from "../utils/clase-gratuita-routing";
 import { useDemoUserState } from "./useDemoUserState";
 
 describe("useDemoUserState — registered_no_sub", () => {
   it("sin progreso demo ofrece acceso al camino demo", () => {
     const cta = useDemoUserState("registered_no_sub");
     assert.equal(cta.label, "Iniciar mis clases gratis");
-    assert.equal(cta.destination, "mi-camino-demo");
+    assert.equal(cta.destination, CLASE_GRATUITA_MAP_PAGE);
   });
 
   it("authenticated sigue yendo a mi-estudio", () => {

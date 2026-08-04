@@ -1,7 +1,8 @@
 import type { PublicStudentSessionOutcome } from "./public-student-session";
+import { CLASE_GRATUITA_MAP_PAGE } from "../../utils/clase-gratuita-routing";
 
 export type PostLoginResolution =
-  | { type: "navigate"; page: "mi-camino" | "mi-camino-demo" | "admin" }
+  | { type: "navigate"; page: "mi-camino" | typeof CLASE_GRATUITA_MAP_PAGE | "admin" }
   | { type: "stay"; message: string };
 
 /**
@@ -25,7 +26,7 @@ export function resolvePostLoginPage(
   }
 
   if (outcome.type === "registered_no_sub") {
-    return { type: "navigate", page: "mi-camino-demo" };
+    return { type: "navigate", page: CLASE_GRATUITA_MAP_PAGE };
   }
 
   if (outcome.type === "anonymous") {

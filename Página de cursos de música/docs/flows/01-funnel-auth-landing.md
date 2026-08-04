@@ -31,7 +31,7 @@ flowchart TD
     TierDemo --> RegExito[registro-exito]
     RegExito --> QuizTemp[Quiz temperamento<br/>Eysenck D-PROD-01]
     QuizTemp --> OnboardingAcad[onboarding-academia<br/>instrumento → nivel]
-    OnboardingAcad --> DemoPath["/mi-camino-demo<br/>gate D-GOV-11"]
+    OnboardingAcad --> DemoPath["/clase-gratuita<br/>gate D-GOV-11"]
 
     Decision1 -- Ya tengo cuenta --> Login[LoginCuentaPage]
     Login --> LoginOK{¿Credenciales OK?}
@@ -45,7 +45,7 @@ flowchart TD
 
     LoginBranch --> AdminDebt{{"⚠️ DEUDA T-FLOW-01:<br/>rol ADMIN no enruta a /admin<br/>desde login alumno"}}
 
-    DemoPath --> DemoClases[demo-clase-1…5<br/>progreso localStorage gmusic:demo_v1]
+    DemoPath --> DemoClases["/clase-gratuita/1…5<br/>progreso localStorage gmusic:demo_v1"]
     DemoClases --> DemoPath
     DemoPath --> Upsell{¿Convierte?}
     Upsell -- Sí --> Inscripcion["/inscripcion<br/>gate → registro"]
@@ -70,8 +70,8 @@ flowchart TD
 |------|-------------------|
 | Host | Producción observada: `proyectogmusic.vercel.app` (B0-P). `gmusic.academy` = marca/email seed, no hostname SPA. |
 | CTA | `academia-public-cta.ts`: label **Comenzar mi camino** → `registro-cuenta` (tests prohíben «Probar gratis»). |
-| Post-registro | `RegistroCuentaPage` → DEMO JWT en register → `registro-exito` → quiz → `onboarding-academia` → `mi-camino-demo`. |
-| Login branch | `resolve-post-login-page.ts` + login en `RegistroCuentaPage`/`LoginCuentaPage`: `authenticated`+ACTIVE → `mi-camino`; `registered_no_sub` → `mi-camino-demo`; error → stay. |
+| Post-registro | `RegistroCuentaPage` → DEMO JWT en register → `registro-exito` → quiz → `onboarding-academia` → `clase-gratuita` (`/clase-gratuita`). |
+| Login branch | `resolve-post-login-page.ts` + login en `RegistroCuentaPage`/`LoginCuentaPage`: `authenticated`+ACTIVE → `mi-camino`; `registered_no_sub` → `clase-gratuita`; error → stay. |
 | ADMIN | Login alumno no distingue rol (T-FLOW-01); admin entra a `/admin` por URL + credencial. |
 | WhatsApp | **J-FLOW-01:** CIERRE COMERCIAL CANÓNICO DEL TRACK A ACTUAL. Código prod `d48d163`: `InscripcionRegistroPage` → `wa.me/56953429676`. No es decisión permanente de producto futuro. |
 | Checkout | **LEGACY / RESIDUAL / PARALELO NO CANÓNICO** — D-005/D-006 / Fase 5 pausada; no confundir con cierre comercial actual. |

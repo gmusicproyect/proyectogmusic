@@ -12,6 +12,7 @@ import { analytics } from "../../utils/analytics";
 import { persistCommunityEnrollmentFromAcademiaSelection } from "../../utils/community-enrollment";
 import { shouldShowTemperamentQuiz } from "../../utils/temperament-quiz-storage";
 import { resolveDemoEntryPage } from "../../utils/demo-auth-gate";
+import { CLASE_GRATUITA_MAP_PAGE } from "../../utils/clase-gratuita-routing";
 import type { PublicStudentSessionState } from "../../hooks/usePublicStudentSession";
 
 const GOLD = "#C9A84C";
@@ -50,7 +51,7 @@ export function InteractiveLevelSelector({
     setLevel(track.focusId);
     const targetPage = shouldShowTemperamentQuiz({ isSubscribedStudent })
       ? "onboarding-quiz"
-      : "mi-camino-demo";
+      : CLASE_GRATUITA_MAP_PAGE;
     setPage(resolveDemoEntryPage(sessionStatus, targetPage));
   };
 

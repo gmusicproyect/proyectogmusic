@@ -18,6 +18,7 @@ import type {
   PlanPrice,
 } from "../data/subscription-plans";
 import { GOLD, TEXT_SEC, WHITE_WARM, BORDER } from "../components/marketing/tokens";
+import { CLASE_GRATUITA_MAP_PAGE } from "../utils/clase-gratuita-routing";
 import { analytics } from "../utils/analytics";
 
 // Gamification tokens — CSS vars from design-system/tokens.css
@@ -375,7 +376,7 @@ export function InscripcionGatePage({ setPage }: InscripcionGatePageProps) {
     return (
       <LockedGate
         completedCount={completedLessons.length}
-        onGoBack={() => setPage("mi-camino-demo")}
+        onGoBack={() => setPage(CLASE_GRATUITA_MAP_PAGE)}
       />
     );
   }
@@ -678,7 +679,7 @@ export function InscripcionGatePage({ setPage }: InscripcionGatePageProps) {
 
           <button
             type="button"
-            onClick={() => setPage("mi-camino-demo")}
+            onClick={() => setPage(CLASE_GRATUITA_MAP_PAGE)}
             style={{
               background: "transparent",
               border: "none",

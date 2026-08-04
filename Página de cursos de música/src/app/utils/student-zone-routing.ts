@@ -1,4 +1,11 @@
 import { scrollToHomeSection } from "./public-home-navigation";
+import {
+  CLASE_GRATUITA_MAP_PAGE,
+  claseGratuitaLessonPage,
+  pageFromClaseGratuitaPathname,
+  parseClaseGratuitaLessonPage,
+  pathnameForClaseGratuitaLesson,
+} from "./clase-gratuita-routing";
 
 const STUDENT_ZONE_PAGES = new Set(["mi-estudio", "welcome", "mi-camino"]);
 
@@ -24,15 +31,16 @@ const AUTH_PUBLIC_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
 
 const AUTH_PUBLIC_PAGES = new Set(Object.keys(AUTH_PUBLIC_PAGE_TO_PATH));
 
-/** D-GOV-02 — mapa canónico funnel demo (sin inscripcion-registro). */
+/** D-GOV-19 — mapa canónico funnel demo (sin inscripcion-registro). */
 const DEMO_FUNNEL_PAGE_TO_PATH: Record<string, string> = {
   "onboarding-quiz": "/quiz-temperamento",
-  "mi-camino-demo": "/mi-camino-demo",
-  "demo-clase-1": "/demo-clase-1",
-  "demo-clase-2": "/demo-clase-2",
-  "demo-clase-3": "/demo-clase-3",
-  "demo-clase-4": "/demo-clase-4",
-  "demo-clase-5": "/demo-clase-5",
+  [CLASE_GRATUITA_MAP_PAGE]: "/clase-gratuita",
+  ...Object.fromEntries(
+    [1, 2, 3, 4, 5].map((lessonNumber) => [
+      claseGratuitaLessonPage(lessonNumber),
+      pathnameForClaseGratuitaLesson(lessonNumber),
+    ])
+  ),
   "inscripcion-gate": "/inscripcion",
 };
 
@@ -64,7 +72,7 @@ const PAGE_TITLES: Record<string, string> = {
   "mi-estudio": "Gmusic Estudio · Panel del alumno",
   welcome: "Gmusic Estudio · Panel del alumno",
   "mi-camino": "Gmusic Estudio · Mi Camino",
-  "mi-camino-demo": "Gmusic Estudio · Camino demo",
+  [CLASE_GRATUITA_MAP_PAGE]: "Gmusic Estudio · Clase gratuita",
   "onboarding-quiz": "Gmusic Estudio · Quiz de temperamento",
   "onboarding-academia": "Gmusic Estudio · Onboarding Academia",
   "inscripcion-gate": "Gmusic Estudio · Inscripción",
@@ -119,6 +127,8 @@ export function pathnameForPage(page: string): string | null {
   if (page === "mi-camino") return "/mi-camino";
   const authPath = AUTH_PUBLIC_PAGE_TO_PATH[page];
   if (authPath) return authPath;
+  const lessonNumber = parseClaseGratuitaLessonPage(page);
+  if (lessonNumber !== null) return pathnameForClaseGratuitaLesson(lessonNumber);
   const demoPath = DEMO_FUNNEL_PAGE_TO_PATH[page];
   if (demoPath) return demoPath;
   const protectedPath = PROTECTED_ENTRY_PAGE_TO_PATH[page];
@@ -134,6 +144,8 @@ export function pageFromPathname(pathname: string): string {
   if (pathname === "/") return "home";
   const authPage = AUTH_PUBLIC_PATH_TO_PAGE[pathname];
   if (authPage) return authPage;
+  const claseGratuitaPage = pageFromClaseGratuitaPathname(pathname);
+  if (claseGratuitaPage) return claseGratuitaPage;
   const demoPage = DEMO_FUNNEL_PATH_TO_PAGE[pathname];
   if (demoPage) return demoPage;
   const protectedPage = PROTECTED_ENTRY_PATH_TO_PAGE[pathname];

@@ -9,6 +9,10 @@ import {
   DEMO_CAROUSEL_LESSON_COUNT,
   DEMO_PATH_TOTAL_LESSONS,
 } from "../data/demo-path-catalog";
+import {
+  CLASE_GRATUITA_MAP_PAGE,
+  claseGratuitaLessonPage,
+} from "../utils/clase-gratuita-routing";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const appSource = readFileSync(join(root, "../App.tsx"), "utf8");
@@ -60,17 +64,17 @@ describe("PathDemoPage — camino demo público", () => {
     assert.equal(allNodes.at(-1)?.status, "available");
   });
 
-  it("App monta PathDemoPage en mi-camino-demo sin StudentZoneGuard", () => {
-    assert.equal(appSource.includes('currentPage === "mi-camino-demo"'), true);
+  it("App monta PathDemoPage en clase-gratuita sin StudentZoneGuard", () => {
+    assert.equal(appSource.includes("currentPage === CLASE_GRATUITA_MAP_PAGE"), true);
     assert.equal(appSource.includes("<PathDemoPage setPage={handlePageChange} />"), true);
     assert.doesNotMatch(
       appSource,
-      /currentPage === "mi-camino-demo"[\s\S]{0,180}StudentZoneGuard/
+      /currentPage === CLASE_GRATUITA_MAP_PAGE[\s\S]{0,180}StudentZoneGuard/
     );
   });
 
-  it("App registra rutas de clases demo (demo-clase-1..5) e inscripcion-gate", () => {
-    assert.equal(appSource.includes("demo-clase-"), true);
+  it("App registra rutas de clases demo (clase-gratuita-1..5) e inscripcion-gate", () => {
+    assert.equal(appSource.includes("parseClaseGratuitaLessonPage"), true);
     assert.equal(appSource.includes("DemoLessonPage"), true);
     assert.equal(appSource.includes("inscripcion-gate"), true);
     assert.equal(appSource.includes("InscripcionGatePage"), true);
@@ -79,13 +83,13 @@ describe("PathDemoPage — camino demo público", () => {
   it("InteractiveLevelSelector navega al quiz o al camino demo", () => {
     assert.equal(selectorSource.includes("shouldShowTemperamentQuiz"), true);
     assert.equal(selectorSource.includes('"onboarding-quiz"'), true);
-    assert.equal(selectorSource.includes('"mi-camino-demo"'), true);
+    assert.equal(selectorSource.includes("CLASE_GRATUITA_MAP_PAGE"), true);
   });
 
   it("PathDemoPage conecta clases demo y CTA de planes", () => {
     assert.equal(demoPageSource.includes("allowLockedSelection"), true);
     assert.equal(demoPageSource.includes('navigateToHomeSection(setPage, "planes")'), true);
-    assert.equal(demoPageSource.includes("demo-clase-"), true);
+    assert.equal(demoPageSource.includes("claseGratuitaLessonPage"), true);
     assert.equal(demoPageSource.includes("LockedDemoNodePanel"), true);
     assert.equal(demoPageSource.includes("subscriptionLock"), true);
     assert.equal(demoPageSource.includes("onAcademyTeaserClick"), true);

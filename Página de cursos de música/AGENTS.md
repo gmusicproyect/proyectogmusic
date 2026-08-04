@@ -46,8 +46,8 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 | Zona | Página (`currentPage`) | URL real / destino | Propósito |
 |------|------------------------|--------------------|-----------|
 | **Público / Funnel** | `home` (landing) | `/` | Inicio y captación |
-| **Funnel Demo** | `mi-camino-demo` | `/mi-camino-demo` | Teaser B: 5 jugables + 10 bloqueadas + card +60 (D-GOV-06) |
-| **Funnel Demo** | `demo-clase-1` … `demo-clase-5` | `/demo-clase-*` | Clases de prueba habilitadas |
+| **Funnel Demo** | `clase-gratuita` | `/clase-gratuita` | Teaser B: 5 jugables + 10 bloqueadas + card +60 (D-GOV-06) |
+| **Funnel Demo** | `clase-gratuita-1` … `clase-gratuita-5` | `/clase-gratuita/1` … `/clase-gratuita/5` | Clases de prueba habilitadas |
 | **Funnel Demo** | `inscripcion-gate` | `/inscripcion` | Cierre de conversión / pasarela |
 | **Alumno suscriptor** | `mi-estudio` / `welcome` | `/alumno` | Dashboard principal del alumno |
 | **Alumno suscriptor** | `mi-camino` | `/mi-camino` | Ruta de aprendizaje de guitarra |
@@ -58,10 +58,10 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 | URL autorizada | Sincronizada en código |
 |----------------|------------------------|
 | `/`, `/alumno`, `/mi-camino` | **Sí** — zona suscriptor (sin cambio de contrato) |
-| `/mi-camino-demo` | **Sí** — `e047ac3`, D-GOV-02/03 |
-| `/demo-clase-1` … `/demo-clase-5` | **Sí** — `e047ac3`, D-GOV-02/03 |
-| `/inscripcion` | **Sí** — `inscripcion-gate`; `e047ac3`, D-GOV-02/03 |
-| **Pendiente D-GOV-19** | `/clase-gratuita`, `/clase-gratuita/1`…`5` reemplazarán `/mi-camino-demo` y `/demo-clase-*` — ver `.agents/DECISIONS.md` · ticket **T-URL-FUNNEL-01** en cola |
+| `/clase-gratuita` | **Sí** — D-GOV-19 |
+| `/clase-gratuita/1` … `/clase-gratuita/5` | **Sí** — D-GOV-19 |
+| `/inscripcion` | **Sí** — `inscripcion-gate`; D-GOV-02/03 |
+| Redirects 301 legacy | `/mi-camino-demo`, `/demo-clase-*` → rutas D-GOV-19 (`vercel.json`) |
 | `inscripcion-registro` | **Sin URL pública** — sub-estado interno; gate → registro mantiene `/inscripcion` |
 | `/admin` | **Sí** — D-GOV-04 / R-008 Admin Creador MVP; guard `requireAdmin` en API |
 | Legacy / resto de `currentPage` | **No** — fuera de alcance D-GOV-03 |

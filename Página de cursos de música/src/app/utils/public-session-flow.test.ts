@@ -87,9 +87,9 @@ describe("R3.3E — redirección suave home → Mi Estudio", () => {
 });
 
 describe("PR2 — funnel demo requiere cuenta", () => {
-  it("onboarding-quiz y demo-clase usan DemoAuthGuard", () => {
+  it("onboarding-quiz y clase-gratuita usan DemoAuthGuard", () => {
     assert.match(appSource, /currentPage === "onboarding-quiz"[\s\S]*DemoAuthGuard/);
-    assert.match(appSource, /currentPage === "mi-camino-demo"[\s\S]*DemoAuthGuard/);
+    assert.match(appSource, /currentPage === CLASE_GRATUITA_MAP_PAGE[\s\S]*DemoAuthGuard/);
     assert.match(appSource, /demoLessonId !== null[\s\S]*DemoAuthGuard/);
   });
 
@@ -162,9 +162,5 @@ describe("PR2 — funnel demo requiere cuenta", () => {
     assert.match(registroSource, /sessionOutcome/);
     assert.match(registroSource, /resolution\.type === "navigate"/);
     assert.equal(registroSource.includes("await refresh()"), false);
-    assert.equal(
-      registroSource.includes('outcome.type === "authenticated" ? "mi-camino" : "mi-camino-demo"'),
-      false
-    );
   });
 });

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { CLASE_GRATUITA_MAP_PAGE } from "../../utils/clase-gratuita-routing";
 import { resolvePostLoginPage } from "./resolve-post-login-page";
 
 describe("resolvePostLoginPage", () => {
@@ -14,13 +15,13 @@ describe("resolvePostLoginPage", () => {
     );
   });
 
-  it("registered_no_sub → mi-camino-demo", () => {
+  it("registered_no_sub → clase-gratuita", () => {
     assert.deepEqual(
       resolvePostLoginPage({
         type: "registered_no_sub",
         user: { id: "1", name: "A", email: "a@test.com" },
       }),
-      { type: "navigate", page: "mi-camino-demo" }
+      { type: "navigate", page: CLASE_GRATUITA_MAP_PAGE }
     );
   });
 

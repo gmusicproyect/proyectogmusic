@@ -121,7 +121,7 @@ export interface DemoPathEntry {
   subtitle: string;
   moduleName: string;
   videoDuration?: string;
-  /** Tiene contenido jugable en demo-clase-N */
+  /** Tiene contenido jugable en clase-gratuita-N */
   isFree: boolean;
   /** Solo definido en las 5 gratuitas */
   lesson?: DemoLesson;

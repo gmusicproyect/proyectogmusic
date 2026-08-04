@@ -18,7 +18,7 @@ describe("ThresholdHero — HeroSection Visual D (D0)", () => {
 
   it("hero marca centrada — sin CTA (embudo en Academia)", () => {
     assert.doesNotMatch(heroSource, /Ver clase gratuita/);
-    assert.doesNotMatch(heroSource, /mi-camino-demo/);
+    assert.doesNotMatch(heroSource, /\/clase-gratuita/);
   });
 
   it("bienvenida + logo centrados; sale al scroll hacia Academia", () => {

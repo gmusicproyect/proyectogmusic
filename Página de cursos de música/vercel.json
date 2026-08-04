@@ -5,6 +5,38 @@
       "schedule": "0 11 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/mi-camino-demo",
+      "destination": "/clase-gratuita",
+      "permanent": true
+    },
+    {
+      "source": "/demo-clase-1",
+      "destination": "/clase-gratuita/1",
+      "permanent": true
+    },
+    {
+      "source": "/demo-clase-2",
+      "destination": "/clase-gratuita/2",
+      "permanent": true
+    },
+    {
+      "source": "/demo-clase-3",
+      "destination": "/clase-gratuita/3",
+      "permanent": true
+    },
+    {
+      "source": "/demo-clase-4",
+      "destination": "/clase-gratuita/4",
+      "permanent": true
+    },
+    {
+      "source": "/demo-clase-5",
+      "destination": "/clase-gratuita/5",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/v1/:path*",
