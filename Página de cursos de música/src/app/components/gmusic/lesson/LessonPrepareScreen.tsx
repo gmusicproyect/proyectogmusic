@@ -9,6 +9,8 @@ import {
   resolveLessonStageSlot,
 } from "./lesson-stage";
 import type { PathNodeData } from "../../../data/gmusic-path-types";
+import { useSignedMaterialUrl } from "../../../hooks/useSignedMaterialUrl";
+import { isPrivateSupabaseStorageMaterialUrl, isSupabaseStorageVideoUrl } from "../../../utils/supabase-storage";
 import { isLessonVideoUrl, toYoutubeEmbedUrl } from "../../../utils/youtube-embed";
 import { GM_GOLD, GM_TEXT_SEC } from "../tokens";
 
@@ -34,10 +36,19 @@ export function LessonPrepareScreen({ node, onContinueToPractice }: LessonPrepar
   const stageSlot = resolveLessonStageSlot(node.stageType, node.order);
   const stageLabel = lessonStageLabelForSlot(stageSlot);
   const hasVideo = isLessonVideoUrl(node.videoUrl);
-  const embedUrl = useMemo(
-    () => (hasVideo && node.videoUrl ? toYoutubeEmbedUrl(node.videoUrl) : null),
-    [hasVideo, node.videoUrl]
+  const isStorageVideo = isSupabaseStorageVideoUrl(node.videoUrl);
+  const signedVideo = useSignedMaterialUrl(isStorageVideo ? node.videoUrl : null);
+  const signedPdf = useSignedMaterialUrl(
+    isPrivateSupabaseStorageMaterialUrl(node.guidePdfUrl) ? node.guidePdfUrl : null
   );
+  const publicPdfUrl = isPrivateSupabaseStorageMaterialUrl(node.guidePdfUrl)
+    ? null
+    : node.guidePdfUrl ?? null;
+
+  const embedUrl = useMemo(() => {
+    if (!hasVideo || !node.videoUrl || isStorageVideo) return null;
+    return toYoutubeEmbedUrl(node.videoUrl);
+  }, [hasVideo, isStorageVideo, node.videoUrl]);
 
   const checklistItems = useMemo(
     () => buildMockPracticeChecklist(stageLabel, node.title),
@@ -52,10 +63,17 @@ export function LessonPrepareScreen({ node, onContinueToPractice }: LessonPrepar
 
   const canContinue = hasVideo ? videoReady : true;
   const durationLabel = node.duration?.trim() || null;
+  const materialError = signedVideo.error ?? signedPdf.error;
 
   return (
     <div className="space-y-6">
       <LessonStageIndicator activeSlot={stageSlot} />
+
+      {materialError ? (
+        <p className="rounded-lg border px-4 py-3 text-sm" style={{ color: GM_TEXT_SEC }}>
+          {materialError}
+        </p>
+      ) : null}
 
       <LessonMaterialTabs
         nodeTitle={node.title}
@@ -64,7 +82,10 @@ export function LessonPrepareScreen({ node, onContinueToPractice }: LessonPrepar
         durationLabel={durationLabel}
         videoUrl={node.videoUrl}
         embedUrl={embedUrl}
-        guidePdfUrl={node.guidePdfUrl ?? null}
+        nativeVideoSrc={signedVideo.resolvedUrl}
+        videoLoading={signedVideo.loading}
+        guidePdfUrl={signedPdf.resolvedUrl ?? publicPdfUrl}
+        pdfLoading={signedPdf.loading}
         onVideoPlaybackComplete={() => setVideoReady(true)}
       />
 
@@ -73,7 +94,7 @@ export function LessonPrepareScreen({ node, onContinueToPractice }: LessonPrepar
       <div className="space-y-2 pt-1">
         <Button
           type="button"
-          disabled={!canContinue}
+          disabled={!canContinue || signedVideo.loading || signedPdf.loading}
           onClick={onContinueToPractice}
           className="min-h-[48px] w-full font-medium tracking-wide"
           style={{ background: GM_GOLD, color: "#0A0A0A" }}

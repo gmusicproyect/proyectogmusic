@@ -11,7 +11,10 @@ export interface LessonMaterialTabsProps {
   durationLabel?: string | null;
   videoUrl?: string | null;
   embedUrl?: string | null;
+  nativeVideoSrc?: string | null;
+  videoLoading?: boolean;
   guidePdfUrl?: string | null;
+  pdfLoading?: boolean;
   onVideoPlaybackComplete?: () => void;
 }
 
@@ -28,10 +31,14 @@ export function LessonMaterialTabs({
   durationLabel,
   videoUrl,
   embedUrl,
+  nativeVideoSrc,
+  videoLoading = false,
   guidePdfUrl,
+  pdfLoading = false,
   onVideoPlaybackComplete,
 }: LessonMaterialTabsProps) {
   const [activeTab, setActiveTab] = useState<LessonMaterialTabId>("video");
+  const hasVideoPlayer = Boolean(embedUrl || nativeVideoSrc);
 
   return (
     <div className="space-y-4">
@@ -64,13 +71,23 @@ export function LessonMaterialTabs({
 
       {activeTab === "video" ? (
         <div role="tabpanel" className="space-y-4">
-          {embedUrl ? (
+          {videoLoading ? (
+            <div
+              className="rounded-lg border px-4 py-10 text-center"
+              style={{ borderColor: GM_BORDER, background: GM_SURFACE }}
+            >
+              <p className="text-sm" style={{ color: GM_TEXT_SEC }}>
+                Preparando el video protegido…
+              </p>
+            </div>
+          ) : hasVideoPlayer ? (
             <VideoPlayerLesson
               title={nodeTitle}
               subtitle={nodeDescription?.trim() || "Mira la lección antes de practicar"}
               duration={durationLabel?.trim() || "Lección"}
               lessonLabel={stageLabel}
-              videoUrl={embedUrl}
+              videoUrl={embedUrl ?? undefined}
+              nativeVideoSrc={nativeVideoSrc ?? undefined}
               onPlaybackComplete={onVideoPlaybackComplete}
             />
           ) : (
@@ -120,7 +137,11 @@ export function LessonMaterialTabs({
           className="rounded-lg border px-4 py-8"
           style={{ borderColor: GM_BORDER, background: GM_SURFACE }}
         >
-          {guidePdfUrl ? (
+          {pdfLoading ? (
+            <p className="text-center text-sm" style={{ color: GM_TEXT_SEC }}>
+              Preparando la guía PDF…
+            </p>
+          ) : guidePdfUrl ? (
             <div className="space-y-3 text-center">
               <p className="text-sm" style={{ color: GM_TEXT_SEC }}>
                 Abre la guía PDF de esta etapa en una pestaña nueva.

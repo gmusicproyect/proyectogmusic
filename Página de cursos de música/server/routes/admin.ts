@@ -1,5 +1,11 @@
-import { Router } from "express";
+import { Router, type NextFunction, type Request, type Response } from "express";
+import multer from "multer";
 import { config } from "../config.js";
+import {
+  adminStorageUploadMiddleware,
+  resolveAdminUploadTarget,
+} from "../lib/adminStorageUpload.js";
+import { ApiError } from "../lib/errors.js";
 import {
   parseCreateAdminModuleBody,
   parseSlotOrderParam,
@@ -15,10 +21,52 @@ import {
   updateAdminSlot,
 } from "../services/curriculum.js";
 import { getAdminNodeAttempts } from "../services/adminReports.js";
+import { uploadStorageObject } from "../lib/supabaseStorage.js";
 
 export const adminRouter = Router();
 
 adminRouter.use(requireAdmin);
+
+function handleMulterError(
+  err: unknown,
+  _req: Request,
+  _res: Response,
+  next: NextFunction
+) {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return next(
+        new ApiError(413, "INVALID_UPLOAD", "El archivo supera el límite de 50 MB.")
+      );
+    }
+    return next(new ApiError(400, "INVALID_UPLOAD", "No pudimos leer el archivo subido."));
+  }
+  return next(err);
+}
+
+/** T1.5 — subida de video/PDF al bucket correcto (solo admin autenticado). */
+adminRouter.post("/storage/upload", (req, res, next) => {
+  adminStorageUploadMiddleware(req, res, (err) => {
+    if (err) {
+      return handleMulterError(err, req, res, next);
+    }
+    next();
+  });
+}, async (req, res, next) => {
+  try {
+    assertAdmin(req);
+    const target = resolveAdminUploadTarget(req);
+    const materialUrl = await uploadStorageObject(target);
+    res.status(201).json({
+      kind: target.kind,
+      bucket: target.bucket,
+      objectPath: target.objectPath,
+      materialUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 adminRouter.get("/modules", async (req, res, next) => {
   try {

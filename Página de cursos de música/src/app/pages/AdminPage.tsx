@@ -54,6 +54,7 @@ import {
 } from "../services/gmusic-api/admin";
 import { adminModuleStatusLabel } from "../services/gmusic-api/admin-legacy-badge";
 import { buildMissingStagesMessage } from "../services/gmusic-api/admin-publish-feedback";
+import { uploadAdminStorageFile } from "../services/gmusic-api/admin-storage-upload";
 import "./admin-page.css";
 
 interface AdminPageProps {
@@ -112,6 +113,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const [slotGuideText, setSlotGuideText] = useState("");
   const [slotCompletionCriteria, setSlotCompletionCriteria] = useState("");
   const [slotCtaLabel, setSlotCtaLabel] = useState("Continuar");
+  const [slotUploadBusy, setSlotUploadBusy] = useState<"video" | "pdf" | null>(null);
   const [attemptsData, setAttemptsData] = useState<AdminNodeAttemptsResponse | null>(null);
   const [attemptsLoading, setAttemptsLoading] = useState(false);
   const [attemptsError, setAttemptsError] = useState<string | null>(null);
@@ -359,6 +361,33 @@ export function AdminPage({ setPage }: AdminPageProps) {
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const handleSlotFileUpload = async (kind: "video" | "pdf", file: File) => {
+    if (view.kind !== "edit" || !detail) return;
+
+    setSlotUploadBusy(kind);
+    try {
+      const prefix = `admin/b${detail.module.order}/slot-${view.slotOrder}`;
+      const uploaded = await uploadAdminStorageFile({ kind, file, prefix });
+      if (kind === "video") {
+        setSlotVideoUrl(uploaded.materialUrl);
+      } else {
+        setSlotGuidePdfUrl(uploaded.materialUrl);
+      }
+      showToast(
+        kind === "video"
+          ? "Video subido — revisa la URL y guarda la etapa."
+          : "PDF subido — revisa la URL y guarda la etapa."
+      );
+    } catch (error) {
+      showToast(
+        error instanceof GmusicApiError ? error.message : "No pudimos subir el archivo.",
+        "error"
+      );
+    } finally {
+      setSlotUploadBusy(null);
     }
   };
 
@@ -1055,15 +1084,31 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </div>
 
             <div className="admin-form-field">
-              <Label htmlFor="slot-video">Video (URL YouTube)</Label>
-              <p className="admin-field-hint">Opcional — puedes publicar sin video al inicio.</p>
+              <Label htmlFor="slot-video">Video (URL YouTube o archivo)</Label>
+              <p className="admin-field-hint">
+                Opcional — sube un MP4 (máx. 50 MB) o pega una URL de YouTube.
+              </p>
               <Input
                 id="slot-video"
                 className="admin-shadcn-input"
                 value={slotVideoUrl}
                 onChange={(e) => setSlotVideoUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=..."
+                placeholder="https://www.youtube.com/watch?v=... o sube archivo abajo"
               />
+              <Input
+                type="file"
+                accept="video/*"
+                className="admin-shadcn-input"
+                disabled={slotUploadBusy !== null || busy}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (file) void handleSlotFileUpload("video", file);
+                }}
+              />
+              {slotUploadBusy === "video" ? (
+                <p className="admin-field-hint">Subiendo video…</p>
+              ) : null}
               {youtubeId ? (
                 <div className="admin-video-preview">
                   <iframe
@@ -1076,17 +1121,31 @@ export function AdminPage({ setPage }: AdminPageProps) {
             </div>
 
             <div className="admin-form-field">
-              <Label htmlFor="slot-pdf">Material PDF (URL)</Label>
+              <Label htmlFor="slot-pdf">Material PDF (URL o archivo)</Label>
               <p className="admin-field-hint">
-                Opcional — enlace https a PDF (Drive, Dropbox, Supabase Storage…).
+                Opcional — sube un PDF (máx. 50 MB) o pega un enlace https.
               </p>
               <Input
                 id="slot-pdf"
                 className="admin-shadcn-input"
                 value={slotGuidePdfUrl}
                 onChange={(e) => setSlotGuidePdfUrl(e.target.value)}
-                placeholder="https://..."
+                placeholder="https://... o sube archivo abajo"
               />
+              <Input
+                type="file"
+                accept="application/pdf"
+                className="admin-shadcn-input"
+                disabled={slotUploadBusy !== null || busy}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (file) void handleSlotFileUpload("pdf", file);
+                }}
+              />
+              {slotUploadBusy === "pdf" ? (
+                <p className="admin-field-hint">Subiendo PDF…</p>
+              ) : null}
               {slotGuidePdfUrl && isSafeMaterialUrl(slotGuidePdfUrl) ? (
                 <a
                   href={slotGuidePdfUrl}

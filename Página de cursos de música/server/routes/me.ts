@@ -22,6 +22,8 @@ import { buildProgressViewH1Async } from "../lib/progressViewH1.js";
 import { assertStudent, realStudentAuth } from "../middleware/realStudentAuth.js";
 import { buildAccessResponse } from "../services/accessService.js";
 import { buildDashboardResponse, buildPathResponse } from "../services/meService.js";
+import { parseSignedMaterialUrlBody } from "../lib/parseSignedMaterialUrlBody.js";
+import { resolveSignedMaterialUrlForStudent } from "../services/mediaAccessService.js";
 
 export const meRouter = Router();
 
@@ -159,6 +161,19 @@ meRouter.get("/access", async (req, res, next) => {
   try {
     const student = assertStudent(req);
     const payload = await buildAccessResponse(student);
+    res.set("Cache-Control", "no-store");
+    res.json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** T1.4 — URL firmada temporal para material en buckets privados de Supabase. */
+meRouter.post("/media/signed-url", async (req, res, next) => {
+  try {
+    const student = assertStudent(req);
+    const input = parseSignedMaterialUrlBody(req.body);
+    const payload = await resolveSignedMaterialUrlForStudent(student, input.materialUrl);
     res.set("Cache-Control", "no-store");
     res.json(payload);
   } catch (error) {
