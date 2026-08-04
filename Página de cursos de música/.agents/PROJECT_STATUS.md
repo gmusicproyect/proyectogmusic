@@ -20,10 +20,11 @@
 | Orden | Item | Estado | Nota |
 |-------|------|--------|------|
 | ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
-| ~~**2**~~ | ~~**T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**)~~ | ✅ **CERRADO** @ `deee235` · push prod READY | `/clase-gratuita`, `/clase-gratuita/1…5`; redirects 308 legacy; `app:test` **614/614** |
+| ~~**2**~~ | ~~**T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**)~~ | ✅ **CERRADO 6/6** @ `deee235` · smoke Juan 4 Ago 2026 | `/clase-gratuita`, `/clase-gratuita/1…5`; redirects **308/301** legacy; `app:test` **614/614** (−8: consolidación tests gate, ver nota cierre) |
+| **3** | **T-PUB-01** | **Siguiente en cola** | Ver `docs/roadmap/t-pub-01-brief.md` · sin reordenar |
 | ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
-**Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md`
+**Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md` · T-URL-FUNNEL-01: criterio binario **6/6** (redirects **308/301**); smoke browser 4 Ago 2026 — `/clase-gratuita`, `/clase-gratuita/1`, `/inscripcion`, `/mi-camino-demo`→`/clase-gratuita` en barra OK; suite **622→614** (−8): 8 tests parametrizados `anonymous-gate-navigation` + 2 duplicados `demo-auth-gate` consolidados al renombrar rutas, +1 `clase-gratuita-routing`, +1 guard `parseClaseGratuitaLessonPage`.
 
 **Nota histórica:** los hitos fechados debajo conservan el estado que era verdadero en su fecha; este bloque superior los supersede como snapshot vigente.
 
