@@ -1,6 +1,14 @@
-# T-URL-FUNNEL-01 — Mini-spec (D-GOV-19)
+# T-URL-FUNNEL-01 — Ticket formal (D-GOV-19)
 
-**Estado:** Archivado · **NO implementar** hasta `OK cierre T1` + autorización explícita de Juan.
+**Estado:** Ticket formal archivado · **NO implementar** hasta frase de control de Juan.  
+**Gate previo:** ✅ T1 Storage cerrado (OK Juan · 4 Ago 2026 @ `dcbccd2`).  
+**Decisión de cola:** Va **SOLO** — no empaquetar con Comunidad B+ ni otros tickets.
+
+**Frase de arranque (Juan → Cursor):**
+
+> OK T-URL-FUNNEL-01 — implementar D-GOV-19 según ticket formal; evidencia: criterio binario completo (6 ítems), push del código con mi OK final.
+
+---
 
 ## Mapa `currentPage` ↔ pathname
 
@@ -12,9 +20,13 @@
 
 Esquema **numerado** (no slugs por título). Decisión: D-GOV-19.
 
+---
+
 ## Redirects 301 en `vercel.json`
 
-Sección **`redirects`**, `permanent: true` (301 en edge — no basta el rewrite catch-all SPA):
+Sección **`redirects`**, `permanent: true` (301 en edge — no basta el rewrite catch-all SPA).
+
+**Importante:** los redirects van **después** del routing en el mismo deploy (ver orden abajo). Si se despliegan redirects antes de rutas nuevas, las URLs viejas apuntan a páginas inexistentes y el funnel se cae.
 
 ```json
 { "source": "/mi-camino-demo", "destination": "/clase-gratuita", "permanent": true },
@@ -25,6 +37,21 @@ Sección **`redirects`**, `permanent: true` (301 en edge — no basta el rewrite
 { "source": "/demo-clase-5", "destination": "/clase-gratuita/5", "permanent": true }
 ```
 
+---
+
+## Orden de implementación
+
+**Todo en UN solo commit de código, deploy único:**
+
+1. **Routing** — rutas nuevas resuelven (`student-zone-routing.ts`, `App.tsx`, `PathDemoPage`, guards)
+2. **Links internos** — reemplazar toda navegación a rutas viejas
+3. **Redirects 301** en `vercel.json` (**después** del routing, nunca antes)
+4. **`docs/flows/01-funnel-auth-landing.md`** actualizado en el **MISMO commit** de código (D-023b). *Excepción puntual a G1: este doc viaja con el commit de código; su push espera OK final de Juan.*
+5. **Tests + suite completa**
+6. **Deploy + verificación**
+
+---
+
 ## Archivos a tocar
 
 - `vercel.json` — redirects + rewrites SPA para rutas nuevas
@@ -33,18 +60,34 @@ Sección **`redirects`**, `permanent: true` (301 en edge — no basta el rewrite
 - `src/app/pages/PathDemoPage.tsx`
 - Guards (`demo-auth-gate.ts`, navegación funnel)
 - Generadores de links internos (mapa, CTA continuar, CTAs landing)
+- `docs/flows/01-funnel-auth-landing.md`
 - Tests: `student-zone-routing.test.ts`, `funnel-navigation-targets.test.ts`, guards
 
-## Tests mínimos
+---
 
-1. **Routing unit:** los 6 pathnames nuevos resuelven a la página correcta en carga directa y `pushState`.
-2. **Grep limpio:** cero referencias a `demo-clase-` / `mi-camino-demo` en `src/` (salvo comentarios de migración si se documentan).
-3. **Post-deploy:** `curl -I` a las 6 URLs viejas en prod → `301` + `Location` nueva; evidencia en reporte.
+## Criterio de cierre binario
 
-## Criterio de cierre
+Marcar sí/no cada ítem. Todo sí → reporte a Juan → `OK push` para código.
 
-Los 3 tests PASS + funnel completo navegable con URLs nuevas. Links viejos redirigen en edge.
+| # | Ítem |
+|---|------|
+| 1 | **Routing unit:** las 6 rutas nuevas resuelven a la página correcta |
+| 2 | **Grep limpio:** cero `demo-clase-` / `mi-camino-demo` en `src/` |
+| 3 | **Suite completa verde** (622/622 o número vigente) |
+| 4 | **Post-deploy:** `curl -I` a las 6 URLs viejas → 301 + `Location` nueva; evidencia pegada |
+| 5 | **Smoke Juan (~2 min):** funnel completo con URLs nuevas — mapa → clase 1 → inscripción |
+| 6 | **Flows doc** actualizado en el commit de implementación |
+
+---
 
 ## Fuera de alcance
 
-Backend, auth, pagos, schema, copy UI, rediseño visual, player suscriptor.
+Backend, auth, pagos, schema, copy UI, rediseño visual, player suscriptor, Comunidad B+, oleadas pendientes de commit.
+
+---
+
+## Dictamen Claude (4 Ago 2026)
+
+- T1 cerrado — no reabrir.
+- T-URL-FUNNEL-01 va solo; Comunidad B+ espera su turno como ticket propio.
+- Orden routing → redirects (no al revés) — obligatorio.

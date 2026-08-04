@@ -20,7 +20,7 @@
 | Orden | Item | Estado | Nota |
 |-------|------|--------|------|
 | ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
-| **2** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **Siguiente** | `/clase-gratuita` + `/clase-gratuita/1…5`; mini-spec en `.agents/specs/` |
+| **2** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **Ticket formal** — pendiente `OK T-URL-FUNNEL-01` | Spec: `.agents/specs/T-URL-FUNNEL-01-mini-spec.md` · va **solo** |
 | ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
 **Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md`
