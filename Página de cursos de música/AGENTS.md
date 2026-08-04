@@ -19,8 +19,8 @@ Para garantizar el orden y evitar conflictos en el desarrollo, el ecosistema de 
 ### Regla maestra — repositorio remoto (GitHub)
 
 - **Exclusividad:** **Cursos (Cursor)** es el **único** agente autorizado para interactuar con el remoto (`gmusicproyect/proyectogmusic`).
-- **Prohibido:** `git push`, `git commit` o subidas automáticas de forma autónoma.
-- **Flujo obligatorio:** Tras compilar y validar localmente, Cursos detiene la ejecución y pregunta al Director (Juan): *"El código está listo y probado localmente. ¿Autoriza hacer el push a GitHub?"*
+- **Prohibido:** `git push`, `git commit` o subidas automáticas de forma autónoma — **salvo documentación y gobernanza** (`docs/**`, `.agents/**`, `AGENTS.md`): commit+push inmediato sin preguntar.
+- **Flujo obligatorio (código producto):** Tras compilar y validar localmente, Cursos detiene la ejecución y pregunta al Director (Juan): *"El código está listo y probado localmente. ¿Autoriza hacer el push a GitHub?"*
 - **Solo proceder** ante respuesta explícita **"SÍ"** o **"OK"**.
 
 ---
@@ -61,6 +61,7 @@ Fuente de verdad para agentes. **Prohibido** agregar o inventar URLs o parámetr
 | `/mi-camino-demo` | **Sí** — `e047ac3`, D-GOV-02/03 |
 | `/demo-clase-1` … `/demo-clase-5` | **Sí** — `e047ac3`, D-GOV-02/03 |
 | `/inscripcion` | **Sí** — `inscripcion-gate`; `e047ac3`, D-GOV-02/03 |
+| **Pendiente D-GOV-19** | `/clase-gratuita`, `/clase-gratuita/1`…`5` reemplazarán `/mi-camino-demo` y `/demo-clase-*` — ver `.agents/DECISIONS.md` · ticket **T-URL-FUNNEL-01** en cola |
 | `inscripcion-registro` | **Sin URL pública** — sub-estado interno; gate → registro mantiene `/inscripcion` |
 | `/admin` | **Sí** — D-GOV-04 / R-008 Admin Creador MVP; guard `requireAdmin` en API |
 | Legacy / resto de `currentPage` | **No** — fuera de alcance D-GOV-03 |

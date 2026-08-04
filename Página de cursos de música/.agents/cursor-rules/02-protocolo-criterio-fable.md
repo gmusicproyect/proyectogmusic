@@ -119,7 +119,7 @@ Son la versión Loop Engineer de los clasificadores de Fable: checkpoint humano 
 
 | # | Regla | Acción irreversible protegida |
 |---|---|---|
-| G1 | Ningún push sin autorización explícita de JP en esa sesión | Historial remoto |
+| G1 | Ningún push sin autorización explícita de JP en esa sesión — **excepción:** commit+push inmediato sin preguntar cuando el diff es **solo documentación y gobernanza**: `docs/**`, `.agents/**`, `AGENTS.md` (incl. decisiones, PROJECT_STATUS, cursor-rules). Todo lo demás sigue requiriendo OK explícito. | Historial remoto |
 | G2 | Todo SQL de producción se muestra COMPLETO antes de ejecutar | Datos de producción (Supabase) |
 | G3 | `db:seed` NUNCA corre en producción de forma amplia | Datos de producción |
 | G4 | Ningún secret/credencial en código, seed, ni UI (lección P0 de `prisma/seed.ts`) | Seguridad de cuentas |
@@ -181,8 +181,10 @@ una decisión posterior las reemplace:
   el cierre del scope del ticket.
 - **Tercer fallo:** bloque "BLOQUEADO" en PROJECT_STATUS (con hipótesis
   descartadas) + aviso en chat. Ambos.
-- **Push:** cero commit/push sin OK explícito de JP, sin excepciones, incluso
-  en ventanas de trabajo solo-Cursor. G1 no se negocia.
+- **Push:** cero commit/push sin OK explícito de JP, sin excepciones en código producto, incluso
+  en ventanas de trabajo solo-Cursor. **Excepción G1 (docs/gobernanza):** cambios limitados a
+  `docs/**`, `.agents/**` y `AGENTS.md` → commit+push inmediato sin preguntar. G1 no se negocia
+  fuera de esa excepción.
 - **Criterio de transferencia (CUMPLIDO 6 jul 2026, ticket T-LOGIN-REDIRECT):**
   ticket Medio real donde el ejecutor produjo mini-brief y nivel sin pedirlo,
   entrega con plantilla de 5 puntos citando archivos reales, verificación

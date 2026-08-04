@@ -15,6 +15,16 @@
 | **Backlog técnico menor** | **T-DEPS-REACT-ROUTER-01** — eliminar dependencia directa no utilizada con verificación propia. **T-GUARD-COUNT-01** — comando de guards con lista exacta + assert que falle si `total !== 75` (evitar falso-verde por glob incompleto). |
 | **Pendientes manuales / producto** | WS4 Mi Estudio (SPEC antes de código) · flicker iPhone en 2 dispositivos · ordenamiento padre + 3C · `connect_timeout` Render · D4/F3 dashboards · URL real video Clase 3. Comunidad/feed, username DB y Supabase Pro siguen estacionados. |
 
+## Cola operativa (4 Ago 2026)
+
+| Orden | Item | Estado | Nota |
+|-------|------|--------|------|
+| **1** | **T1 Storage** (T1.4/T1.5) | En cierre | Prioridad activa — no mezclar contexto |
+| **2** | **Rediseño UI** vista demo «Conoce tu guitarra» | ✅ **Hecho** @ `cb5c3e5` | Solo layout/estilos; URL sin cambio |
+| **3** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **En cola** | `/clase-gratuita` + `/clase-gratuita/1…5`; 301 edge en `vercel.json`; routing + guards + tests |
+
+**Regla:** no arrancar T-URL-FUNNEL-01 hasta criterio de cierre T1 confirmado por Juan.
+
 **Nota histórica:** los hitos fechados debajo conservan el estado que era verdadero en su fecha; este bloque superior los supersede como snapshot vigente.
 
 ## Hito — Comunidad B+ · formalizar abierta (2 Ago 2026)
