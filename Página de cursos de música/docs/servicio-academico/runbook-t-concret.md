@@ -43,9 +43,9 @@ Objetivo: base ordenada antes de construir nada.
 
 Objetivo: que exista un lugar oficial donde viven los archivos y una forma segura de entregarlos. Desbloquea T2, T4 y la protección del contenido de pago.
 
-- [ ] **T1.1 · Crear buckets** — En Supabase → Storage crea `demo-media` (público) y `clases-video`, `clases-pdf`, `ejercicios-media` (privados).
+- [ ] **T1.1 · Crear buckets** — Antes de crear nada: **Settings → Billing** (plan) y **Settings → Storage** (límite real de subida). En **Free**: máx. **50 MB/archivo** y **1 GB** total del proyecto — un video largo puede agotar la cuota; para el piloto usar video comprimido ≤50 MB (720p H.264). En **Pro**: límites mayores (~100 GB incluidos). Luego en Storage crea `demo-media` (público) y `clases-video`, `clases-pdf`, `ejercicios-media` (privados).
 - [ ] **T1.2 · Blindar lo privado** — Abre en una ventana de incógnito la URL directa de un archivo de un bucket privado y confirma que devuelve error de acceso; si abre, corrige las políticas del bucket antes de seguir.
-- [ ] **T1.3 · Piloto manual** — Sube el video y el PDF de una etapa real a sus buckets y guarda las rutas en `PathNode.videoUrl` y `PathNode.guidePdfUrl` de esa etapa.
+- [ ] **T1.3 · Piloto manual** — Sube el video y el PDF de una etapa real a sus buckets y guarda las rutas en `PathNode.videoUrl` y `PathNode.guidePdfUrl` de esa etapa. Si la clase real aún no está grabada, cualquier video ≤ límite del plan y cualquier PDF sirven: T1 valida el flujo técnico, no la calidad del contenido (reemplazar archivo en bucket después, sin tocar código).
 - [ ] **T1.4 · URL firmada (en la API de Render)** — En la API de Render crea el endpoint que, solo si el `User` tiene `Subscription` activa, genere una URL firmada temporal (p. ej. 1 hora) usando la service role key y la devuelva al front. La service role key NUNCA va en el front: todo lo que Vite empaqueta queda expuesto en el navegador.
 - [ ] **T1.5 · Subir desde /admin** — Agrega al editor de etapas un campo de archivo que suba al bucket correcto y escriba la ruta en el `PathNode` automáticamente: nadie vuelve a pegar URLs a mano.
 - [ ] **Cierre T1** — Un suscrito ve el video y el PDF piloto dentro de la app; un no suscrito no puede abrirlos ni con el enlace.
