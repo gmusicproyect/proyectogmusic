@@ -3,7 +3,7 @@
 
 | | |
 |---|---|
-| Versión | 1.0 |
+| Versión | 1.1 |
 | Fecha | 2026-08-03 |
 | Ubicación | `docs/servicio-academico/mapa-servicio-academico.md` |
 | Se actualiza cuando | cambia una decisión de contenido, storage, pagos o comunidad |
@@ -29,7 +29,7 @@ La carpeta que sube al hosting **no contiene la academia**; contiene el código 
 | Clases de pago: curso, bloques, etapas, ejercicios | Supabase (tablas) | 🟡 (admin parcial; ejercicios aún dependen de seed) |
 | Alumnos, suscripciones, progreso | Supabase (tablas) | ✅ |
 | Validación de ejercicios y progreso | Render | ✅ |
-| Videos, PDF, imágenes, audio | Storage centralizado | 🔴 por crear |
+| Videos, PDF, imágenes, audio | Supabase Storage (4 buckets) | 🔴 por crear |
 | Cierre comercial Track A | WhatsApp (`wa.me`) | ✅ (J-FLOW-01) |
 | Cobros automatizados | Pasarela + webhook → `Subscription` | 🔴 por definir |
 
@@ -39,30 +39,25 @@ Por eso el orden tiene dos capas: la carpeta (sección 1) y los flujos del servi
 
 ## 1 · Orden de la carpeta (repo)
 
-Estructura **real hoy** (Vite + React SPA, no App Router de Next.js):
+Estructura **Vite + React SPA** (routing en `App.tsx`; no App Router de Next.js). Las subcarpetas de `pages/` son el objetivo de T0.2 (opcional); hoy muchas pantallas viven planas en `pages/` con `legacy/` aparte.
 
 ```
 Página de cursos de música/
 ├── src/
-│   ├── app/
-│   │   ├── pages/              ← landing, registro, demo, alumno, admin, inscripción
-│   │   ├── components/         ← UI (gmusic, music, auth…)
-│   │   ├── data/
-│   │   │   └── demo-lessons.ts ← demo gratis (temporal: migrar a Supabase)
-│   │   ├── services/gmusic-api/← cliente HTTP → /api/v1
-│   │   └── App.tsx             ← routing string-based (D-018)
-│   └── main.tsx
-├── server/                     ← API Express (Render)
-├── prisma/
-│   ├── schema.prisma           ← plano de los datos
-│   ├── migrations/             ← historial de cambios
-│   └── seed.ts                 ← ejercicios iniciales (a retirar)
-├── public/                     ← SOLO marca e interfaz, nada de clases
-├── docs/
-│   ├── operations/
-│   ├── flows/
-│   └── servicio-academico/     ← este mapa
-├── vercel.json                 ← rewrites SPA + proxy API + cron keep-alive
+│   └── app/
+│       ├── App.tsx              ← routing (string-based)
+│       ├── pages/
+│       │   ├── marketing/       ← landing, precios, inscripción    [VENTA]
+│       │   ├── demo/            ← 5 clases gratis                   [ALUMNO]
+│       │   ├── alumno/          ← ruta, clase, progreso             [ALUMNO]
+│       │   └── admin/           ← panel del profesor                [ADMIN]
+│       ├── components/          ← UI compartida (gmusic, auth…)
+│       ├── services/gmusic-api/ ← cliente HTTP → /api/v1 (Render)
+│       └── data/demo-lessons.ts ← demo (temporal: migrar a Supabase)
+├── server/                      ← API Express (Render); URLs firmadas T1.4
+├── prisma/                      ← schema, migrations, seed (a retirar)
+├── public/                      ← SOLO marca e interfaz, nada de clases
+├── docs/servicio-academico/     ← mapa + runbook
 └── .agents/PROJECT_STATUS.md
 ```
 
@@ -170,13 +165,13 @@ Las 5 etapas son fijas en cada bloque: Fundamento 1, Fundamento 2, Técnica, Pr�
 
 ## 6 · Multimedia y PDF
 
-**Decisión propuesta: Supabase Storage** (🔴 por confirmar — ver registro).
+**Decisión: Supabase Storage** (confirmada — ver registro). URLs firmadas se generan en la API de Render (service role key nunca en el front).
 
 - Razón: la base y la autenticación ya viven ahí; URLs firmadas impiden que un no-suscriptor comparta el enlace de un video o PDF de pago.
 - Buckets propuestos: `demo-media` (público o firmado corto) · `clases-video` · `clases-pdf` · `ejercicios-media` (privados).
 - Riesgo: el egress de video se encarece con volumen. Plan B: con cientos de alumnos, mover solo el video a Cloudflare R2/Stream o Mux; PDF, imágenes y audio se quedan en Supabase.
 
-**No crear buckets ni subir archivos de prod hasta confirmar esta decisión** (runbook propio + permisos + política de firmado).
+**Crear buckets y subir el piloto solo tras la frase «OK Storage: Supabase + 4 buckets»** (runbook T1 + permisos + política de firmado).
 
 ```mermaid
 flowchart TD
@@ -266,8 +261,15 @@ flowchart LR
 |---|---|---|
 | 2026-08-03 | Este mapa es la fuente de verdad del servicio académico (capa servicio; no reemplaza `docs/flows/` ni PROJECT_STATUS) | Vigente |
 | 2026-08-03 | Cierre comercial Track A hoy = WhatsApp (J-FLOW-01); pasarela automatizada = futuro | Vigente |
-| 2026-08-03 | Storage: Supabase Storage con 4 buckets (`demo-media`, `clases-video`, `clases-pdf`, `ejercicios-media`) | 🔴 Propuesta, por confirmar |
-| 2026-08-03 | Pasarela de pago (Stripe / Mercado Pago / Wompi / otra) | 🔴 Por definir |
+| 2026-08-03 | Front: Vite + React SPA (routing en `App.tsx`); los endpoints de servidor viven en la API de Render | Vigente |
+| 2026-08-03 | Storage: Supabase Storage con 4 buckets (`demo-media`, `clases-video`, `clases-pdf`, `ejercicios-media`) | Vigente |
+| 2026-08-03 | T3 en modo manual: venta por WhatsApp + activación a mano de `Subscription` | Vigente hasta su disparador |
+| 2026-08-03 | Pasarela de pago (Stripe / Mercado Pago / Wompi / otra) | 🔴 Por definir (disparador T3: >10 pagos/mes o >30 min/día en activaciones manuales) |
 | 2026-08-03 | Comunidad feedback: empezar con Opción B (Discord/externa); producto in-app NO LANZADO (B+ parcial vigente) | 🔴 Propuesta, por confirmar |
 
-Cuando confirmen storage y pasarela, actualizar este registro y subir la versión a **1.1**.
+### Historial del mapa
+
+| Fecha | Versión | Cambio |
+|---|---|---|
+| 2026-08-03 | 1.0 | Creación: flujos, 6 preguntas, orden de construcción |
+| 2026-08-03 | 1.1 | Stack Vite corregido; Storage y T3 manual confirmados; T1.4 en Render |
