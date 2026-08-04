@@ -160,7 +160,7 @@ Si frontend y API están en dominios distintos, configurar **CORS** en Render:
 |----------|----------------|
 | `CORS_ALLOWED_ORIGINS` | `https://proyectogmusic.vercel.app,http://localhost:5173` |
 
-Verificar: `npm run deploy:verify-production` (preflight quiz debe reflejar el origen Vercel).
+Verificar: `node --env-file=.env npm run deploy:verify-production` — requiere **`DATABASE_URL` prod** (migrate guard fail-closed si falta). Incluye health, schema Prisma 8/8, rutas SPA y CORS.
 
 ---
 
@@ -279,7 +279,7 @@ Tras cambiar variables → **Redeploy** obligatorio.
 
 ```bash
 npm run deploy:verify-config      # repo local
-npm run deploy:verify-production  # smoke prod (rutas + health + CORS)
+node --env-file=.env npm run deploy:verify-production  # smoke prod (health + migrate guard + rutas + CORS)
 ```
 
 ### Estado cierre

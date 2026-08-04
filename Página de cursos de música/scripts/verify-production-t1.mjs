@@ -3,10 +3,15 @@
  * Smoke test de producción Track A (T1).
  * Uso: npm run deploy:verify-production
  *
+ * Requiere DATABASE_URL prod para migrate guard (fail-closed si falta).
+ * Ejemplo: node --env-file=.env scripts/verify-production-t1.mjs
+ *
  * Variables opcionales:
  *   GMUSIC_FRONTEND_URL=https://proyectogmusic.vercel.app
  *   GMUSIC_API_URL=https://gmusic-api.onrender.com
+ *   SKIP_PROD_MIGRATE_GUARD=1  — solo debug local (no flujo normal)
  */
+import { checkProdMigrateGuard } from "./lib/prisma-migrate-status-guard.mjs";
 const FRONTEND = (process.env.GMUSIC_FRONTEND_URL ?? "https://proyectogmusic.vercel.app").replace(
   /\/+$/,
   ""
@@ -51,6 +56,15 @@ try {
   }
 } catch (error) {
   fail(`API health — ${error instanceof Error ? error.message : String(error)}`);
+}
+
+const migrateGuard = checkProdMigrateGuard();
+if (migrateGuard.skipped) {
+  console.warn(`  ⚠ ${migrateGuard.message}`);
+} else if (migrateGuard.ok) {
+  ok(`${migrateGuard.message} (${migrateGuard.host})`);
+} else {
+  fail(`${migrateGuard.message}${migrateGuard.host ? ` · host ${migrateGuard.host}` : ""}`);
 }
 
 for (const route of FRONTEND_ROUTES) {

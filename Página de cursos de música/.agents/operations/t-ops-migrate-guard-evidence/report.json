@@ -1,0 +1,52 @@
+{
+  "ticket": "T-OPS-MIGRATE-GUARD-01",
+  "timestampUtc": "2026-08-04T18:00:00Z",
+  "authorization": "OK handoff T-OPS-MIGRATE-GUARD-01 — Juan 4 Ago 2026",
+  "pushGate": "OK cierre Juan 4 Ago 2026 — committed",
+  "negativeEvidence": {
+    "databaseUrlMissing": {
+      "command": "env -u DATABASE_URL node scripts/verify-production-t1.mjs",
+      "exitCode": 1,
+      "failLine": "DATABASE_URL ausente — verify prod requiere conexión prod para migrate guard (fail-closed)",
+      "unitTest": "checkProdMigrateGuard FAIL — DATABASE_URL ausente (fail-closed)"
+    },
+    "pendingMigrationMocked": {
+      "method": "unit test only — no migraciones reales contra prod",
+      "unitTest": "FAIL — migraciones pendientes (evidencia negativa mockeada)",
+      "mockMigration": "20260717120000_pd2_durable_persistence_h1"
+    }
+  },
+  "positiveEvidence": {
+    "unitTests": {
+      "command": "node --test scripts/lib/prisma-migrate-status-guard.test.mjs",
+      "pass": 7,
+      "fail": 0
+    },
+    "verifyProductionProd": {
+      "command": "node --env-file=.env scripts/verify-production-t1.mjs",
+      "exitCode": 0,
+      "migrateLine": "Prisma migrate status — schema alineado (up to date)",
+      "schemaMigrations": "8/8"
+    },
+    "appTest": {
+      "command": "npm run app:test",
+      "pass": 614,
+      "fail": 0
+    }
+  },
+  "filesChanged": [
+    "scripts/lib/prisma-migrate-status-guard.mjs",
+    "scripts/lib/prisma-migrate-status-guard.test.mjs",
+    "scripts/verify-production-t1.mjs",
+    "docs/deploy/checklist-track-a.md"
+  ],
+  "criteria6of6": {
+    "1_moduleAndUnitTests": true,
+    "2_integratedInVerifyProduction": true,
+    "3_prodCleanGreen": true,
+    "4_parserPendingFailsMocked": true,
+    "5_appTest614": true,
+    "6_closureDocPendingOk": true
+  },
+  "pass": true
+}
