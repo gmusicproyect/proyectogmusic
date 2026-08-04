@@ -31,3 +31,6 @@ export-instruccionescursor/
 
 # Cursor IDE (local skill symlinks; secrets path also listed above)
 .cursor/
+
+# Ops smoke — session cookies (browser curl -c/-b; never commit)
+.agents/operations/**/*-cookies*.txt
