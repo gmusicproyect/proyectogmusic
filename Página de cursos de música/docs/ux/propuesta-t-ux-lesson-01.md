@@ -267,6 +267,16 @@ const ROUTES = {
 | 8 | Schema `fretboard` en PathNode — cambio de schema vía migración Prisma | Cuando se apruebe el campo |
 | 9 | Comportamiento cuando el alumno abandona la sesión de práctica | Cuando se integre con runner |
 
+### 8.4 Registro de discrepancias (repo vs propuesta)
+
+| # | Discrepancia |
+|---|---|
+| 1 | Dorado real `#C9A84C` (tokens cb5c3e5) — no `#D4AF37` (afirmación descartada en §3). |
+| 2 | cb5c3e5 no define sidebar; `#111111` (`BG_SURFACE`) es el token de superficie más cercano. |
+| 3 | Rutas completas llevan prefijo `/api/v1/` (§3.4 usa `/lesson-sessions` sin prefijo). |
+| 4 | `signed-url` pide `materialUrl` (URL https completa), no `{ key, ttl }` del borrador anterior. |
+| 5 | El backend de rachas **SÍ existe** — la respuesta de `POST /lesson-sessions/:id/complete` incluye `streakUpdated` y `currentStreak`. Mostrar o no la racha en la pantalla de lección pasa de «ficción eliminada» a **decisión de producto** para el handoff T-UX-LESSON-01. |
+
 ---
 
 *Documento de propuesta. No contiene código de producción. Las piezas de código asociadas se revisarán contra el repo real cuando existan. Nombre del producto: Academia GMusic.*
