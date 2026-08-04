@@ -2,8 +2,8 @@
 
 **Fecha cierre:** 4 Ago 2026  
 **Entorno:** prod — `proyectogmusic.vercel.app` → Render `gmusic-api` → Supabase prod  
-**Smoke:** Juan «hazlo tu» 4 Ago 2026 (delegado Cursor · API E2E + path)  
-**Veredicto:** **CERRADO 6/6**
+**Smoke:** Juan «hazlo tu» 4 Ago 2026 — delegado Cursor · **API E2E** + verificación de estado en browser (ver § alcance abajo)  
+**Veredicto:** **CERRADO 6/6** (no reabre por pendiente UI no bloqueante)
 
 **Prerequisito Fase A:** `INC-2026-08-04-schema-drift-pd2.md` — PD-2 migrate prod aplicada el mismo día.
 
@@ -15,7 +15,7 @@
 |---|------|-----------|
 | 1 | Script `seed-b3-microexercises.mjs` + `--dry-run` prod OK | 6/6 ejercicios · `WOULD_SKIP (matches spec)` · tests **13/13** |
 | 2 | 6 `MicroExercise` en B3 «Tu primer acorde: La menor» | Prod pre-aplicados · catálogo `seed-b3-microexercises-catalog.mjs` |
-| 3 | Smoke E2E B3 **nodo 2** · runner practicable | **CHORD_SHAPE** digitación Am · sesión 201 · complete · `xpEarned: 100` |
+| 3 | Smoke E2E B3 **nodo 2** · flujo practicable (datos) | **API E2E** · **CHORD_SHAPE** · sesión · complete · `xpEarned: 100` — *no* runner UI humano (§ alcance) |
 | 4 | `POST /complete` → progreso + XP sin duplicados | `nodeCompleted: true` · `accuracy: 1` · path nodo 2 → **completed** |
 | 5 | Re-complete idempotente | `alreadyProcessed: true` · session `662b88ec-d28f-491c-8e2b-fc866418d481` |
 | 6 | Doc + PROJECT_STATUS **6/6** | Este archivo · evidencia JSON abajo |
@@ -35,6 +35,19 @@
 ---
 
 ## Fase B — smoke B3 nodo 2
+
+### Alcance del smoke (registro honesto)
+
+| Qué se probó | Cómo |
+|--------------|------|
+| Login · sesión · complete · XP · path `completed` · re-complete idempotente | **API E2E** prod (`scripts/ops/t-pub-02-prod-smoke-b3-node2.mjs`) |
+| Carga de `/mi-camino` autenticado | Browser — verificación de estado (nodo 2 visible en camino post-complete) |
+
+**Delegación:** Juan autorizó **«hazlo tú»** (4 Ago 2026). El flujo API es **equivalente en datos** al del runner; **no** sustituye una pasada humana de la UI (render del ejercicio, botones, feedback visual de XP).
+
+**Pendiente no bloqueante:** primera pasada humana del **runner UI** en prod — no ticket; se cierra con uso normal del producto (p. ej. jugar B3 nodo 3 como alumno antes de invitar a un alumno real). Si el runner no renderiza o el feedback XP no se muestra, este cierre **no** lo habría atrapado.
+
+### Resultado API
 
 | Campo | Valor |
 |-------|-------|
@@ -102,4 +115,5 @@ Canon Am abierto: **X-0-2-2-1-0**. Nodo 5 `order=2` = CHORD_SHAPE piloto (sin EA
 |-------|--------|
 | 8 Jul 2026 | Brief + spec Fase 2A · vía B script ops |
 | 4 Ago 2026 | Fase A PD-2 prod · incidente drift |
-| 4 Ago 2026 | Fase B smoke · **CERRADO 6/6** |
+| 4 Ago 2026 | Fase B smoke API · **CERRADO 6/6** |
+| 4 Ago 2026 | Ajuste registro: smoke = API E2E + browser estado · runner UI humano pendiente no bloqueante |
