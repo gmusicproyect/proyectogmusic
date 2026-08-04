@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   buildSupabaseObjectUrl,
   isPrivateSupabaseStorageUrl,
+  isPilotFreeMaterialUrl,
   parseSupabaseStorageUrl,
   sanitizeUploadFilename,
 } from "../lib/supabaseStorage.js";
@@ -44,6 +45,23 @@ describe("isPrivateSupabaseStorageUrl", () => {
     assert.equal(
       isPrivateSupabaseStorageUrl(
         "https://x.supabase.co/storage/v1/object/demo-media/a.mp4"
+      ),
+      false
+    );
+  });
+});
+
+describe("isPilotFreeMaterialUrl", () => {
+  it("detecta material piloto T1", () => {
+    assert.equal(
+      isPilotFreeMaterialUrl(
+        "https://x.supabase.co/storage/v1/object/clases-pdf/tu-guitarra-y-postura.pdf"
+      ),
+      true
+    );
+    assert.equal(
+      isPilotFreeMaterialUrl(
+        "https://x.supabase.co/storage/v1/object/clases-video/otro.mp4"
       ),
       false
     );

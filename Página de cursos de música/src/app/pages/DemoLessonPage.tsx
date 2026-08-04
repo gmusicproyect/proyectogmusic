@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { VideoPlayerLesson } from "../components/dashboard/VideoPlayerLesson";
+import { LessonMaterialTabs } from "../components/gmusic/lesson/LessonMaterialTabs";
 import { MultipleChoiceExercise } from "../components/gmusic/lesson/MultipleChoiceExercise";
 import { Ex1Cuerdas } from "../components/dashboard/exercises/Ex1Cuerdas";
 import { ExPulsoAire } from "../components/dashboard/exercises/ExPulsoAire";
 import { useDemoProgress } from "../hooks/useDemoProgress";
+import { useSignedMaterialUrl } from "../hooks/useSignedMaterialUrl";
 import { DEMO_LESSONS } from "../data/demo-lessons";
 import { playFreeFundamentoSuccessFeedback } from "../utils/free-fundamento-lesson";
 import { analytics } from "../utils/analytics";
+import { isPrivateSupabaseStorageMaterialUrl } from "../utils/supabase-storage";
 import type { ParsedExerciseView } from "../components/gmusic/lesson/lesson-runner-types";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
 
@@ -144,6 +146,14 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       interaction: { mode: "mcq" },
     };
   }, [lesson, lessonId]);
+
+  const signedPdf = useSignedMaterialUrl(
+    isPrivateSupabaseStorageMaterialUrl(lesson?.guidePdfUrl) ? lesson?.guidePdfUrl : null
+  );
+  const publicPdfUrl = isPrivateSupabaseStorageMaterialUrl(lesson?.guidePdfUrl)
+    ? null
+    : lesson?.guidePdfUrl ?? null;
+  const resolvedPdfUrl = signedPdf.resolvedUrl ?? publicPdfUrl;
 
   useEffect(() => {
     if (!lesson) setPage("mi-camino-demo");
@@ -310,13 +320,32 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
               >
-                <VideoPlayerLesson
-                  title={lesson.videoTitle}
-                  subtitle={lesson.videoSubtitle}
-                  duration={lesson.videoDuration}
-                  lessonLabel={`Clase ${lessonId} · Fundamento`}
+                {signedPdf.error ? (
+                  <p
+                    style={{
+                      margin: "0 0 12px",
+                      padding: "12px 14px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(248,113,113,0.25)",
+                      background: "rgba(40,18,18,0.55)",
+                      color: TEXT_SEC,
+                      fontSize: 14,
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {signedPdf.error}
+                  </p>
+                ) : null}
+                <LessonMaterialTabs
+                  nodeTitle={lesson.videoTitle}
+                  nodeDescription={lesson.subtitle}
+                  stageLabel={`Clase ${lessonId} · Fundamento`}
+                  durationLabel={lesson.videoDuration}
                   videoUrl={lesson.videoUrl}
-                  onPlaybackComplete={() => setVideoComplete(true)}
+                  embedUrl={lesson.videoUrl}
+                  guidePdfUrl={resolvedPdfUrl}
+                  pdfLoading={signedPdf.loading}
+                  onVideoPlaybackComplete={() => setVideoComplete(true)}
                 />
               </motion.div>
             )}

@@ -52,6 +52,20 @@ export function isPrivateSupabaseStorageUrl(url: string | null | undefined): boo
   return PRIVATE_STORAGE_BUCKETS.includes(parsed.bucket as PrivateStorageBucket);
 }
 
+/** Material piloto T1 — accesible con sesión (clase gratis / primera lección). */
+const PILOT_FREE_OBJECT_PATHS = new Set([
+  "tu-guitarra-y-postura.mp4",
+  "tu-guitarra-y-postura.pdf",
+  "pilot/fundamentos/tu-guitarra-y-postura.mp4",
+  "pilot/fundamentos/tu-guitarra-y-postura.pdf",
+]);
+
+export function isPilotFreeMaterialUrl(url: string | null | undefined): boolean {
+  const parsed = parseSupabaseStorageUrl(url ?? "");
+  if (!parsed) return false;
+  return PILOT_FREE_OBJECT_PATHS.has(parsed.objectPath);
+}
+
 export function buildSupabaseObjectUrl(
   supabaseUrl: string,
   bucket: string,

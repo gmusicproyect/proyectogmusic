@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import { resolveStudentAccess } from "../lib/studentAccess.js";
 import {
   createSignedStorageUrl,
+  isPilotFreeMaterialUrl,
   isPrivateSupabaseStorageUrl,
 } from "../lib/supabaseStorage.js";
 
@@ -40,6 +41,8 @@ export async function resolveSignedMaterialUrlForStudent(
     );
   }
 
-  await assertActiveSubscription(student);
+  if (!isPilotFreeMaterialUrl(materialUrl)) {
+    await assertActiveSubscription(student);
+  }
   return createSignedStorageUrl(materialUrl);
 }

@@ -22,6 +22,7 @@ describe("T-UX-LESSON-01A — pantalla prepare", () => {
     assert.match(tabsSource, /Próximamente/);
     assert.match(tabsSource, /guidePdfUrl/);
     assert.match(tabsSource, /Ver guía PDF/);
+    assert.match(tabsSource, /También tienes la guía PDF/);
   });
 
   it("PathLessonRunner integra prepare antes del runner evaluado", () => {

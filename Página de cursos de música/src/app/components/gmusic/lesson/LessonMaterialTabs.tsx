@@ -113,6 +113,25 @@ export function LessonMaterialTabs({
               </p>
             ) : null}
           </div>
+          {guidePdfUrl && !pdfLoading ? (
+            <div
+              className="rounded-lg border px-4 py-4"
+              style={{ borderColor: GM_BORDER, background: "rgba(212, 175, 55, 0.06)" }}
+            >
+              <p className="mb-3 text-sm" style={{ color: GM_TEXT_SEC }}>
+                También tienes la guía PDF de esta clase.
+              </p>
+              <a
+                href={guidePdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em]"
+                style={{ background: GM_GOLD, color: "#0A0A0A" }}
+              >
+                Ver guía PDF
+              </a>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -142,19 +161,27 @@ export function LessonMaterialTabs({
               Preparando la guía PDF…
             </p>
           ) : guidePdfUrl ? (
-            <div className="space-y-3 text-center">
-              <p className="text-sm" style={{ color: GM_TEXT_SEC }}>
-                Abre la guía PDF de esta etapa en una pestaña nueva.
-              </p>
-              <a
-                href={guidePdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[44px] items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em]"
-                style={{ background: GM_GOLD, color: "#0A0A0A" }}
-              >
-                Ver guía PDF
-              </a>
+            <div className="space-y-4">
+              <iframe
+                title={`Guía PDF — ${nodeTitle}`}
+                src={guidePdfUrl}
+                className="h-[min(70vh,520px)] w-full rounded-md border-0 bg-white"
+                style={{ border: `1px solid ${GM_BORDER}` }}
+              />
+              <div className="space-y-3 text-center">
+                <p className="text-sm" style={{ color: GM_TEXT_SEC }}>
+                  Si no se ve arriba, abre la guía en una pestaña nueva.
+                </p>
+                <a
+                  href={guidePdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em]"
+                  style={{ background: GM_GOLD, color: "#0A0A0A" }}
+                >
+                  Abrir PDF en pestaña nueva
+                </a>
+              </div>
             </div>
           ) : (
             <p className="text-center text-sm" style={{ color: GM_TEXT_SEC }}>

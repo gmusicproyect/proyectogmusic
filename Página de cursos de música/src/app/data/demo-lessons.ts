@@ -35,6 +35,8 @@ export interface DemoLesson {
   videoSource?: "youtube-example" | "owned";
   /** true mientras el video no sea el contenido oficial definitivo de Gmusic. */
   isPlaceholderVideo?: true;
+  /** Guía PDF (Storage privado; requiere sesión para URL firmada). */
+  guidePdfUrl?: string | null;
   exercise: DemoExerciseKind;
   completionMessage: string;
 }
@@ -69,6 +71,8 @@ export const DEMO_LESSONS: readonly DemoLesson[] = [
     videoUrl: "https://www.youtube.com/embed/0GImi8l53q0",
     videoSource: "youtube-example",
     isPlaceholderVideo: true,
+    guidePdfUrl:
+      "https://tosbwmqijmtxchvcgrkj.supabase.co/storage/v1/object/clases-pdf/tu-guitarra-y-postura.pdf",
     exercise: {
       kind: "mcq",
       question: "¿Cómo se llama la parte superior del mástil donde van las clavijas?",
