@@ -1,3 +1,7 @@
+import { loadSupabaseSecretsFromRender } from "./lib/loadRenderSecretFile.js";
+
+loadSupabaseSecretsFromRender();
+
 import { config, assertJwtSecretConfigured } from "./config.js";
 import { createApp } from "./app.js";
 import { prisma } from "./lib/prisma.js";
