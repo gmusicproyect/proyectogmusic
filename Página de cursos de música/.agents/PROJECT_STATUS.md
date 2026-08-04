@@ -1,6 +1,6 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **3 Ago 2026** (D-500 cerrado · T-REG-01 prod · SEC-PRELAUNCH · keep-alive) · base **`origin/main@d438f84`** · `app:test` **621/621** · build OK · guards focales exactos **75/75**.
+Última actualización: **4 Ago 2026** (T-URL-FUNNEL-01 cerrado · D-GOV-19 en prod) · base **`origin/main@deee235`** · `app:test` **614/614** · build OK
 
 ## Hito — Cierre operativo 3 Ago 2026
 
@@ -20,7 +20,7 @@
 | Orden | Item | Estado | Nota |
 |-------|------|--------|------|
 | ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
-| **2** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **Ticket formal** — pendiente `OK T-URL-FUNNEL-01` | Spec: `.agents/specs/T-URL-FUNNEL-01-mini-spec.md` · va **solo** |
+| ~~**2**~~ | ~~**T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**)~~ | ✅ **CERRADO** @ `deee235` · push prod READY | `/clase-gratuita`, `/clase-gratuita/1…5`; redirects 308 legacy; `app:test` **614/614** |
 | ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
 **Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md`
