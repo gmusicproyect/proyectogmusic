@@ -2,9 +2,7 @@
 
 **Dictamen:** Claude/Fable · **4 Ago 2026**  
 **Ruta canónica de firma (ítem 2):** `POST /api/v1/me/media/signed-url`  
-**Estado global:** Pendiente smoke manual Juan (ítems 7–8) + frase `OK cierre T1`
-
-Marcar **sí/no**. Todo sí → Juan envía `OK cierre T1` → Cursor cierra PROJECT_STATUS y puede arrancar T-URL-FUNNEL-01.
+**Estado global:** ✅ **CERRADO** — OK Juan · 4 Ago 2026 @ `f05b81e`
 
 ---
 
@@ -25,8 +23,8 @@ Marcar **sí/no**. Todo sí → Juan envía `OK cierre T1` → Cursor cierra PRO
 
 | # | Ítem | Sí/No | Notas |
 |---|------|-------|-------|
-| 7 | Login `carlos@gmusic.academy` (ACTIVE) → nodo «Tu guitarra y postura»: video carga y reproduce | **pendiente Juan** | Placeholder ~2 s / ~3 KB — si falla player, subir mp4 normal al bucket antes de declarar FAIL |
-| 8 | Mismo nodo: PDF abre desde la app | **pendiente Juan** | |
+| 7 | Login `carlos@gmusic.academy` (ACTIVE) → nodo «Tu guitarra y postura»: video carga y reproduce | **sí** | OK cierre T1 — Juan 4 Ago 2026 |
+| 8 | Mismo nodo: PDF abre desde la app | **sí** | OK cierre T1 — Juan 4 Ago 2026 |
 
 ---
 
@@ -50,7 +48,7 @@ Marcar **sí/no**. Todo sí → Juan envía `OK cierre T1` → Cursor cierra PRO
 
 ## Qué autoriza `OK cierre T1`
 
-1. `PROJECT_STATUS.md` → T1 **CERRADO** (commit de cierre docs)
-2. Arrancar **T-URL-FUNNEL-01** (mini-spec: `.agents/specs/T-URL-FUNNEL-01-mini-spec.md`)
+~~Pendiente.~~ **Ejecutado 4 Ago 2026:**
 
-Nada más.
+1. ✅ `PROJECT_STATUS.md` → T1 **CERRADO**
+2. **T-URL-FUNNEL-01** autorizado — arrancar cuando Juan lo pida

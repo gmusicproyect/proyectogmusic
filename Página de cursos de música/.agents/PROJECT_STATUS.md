@@ -19,11 +19,11 @@
 
 | Orden | Item | Estado | Nota |
 |-------|------|--------|------|
-| **1** | **T1 Storage** (T1.4/T1.5) | En cierre | Prioridad activa — no mezclar contexto |
-| **2** | **Rediseño UI** vista demo «Conoce tu guitarra» | ✅ **Hecho** @ `cb5c3e5` | Solo layout/estilos; URL sin cambio |
-| **3** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **En cola** | `/clase-gratuita` + `/clase-gratuita/1…5`; 301 edge en `vercel.json`; routing + guards + tests |
+| ~~**1**~~ | ~~**T1 Storage** (T1.4/T1.5)~~ | ✅ **CERRADO** @ `f05b81e` · OK Juan 4 Ago 2026 | Signed URL, upload admin, Secret File Render, demo PDF, UI `cb5c3e5` |
+| **2** | **T-URL-FUNNEL-01** — URLs públicas funnel (**D-GOV-19**) | **Siguiente** | `/clase-gratuita` + `/clase-gratuita/1…5`; mini-spec en `.agents/specs/` |
+| ~~**3**~~ | ~~Rediseño UI demo «Conoce tu guitarra»~~ | ✅ **Hecho** @ `cb5c3e5` | Incluido en cierre T1 |
 
-**Regla:** no arrancar T-URL-FUNNEL-01 hasta criterio de cierre T1 confirmado por Juan.
+**Evidencia cierre:** `.agents/operations/T1-STORAGE-CIERRE-CHECKLIST.md`
 
 **Nota histórica:** los hitos fechados debajo conservan el estado que era verdadero en su fecha; este bloque superior los supersede como snapshot vigente.
 
