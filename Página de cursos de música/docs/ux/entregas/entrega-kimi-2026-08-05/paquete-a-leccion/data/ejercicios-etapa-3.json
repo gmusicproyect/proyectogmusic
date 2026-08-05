@@ -1,0 +1,42 @@
+{
+  "_MOCK": "DATOS DE PRUEBA — no provienen del backend real. Simulan el payload de MicroExercise[] que llegaría dentro de exercises[] al crear la sesión con POST /api/v1/lesson-sessions. Ejercicios de RESPUESTA (selectedAnswer + responseTimeMs). Ningún ejercicio usa micrófono ni audio en vivo.",
+  "nodeId": "n3-cuerdas-al-aire",
+  "exercises": [
+    {
+      "microExerciseId": "me-01-cuerda-6",
+      "tipo": "SELECCION",
+      "prompt": "¿Cuál es la cuerda 6, la más grave de la guitarra?",
+      "opciones": ["E", "A", "D", "G"],
+      "respuestaCorrecta": "E"
+    },
+    {
+      "microExerciseId": "me-02-cuerda-marcada",
+      "tipo": "SELECCION_DIAPASON",
+      "prompt": "En el diapasón hay una cuerda marcada en dorado. ¿Cuál es?",
+      "cuerdaMarcada": "D",
+      "opciones": ["G", "D", "A", "B"],
+      "respuestaCorrecta": "D"
+    },
+    {
+      "microExerciseId": "me-03-orden-grave-aguda",
+      "tipo": "ORDENAR",
+      "prompt": "Ordena estas cuerdas de grave a aguda, tocándolas en secuencia:",
+      "items": ["A", "e", "D"],
+      "respuestaCorrecta": ["A", "D", "e"]
+    },
+    {
+      "microExerciseId": "me-04-identifica-sonido",
+      "tipo": "SELECCION_AUDIO",
+      "prompt": "Escucha el audio y elige qué cuerda sonó:",
+      "audioRef": "audio pregrabado — SIMULADO en este prototipo (sin archivo real)",
+      "opciones": ["B", "G", "e", "A"],
+      "respuestaCorrecta": "G"
+    },
+    {
+      "microExerciseId": "me-05-toca-en-diapason",
+      "tipo": "TOCAR_CUERDA_DIAPASON",
+      "prompt": "Toca en el diapasón la cuerda B:",
+      "respuestaCorrecta": "B"
+    }
+  ]
+}

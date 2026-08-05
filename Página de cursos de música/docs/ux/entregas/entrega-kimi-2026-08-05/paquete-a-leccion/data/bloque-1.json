@@ -1,0 +1,79 @@
+{
+  "_MOCK": "DATOS DE PRUEBA — no provienen del backend real. Simulan la forma de GET /api/v1/me/path",
+  "bloqueId": "bloque-1-acordes-abiertos",
+  "titulo": "Habilidad del Bloque 1: Tocar acordes abiertos limpios",
+  "descripcion": "Al finalizar estas 5 etapas, podrás tocar Em, Am, D y G sin trasteo, y cambiar entre ellos al ritmo de una canción.",
+  "activeNodeId": "n3-cuerdas-al-aire",
+  "etapas": [
+    {
+      "nodeId": "n1-conoce-tu-guitarra",
+      "stageType": "FUNDAMENTO_UNO",
+      "orden": 1,
+      "titulo": "Conoce tu guitarra",
+      "estado": "DONE",
+      "videoUrl": "enlace firmado (1 h) — MOCK",
+      "guidePdfUrl": "enlace firmado (1 h) — MOCK · partes de la guitarra, diagrama ilustrado",
+      "videos": [
+        { "modo": "R", "titulo": "Repaso (video)", "detalle": "Partes de la guitarra: cuerpo, mástil, trastes, clavijas", "min": 4 },
+        { "modo": "E", "titulo": "Ejercicio en video", "detalle": "Identifica cada parte junto al profesor", "min": 5 },
+        { "modo": "T", "titulo": "Toca conmigo", "detalle": "Nombra las 6 cuerdas al aire siguiendo al profesor", "min": 3 }
+      ]
+    },
+    {
+      "nodeId": "n2-afina-y-posturea",
+      "stageType": "FUNDAMENTO_DOS",
+      "orden": 2,
+      "titulo": "Afina y posturea",
+      "estado": "DONE",
+      "videoUrl": "enlace firmado (1 h) — MOCK",
+      "guidePdfUrl": "enlace firmado (1 h) — MOCK · postura paso a paso, tabla de afinación estándar",
+      "videos": [
+        { "modo": "R", "titulo": "Repaso (video)", "detalle": "Postura correcta: espalda, brazos, ángulo del mástil", "min": 4 },
+        { "modo": "E", "titulo": "Ejercicio en video", "detalle": "Afinar cuerda por cuerda con afinador", "min": 6 },
+        { "modo": "T", "titulo": "Toca conmigo", "detalle": "Afina tu guitarra junto al profesor, cuerda por cuerda", "min": 5 }
+      ]
+    },
+    {
+      "nodeId": "n3-cuerdas-al-aire",
+      "stageType": "TECNICA",
+      "orden": 3,
+      "titulo": "Cuerdas al aire",
+      "estado": "CURRENT",
+      "videoUrl": "enlace firmado (1 h) — MOCK",
+      "guidePdfUrl": "enlace firmado (1 h) — MOCK · nombres de cuerdas, ejercicios de memoria",
+      "videos": [
+        { "modo": "R", "titulo": "Repaso (video)", "detalle": "Orden y nombre de las cuerdas: E A D G B e", "min": 4 },
+        { "modo": "E", "titulo": "Ejercicio en video", "detalle": "Cómo pulsar para que la cuerda suene limpia", "min": 5 },
+        { "modo": "T", "titulo": "Toca conmigo", "detalle": "Secuencia completa de las 6 cuerdas con el profesor", "min": 5 }
+      ]
+    },
+    {
+      "nodeId": "n4-em-am-limpios",
+      "stageType": "PRACTICA",
+      "orden": 4,
+      "titulo": "Em y Am limpios",
+      "estado": "LOCKED",
+      "videoUrl": "enlace firmado (1 h) — MOCK",
+      "guidePdfUrl": "enlace firmado (1 h) — MOCK · diagramas de acordes, errores comunes",
+      "videos": [
+        { "modo": "R", "titulo": "Repaso (video)", "detalle": "Digitación de Em y Am, dedo por dedo", "min": 5 },
+        { "modo": "E", "titulo": "Ejercicio en video", "detalle": "Errores comunes: cuerdas apagadas y zumbidos", "min": 6 },
+        { "modo": "T", "titulo": "Toca conmigo", "detalle": "Cambio Em ↔ Am a tempo lento junto al profesor", "min": 7 }
+      ]
+    },
+    {
+      "nodeId": "n5-primera-cancion",
+      "stageType": "TOCAR",
+      "orden": 5,
+      "titulo": "Tu primera canción",
+      "estado": "LOCKED",
+      "videoUrl": "enlace firmado (1 h) — MOCK",
+      "guidePdfUrl": "enlace firmado (1 h) — MOCK · tabla de cambios Em→Am→D→G con conteo",
+      "videos": [
+        { "modo": "R", "titulo": "Repaso (video)", "detalle": "La progresión de la canción: Em → Am → D → G", "min": 4 },
+        { "modo": "E", "titulo": "Ejercicio en video", "detalle": "Cambios con conteo en voz alta", "min": 6 },
+        { "modo": "T", "titulo": "Toca conmigo", "detalle": "La canción completa junto al profesor", "min": 6 }
+      ]
+    }
+  ]
+}

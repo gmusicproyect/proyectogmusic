@@ -1,0 +1,187 @@
+/* ============================================================
+   Academia GMusic — Paquete A · prototipo de referencia
+   TOKENS VERIFICADOS (los únicos usados en este archivo):
+     fondo      #080808
+     superficie #111111
+     borde      rgba(255,255,255,0.06)
+     dorado     #C9A84C  (+ derivados con alpha del dorado)
+     texto      #F5F0E8
+     secundario #8A8A8A
+   EXCEPCIÓN declarada (propuesta de paleta, pendiente decisión):
+     verde acierto #4ADE80 — usado en combo/aciertos/estado DONE.
+     Está listado en README-ENTREGA.md. No hay ningún otro color.
+   Tipografía mínima: 11px en todo el archivo.
+   ============================================================ */
+
+:root{
+  --gold:#C9A84C;
+  --gold-a08:rgba(201,168,76,.08);
+  --gold-a15:rgba(201,168,76,.15);
+  --gold-a25:rgba(201,168,76,.25);
+  --gold-a35:rgba(201,168,76,.35);
+  --bg:#080808;
+  --surface:#111111;
+  --line:rgba(255,255,255,0.06);
+  --txt:#F5F0E8;
+  --txt-2:#8A8A8A;
+  --acierto:#4ADE80; /* propuesta de paleta — pendiente decisión */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'Segoe UI',Inter,Roboto,sans-serif}
+body{background:var(--bg);color:var(--txt);min-height:100vh;font-size:14px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 60px}
+code{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:11px;color:var(--gold)}
+.hidden{display:none}
+
+/* ---------- Header ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
+.logo{font-size:19px;font-weight:700}
+.logo b{color:var(--gold);margin-left:6px}
+.nav{display:flex;gap:28px;font-size:11px;letter-spacing:.14em;font-weight:600;color:var(--txt-2);align-items:center}
+.nav a{cursor:pointer;padding-bottom:6px}
+.nav a.on{color:var(--gold);border-bottom:2px solid var(--gold)}
+.streak-chip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--gold);background:var(--gold-a08);border:1px solid var(--gold-a15);border-radius:999px;padding:5px 12px}
+
+/* ---------- Hero ---------- */
+.hero{padding:34px 0 8px}
+.hero h1{font-size:27px;font-weight:700;margin-bottom:8px}
+.hero p{font-size:14px;color:var(--txt-2);margin-bottom:18px}
+.hero-progress{display:flex;align-items:center;gap:14px}
+.hero-progress .track{flex:1;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
+.hero-progress .track i{display:block;height:100%;width:0;background:var(--gold);transition:width .4s}
+.hero-progress .num{font-size:11px;color:var(--txt-2);white-space:nowrap}
+
+/* ---------- Pestañas ---------- */
+.tabs{display:flex;margin:26px 0 22px;border-bottom:1px solid var(--line)}
+.tab{font-size:11px;letter-spacing:.1em;font-weight:600;color:var(--txt-2);padding:12px 18px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;text-transform:uppercase}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ---------- Skill banner ---------- */
+.skill-banner{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;gap:18px;align-items:flex-start;margin-bottom:24px}
+.skill-icon{width:46px;height:46px;flex:none;border-radius:12px;background:var(--gold-a08);border:1px solid var(--gold-a15);display:flex;align-items:center;justify-content:center;font-size:20px}
+.skill-banner h2{font-size:16px;font-weight:700;margin-bottom:5px}
+.skill-banner h2 .frac{float:right;font-size:13px;color:var(--gold)}
+.skill-banner p{font-size:13px;color:var(--txt-2);line-height:1.55;max-width:640px}
+
+/* ---------- Tarjetas ---------- */
+.cards{display:flex;gap:18px;overflow-x:auto;padding:4px 2px 14px}
+.card{flex:0 0 232px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.card.active{border-color:var(--gold-a35);box-shadow:0 0 0 1px var(--gold-a35)}
+.card.locked{opacity:.55}
+.card .tag-row{display:flex;justify-content:space-between;align-items:center}
+.card .kind{font-size:11px;letter-spacing:.1em;font-weight:700;text-transform:uppercase;padding:4px 9px;border-radius:6px;background:var(--gold-a08);color:var(--gold)}
+.card .lock{font-size:13px;color:var(--txt-2)}
+.card .emoji{font-size:30px}
+.card .clase{font-size:11px;letter-spacing:.1em;color:var(--txt-2);text-transform:uppercase;font-weight:600}
+.card h3{font-size:17px;font-weight:700}
+.card .meta{font-size:11px;color:var(--txt-2)}
+.card .meta .vid{color:var(--gold)}
+.card .btn{margin-top:auto;text-align:center;font-size:13px;font-weight:700;border-radius:10px;padding:11px}
+.card .btn.done{color:var(--txt-2);background:var(--bg);font-weight:500}
+.card .btn.go{background:var(--gold);color:var(--bg);cursor:pointer;border:none}
+.card .btn.locked-b{color:var(--txt-2);background:var(--bg);font-weight:500}
+.card .sub-note{text-align:center;font-size:11px;color:var(--txt-2)}
+
+.legend{margin-top:18px;border-left:2px solid var(--gold-a35);background:var(--gold-a08);border-radius:0 10px 10px 0;padding:14px 18px;font-size:12px;color:var(--txt-2);line-height:1.65}
+.legend b{color:var(--txt);font-weight:600}
+
+/* ---------- Práctica: chips ---------- */
+.ex-chips{display:flex;gap:12px;margin:4px 0 18px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;border-radius:999px;padding:9px 18px;border:1px solid var(--line);background:var(--surface)}
+.chip.done{color:var(--txt-2)}
+.chip.done .n-ic{color:var(--acierto)}
+.chip.current{color:var(--gold);border-color:var(--gold-a35);background:var(--gold-a08)}
+.chip.locked{color:var(--txt-2);opacity:.6}
+.chip .n-ic{font-size:11px}
+
+/* ---------- Práctica: cuadro ---------- */
+.practice{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 24px 26px;transition:opacity .2s}
+.practice-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:16px}
+.practice-head h2{font-size:17px;font-weight:700}
+.practice-head .sub{font-size:13px;color:var(--txt-2);margin-top:6px;line-height:1.5}
+.score{display:flex;gap:22px;text-align:right;flex:none}
+.score .v{font-size:19px;font-weight:800}
+.score .v.gold{color:var(--gold)}
+.score .v:not(.gold){color:var(--acierto)}
+.score .l{font-size:11px;color:var(--txt-2);margin-top:2px;max-width:120px}
+
+.q-body{margin-top:22px;min-height:180px}
+.opciones{display:flex;gap:12px;flex-wrap:wrap}
+.opcion{min-width:76px;padding:16px 20px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;text-align:center;transition:.12s}
+.opcion:hover{border-color:var(--gold-a25)}
+.opcion.pick{border-color:var(--gold);background:var(--gold-a08);color:var(--gold)}
+.opcion.ok{border-color:var(--acierto);color:var(--acierto)}
+.opcion.bad{border-color:var(--gold-a35);opacity:.5}
+
+.diapason{margin:6px 0 18px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--bg)}
+.cuerda{display:flex;align-items:center;gap:12px;height:34px;border-bottom:1px solid var(--line);cursor:pointer;padding:0 4px}
+.cuerda:last-child{border-bottom:none}
+.cuerda:hover{background:var(--gold-a08)}
+.cuerda.marcada{background:var(--gold-a15)}
+.cuerda .nombre{width:20px;font-size:12px;color:var(--txt-2)}
+.cuerda .linea{flex:1;height:1px;background:var(--txt-2);opacity:.4}
+.cuerda.marcada .linea{background:var(--gold);opacity:1;height:2px}
+.cuerda.pick .nombre{color:var(--gold);font-weight:700}
+
+.seq-display{display:flex;gap:10px;margin:14px 0;min-height:52px;align-items:center}
+.seq-slot{width:52px;height:52px;border-radius:50%;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--txt)}
+.seq-slot.full{border-style:solid;border-color:var(--gold);color:var(--gold);background:var(--gold-a08)}
+
+.audio-fake{display:flex;align-items:center;gap:14px;border:1px dashed var(--gold-a25);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.audio-fake .play{width:44px;height:44px;border-radius:50%;background:var(--gold-a08);border:1px solid var(--gold-a25);color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.audio-fake .txt{font-size:12px;color:var(--txt-2);line-height:1.5}
+
+.btn-main{font-size:13px;font-weight:700;color:var(--bg);background:var(--gold);border:none;border-radius:10px;padding:11px 22px;cursor:pointer}
+.btn-main:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{font-size:12px;font-weight:600;color:var(--txt-2);background:transparent;border:1px solid var(--line);border-radius:10px;padding:9px 16px;cursor:pointer}
+
+.practice-foot{display:flex;align-items:center;justify-content:space-between;margin-top:22px;gap:14px;flex-wrap:wrap}
+.ex-pos{font-size:11px;color:var(--txt-2)}
+.session-note{margin-top:14px;font-size:11px;color:var(--txt-2);border-top:1px solid var(--line);padding-top:12px}
+.session-note code{margin-right:10px}
+
+.feedback{margin-top:16px;font-size:13px;font-weight:600;min-height:20px}
+.feedback.ok{color:var(--acierto)}
+.feedback.bad{color:var(--gold)}
+
+.module-done{text-align:center;padding:26px 0 6px}
+.module-done .big{font-size:40px;margin-bottom:10px}
+.module-done h3{font-size:17px;margin-bottom:6px}
+.module-done p{font-size:12px;color:var(--txt-2);line-height:1.6}
+
+/* ---------- Resumen PDF ---------- */
+.pdf-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-2);font-weight:700;margin:6px 0 12px}
+.pdf-list{display:flex;flex-direction:column;gap:10px}
+.pdf-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:border-color .15s}
+.pdf-item.open{border-color:var(--gold-a35)}
+.pdf-row{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer}
+.pdf-row .ic{font-size:20px}
+.pdf-row .t{font-size:14px;font-weight:600}
+.pdf-row .s{font-size:11px;color:var(--txt-2);margin-top:2px}
+.pdf-row .chev{margin-left:auto;font-size:12px;color:var(--txt-2);transition:transform .2s}
+.pdf-item.open .chev{transform:rotate(180deg);color:var(--gold)}
+.pdf-detail{display:none;padding:4px 18px 18px;border-top:1px solid var(--line)}
+.pdf-item.open .pdf-detail{display:block}
+.pdf-detail .about{font-size:12px;color:var(--txt-2);line-height:1.6;padding:12px 0 14px}
+.vid-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:var(--bg);margin-bottom:8px}
+.vid-row .m-ic{width:26px;height:26px;flex:none;border-radius:8px;background:var(--gold-a08);border:1px solid var(--gold-a15);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold);font-weight:700}
+.vid-row .vt{font-size:13px;font-weight:600}
+.vid-row .vs{font-size:11px;color:var(--txt-2);margin-top:1px}
+.vid-row .vd{margin-left:auto;font-size:11px;color:var(--txt-2);white-space:nowrap}
+.pdf-actions{display:flex;gap:10px;margin-top:6px}
+.pdf-actions .dl{font-size:11px;font-weight:700;color:var(--gold);border:1px solid var(--gold-a25);border-radius:8px;padding:7px 14px;cursor:pointer}
+
+/* ---------- Modal resultado ---------- */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:50}
+.overlay.show{display:flex}
+.modal{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:36px 40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:360px}
+.modal .fire{font-size:44px}
+.modal h2{font-size:18px;font-weight:700}
+.modal p{font-size:13px;color:var(--txt-2);line-height:1.6}
+.modal .streak-big{margin-top:6px;font-size:16px;font-weight:700;color:var(--gold);background:var(--gold-a08);border:1px solid var(--gold-a25);border-radius:999px;padding:8px 20px}
+.modal .xp{font-size:12px;color:var(--txt-2)}
+.modal .xp b{color:var(--gold)}
+.modal .contract{margin-top:8px;font-size:11px;color:var(--txt-2);text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;max-height:180px;overflow:auto;width:100%}
+.modal .contract code{display:block;color:var(--txt-2);white-space:pre-wrap}
+
+.tag{position:fixed;left:12px;bottom:12px;z-index:40;font-size:11px;color:var(--txt-2);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}

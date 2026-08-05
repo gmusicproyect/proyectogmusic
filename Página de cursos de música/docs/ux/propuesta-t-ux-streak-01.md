@@ -212,10 +212,13 @@ El backend ya expone `currentStreak` y `streakUpdated` en la respuesta de `POST 
 
 | # | Pendiente | Quién decide |
 |---|---|---|
-| 7 | ¿Agregar campos `bestStreak`, `weekHistory`, `practicedToday` al schema? | Backend + Producto |
-| 8 | ¿Qué ubicaciones se implementan? (1, 2, 3, 4, o subset) | Producto + Diseño |
+| 7 | ¿Agregar campos `bestStreak`, `weekHistory` al schema? (`activeToday` ya existe en dashboard — no requiere campo nuevo) | Backend + Producto |
+| 8 | ¿Qué ubicaciones se implementan? (1, 2, 3, 4, 5 chip Mi Camino, o subset) | Producto + Diseño |
 | 9 | ¿Animación de celebración: sí/no, qué tipo? | Diseño |
 | 10 | ¿Mostrar racha si es 0? | Producto (recomendación del doc: no) |
+| 11 | **Fuente canónica de racha:** ¿`GET /me/dashboard` (`streak.currentDays` / StreakEvent) o `GET /me/progress` (`streakDays` H1)? Evitar dos números distintos en pantalla. | Producto + Backend |
+| 12 | **Relación con el chip existente de Mi Estudio:** ¿extender `deriveStreakChipCopy` + `useDashboard`, reemplazar, o duplicar en header/Mi Camino? (Smoke C: captura del chip actual alimenta esta decisión.) | Producto + Diseño |
+| 13 | **Ubicación candidata (insumo camino archivado §5-4):** chip flotante de racha en **Mi Camino** (`/mi-camino`) — distinto del header global y del chip de Mi Estudio. Pendiente validar en handoff T-UX-STREAK-01. | Producto + Diseño |
 
 ### 8.3 Post-implementación
 
@@ -231,7 +234,7 @@ El backend ya expone `currentStreak` y `streakUpdated` en la respuesta de `POST 
 |---|---|
 | 1 | §2 JSON de ejemplo del `complete` usa campos inventados (`completed`, `totalXp`, `nextLevelAt`); contrato real: `status`, `alreadyProcessed`, `accuracy`, `xpEarned`, `streakUpdated`, `currentStreak`, `nodeCompleted`, `completedAt`. |
 | 2 | `currentStreak` **no** viaja en `GET /api/v1/me` ni en `GET /api/v1/me/path`; el dato fuera del `complete` está en `GET /api/v1/me/dashboard` como `streak.currentDays` (nombre distinto). |
-| 3 | `practicedToday` como campo no existe, pero `streak.activeToday` en dashboard cubre el mismo intent (booleano, backend). `/me/path` no ayuda para derivarlo. |
+| 3 | Usar **`streak.activeToday`** (dashboard), no `practicedToday` — el campo dedicado no existe; el booleano backend cubre «practicó hoy». `/me/path` no ayuda. |
 | 4 | Mi Estudio (`GmusicWelcome` + `useDashboard`) **ya consume** racha del backend; Ubicación 2 no es pantalla nueva sino extensión de `/alumno`. |
 | 5 | `GET /api/v1/me/progress` expone `streakDays` calculado desde eventos H1 — puede diferir de `StreakEvent.currentStreak` usado en dashboard/`complete`; no asumir una sola fuente sin alinear producto. |
 

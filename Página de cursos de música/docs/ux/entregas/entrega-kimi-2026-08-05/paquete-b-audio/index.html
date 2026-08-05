@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spike de audio — Academia GMusic (Paquete B)</title>
+<style>
+  /* Tokens verificados: #080808 · #111111 · rgba(255,255,255,.06) · #C9A84C · #F5F0E8 · #8A8A8A */
+  :root{ --gold:#C9A84C; --gold-a08:rgba(201,168,76,.08); --gold-a25:rgba(201,168,76,.25);
+         --bg:#080808; --surface:#111111; --line:rgba(255,255,255,.06); --txt:#F5F0E8; --txt2:#8A8A8A; }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'Segoe UI',Roboto,sans-serif}
+  body{background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:32px;max-width:560px;width:100%}
+  h1{font-size:19px;margin-bottom:6px}
+  h1 b{color:var(--gold)}
+  .sub{font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:22px}
+  .big-note{text-align:center;padding:26px 0}
+  .big-note .cuerda{font-size:44px;font-weight:800;color:var(--gold)}
+  .big-note .freq{font-size:13px;color:var(--txt2);margin-top:8px}
+  .big-note .cents{font-size:13px;margin-top:6px}
+  .cents.ok{color:var(--gold)}
+  .cents.off{color:var(--txt2)}
+  .strings{display:flex;flex-direction:column;gap:6px;margin-top:18px}
+  .str{display:flex;justify-content:space-between;font-size:13px;padding:9px 14px;border:1px solid var(--line);border-radius:10px;color:var(--txt2)}
+  .str.hit{border-color:var(--gold-a25);background:var(--gold-a08);color:var(--gold);font-weight:700}
+  button{width:100%;font-size:14px;font-weight:700;color:var(--bg);background:var(--gold);border:none;border-radius:10px;padding:13px;cursor:pointer;margin-top:18px}
+  .status{font-size:11px;color:var(--txt2);margin-top:14px;text-align:center;line-height:1.6}
+  .warn{font-size:12px;color:var(--gold);background:var(--gold-a08);border:1px solid var(--gold-a25);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:none}
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>Spike de audio · <b>detección monofónica</b></h1>
+  <p class="sub">Prototipo de fase 0 (D-GOV motor de audio). Toca <b>una cuerda al aire</b> de tu guitarra:
+     el prototipo detecta cuál es. Sin acordes, sin tempo — solo pitch por autocorrelación.</p>
+
+  <div class="warn" id="micWarn">⚠️ El navegador pedirá permiso de micrófono. En algunos navegadores el micrófono exige HTTPS o localhost — ver PRUEBA-EN-5-PASOS.md.</div>
+
+  <div class="big-note">
+    <div class="cuerda" id="notaDetectada">—</div>
+    <div class="freq" id="freqDetectada">Toca una cuerda…</div>
+    <div class="cents" id="centsDetectada"></div>
+  </div>
+
+  <div class="strings" id="stringList"></div>
+
+  <button id="btnMic">🎤 Activar micrófono</button>
+  <div class="status" id="status">Prototipo aislado del Paquete A · no guarda nada · no califica nada</div>
+</div>
+
+<script src="js/pitch.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  let running = false;
+
+  // Lista de cuerdas en pantalla
+  $('stringList').innerHTML = Cuerdas.STRINGS.map((s,i)=>
+    `<div class="str" id="str-${i}"><span>${s.nombre}</span><span>${s.freq.toFixed(2)} Hz</span></div>`).join('');
+
+  $('btnMic').onclick = async () => {
+    $('micWarn').style.display = 'block';
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:false, noiseSuppression:false } });
+      startAnalysis(stream);
+    }catch(err){
+      $('status').textContent = 'No se pudo acceder al micrófono: ' + err.message + ' — revisa PRUEBA-EN-5-PASOS.md (paso 2).';
+    }
+  };
+
+  function startAnalysis(stream){
+    running = true;
+    $('btnMic').textContent = '🎤 Escuchando… toca una cuerda';
+    $('btnMic').disabled = true;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    src.connect(analyser);
+    const buf = new Float32Array(analyser.fftSize);
+
+    let lastHit = 0;
+    (function tick(){
+      if(!running) return;
+      analyser.getFloatTimeDomainData(buf);
+      const freq = Cuerdas.autoCorrelate(buf, ctx.sampleRate);
+      if(freq > 60 && freq < 400){
+        const { cuerda, cents } = Cuerdas.nearestString(freq);
+        const afinada = Math.abs(cents) <= 50; // tolerancia del spike: ±50 cents
+        $('notaDetectada').textContent = cuerda.nombre;
+        $('freqDetectada').textContent = freq.toFixed(1) + ' Hz detectados · objetivo ' + cuerda.freq.toFixed(2) + ' Hz';
+        const c = $('centsDetectada');
+        c.className = 'cents ' + (afinada ? 'ok' : 'off');
+        c.textContent = (cents >= 0 ? '+' : '') + Math.round(cents) + ' cents' + (afinada ? ' · ✓ dentro de ±50¢' : ' · fuera de tolerancia (¿desafinada?)');
+        document.querySelectorAll('.str').forEach(e=>e.classList.remove('hit'));
+        const idx = Cuerdas.STRINGS.indexOf(cuerda);
+        if(idx >= 0 && afinada) $('str-'+idx).classList.add('hit');
+        lastHit = Date.now();
+      } else if(Date.now() - lastHit > 1200){
+        $('notaDetectada').textContent = '—';
+        $('freqDetectada').textContent = 'Toca una cuerda…';
+        $('centsDetectada').textContent = '';
+        document.querySelectorAll('.str').forEach(e=>e.classList.remove('hit'));
+      }
+      requestAnimationFrame(tick);
+    })();
+  }
+</script>
+</body>
+</html>

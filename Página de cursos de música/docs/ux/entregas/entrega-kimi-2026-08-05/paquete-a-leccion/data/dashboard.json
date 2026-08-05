@@ -1,0 +1,6 @@
+{
+  "_MOCK": "DATOS DE PRUEBA — no provienen del backend real. Simulan la forma de GET /api/v1/me/dashboard",
+  "streak": { "currentDays": 12 },
+  "activeToday": false,
+  "progreso": { "gratisUsadas": 2, "gratisTotal": 5, "totalLecciones": 75 }
+}

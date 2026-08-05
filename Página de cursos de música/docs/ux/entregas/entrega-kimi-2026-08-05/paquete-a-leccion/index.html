@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academia GMusic — Experiencia de lección (Paquete A · prototipo de referencia)</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header global — la racha llega de GET /api/v1/me/dashboard (MOCK) -->
+  <header class="topbar">
+    <div class="logo">Academia <b>GMusic</b></div>
+    <nav class="nav">
+      <a>INICIO</a><a class="on">MI CAMINO</a><a>INSCRIBIRME</a>
+      <span class="streak-chip" id="streakChip" title="Dato: streak.currentDays de /me/dashboard">🔥 —</span>
+    </nav>
+  </header>
+
+  <!-- Hero Mi Camino -->
+  <section class="hero">
+    <h1>Sigue tu camino musical</h1>
+    <p id="heroSub">Cargando tu camino…</p>
+    <div class="hero-progress">
+      <div class="track"><i id="heroBar"></i></div>
+      <div class="num" id="heroNum"></div>
+    </div>
+  </section>
+
+  <!-- Pestañas principales -->
+  <div class="tabs">
+    <div class="tab on" data-tab="tarjetas">▦ Tarjetas (Mi Camino)</div>
+    <div class="tab" data-tab="practica">🎮 Práctica</div>
+    <div class="tab" data-tab="pdf">📄 Resumen PDF</div>
+  </div>
+
+  <!-- ===== PESTAÑA: TARJETAS ===== -->
+  <section id="v-tarjetas">
+    <div class="skill-banner" id="skillBanner"></div>
+    <div class="cards" id="cardsRow"></div>
+    <div class="legend">
+      💡 <b>Las tarjetas son video:</b> Ⓡ Repaso → Ⓔ Ejercicio en video → Ⓣ Toca conmigo.
+      El software interactivo vive en la pestaña <b>Práctica</b>: los ejercicios llegan
+      dentro de la sesión autenticada (<code>POST /lesson-sessions</code>), nunca por URL pública.
+    </div>
+  </section>
+
+  <!-- ===== PESTAÑA: PRÁCTICA ===== -->
+  <section id="v-practica" class="hidden">
+    <div class="ex-chips" id="exChips"></div>
+    <div class="practice" id="practiceBox">
+      <div class="practice-head">
+        <div>
+          <h2 id="exTitle">—</h2>
+          <div class="sub" id="exPrompt">—</div>
+        </div>
+        <div class="score">
+          <div><div class="v gold" id="exPoints">0</div><div class="l">Puntos · feedback visual, no califica</div></div>
+          <div><div class="v" id="exCombo">0</div><div class="l">Combo · feedback visual</div></div>
+        </div>
+      </div>
+      <div id="gameArea"></div>
+      <div class="practice-foot" id="practiceFoot">
+        <div class="ex-pos" id="exPos"></div>
+      </div>
+      <div class="session-note" id="sessionNote"></div>
+    </div>
+  </section>
+
+  <!-- ===== PESTAÑA: RESUMEN PDF ===== -->
+  <section id="v-pdf" class="hidden">
+    <div class="pdf-title">📄 Materia de las 5 etapas — toca una para ver de qué trata</div>
+    <div class="pdf-list" id="pdfList"></div>
+  </section>
+
+</div>
+
+<!-- Resultado del complete: solo muestra lo que emite el servidor (MOCK con la forma real) -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="tag">Paquete A · prototipo de referencia · datos MOCK · Academia GMusic</div>
+
+<script src="js/api-mock.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
