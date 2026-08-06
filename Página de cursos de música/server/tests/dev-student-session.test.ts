@@ -382,7 +382,7 @@ integration("dev student session — integración", () => {
     assert.equal(response.body.error.code, "UNAUTHORIZED");
   });
 
-  it("JWT de ADMIN responde 403", async () => {
+  it("JWT de ADMIN responde 200 con role para post-login (T-FLOW-01)", async () => {
     const admin = await prisma.user.findUniqueOrThrow({ where: { email: ADMIN_EMAIL } });
     const cookie = await buildSessionCookieHeader(admin.id);
 
@@ -390,8 +390,8 @@ integration("dev student session — integración", () => {
       .get("/api/v1/me/access")
       .set("Cookie", cookie);
 
-    assert.equal(response.status, 403);
-    assert.equal(response.body.error.code, "FORBIDDEN");
+    assert.equal(response.status, 200);
+    assert.equal(response.body.user.role, "ADMIN");
   });
 
   it("JWT de GUARDIAN responde 403", async () => {
