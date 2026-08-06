@@ -109,6 +109,7 @@ const PARSED_A: ParsedExerciseView = {
   ],
   media: {},
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 const PARSED_B: ParsedExerciseView = {
@@ -122,6 +123,7 @@ const PARSED_B: ParsedExerciseView = {
   ],
   media: { diagramLabel: "Am" },
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 function reduce(

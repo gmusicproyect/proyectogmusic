@@ -21,6 +21,7 @@ const EXERCISE_A: ParsedExerciseView = {
   ],
   media: {},
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 const EXERCISE_B: ParsedExerciseView = {
@@ -34,6 +35,7 @@ const EXERCISE_B: ParsedExerciseView = {
   ],
   media: { diagramLabel: "Am abierto" },
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 const EXERCISE_C: ParsedExerciseView = {
@@ -47,6 +49,7 @@ const EXERCISE_C: ParsedExerciseView = {
   ],
   media: { audioUrl: "https://cdn.example.com/chord.mp3" },
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 const EXERCISE_TAP: ParsedExerciseView = {
@@ -66,6 +69,7 @@ const EXERCISE_TAP: ParsedExerciseView = {
       { stringNumber: 6, label: "6", stringName: "Mi grave" },
     ],
   },
+  answerInput: "options",
 };
 
 const STARTED_AT_MS = 1_000_000;

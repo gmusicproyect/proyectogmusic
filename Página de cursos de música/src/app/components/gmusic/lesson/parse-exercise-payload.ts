@@ -2,6 +2,7 @@ import { findForbiddenLessonSessionKey } from "../../../services/gmusic-api/asse
 import { GmusicApiError } from "../../../services/gmusic-api/client";
 import type { ExerciseType, PublicExercise } from "../../../services/gmusic-api/types";
 import type {
+  AnswerInputMode,
   ExerciseParseResult,
   ParsedExerciseView,
   SafeExerciseMedia,
@@ -22,6 +23,15 @@ const VALID_EXERCISE_TYPES = new Set<ExerciseType>([
   "EAR_TRAINING",
   "RHYTHM_TAP",
 ]);
+
+const VALID_ANSWER_INPUT = new Set<AnswerInputMode>(["options", "fretboard"]);
+
+export function parseAnswerInput(raw: unknown): AnswerInputMode {
+  if (typeof raw === "string" && VALID_ANSWER_INPUT.has(raw as AnswerInputMode)) {
+    return raw as AnswerInputMode;
+  }
+  return "options";
+}
 
 function incompatible(exerciseId: string, reason: string): ExerciseParseResult {
   return { kind: "incompatible", exerciseId, reason };
@@ -301,6 +311,7 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
       options: [],
       media: mediaResult.media,
       interaction: tapResult.interaction,
+      answerInput: parseAnswerInput(payload.answerInput),
     };
 
     return { kind: "supported", exercise: parsed };
@@ -320,6 +331,7 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
     options: optionsResult.options,
     media: mediaResult.media,
     interaction: { mode: "mcq" },
+    answerInput: parseAnswerInput(payload.answerInput),
   };
 
   return { kind: "supported", exercise: parsed };

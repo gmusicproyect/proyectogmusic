@@ -51,6 +51,7 @@ const SAMPLE_EXERCISE: ParsedExerciseView = {
   ],
   media: {},
   interaction: { mode: "mcq" },
+  answerInput: "options",
 };
 
 describe("normalizeStepperValues", () => {

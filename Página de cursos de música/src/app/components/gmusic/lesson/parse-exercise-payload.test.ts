@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { findForbiddenLessonSessionKey } from "../../../services/gmusic-api/assert-safe-lesson-session";
 import type { PublicExercise } from "../../../services/gmusic-api/types";
 import {
   MAX_EXERCISE_OPTIONS,
@@ -7,6 +8,7 @@ import {
   MAX_OPTION_TEXT_LENGTH,
   MAX_PATTERN_BEATS,
   MAX_TAP_SEQUENCE,
+  parseAnswerInput,
   parsePublicExercise,
 } from "./parse-exercise-payload";
 
@@ -98,6 +100,7 @@ describe("parsePublicExercise — payloads del seed", () => {
     const parsed = assertSupported(SEED_RHYTHM_TAP);
     assert.deepEqual(parsed?.media.patternBeats, ["1", "2", "3", "4"]);
     assert.deepEqual(parsed?.interaction, { mode: "mcq" });
+    assert.equal(parsed?.answerInput, "options");
   });
 
   it("RHYTHM_TAP con tapSequence alineado a demo clase 4", () => {
@@ -126,6 +129,62 @@ describe("parsePublicExercise — payloads del seed", () => {
     assert.equal(parsed.interaction.tapSequence.length, 8);
     assert.equal(parsed.options.length, 0);
     assert.equal(parsed.interaction.tapHeadline, "Pulso en cuerda 6");
+  });
+});
+
+describe("parseAnswerInput", () => {
+  it("default options si ausente", () => {
+    assert.equal(parseAnswerInput(undefined), "options");
+  });
+
+  it("acepta fretboard", () => {
+    assert.equal(parseAnswerInput("fretboard"), "fretboard");
+  });
+
+  it("fallback options si valor inválido", () => {
+    assert.equal(parseAnswerInput("esDeCuerdas"), "options");
+    assert.equal(parseAnswerInput(42), "options");
+  });
+});
+
+describe("parsePublicExercise — answerInput en payload", () => {
+  it("legacy sin answerInput → options", () => {
+    const parsed = assertSupported(SEED_CHORD_SHAPE);
+    assert.equal(parsed?.answerInput, "options");
+  });
+
+  it("answerInput fretboard se propaga al ParsedExerciseView", () => {
+    const parsed = assertSupported({
+      ...SEED_EAR_TRAINING,
+      contentPayload: {
+        ...(SEED_EAR_TRAINING.contentPayload as Record<string, unknown>),
+        answerInput: "fretboard",
+      },
+    });
+    assert.equal(parsed?.answerInput, "fretboard");
+    assert.equal(parsed?.interaction.mode, "mcq");
+  });
+
+  it("answerInput inválido → options sin incompatible", () => {
+    const parsed = assertSupported({
+      ...SEED_CHORD_SHAPE,
+      contentPayload: {
+        ...(SEED_CHORD_SHAPE.contentPayload as Record<string, unknown>),
+        answerInput: "guess",
+      },
+    });
+    assert.equal(parsed?.answerInput, "options");
+  });
+
+  it("answerInput no está en lista prohibida de sesión", () => {
+    const parsed = assertSupported({
+      ...SEED_CHORD_SHAPE,
+      contentPayload: {
+        ...(SEED_CHORD_SHAPE.contentPayload as Record<string, unknown>),
+        answerInput: "fretboard",
+      },
+    });
+    assert.equal(findForbiddenLessonSessionKey(parsed), null);
   });
 });
 

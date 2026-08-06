@@ -66,6 +66,7 @@ export function buildFreeFundamentoChallengeExercise(): ParsedExerciseView {
     })),
     media: {},
     interaction: { mode: "mcq" },
+    answerInput: "options",
   };
 }
 

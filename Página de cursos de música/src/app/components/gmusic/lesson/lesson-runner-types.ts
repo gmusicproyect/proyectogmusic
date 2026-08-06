@@ -18,6 +18,8 @@ export interface TapSequenceBeat {
   stringName: string;
 }
 
+export type AnswerInputMode = "options" | "fretboard";
+
 export type ParsedExerciseInteraction =
   | { mode: "mcq" }
   | {
@@ -36,6 +38,8 @@ export interface ParsedExerciseView {
   options: SafeExerciseOption[];
   media: SafeExerciseMedia;
   interaction: ParsedExerciseInteraction;
+  /** UI-only: from contentPayload.answerInput; default "options". */
+  answerInput: AnswerInputMode;
 }
 
 export type ExerciseParseResult =
