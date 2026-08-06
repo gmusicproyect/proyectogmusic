@@ -1,7 +1,7 @@
 # T-UX-LESSON-01 — Ticket formal (D-UX-LAYOUT-01)
 
-**Estado:** Handoff Cursor · **pendiente validación Fable (criterio binario)** · **NO implementar** hasta OK explícito post-validación.  
-**Commit spec:** `a555f89` (revisión rúbrica Fable · 2026-08-06)  
+**Estado:** **OK binario Fable emitido** (2026-08-06, condicionado C1–C3) · autorizado `src/`  
+**Commit spec:** ver último G1 en `main`  
 **Frase de arranque (Juan · 2026-08-06):** `arrancar T-UX-LESSON-01`  
 **Referencia visual:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-a-leccion/` (v2 · delta 2026-08-06)  
 **Propuesta insumo:** `docs/ux/propuesta-t-ux-lesson-01.md` v1.1 (Parte B pedagógica; layout = pestañas Kimi)
@@ -55,6 +55,8 @@ Entregar la **experiencia de lección en pestañas** (D-UX-LAYOUT-01) para suscr
 ---
 
 ## Alcance OUT (escrito — no implícito)
+
+> Fuera de alcance: chip/celebración de racha dentro de la lección (territorio T-UX-STREAK-01, fuente canónica pendiente) · #4ADE80 (P-PALETA-01 abierta) · afinador en producto · motor de audio fase 1 · tripleta de videos Ⓡ/Ⓔ/Ⓣ (evolución con migración propia).
 
 | Exclusión | Motivo |
 |-----------|--------|
@@ -174,11 +176,11 @@ Verificar: `findForbiddenLessonSessionKey` **no** lista `answerInput` (no es sec
 | # | Criterio | ¿Pasa? | Evidencia requerida |
 |---|----------|--------|---------------------|
 | **1** | Suscriptor ACTIVE en `/mi-camino` ve **exactamente 3 pestañas**: Tarjetas (Mi Camino) · Práctica · Resumen PDF | ☐ | Captura + test UI/guard si aplica |
-| **2** | **Video MVP:** nodo con `videoUrl` YouTube → embed reproduce; nodo con `videoUrl` Supabase privado → UI llama `POST /me/media/signed-url` con `{ materialUrl }` → reproduce con `signedUrl` (o error honesto si falla firma) | ☐ | Captura + network log o test con mock de signed-url |
+| **2** | La tarjeta reproduce vía POST /me/media/signed-url (enlace firmado, TTL 3600); nunca URL directa del bucket en el DOM. | ☐ | Captura + network log o test con mock de signed-url |
 | **3** | **Práctica T-PUB-02:** `POST /lesson-sessions` → ejercicios → `POST .../complete` con `attempts[]` sin cambio de forma → respuesta con `accuracy`, `xpEarned`, `nodeCompleted` | ☐ | Flujo manual alumno + `app:test` verde |
 | **4** | **Diapasón:** siempre visible en Práctica; ejercicio con `answerInput: "fretboard"` envía `selectedAnswer` ∈ `{E,A,D,G,B,e}`; sin `answerInput` comportamiento legacy MCQ | ☐ | Test parser + captura interacción |
 | **5** | **Gate Yousician** visible en Práctica; sin micrófono; copy no promete audio | ☐ | Captura |
-| **6** | **Sin regresiones operacionalizadas:** `npm run app:test` **614/614** (o total vigente en `main`) **verde**; `npm run api:test` verde si tocó proxy tipos; smokes nombrados PASS: **(a)** login ADMIN → redirige `/admin`; **(b)** alumno ACTIVE completa nodo por camino actual (mismo flujo T-PUB-02); **(c)** funnel demo `/clase-gratuita` intacto (sin rotura routing). Además: diff sin `#4ADE80`; **sin** chip racha en shell lección; **sin** cambios en `server/` | ☐ | Log CI local + checklist smoke Juan |
+| **6** | Suite completa verde (app:test + api:test) Y tres smokes nombrados intactos: login ADMIN → /admin · alumno ACTIVE completa un nodo por el camino actual · demo /clase-gratuita → upsell WhatsApp. | ☐ | Log CI local + checklist smoke Juan |
 
 ---
 
@@ -200,4 +202,4 @@ Verificar: `findForbiddenLessonSessionKey` **no** lista `answerInput` (no es sec
 
 ---
 
-*Handoff Cursor · revisión rúbrica Fable · 2026-08-06 · Pendiente OK binario.*
+*Handoff Cursor · OK binario Fable · 2026-08-06 · Implementación autorizada.*
