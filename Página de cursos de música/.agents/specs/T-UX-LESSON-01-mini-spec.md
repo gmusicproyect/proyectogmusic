@@ -1,7 +1,7 @@
 # T-UX-LESSON-01 — Ticket formal (D-UX-LAYOUT-01)
 
 **Estado:** Handoff Cursor · **pendiente validación Fable (criterio binario)** · **NO implementar** hasta OK explícito post-validación.  
-**Commit spec:** `a6214e2` (revisión en curso — ver hash post-corrección rúbrica Fable)  
+**Commit spec:** `a555f89` (revisión rúbrica Fable · 2026-08-06)  
 **Frase de arranque (Juan · 2026-08-06):** `arrancar T-UX-LESSON-01`  
 **Referencia visual:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-a-leccion/` (v2 · delta 2026-08-06)  
 **Propuesta insumo:** `docs/ux/propuesta-t-ux-lesson-01.md` v1.1 (Parte B pedagógica; layout = pestañas Kimi)
