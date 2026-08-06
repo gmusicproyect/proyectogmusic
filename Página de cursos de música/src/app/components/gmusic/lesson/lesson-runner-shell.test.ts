@@ -31,6 +31,7 @@ import {
 const root = dirname(fileURLToPath(import.meta.url));
 const shellSource = readFileSync(join(root, "LessonRunnerShell.tsx"), "utf8");
 const hookSource = readFileSync(join(root, "useLessonRunner.ts"), "utf8");
+const stateSource = readFileSync(join(root, "lesson-runner-state.ts"), "utf8");
 const lessonSources = [shellSource, hookSource];
 
 const VALID_EXERCISE: PublicExercise = {
@@ -430,6 +431,18 @@ describe("LessonRunnerShell — seguridad", () => {
     assert.equal(shellSource.includes("GmusicPath"), false);
     assert.equal(shellSource.includes("activeRunner"), false);
     assert.equal(shellSource.includes("fixed inset-0"), false);
+  });
+});
+
+describe("F2 — sin IDs internos en UI de práctica", () => {
+  it("footLabel no expone microExerciseId ni id de ejercicio al alumno", () => {
+    assert.doesNotMatch(shellSource, /· id:/);
+    assert.doesNotMatch(shellSource, /id: \$\{currentExercise\.id\}/);
+    assert.match(shellSource, /Ejercicio \$\{state\.currentIndex \+ 1\} de \$\{state\.exercises\.length\}/);
+  });
+
+  it("payload de attempts conserva microExerciseId (contrato intacto)", () => {
+    assert.match(stateSource, /microExerciseId/);
   });
 });
 

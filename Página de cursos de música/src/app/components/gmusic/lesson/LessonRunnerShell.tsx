@@ -425,9 +425,7 @@ function LessonRunnerActive({
   );
   const footLabel =
     state.exercises.length > 0
-      ? `Ejercicio ${state.currentIndex + 1} de ${state.exercises.length}${
-          currentExercise ? ` · id: ${currentExercise.id}` : ""
-        }`
+      ? `Ejercicio ${state.currentIndex + 1} de ${state.exercises.length}`
       : null;
 
   const fretboardBlock =
