@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildLessonResultFeedback } from "./lesson-result-feedback";
 import { X } from "lucide-react";
 import { Button } from "../../ui/button";
@@ -17,6 +17,15 @@ import {
 import { ExerciseMediaBlock } from "./ExerciseMediaBlock";
 import { LessonExerciseStepper } from "./LessonExerciseStepper";
 import { LessonFretboard } from "./LessonFretboard";
+import {
+  exerciseOptionsAreFretboardStrings,
+  type FretboardStringId,
+} from "./lesson-fretboard";
+import {
+  buildLessonPracticeChipItems,
+  LessonPracticeChips,
+} from "./LessonPracticeChips";
+import { LessonPracticePanel } from "./LessonPracticePanel";
 import { MultipleChoiceExercise } from "./MultipleChoiceExercise";
 import { RhythmTapExercise } from "./RhythmTapExercise";
 import { prepareLessonRunner } from "./prepare-lesson-runner";
@@ -25,6 +34,8 @@ import { UnsupportedExercisePanel } from "./UnsupportedExercisePanel";
 import { useLessonRunner } from "./useLessonRunner";
 import type { LessonRunnerStatus } from "./lesson-runner-state";
 import type { RunnerAttemptDraft } from "./lesson-runner-state";
+import { PathPracticaBody } from "../path/PathPracticaBody";
+import { usePathPracticaLayout } from "../path/path-practica-layout";
 
 export type LessonRunnerCompletionSummary = {
   points: number;
@@ -47,6 +58,8 @@ export interface LessonRunnerShellProps {
   submission?: LessonRunnerSubmissionView;
   /** embedded = sin header técnico; usado dentro de PathLessonRunner suscriptor */
   variant?: "default" | "embedded";
+  /** Progreso completado (índice actual = ejercicios ya superados en pantalla). */
+  onExerciseProgress?: (completedCount: number, totalExercises: number) => void;
 }
 
 type ShellPreparation =
@@ -80,8 +93,10 @@ function prepareShellSession(session: LessonSessionResponse): ShellPreparation {
   }
 }
 
-function useEscapeExit(onExit: () => void) {
+function useEscapeExit(onExit: () => void, enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onExit();
@@ -90,7 +105,7 @@ function useEscapeExit(onExit: () => void) {
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onExit]);
+  }, [enabled, onExit]);
 }
 
 function LessonRunnerShellFrame({
@@ -298,17 +313,23 @@ function LessonRunnerFinishedState({
 function LessonRunnerActive({
   exercises,
   expiresAt,
+  nodeTitle,
   onExit,
   onPracticeFinished,
   submission,
   showSecondaryExit = true,
+  embedded = false,
+  onExerciseProgress,
 }: {
   exercises: ParsedExerciseView[];
   expiresAt: string;
+  nodeTitle: string;
   onExit: () => void;
   onPracticeFinished?: (attempts: RunnerAttemptDraft[]) => void;
   submission?: LessonRunnerSubmissionView;
   showSecondaryExit?: boolean;
+  embedded?: boolean;
+  onExerciseProgress?: (completedCount: number, totalExercises: number) => void;
 }) {
   const { state, currentExercise, selectOption, selectFretboardString, nextExercise, completeTap } =
     useLessonRunner({
@@ -316,7 +337,37 @@ function LessonRunnerActive({
       expiresAt,
     });
 
+  const layoutMode = usePathPracticaLayout();
+  const immersiveLayout = layoutMode === "immersive";
+
   const finishedSentRef = useRef(false);
+  const [visualPoints, setVisualPoints] = useState(0);
+  const [visualCombo, setVisualCombo] = useState(0);
+  const prevIndexRef = useRef(0);
+
+  useEffect(() => {
+    if (!embedded || !onExerciseProgress || state.exercises.length === 0) return;
+    if (state.status === "finished") {
+      onExerciseProgress(state.exercises.length, state.exercises.length);
+      return;
+    }
+    onExerciseProgress(state.currentIndex, state.exercises.length);
+  }, [
+    embedded,
+    onExerciseProgress,
+    state.currentIndex,
+    state.exercises.length,
+    state.status,
+  ]);
+
+  useEffect(() => {
+    if (!embedded || state.status === "finished") return;
+    if (state.currentIndex > prevIndexRef.current) {
+      setVisualPoints((value) => value + 20);
+      setVisualCombo((value) => value + 1);
+    }
+    prevIndexRef.current = state.currentIndex;
+  }, [embedded, state.currentIndex, state.status]);
 
   useEffect(() => {
     if (state.status !== "finished" || !onPracticeFinished || finishedSentRef.current) {
@@ -341,10 +392,135 @@ function LessonRunnerActive({
     state.exercises.length > 0 && state.currentIndex === state.exercises.length - 1;
   const isTapExercise = currentExercise?.interaction.mode === "tap";
   const isFretboardAnswer = currentExercise?.answerInput === "fretboard";
+  const isStringOptionsExercise = currentExercise
+    ? exerciseOptionsAreFretboardStrings(currentExercise.options)
+    : false;
+  const fretboardInteractive = isFretboardAnswer || isStringOptionsExercise;
+
+  const handleFretboardTap = (stringId: FretboardStringId) => {
+    if (!currentExercise || interactionDisabled) return;
+
+    if (isFretboardAnswer) {
+      selectFretboardString(stringId);
+      return;
+    }
+
+    if (isStringOptionsExercise) {
+      const match = currentExercise.options.find(
+        (option) => option.text.trim() === stringId || option.id === stringId
+      );
+      if (match) selectOption(match.id);
+    }
+  };
+
   const canAdvance =
     !isTapExercise &&
-    !isFretboardAnswer &&
+    !fretboardInteractive &&
     canAdvanceLessonRunner(state.status, state.selectedOptionId);
+
+  const chipItems = buildLessonPracticeChipItems(
+    state.exercises.length,
+    state.currentIndex,
+    false
+  );
+  const footLabel =
+    state.exercises.length > 0
+      ? `Ejercicio ${state.currentIndex + 1} de ${state.exercises.length}${
+          currentExercise ? ` · id: ${currentExercise.id}` : ""
+        }`
+      : null;
+
+  const fretboardBlock =
+    currentExercise && !isTapExercise ? (
+      <LessonFretboard
+        selectedStringId={
+          isFretboardAnswer
+            ? state.selectedOptionId
+            : isStringOptionsExercise
+              ? currentExercise.options.find((option) => option.id === state.selectedOptionId)
+                  ?.text.trim() ?? null
+              : null
+        }
+        interactive={fretboardInteractive}
+        disabled={interactionDisabled}
+        onSelectStringId={handleFretboardTap}
+      />
+    ) : null;
+
+  const exerciseBody = currentExercise ? (
+    isTapExercise ? (
+      <RhythmTapExercise
+        exercise={currentExercise}
+        disabled={interactionDisabled}
+        onComplete={completeTap}
+      />
+    ) : (
+      <>
+        {!immersiveLayout ? fretboardBlock : null}
+        <ExerciseMediaBlock media={currentExercise.media} />
+        <MultipleChoiceExercise
+          exercise={currentExercise}
+          selectedOptionId={state.selectedOptionId}
+          disabled={interactionDisabled}
+          showOptions={!fretboardInteractive}
+          layout={embedded ? "pills" : "list"}
+          hideInstruction={embedded}
+          onSelect={selectOption}
+        />
+      </>
+    )
+  ) : null;
+
+  const actionButtons = (
+    <div className="flex flex-col gap-3 pt-2">
+      {!isTapExercise && !fretboardInteractive ? (
+        <Button
+          type="button"
+          onClick={nextExercise}
+          disabled={!canAdvance}
+          className="w-full font-medium min-h-[44px] tracking-wide"
+          style={{ background: GM_GOLD, color: "#0A0A0A" }}
+        >
+          {isLastExercise ? "Finalizar práctica" : "Siguiente"}
+        </Button>
+      ) : null}
+      {showSecondaryExit ? (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onExit}
+          className="w-full font-medium min-h-[44px] tracking-wide"
+        >
+          Volver al camino
+        </Button>
+      ) : null}
+    </div>
+  );
+
+  if (embedded) {
+    const panelWrapClass = immersiveLayout ? "path-practica-immersive-panel space-y-4" : "space-y-4";
+
+    return (
+      <PathPracticaBody>
+        {state.status === "expired" ? <LessonRunnerExpiredBanner /> : null}
+        {immersiveLayout ? fretboardBlock : null}
+        <div className={panelWrapClass}>
+          <LessonPracticeChips items={chipItems} />
+          <LessonPracticePanel
+            title={nodeTitle}
+            prompt={currentExercise?.instruction ?? null}
+            visualPoints={visualPoints}
+            visualCombo={visualCombo}
+            hideTitle
+            footLabel={footLabel}
+          >
+            {exerciseBody}
+            {actionButtons}
+          </LessonPracticePanel>
+        </div>
+      </PathPracticaBody>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -369,42 +545,27 @@ function LessonRunnerActive({
               exercise={currentExercise}
               selectedOptionId={state.selectedOptionId}
               disabled={interactionDisabled}
-              showOptions={!isFretboardAnswer}
+              showOptions={!fretboardInteractive}
               onSelect={selectOption}
             />
             <LessonFretboard
-              selectedStringId={isFretboardAnswer ? state.selectedOptionId : null}
-              interactive={isFretboardAnswer}
+              selectedStringId={
+                isFretboardAnswer
+                  ? state.selectedOptionId
+                  : isStringOptionsExercise
+                    ? currentExercise.options.find((option) => option.id === state.selectedOptionId)
+                        ?.text.trim() ?? null
+                    : null
+              }
+              interactive={fretboardInteractive}
               disabled={interactionDisabled}
-              onSelectStringId={selectFretboardString}
+              onSelectStringId={handleFretboardTap}
             />
           </>
         )
       ) : null}
 
-      <div className="flex flex-col gap-3 pt-2">
-        {!isTapExercise && !isFretboardAnswer ? (
-          <Button
-            type="button"
-            onClick={nextExercise}
-            disabled={!canAdvance}
-            className="w-full font-medium min-h-[44px] tracking-wide"
-            style={{ background: GM_GOLD, color: "#0A0A0A" }}
-          >
-            {isLastExercise ? "Finalizar práctica" : "Siguiente"}
-          </Button>
-        ) : null}
-        {showSecondaryExit ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onExit}
-            className="w-full font-medium min-h-[44px] tracking-wide"
-          >
-            Volver al camino
-          </Button>
-        ) : null}
-      </div>
+      {actionButtons}
     </div>
   );
 }
@@ -416,22 +577,26 @@ export function LessonRunnerShell({
   onPracticeFinished,
   submission,
   variant = "default",
+  onExerciseProgress,
 }: LessonRunnerShellProps) {
   const preparation = useMemo(() => prepareShellSession(session), [session]);
   const sessionIdLabel = abbreviateSessionId(session.sessionId);
   const embedded = variant === "embedded";
 
-  useEscapeExit(onExit);
+  useEscapeExit(onExit, !embedded);
 
   const practiceRunner = (
     <LessonRunnerActive
       key={getLessonRunnerResetKey(session.sessionId)}
       exercises={preparation.kind === "supported" ? preparation.exercises : []}
       expiresAt={session.expiresAt}
+      nodeTitle={nodeTitle}
       onExit={onExit}
       onPracticeFinished={onPracticeFinished}
       submission={submission}
       showSecondaryExit={!embedded}
+      embedded={embedded}
+      onExerciseProgress={onExerciseProgress}
     />
   );
 

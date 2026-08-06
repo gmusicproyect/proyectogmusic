@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { Button } from "../../ui/button";
 import { LessonPrepareScreen } from "../lesson/LessonPrepareScreen";
 import { LessonRunnerShell, type LessonRunnerSubmissionView } from "../lesson/LessonRunnerShell";
+import { LessonYousicianGate } from "../lesson/LessonYousicianGate";
 import type { CompleteLessonSessionResponse, LessonSessionResponse } from "../../../services/gmusic-api/types";
 import { completeLessonSession } from "../../../services/gmusic-api/complete-lesson-session";
 import { GmusicApiError } from "../../../services/gmusic-api/client";
@@ -24,6 +25,9 @@ export interface PathLessonRunnerProps {
   onSessionCompleted?: () => void;
   /** embedded = pestaña Práctica en Mi Camino; overlay = diálogo pantalla completa (legacy) */
   variant?: "overlay" | "embedded";
+  /** Salta video/preparación y abre directo los ejercicios (Mi Camino → Práctica). */
+  practiceOnly?: boolean;
+  onExerciseProgress?: (completedCount: number, totalExercises: number) => void;
 }
 
 function formatCompleteError(error: unknown): string {
@@ -49,9 +53,12 @@ export function PathLessonRunner({
   onExit,
   onSessionCompleted,
   variant = "overlay",
+  practiceOnly = false,
+  onExerciseProgress,
 }: PathLessonRunnerProps) {
   const isEmbedded = variant === "embedded";
-  const hasVideo = !isEmbedded && isLessonVideoUrl(videoUrl ?? lessonNode.videoUrl);
+  const hasVideo =
+    !practiceOnly && !isEmbedded && isLessonVideoUrl(videoUrl ?? lessonNode.videoUrl);
   const prepareNode = useMemo(
     () => ({
       ...lessonNode,
@@ -61,7 +68,7 @@ export function PathLessonRunner({
     [lessonNode, nodeDuration, videoUrl]
   );
 
-  const [phase, setPhase] = useState<SubscriberLessonPhase>(isEmbedded ? "practice" : "video");
+  const [phase, setPhase] = useState<SubscriberLessonPhase>(hasVideo ? "video" : "practice");
   const [submission, setSubmission] = useState<LessonRunnerSubmissionView>({ status: "idle" });
 
   useBodyScrollLock(!isEmbedded);
@@ -89,13 +96,9 @@ export function PathLessonRunner({
     [session.sessionId, onSessionCompleted]
   );
 
-  const runnerBody =
-    !isEmbedded && phase === "video" ? (
-      <LessonPrepareScreen
-        node={prepareNode}
-        onContinueToPractice={() => setPhase("practice")}
-      />
-    ) : (
+  const practiceBody = (
+    <>
+      <LessonYousicianGate />
       <LessonRunnerShell
         key={session.sessionId}
         session={session}
@@ -104,7 +107,19 @@ export function PathLessonRunner({
         onPracticeFinished={handlePracticeFinished}
         submission={submission}
         variant="embedded"
+        onExerciseProgress={onExerciseProgress}
       />
+    </>
+  );
+
+  const runnerBody =
+    phase === "video" && hasVideo ? (
+      <LessonPrepareScreen
+        node={prepareNode}
+        onContinueToPractice={() => setPhase("practice")}
+      />
+    ) : (
+      practiceBody
     );
 
   if (isEmbedded) {

@@ -1,19 +1,47 @@
+import "./lesson-fretboard.css";
 import {
+  FRETBOARD_COMPACT_HEIGHT_PX,
+  FRETBOARD_COMPACT_HEIGHT_WITH_HINT_PX,
   FRETBOARD_DISPLAY_ORDER,
+  FRETBOARD_IMMERSIVE_HEIGHT_WITH_HINT_PX,
+  FRETBOARD_IMMERSIVE_MIN_HEIGHT_PX,
+  FRETBOARD_ROW_HEIGHT_PX,
+  FRETBOARD_ROWS_BLOCK_HEIGHT_PX,
+  FRETBOARD_STRING_THICKNESS_PX,
   type FretboardStringId,
 } from "./lesson-fretboard";
-import {
-  GM_GOLD,
-  GM_GOLD_MATT,
-  GM_SURFACE_ALT,
-  GM_TEXT,
-  GM_TEXT_SEC,
-} from "../tokens";
+import { usePathPracticaLayout } from "../path/path-practica-layout";
+
+export {
+  FRETBOARD_COMPACT_HEIGHT_PX,
+  FRETBOARD_COMPACT_HEIGHT_WITH_HINT_PX,
+  FRETBOARD_IMMERSIVE_HEIGHT_WITH_HINT_PX,
+  FRETBOARD_IMMERSIVE_MIN_HEIGHT_PX,
+  FRETBOARD_ROW_HEIGHT_PX,
+  FRETBOARD_ROWS_BLOCK_HEIGHT_PX,
+  FRETBOARD_STRING_THICKNESS_PX,
+} from "./lesson-fretboard";
+
+const CUERDA_ROW_STYLE = {
+  height: FRETBOARD_ROW_HEIGHT_PX,
+  minHeight: FRETBOARD_ROW_HEIGHT_PX,
+  maxHeight: FRETBOARD_ROW_HEIGHT_PX,
+  flex: "none",
+} as const;
+
+const INLAY_DOT_LEFT = [
+  "calc(40px + (100% - 56px) * 0.5)",
+  "calc(40px + (100% - 56px) * 0.9)",
+] as const;
 
 export interface LessonFretboardProps {
   selectedStringId: string | null;
   interactive: boolean;
   disabled?: boolean;
+  /** @deprecated Se ignora. */
+  variant?: "card" | "compact";
+  /** @deprecated Se ignora. */
+  muted?: boolean;
   onSelectStringId?: (stringId: FretboardStringId) => void;
 }
 
@@ -23,65 +51,107 @@ export function LessonFretboard({
   disabled = false,
   onSelectStringId,
 }: LessonFretboardProps) {
+  const layoutMode = usePathPracticaLayout();
+  const immersive = layoutMode === "immersive";
   const isDisabled = disabled || !interactive;
+  const showHint = interactive && !disabled;
+  const inlineHeight = showHint
+    ? FRETBOARD_COMPACT_HEIGHT_WITH_HINT_PX
+    : FRETBOARD_COMPACT_HEIGHT_PX;
+  const immersiveMinHeight = showHint
+    ? FRETBOARD_IMMERSIVE_HEIGHT_WITH_HINT_PX
+    : FRETBOARD_IMMERSIVE_MIN_HEIGHT_PX;
+
+  const diapasonClassName = immersive
+    ? "lesson-fretboard diapason diapason--immersive"
+    : "lesson-fretboard diapason";
+
+  const diapasonStyle = immersive
+    ? ({
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        width: "100%",
+        minHeight: immersiveMinHeight,
+        flex: "1 1 auto",
+      } as const)
+    : ({
+        display: "block",
+        width: "100%",
+        height: inlineHeight,
+        minHeight: inlineHeight,
+        maxHeight: inlineHeight,
+        flex: "none",
+        alignSelf: "stretch",
+      } as const);
+
+  const stringRows = FRETBOARD_DISPLAY_ORDER.map((stringId) => {
+    const isSelected = selectedStringId === stringId;
+    const rowInteractive = interactive && !disabled;
+    const className = ["cuerda", isSelected ? "marcada" : "", rowInteractive && isSelected ? "pick" : ""]
+      .filter(Boolean)
+      .join(" ");
+    const lineHeight = FRETBOARD_STRING_THICKNESS_PX[stringId];
+
+    const rowStyle = immersive ? undefined : CUERDA_ROW_STYLE;
+
+    if (rowInteractive) {
+      return (
+        <button
+          key={stringId}
+          type="button"
+          className={className}
+          style={rowStyle}
+          data-string={stringId}
+          disabled={isDisabled}
+          onClick={() => onSelectStringId?.(stringId)}
+          aria-pressed={isSelected}
+          aria-label={`Cuerda ${stringId}`}
+        >
+          <span className="nombre">{stringId}</span>
+          <span className="linea" style={{ height: lineHeight }} aria-hidden="true" />
+        </button>
+      );
+    }
+
+    return (
+      <div key={stringId} className={className} style={rowStyle} data-string={stringId}>
+        <span className="nombre">{stringId}</span>
+        <span className="linea" style={{ height: lineHeight }} aria-hidden="true" />
+      </div>
+    );
+  });
 
   return (
     <div
-      className="w-full rounded-lg border px-4 py-4"
-      style={{ background: GM_SURFACE_ALT, borderColor: GM_GOLD_MATT }}
+      className={diapasonClassName}
+      style={diapasonStyle}
       role="group"
       aria-label="Diapasón de guitarra"
     >
-      <p
-        className="text-[10px] font-medium tracking-[0.18em] uppercase mb-3"
-        style={{ color: GM_TEXT_SEC }}
-      >
-        Diapasón
-      </p>
-      <div className="flex flex-col gap-2">
-        {FRETBOARD_DISPLAY_ORDER.map((stringId) => {
-          const isSelected = selectedStringId === stringId;
-          const rowInteractive = interactive && !disabled;
+      <div
+        className="trastes"
+        style={immersive ? undefined : { height: FRETBOARD_ROWS_BLOCK_HEIGHT_PX }}
+        aria-hidden="true"
+      />
+      {INLAY_DOT_LEFT.map((left) => (
+        <div key={left} className="punto" style={{ left }} aria-hidden="true" />
+      ))}
 
-          return (
-            <button
-              key={stringId}
-              type="button"
-              disabled={isDisabled}
-              onClick={() => {
-                if (rowInteractive && onSelectStringId) {
-                  onSelectStringId(stringId);
-                }
-              }}
-              className="flex items-center gap-3 rounded-md border px-3 py-2 min-h-[2.75rem] text-left transition-colors"
-              style={{
-                borderColor: isSelected ? GM_GOLD : "rgba(212, 175, 55, 0.25)",
-                background: isSelected ? "rgba(212, 175, 55, 0.1)" : "rgba(0, 0, 0, 0.2)",
-                opacity: isDisabled ? 0.55 : 1,
-                cursor: rowInteractive ? "pointer" : "default",
-              }}
-              aria-pressed={rowInteractive ? isSelected : undefined}
-              aria-label={`Cuerda ${stringId}`}
-            >
-              <span
-                className="w-6 shrink-0 text-sm font-mono font-medium"
-                style={{ color: isSelected ? GM_GOLD : GM_TEXT }}
-              >
-                {stringId}
-              </span>
-              <span
-                className="flex-1 h-px"
-                style={{
-                  background: isSelected
-                    ? "rgba(212, 175, 55, 0.65)"
-                    : "rgba(255, 255, 255, 0.12)",
-                }}
-                aria-hidden="true"
-              />
-            </button>
-          );
-        })}
+      <div
+        className="lesson-fretboard__cuerdas"
+        style={
+          immersive
+            ? undefined
+            : { height: FRETBOARD_ROWS_BLOCK_HEIGHT_PX }
+        }
+      >
+        {stringRows}
       </div>
+
+      {showHint && !immersive ? (
+        <p className="lesson-fretboard__hint">Toca la cuerda en pantalla para responder.</p>
+      ) : null}
     </div>
   );
 }

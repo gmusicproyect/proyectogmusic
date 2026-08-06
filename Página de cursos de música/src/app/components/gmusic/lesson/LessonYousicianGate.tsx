@@ -19,16 +19,10 @@ export function LessonYousicianGate() {
         />
         <div className="min-w-0 space-y-2">
           <h2 className="text-sm font-semibold tracking-wide" style={{ color: GM_TEXT }}>
-            Modo escucha — próximamente
+            Modo escucha — en evaluación
           </h2>
           <p className="text-sm leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-            Hoy practicas respondiendo en pantalla; el servidor califica al finalizar.
-          </p>
-          <p className="text-sm leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-            La app escuchando tu guitarra en vivo está en evaluación (D-GOV-AUDIO-01 · fase 1).
-          </p>
-          <p className="text-xs italic leading-relaxed" style={{ color: GM_TEXT_SEC }}>
-            No se activa el micrófono en esta versión.
+            Hoy practicas respondiendo en pantalla; el servidor califica al finalizar. No se activa el micrófono en esta versión.
           </p>
         </div>
       </div>

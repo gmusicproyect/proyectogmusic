@@ -12,9 +12,15 @@ const root = dirname(fileURLToPath(import.meta.url));
 const gmusicPathSource = readFileSync(join(root, "../../../pages/GmusicPath.tsx"), "utf8");
 const tabsShellSource = readFileSync(join(root, "PathLessonTabsShell.tsx"), "utf8");
 const videoCardSource = readFileSync(join(root, "PathNodeVideoCard.tsx"), "utf8");
+const cardHeroSource = readFileSync(join(root, "PathCarouselCardHero.tsx"), "utf8");
+const videoSourcesSource = readFileSync(join(root, "use-path-node-video-sources.ts"), "utf8");
+const carouselSource = readFileSync(join(root, "../PathCarouselCards.tsx"), "utf8");
 const resumenSource = readFileSync(join(root, "PathResumenPdfTab.tsx"), "utf8");
 const practicaSource = readFileSync(join(root, "PathPracticaTab.tsx"), "utf8");
+const practicaShellSource = readFileSync(join(root, "PathPracticaShell.tsx"), "utf8");
+const practicaReposoSource = readFileSync(join(root, "PathPracticaReposo.tsx"), "utf8");
 const runnerSource = readFileSync(join(root, "PathLessonRunner.tsx"), "utf8");
+const runnerShellSource = readFileSync(join(root, "../lesson/LessonRunnerShell.tsx"), "utf8");
 
 describe("T-UX-LESSON-01 CP3 — shell de 3 pestañas", () => {
   it("define exactamente Tarjetas · Práctica · Resumen PDF", () => {
@@ -34,10 +40,13 @@ describe("T-UX-LESSON-01 CP3 — shell de 3 pestañas", () => {
     assert.match(gmusicPathSource, /tarjetasPanel=/);
     assert.match(gmusicPathSource, /practicaPanel=/);
     assert.match(gmusicPathSource, /resumenPdfPanel=/);
-    assert.match(gmusicPathSource, /PathNodeVideoCard/);
+    assert.doesNotMatch(gmusicPathSource, /PathNodeVideoCard/);
+    assert.match(carouselSource, /PathCarouselCardHero/);
     assert.match(gmusicPathSource, /PathResumenPdfTab/);
     assert.match(gmusicPathSource, /PathPracticaTab/);
-    assert.doesNotMatch(gmusicPathSource, /fixed inset-0/);
+    assert.match(gmusicPathSource, /activeRunner=\{activeRunner\}/);
+    assert.doesNotMatch(gmusicPathSource, /Ir a Práctica/);
+    assert.doesNotMatch(gmusicPathSource, /Ver pestaña Práctica/);
   });
 
   it("PathLessonTabsShell usa tablist accesible", () => {
@@ -47,26 +56,48 @@ describe("T-UX-LESSON-01 CP3 — shell de 3 pestañas", () => {
     assert.match(tabsShellSource, /PATH_LESSON_TAB_DEFINITIONS/);
   });
 
-  it("Práctica embebe PathLessonRunner sin overlay de pantalla completa", () => {
+  it("Práctica embebida: guitarra visible, contador y pantalla completa opcional", () => {
+    assert.match(practicaSource, /PathPracticaShell/);
+    assert.match(practicaSource, /PathPracticaReposo/);
+    assert.match(practicaSource, /onToggleFullscreen/);
     assert.match(practicaSource, /variant="embedded"/);
-    assert.match(practicaSource, /LessonYousicianGate/);
-    assert.match(runnerSource, /variant\?: "overlay" \| "embedded"/);
-    assert.match(runnerSource, /isEmbedded \? "practice" : "video"/);
+    assert.match(practicaShellSource, /de \{totalExercises\}/);
+    assert.match(practicaShellSource, /Maximize2/);
+    assert.match(practicaShellSource, /fixed inset-0/);
+    assert.match(practicaShellSource, /path-practica-immersive-stage/);
+    assert.match(practicaShellSource, /path-practica-immersive-hud/);
+    assert.match(practicaReposoSource, /LessonFretboard/);
+    assert.match(practicaReposoSource, /PathPracticaBody/);
+    assert.doesNotMatch(practicaReposoSource, /Etapa activa/);
+    assert.doesNotMatch(practicaReposoSource, /Cinco ejercicios/);
+    assert.match(runnerSource, /onExerciseProgress/);
+  });
+
+  it("sesión activa usa layout Paquete A embebido dentro del shell", () => {
+    assert.match(runnerShellSource, /LessonPracticeChips/);
+    assert.match(runnerSource, /variant="embedded"/);
+    assert.match(runnerShellSource, /LessonPracticePanel/);
+    assert.match(runnerShellSource, /hideTitle/);
+    assert.match(runnerShellSource, /onExerciseProgress/);
+    assert.match(runnerShellSource, /diapason--immersive|immersiveLayout/);
   });
 });
 
 describe("T-UX-LESSON-01 CP3 — video firmado en Tarjetas", () => {
-  it("PathNodeVideoCard firma videos Supabase vía useSignedMaterialUrl", () => {
-    assert.match(videoCardSource, /useSignedMaterialUrl/);
-    assert.match(videoCardSource, /isSupabaseStorageVideoUrl/);
-    assert.match(videoCardSource, /nativeVideoSrc=\{nativeVideoSrc/);
-    assert.equal(videoCardSource.includes("fetchSignedMaterialUrl"), false);
-    assert.doesNotMatch(videoCardSource, /src=\{node\.videoUrl\}/);
+  it("video en tarjeta firma Supabase vía useSignedMaterialUrl", () => {
+    assert.match(videoSourcesSource, /useSignedMaterialUrl/);
+    assert.match(videoSourcesSource, /isSupabaseStorageVideoUrl/);
+    assert.match(cardHeroSource, /usePathNodeVideoSources/);
+    assert.doesNotMatch(cardHeroSource, /src=\{node\.videoUrl\}/);
+    assert.match(videoCardSource, /usePathNodeVideoSources/);
   });
 
   it("Resumen PDF firma guías privadas solo al expandir", () => {
     assert.match(resumenSource, /useSignedMaterialUrl/);
     assert.match(resumenSource, /expanded && needsSigning/);
     assert.doesNotMatch(resumenSource, /href=\{node\.guidePdfUrl\}/);
+    assert.match(resumenSource, /flattenPathNodesWithStep/);
+    assert.match(resumenSource, /resolveLessonStageSlot\(node\.stageType, stepNumber\)/);
+    assert.doesNotMatch(resumenSource, /node\.order\}/);
   });
 });

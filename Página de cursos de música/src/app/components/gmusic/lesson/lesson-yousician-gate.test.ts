@@ -7,13 +7,15 @@ import { describe, it } from "node:test";
 const root = dirname(fileURLToPath(import.meta.url));
 const gateSource = readFileSync(join(root, "LessonYousicianGate.tsx"), "utf8");
 const practicaSource = readFileSync(join(root, "../path/PathPracticaTab.tsx"), "utf8");
+const runnerSource = readFileSync(join(root, "../path/PathLessonRunner.tsx"), "utf8");
 
 describe("T-UX-LESSON-01 CP4 — gate Yousician", () => {
   it("usa copy honesto del spec", () => {
-    assert.match(gateSource, /Modo escucha — próximamente/);
+    assert.match(gateSource, /Modo escucha — en evaluación/);
     assert.match(gateSource, /Hoy practicas respondiendo en pantalla/);
-    assert.match(gateSource, /D-GOV-AUDIO-01 · fase 1/);
     assert.match(gateSource, /No se activa el micrófono en esta versión/);
+    assert.doesNotMatch(gateSource, /D-GOV-AUDIO-01/);
+    assert.doesNotMatch(gateSource, /próximamente/i);
   });
 
   it("no promete audio ni solicita micrófono", () => {
@@ -31,7 +33,8 @@ describe("T-UX-LESSON-01 CP4 — gate Yousician", () => {
     }
   });
 
-  it("PathPracticaTab muestra el gate en la pestaña Práctica", () => {
-    assert.match(practicaSource, /LessonYousicianGate/);
+  it("PathPracticaTab muestra el gate solo durante la sesión activa", () => {
+    assert.match(runnerSource, /LessonYousicianGate/);
+    assert.doesNotMatch(practicaSource, /LessonYousicianGate/);
   });
 });

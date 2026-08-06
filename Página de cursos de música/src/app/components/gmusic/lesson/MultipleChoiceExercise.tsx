@@ -13,6 +13,9 @@ export interface MultipleChoiceExerciseProps {
   selectedOptionId: string | null;
   disabled?: boolean;
   showOptions?: boolean;
+  /** pills = Paquete A (opciones horizontales); default = lista accesible */
+  layout?: "list" | "pills";
+  hideInstruction?: boolean;
   onSelect: (optionId: string) => void;
 }
 
@@ -21,6 +24,8 @@ export function MultipleChoiceExercise({
   selectedOptionId,
   disabled = false,
   showOptions = true,
+  layout = "list",
+  hideInstruction = false,
   onSelect,
 }: MultipleChoiceExerciseProps) {
   const instructionId = useId();
@@ -28,15 +33,51 @@ export function MultipleChoiceExercise({
 
   return (
     <div className="w-full">
-      <p
-        id={instructionId}
-        className="text-base md:text-lg font-medium leading-relaxed mb-5 min-h-[3rem]"
-        style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
-      >
-        {exercise.instruction}
-      </p>
+      {!hideInstruction ? (
+        <p
+          id={instructionId}
+          className="text-base md:text-lg font-medium leading-relaxed mb-5 min-h-[3rem]"
+          style={{ color: GM_TEXT, fontFamily: "'Playfair Display', Georgia, serif" }}
+        >
+          {exercise.instruction}
+        </p>
+      ) : (
+        <p id={instructionId} className="sr-only">
+          {exercise.instruction}
+        </p>
+      )}
 
       {showOptions ? (
+        layout === "pills" ? (
+          <div
+            role="radiogroup"
+            aria-labelledby={instructionId}
+            className="flex flex-wrap gap-3"
+          >
+            {exercise.options.map((option) => {
+              const isSelected = selectedOptionId === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onSelect(option.id)}
+                  className="min-w-[4.75rem] rounded-[14px] border px-5 py-4 text-lg font-bold transition-colors"
+                  style={{
+                    borderColor: isSelected ? GM_GOLD : GM_GOLD_MATT,
+                    background: isSelected ? "rgba(212, 175, 55, 0.08)" : "rgba(0, 0, 0, 0.35)",
+                    color: isSelected ? GM_GOLD : GM_TEXT,
+                    opacity: disabled ? 0.55 : 1,
+                    cursor: disabled ? "not-allowed" : "pointer",
+                  }}
+                  aria-pressed={isSelected}
+                >
+                  {option.text}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
         <>
           <fieldset disabled={disabled} className="border-0 p-0 m-0 min-w-0">
             <legend className="sr-only">Opciones de respuesta</legend>
@@ -81,6 +122,7 @@ export function MultipleChoiceExercise({
             Selecciona una opción para continuar.
           </p>
         </>
+        )
       ) : null}
     </div>
   );

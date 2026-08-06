@@ -34,7 +34,8 @@ describe("T-FLOW-04 — pantalla fin de contenido publicado", () => {
   it("carrusel se remonta en revisión sin habilitar replay", () => {
     assert.match(gmusicPathSource, /!viewModel\.isComplete \|\| reviewCompletedPath/);
     assert.match(gmusicPathSource, /reviewCompleted=\{reviewCompletedPath\}/);
-    assert.match(gmusicPathSource, /canStartLessonFromNode\(activeNode\)/);
+    assert.match(gmusicPathSource, /canStartLessonFromNode\(node\)/);
+    assert.doesNotMatch(gmusicPathSource, /Ir a Práctica/);
   });
 
   it("las 3 pestañas siguen visibles con camino completo (no se oculta el shell)", () => {

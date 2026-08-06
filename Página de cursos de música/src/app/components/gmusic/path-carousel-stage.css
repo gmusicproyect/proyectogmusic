@@ -281,6 +281,62 @@
   height: 12rem;
 }
 
+.path-carousel--stage .path-carousel__card-hero--video {
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #050505;
+}
+
+.path-carousel--stage .path-carousel__card--active .path-carousel__card-hero--video {
+  height: auto;
+  min-height: 12rem;
+}
+
+.path-carousel--stage .path-carousel__card-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  object-fit: cover;
+  background: #000;
+}
+
+.path-carousel--stage .path-carousel__card-hero-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: rgba(245, 240, 232, 0.72);
+}
+
+.path-carousel--stage .path-carousel__card-hero--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(212, 175, 55, 0.04);
+}
+
+.path-carousel--stage .path-carousel__card-hero-empty-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: rgba(212, 175, 55, 0.65);
+}
+
+.path-carousel--stage .path-carousel__card-hero-empty-text {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
 .path-carousel--stage .path-carousel__card-body {
   display: flex;
   flex-direction: column;

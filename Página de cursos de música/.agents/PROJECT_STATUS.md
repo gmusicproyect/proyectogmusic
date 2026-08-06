@@ -1,6 +1,19 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Ago 2026** (Entrega Kimi v2 · spike audio fase 0) · base **`origin/main`** · `app:test` **614/614**
+Última actualización: **6 Ago 2026** (T-UX-LESSON-01 avance producto `/mi-camino`) · base **`main`** · `app:test` **652/652**
+
+## Hito — 6 Ago 2026 · T-UX-LESSON-01 producto real (no demo)
+
+| Item | Estado |
+|------|--------|
+| **Veredicto Juan** | ✅ *«Muy sólido, muy bien»* — trabajo en **página suscriptor** para terminarla, **no demo** |
+| **Shell 3 pestañas** | ✅ Tarjetas · Práctica · Resumen PDF en `/mi-camino` |
+| **Video por tarjeta** | ✅ Embebido en hero del carrusel (`PathCarouselCardHero`); **eliminado** bloque global «Video de la etapa» |
+| **Práctica + diapasón Kimi v2** | ✅ Inline compacto + fullscreen inmersivo borde a borde · contador X/Y · gate Yousician |
+| **Tests** | ✅ `app:test` **652/652** · typecheck OK |
+| **Evidencia** | `docs/operations/T-UX-LESSON-01-avance-2026-08-06.md` |
+| **Cierre formal 6/6** | ☐ Smoke humano Render + OK Juan + commit |
+| **Commit / push** | ☐ Pendiente `OK commit` Juan |
 
 ## Hito — 6 Ago 2026 · Spike audio + Entrega Kimi v2
 
@@ -10,7 +23,7 @@
 | **D-GOV-AUDIO-01 fase 0** | ✅ **Completada** — pase con reserva: precisión + latencia Mac + solo navegador ✓; **falsos positivos voz ✗** |
 | **Evidencia spike** | `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-b-audio/VEREDICTO-SPIKE-2026-08-06.md` |
 | **Siguiente gate audio** | Fase 1 condicionada: filtros voz/ruido + prueba tablet (<150 ms) — **sin schema ni UI lúdica aún** |
-| **Siguiente producto** | **T-UX-LESSON-01** esperando «arrancar» — alcance pestañas + diapasón permanente ya demostrado en entrega v2 |
+| **Siguiente producto** | **T-UX-LESSON-01** — **implementación en curso** (checkpoint 6 Ago: shell + diapasón + video en tarjeta · ver `docs/operations/T-UX-LESSON-01-avance-2026-08-06.md`) |
 
 ## Hito — 5 Ago 2026 · Entrega Kimi aprobada
 

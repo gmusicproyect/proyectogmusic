@@ -184,6 +184,7 @@ export function DemoPathCards({
         return `Clase ${lessonNum ?? focusedIdx + 1} de ${lessonNodes.length}`;
       }}
       useDotFooter={nodes.length <= 12}
+      stepLabelWord="Clase"
     />
   );
 }

@@ -1,8 +1,9 @@
 # T-UX-LESSON-01 — Ticket formal (D-UX-LAYOUT-01)
 
-**Estado:** **OK binario Fable emitido** (2026-08-06, condicionado C1–C3) · autorizado `src/`  
+**Estado:** **OK binario Fable emitido** (2026-08-06) · **implementación en curso — checkpoint producto 6 Ago 2026**  
 **Commit spec:** ver último G1 en `main`  
 **Frase de arranque (Juan · 2026-08-06):** `arrancar T-UX-LESSON-01`  
+**Checkpoint Juan (2026-08-06):** *«Muy sólido — no es demo, es nuestra página para terminarla»* → ver `docs/operations/T-UX-LESSON-01-avance-2026-08-06.md`  
 **Referencia visual:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-a-leccion/` (v2 · delta 2026-08-06)  
 **Propuesta insumo:** `docs/ux/propuesta-t-ux-lesson-01.md` v1.1 (Parte B pedagógica; layout = pestañas Kimi)
 

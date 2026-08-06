@@ -15,7 +15,6 @@ import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
 import { PathShell } from "../components/gmusic/path/PathShell";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
 import { PathLessonTabsShell } from "../components/gmusic/path/PathLessonTabsShell";
-import { PathNodeVideoCard } from "../components/gmusic/path/PathNodeVideoCard";
 import { PathPracticaTab } from "../components/gmusic/path/PathPracticaTab";
 import { PathResumenPdfTab } from "../components/gmusic/path/PathResumenPdfTab";
 import type { PathLessonTabId } from "../components/gmusic/path/path-lesson-tab-ids";
@@ -52,7 +51,6 @@ type LessonStartState =
 
 export function GmusicPath({ setPage }: GmusicPathProps) {
   const [activeTab, setActiveTab] = useState<PathLessonTabId>("tarjetas");
-  const [focusedNodeIndex, setFocusedNodeIndex] = useState(0);
   const [modal, setModal] = useState<ModalKind>(null);
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
   const [sessionOpenError, setSessionOpenError] = useState<string | null>(null);
@@ -74,16 +72,11 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     [pathNodes, viewModel?.activeNodeId]
   );
 
-  useEffect(() => {
-    setFocusedNodeIndex(initialFocusIndex);
-  }, [initialFocusIndex]);
-
   const activeNode = useMemo(() => {
     if (!viewModel?.activeNodeId) return null;
     return findPathNodeById(viewModel.modules, viewModel.activeNodeId);
   }, [viewModel?.activeNodeId, viewModel?.modules]);
 
-  const focusedNode = pathNodes[focusedNodeIndex] ?? null;
   const activeClass = useMemo(
     () => resolveCarouselActiveClass(pathNodes, viewModel?.activeNodeId ?? null),
     [pathNodes, viewModel?.activeNodeId]
@@ -211,10 +204,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     if (!activeNode) return;
     void handleStartNode(activeNode.id);
   }, [activeNode, handleStartNode]);
-
-  const handleGoToPracticaTab = useCallback(() => {
-    setActiveTab("practica");
-  }, []);
 
   const loadingNodeId = lessonStart.status === "loading" ? lessonStart.nodeId : null;
 
@@ -374,35 +363,8 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                                 : null
                             }
                             useDotFooter={false}
-                            onFocusedIndexChange={setFocusedNodeIndex}
                           />
                         </div>
-                        {focusedNode ? (
-                          <PathNodeVideoCard node={focusedNode} />
-                        ) : null}
-                        {activeNode && canStartLessonFromNode(activeNode) ? (
-                          <div className="flex flex-col gap-2 sm:flex-row">
-                            <button
-                              type="button"
-                              onClick={() => void handleStartNode(activeNode.id)}
-                              disabled={loadingNodeId === activeNode.id}
-                              className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
-                              style={{ background: GM_GOLD, color: "#0A0A0A" }}
-                            >
-                              {loadingNodeId === activeNode.id
-                                ? "Abriendo sesión…"
-                                : "Ir a Práctica"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleGoToPracticaTab}
-                              className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border px-5 text-xs font-semibold uppercase tracking-[0.1em]"
-                              style={{ borderColor: "rgba(201, 168, 76, 0.35)", color: GM_GOLD }}
-                            >
-                              Ver pestaña Práctica
-                            </button>
-                          </div>
-                        ) : null}
                       </>
                     ) : null}
                   </div>

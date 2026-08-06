@@ -8,32 +8,23 @@ import {
   resolveLessonStageSlot,
 } from "../lesson/lesson-stage";
 import { GM_BORDER, GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "../tokens";
+import { flattenPathNodesWithStep } from "./path-node-step";
 
 export interface PathResumenPdfTabProps {
   modules: PathModuleData[];
 }
 
-function flattenNodesWithModule(modules: PathModuleData[]): Array<{
-  node: PathNodeData;
-  moduleTitle: string;
-}> {
-  return modules.flatMap((module) =>
-    module.nodes.map((node) => ({
-      node,
-      moduleTitle: module.title,
-    }))
-  );
-}
-
 function PathPdfStageItem({
   node,
   moduleTitle,
+  stepNumber,
 }: {
   node: PathNodeData;
   moduleTitle: string;
+  stepNumber: number;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const stageSlot = resolveLessonStageSlot(node.stageType, node.order);
+  const stageSlot = resolveLessonStageSlot(node.stageType, stepNumber);
   const stageLabel = lessonStageLabelForSlot(stageSlot);
   const needsSigning = isPrivateSupabaseStorageMaterialUrl(node.guidePdfUrl);
   const signedPdf = useSignedMaterialUrl(expanded && needsSigning ? node.guidePdfUrl : null);
@@ -64,8 +55,7 @@ function PathPdfStageItem({
             className="block text-sm font-medium leading-snug"
             style={{ color: GM_TEXT }}
           >
-            {node.order != null ? `Etapa ${node.order} · ` : ""}
-            {node.title}
+            {`Etapa ${stepNumber} · ${node.title}`}
           </span>
           <span className="mt-1 block text-xs leading-relaxed" style={{ color: GM_TEXT_SEC }}>
             {stageLabel} · toca para ver de qué trata
@@ -130,7 +120,7 @@ function PathPdfStageItem({
 }
 
 export function PathResumenPdfTab({ modules }: PathResumenPdfTabProps) {
-  const entries = flattenNodesWithModule(modules);
+  const entries = flattenPathNodesWithStep(modules);
 
   if (entries.length === 0) {
     return (
@@ -146,8 +136,13 @@ export function PathResumenPdfTab({ modules }: PathResumenPdfTabProps) {
         Materia de las etapas — toca una para ver de qué trata.
       </p>
       <div className="space-y-3">
-        {entries.map(({ node, moduleTitle }) => (
-          <PathPdfStageItem key={node.id} node={node} moduleTitle={moduleTitle} />
+        {entries.map(({ node, moduleTitle, stepNumber }) => (
+          <PathPdfStageItem
+            key={node.id}
+            node={node}
+            moduleTitle={moduleTitle}
+            stepNumber={stepNumber}
+          />
         ))}
       </div>
     </div>

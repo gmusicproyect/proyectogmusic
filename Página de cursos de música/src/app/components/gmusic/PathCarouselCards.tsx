@@ -16,6 +16,7 @@ import {
   pathCarouselStageCtaButtonStyle,
   microCycleStageLabel,
 } from "./path-carousel-styles";
+import { PathCarouselCardHero } from "./path/PathCarouselCardHero";
 
 export interface PathCarouselFocusedCta {
   kind: "locked" | "action" | "teaser";
@@ -57,6 +58,8 @@ export interface PathCarouselCardsProps {
   useDotFooter?: boolean;
   /** D-022B2 — preset stage suscriptor; demo mantiene default */
   visualVariant?: "default" | "stage";
+  /** Suscriptor: «Etapa»; demo legacy: «Clase». */
+  stepLabelWord?: "Etapa" | "Clase";
   onFocusedIndexChange?: (index: number) => void;
 }
 
@@ -101,9 +104,11 @@ export function PathCarouselCards({
   buildFooterText,
   useDotFooter,
   visualVariant = "default",
+  stepLabelWord = "Etapa",
   onFocusedIndexChange,
 }: PathCarouselCardsProps) {
   const isStage = visualVariant === "stage";
+  const stepLabelUpper = stepLabelWord.toUpperCase();
   const safeInitial = Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0)));
   const [focusedIdx, setFocusedIdx] = useState(safeInitial);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -258,21 +263,16 @@ export function PathCarouselCards({
             scrollSnapAlign: "center",
           }}
         >
-          <div className="path-carousel__card-hero">
-            <img
-              src={photo}
-              alt=""
-              className="path-carousel__card-hero-img"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="path-carousel__card-hero-overlay" aria-hidden="true" />
-            <span className="path-carousel__hero-stage-label">{stageLabel}</span>
-          </div>
+          <PathCarouselCardHero
+            node={node}
+            isFocused={isFocused}
+            fallbackPhoto={photo}
+            stageLabel={stageLabel}
+          />
           <div className="path-carousel__card-body">
             <div className="path-carousel__card-label-row">
               <span className="path-carousel__card-class">
-                CLASE {stepNumber ?? i + 1}
+                {stepLabelUpper} {stepNumber ?? i + 1}
               </span>
               {isPlayableFocused ? (
                 <span className="path-carousel__pill-available">Disponible</span>
@@ -638,7 +638,7 @@ export function PathCarouselCards({
         <button
           type="button"
           onClick={() => goTo(focusedIdx - 1)}
-          aria-label="Clase anterior"
+          aria-label={`${stepLabelWord} anterior`}
           style={pathCarouselArrowButtonStyle("left")}
         >
           <ChevronLeft size={22} />
@@ -669,7 +669,7 @@ export function PathCarouselCards({
         <button
           type="button"
           onClick={() => goTo(focusedIdx + 1)}
-          aria-label="Clase siguiente"
+          aria-label={`${stepLabelWord} siguiente`}
           style={pathCarouselArrowButtonStyle("right")}
         >
           <ChevronRight size={22} />
