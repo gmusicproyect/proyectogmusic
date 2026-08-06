@@ -22,6 +22,7 @@ const Engine = (() => {
   let idx = 0;
   let attempts = [];
   let exerciseStartedAt = 0;
+  let answered = false; // una sola respuesta por ejercicio (la guitarra clicable también pasa por aquí)
 
   /* Feedback visual SIMULADO (no califica — ver README, fila "Puntos y combo") */
   let puntosVisuales = 0;
@@ -57,6 +58,7 @@ const Engine = (() => {
   function renderExercise(){
     const ex = exercises[idx];
     exerciseStartedAt = performance.now();
+    answered = false;
     $('exTitle').textContent = 'Etapa: Cuerdas al aire — Práctica';
     $('exPrompt').textContent = ex.prompt;
     $('exPos').textContent = `Ejercicio ${idx+1} de ${exercises.length} · id: ${ex.microExerciseId}`;
@@ -67,11 +69,20 @@ const Engine = (() => {
     area.innerHTML = '<div class="q-body" id="qBody"></div><div class="feedback" id="fb"></div>';
     const q = $('qBody');
 
-    if(ex.tipo === 'SELECCION')            q.appendChild(renderOpciones(ex));
+    /* El diapasón SIEMPRE está presente en el cuadro de práctica.
+       Si el ejercicio pregunta por una cuerda, la guitarra es CLICABLE
+       y la respuesta se da tocando la cuerda en pantalla. */
+    if(ex.tipo === 'SELECCION'){
+      const esDeCuerdas = ex.opciones.every(op => ApiMock.STRINGS.includes(op));
+      q.appendChild(renderDiapason(null, esDeCuerdas, ex));
+      if(!esDeCuerdas) q.appendChild(renderOpciones(ex));
+    }
     if(ex.tipo === 'SELECCION_DIAPASON'){  q.appendChild(renderDiapason(ex.cuerdaMarcada, false));
                                            q.appendChild(renderOpciones(ex)); }
-    if(ex.tipo === 'ORDENAR')              q.appendChild(renderOrdenar(ex));
-    if(ex.tipo === 'SELECCION_AUDIO'){     q.appendChild(renderAudioFake(ex));
+    if(ex.tipo === 'ORDENAR'){             q.appendChild(renderDiapason(null, false));
+                                           q.appendChild(renderOrdenar(ex)); }
+    if(ex.tipo === 'SELECCION_AUDIO'){     q.appendChild(renderDiapason(null, false));
+                                           q.appendChild(renderAudioFake(ex));
                                            q.appendChild(renderOpciones(ex)); }
     if(ex.tipo === 'TOCAR_CUERDA_DIAPASON') q.appendChild(renderDiapason(null, true, ex));
 
@@ -149,6 +160,8 @@ const Engine = (() => {
 
   /* ---------- Registrar respuesta (nunca califica aquí) ---------- */
   function answer(ex, selectedAnswer, btn, box){
+    if(answered) return; // ya respondió este ejercicio (doble click en guitarra u opción)
+    answered = true;
     const responseTimeMs = Math.round(performance.now() - exerciseStartedAt);
     attempts.push({ microExerciseId: ex.microExerciseId, selectedAnswer, responseTimeMs });
 

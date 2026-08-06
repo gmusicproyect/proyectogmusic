@@ -42,3 +42,13 @@ Criterios de la decisión D-GOV (fase 0). Anota sí/no en cada uno:
 | Sin instalar nada (solo navegador) | ☐ |
 
 **Eso es todo.** Este prototipo es deliberadamente mínimo: no guarda datos, no califica, no se conecta al Paquete A. Su único trabajo es responder con evidencia si la detección monofónica en browser es viable — esa evidencia es la entrada de la siguiente decisión.
+
+---
+
+## Extra — Afinador guiado (`afinador.html`, agregado 2026-08-06)
+
+Con el mismo servidor del paso 1, abre **http://localhost:8000/afinador.html**.
+
+El proceso es exactamente el pedido por Juan: empieza pidiendo la **6ª cuerda (E)**, mide en vivo con el mismo motor del spike, y solo cuando la cuerda se mantiene **±10 cents durante 1 segundo** la aprueba (✓ dorado) y avanza sola a la **5ª (A)**, luego D, G, B y e. Al aprobar las 6 muestra «¡Guitarra afinada!». Si la cuerda se sale de tolerancia, el contador se reinicia — no aprueba por accidente.
+
+Igual que el spike: no califica, no guarda datos, no se conecta al Paquete A. Poner «1 afinador por habilidad» en el producto real requeriría su propio ticket y decisión.

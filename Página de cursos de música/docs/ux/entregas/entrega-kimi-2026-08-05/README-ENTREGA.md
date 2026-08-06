@@ -1,4 +1,4 @@
-# README-ENTREGA — Paquete Academia GMusic (2026-08-05)
+# README-ENTREGA — Paquete Academia GMusic (2026-08-05 · delta 2026-08-06)
 
 **«Todo lo afirmado en este README está en el código de este ZIP.»**
 
@@ -10,7 +10,7 @@
 
 **Paquete A** (`paquete-a-leccion/`): doble click en `index.html`. Sin build, sin servidor, sin llamadas de red. Los datos MOCK van embebidos en `js/api-mock.js` (espejo de `data/*.json`, embebido para que funcione desde `file://`).
 
-**Paquete B** (`paquete-b-audio/`): necesita localhost por el micrófono — ver `PRUEBA-EN-5-PASOS.md`.
+**Paquete B** (`paquete-b-audio/`): necesita localhost por el micrófono — ver `PRUEBA-EN-5-PASOS.md`. Incluye dos prototipos: `index.html` (spike de detección por cuerda) y `afinador.html` (afinador guiado E→A→D→G→B→e).
 
 **Dependencias:** cero. Sin CDNs, sin frameworks, sin código minificado ni ofuscado.
 
@@ -27,6 +27,7 @@
 | Práctica: sesión creada con la forma `POST /lesson-sessions {nodeId}` → `{sessionId, expiresAt, exercises[]}` | **REAL** (contra ApiMock) | `js/engine.js` → `start()`; contrato en `js/api-mock.js` → `createSession()` |
 | Ejercicios llegan por sesión autenticada (nunca CDN público) | **REAL** (diseño aplicado) | los ejercicios viven dentro de la sesión: `js/api-mock.js` → `createSession()` |
 | 5 ejercicios de respuesta en el mismo cuadro (selección, diapasón, ordenar, audio pregrabado, tocar cuerda) | **REAL** | `js/engine.js` → `renderExercise()` y los `render*` por tipo |
+| Guitarra interactiva (diapasón) SIEMPRE visible en Práctica; si el ejercicio pregunta por una cuerda, se responde tocándola en pantalla | **REAL** (ajuste 2026-08-06 a solicitud de Juan) | `js/engine.js` → `renderExercise()` (diapasón permanente) y `renderDiapason()` (modo clicable) |
 | Registro de respuestas `{microExerciseId, selectedAnswer, responseTimeMs}` | **REAL** | `js/engine.js` → `answer()` |
 | `complete` con la forma real; el "servidor" (ApiMock) calcula accuracy, umbral 0.7, XP, racha | **REAL** (contra ApiMock) | `js/api-mock.js` → `complete()` |
 | Celebración de racha SOLO si `streakUpdated === true`; `alreadyProcessed` no re-suma | **REAL** (contra ApiMock) | `js/engine.js` → `showResult()`; lógica en `api-mock.js` → `complete()` |
@@ -34,7 +35,8 @@
 | Audio del ejercicio 4 («escucha y elige») | **SIMULADO** (placeholder sin archivo; en producción: audio pregrabado por enlace firmado) | `js/engine.js` → `renderAudioFake()` |
 | Videos de las tarjetas y PDFs | **SIMULADO** (se muestran como «enlace firmado (1 h)», sin archivos reales) | `data/bloque-1.json` |
 | Detección de pitch por micrófono (monofónica, spike fase 0) | **REAL en paquete B** (prototipo aislado; NO integrado al Paquete A ni al producto) | `paquete-b-audio/js/pitch.js` → `autoCorrelate()` |
-| Detección de acordes (polifonía), notas cayendo a tempo, afinador interactivo | **NO INCLUIDO** (fuera del alcance del spike fase 0 — decisión D-GOV) | — |
+| Afinador guiado por cuerda: empieza en E (6ª), aprueba con ±10 cents sostenidos 1 s, avanza solo A→D→G→B→e | **REAL en paquete B** (agregado 2026-08-06 a solicitud de Juan; mismo motor monofónico del spike; NO califica, NO guarda datos, NO integrado al Paquete A ni al producto — poner «1 afinador por habilidad» en producción requeriría su propio ticket/decisión) | `paquete-b-audio/afinador.html` (reusa `js/pitch.js`) |
+| Detección de acordes (polifonía), notas cayendo a tempo | **NO INCLUIDO** (fuera del alcance del spike fase 0 — decisión D-GOV) | — |
 | Conexión al backend real | **NO INCLUIDO** (toda la API es MOCK con las formas de contrato) | `js/api-mock.js` |
 
 ---
@@ -51,7 +53,7 @@
 
 | Color | Uso en el prototipo |
 |---|---|
-| `#4ADE80` (verde) | Combo/aciertos del feedback visual y checks de ejercicios completados |
+| `#4ADE80` (verde) | Combo/aciertos del feedback visual, checks de ejercicios completados y zona «afinada» del afinador (`afinador.html`) |
 
 ---
 
@@ -75,7 +77,8 @@ entrega-kimi-2026-08-05/
 │       ├── dashboard.json
 │       └── ejercicios-etapa-3.json
 └── paquete-b-audio/             ← spike fase 0, aislado del Paquete A
-    ├── index.html
+    ├── index.html               ← spike: detección por cuerda
+    ├── afinador.html            ← afinador guiado E→A→D→G→B→e (reusa pitch.js)
     ├── js/pitch.js              ← autocorrelación monofónica (real)
     └── PRUEBA-EN-5-PASOS.md
 ```
@@ -88,5 +91,6 @@ entrega-kimi-2026-08-05/
 |---|---|---|
 | 1 | `api-mock.js` → `complete()` pone `xpEarned = 0` si `nodeCompleted = false` | Contrato certificado T-PUB-02: `xpEarned = round(accuracy · 100)` **sin** ese gate. Alinear cuando nazca el ticket de implementación. |
 | 2 | `#4ADE80` (verde acierto) | Propuesta de paleta — pendiente decisión de Juan (ver §3). |
+| 3 | `engine.js` → heurística `esDeCuerdas` (guitarra clicable inferida si las opciones son nombres de cuerda) | Válida en prototipo. En **producto** debe ser un **campo explícito del payload del ejercicio** (p. ej. `interactiveFretboard: true`), no una inferencia — anotar en T-UX-LESSON-01 / schema cuando «arrancar». |
 
 ---

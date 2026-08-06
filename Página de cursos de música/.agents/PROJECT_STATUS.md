@@ -1,14 +1,16 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Ago 2026** (Spike audio fase 0 — veredicto Juan) · base **`origin/main`** · `app:test` **614/614**
+Última actualización: **6 Ago 2026** (Entrega Kimi v2 · spike audio fase 0) · base **`origin/main`** · `app:test` **614/614**
 
-## Hito — 6 Ago 2026 · Spike audio fase 0
+## Hito — 6 Ago 2026 · Spike audio + Entrega Kimi v2
 
 | Item | Estado |
 |------|--------|
+| **Entrega Kimi v2 (06/08)** | ✅ Archivada — diapasón permanente en Práctica (`engine.js`) + prototipo afinador guiado (`paquete-b-audio/afinador.html`) · gate **D-GOV-AUDIO-01 sin cambios** (fase 1 sigue pendiente: filtros voz re-medidos + tablet) · **hallazgo:** mecanismo «sostenido en tolerancia» del afinador = candidato filtro anti-voz fase 1 |
 | **D-GOV-AUDIO-01 fase 0** | ✅ **Completada** — pase con reserva: precisión + latencia Mac + solo navegador ✓; **falsos positivos voz ✗** |
-| **Evidencia** | `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-b-audio/VEREDICTO-SPIKE-2026-08-06.md` |
-| **Siguiente gate** | Fase 1 condicionada: filtros voz/ruido + prueba tablet (<150 ms) — **sin schema ni UI lúdica aún** |
+| **Evidencia spike** | `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-b-audio/VEREDICTO-SPIKE-2026-08-06.md` |
+| **Siguiente gate audio** | Fase 1 condicionada: filtros voz/ruido + prueba tablet (<150 ms) — **sin schema ni UI lúdica aún** |
+| **Siguiente producto** | **T-UX-LESSON-01** esperando «arrancar» — alcance pestañas + diapasón permanente ya demostrado en entrega v2 |
 
 ## Hito — 5 Ago 2026 · Entrega Kimi aprobada
 

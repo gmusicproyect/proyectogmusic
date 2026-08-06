@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afinador guiado — Academia GMusic (Paquete B)</title>
+<style>
+  /* Tokens verificados: #080808 · #111111 · rgba(255,255,255,.06) · #C9A84C · #F5F0E8 · #8A8A8A
+     Excepción declarada (propuesta de paleta, pendiente decisión): verde #4ADE80 en la zona afinada. */
+  :root{ --gold:#C9A84C; --gold-a08:rgba(201,168,76,.08); --gold-a15:rgba(201,168,76,.15); --gold-a25:rgba(201,168,76,.25);
+         --bg:#080808; --surface:#111111; --line:rgba(255,255,255,.06); --txt:#F5F0E8; --txt2:#8A8A8A;
+         --ok:#4ADE80; }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'Segoe UI',Roboto,sans-serif}
+  body{background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:36px 32px 28px;max-width:420px;width:100%;text-align:center}
+  h1{font-size:15px;font-weight:600;color:var(--txt2);letter-spacing:.08em;text-transform:uppercase}
+  h1 b{color:var(--gold)}
+
+  /* Cuerda actual: protagonista */
+  .target{margin:26px 0 6px}
+  .target .letra{font-size:92px;font-weight:800;line-height:1;color:var(--txt);transition:.2s}
+  .target .letra.approved{color:var(--gold);transform:scale(1.06)}
+  .target .nombre{font-size:13px;color:var(--txt2);margin-top:6px}
+
+  /* Gauge horizontal minimalista */
+  .gauge{position:relative;height:64px;margin:22px 8px 6px}
+  .gauge .rail{position:absolute;left:0;right:0;top:30px;height:2px;background:var(--line);border-radius:2px}
+  .gauge .zone{position:absolute;left:50%;transform:translateX(-50%);top:26px;width:44px;height:10px;border-radius:6px;background:var(--gold-a15)}
+  .gauge .zone.ok{background:rgba(74,222,128,.18)}
+  .gauge .center{position:absolute;left:50%;transform:translateX(-50%);top:22px;width:2px;height:18px;background:var(--gold)}
+  .gauge .needle{position:absolute;top:16px;width:3px;height:30px;border-radius:3px;background:var(--txt);left:50%;transition:left .12s ease-out}
+  .gauge .needle.in{background:var(--ok)}
+  .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin:0 8px}
+  .hint{font-size:13px;min-height:20px;margin-top:14px;color:var(--txt2)}
+  .hint.up,.hint.down{color:var(--gold);font-weight:600}
+  .hint.in{color:var(--ok);font-weight:700}
+  .cents{font-size:11px;color:var(--txt2);margin-top:4px;min-height:16px}
+
+  /* Progreso de las 6 cuerdas */
+  .progress{display:flex;justify-content:center;gap:14px;margin-top:26px}
+  .p-dot{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--txt2);transition:.2s}
+  .p-dot.current{border-color:var(--gold);color:var(--gold);background:var(--gold-a08);box-shadow:0 0 14px var(--gold-a15)}
+  .p-dot.done{border-color:var(--gold);background:var(--gold);color:var(--bg)}
+
+  button{font-size:13px;font-weight:700;color:var(--bg);background:var(--gold);border:none;border-radius:10px;padding:12px 26px;cursor:pointer;margin-top:24px}
+  .status{font-size:11px;color:var(--txt2);margin-top:14px;line-height:1.6}
+  .done-all{padding:30px 0 6px;display:none}
+  .done-all .big{font-size:52px;margin-bottom:12px}
+  .done-all h2{font-size:18px;margin-bottom:8px}
+  .done-all p{font-size:13px;color:var(--txt2);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>Afinador · <b>Etapa 2: Afina y posturea</b></h1>
+
+  <div id="tunerUI">
+    <div class="target">
+      <div class="letra" id="letra">E</div>
+      <div class="nombre" id="nombre">6ª cuerda — la más grave</div>
+    </div>
+
+    <div class="gauge">
+      <div class="rail"></div>
+      <div class="zone" id="zone"></div>
+      <div class="center"></div>
+      <div class="needle" id="needle" style="left:50%"></div>
+    </div>
+    <div class="ticks"><span>-50¢</span><span>0</span><span>+50¢</span></div>
+
+    <div class="hint" id="hint">Toca la cuerda E al aire…</div>
+    <div class="cents" id="cents"></div>
+
+    <div class="progress" id="progress"></div>
+
+    <button id="btnMic">🎤 Activar micrófono</button>
+    <div class="status" id="status">Aprueba cada cuerda para avanzar a la siguiente.<br>En Mac: sirve esta carpeta con <b>python3 -m http.server</b> y abre localhost.</div>
+  </div>
+
+  <div class="done-all" id="doneAll">
+    <div class="big">🎉</div>
+    <h2>¡Guitarra afinada!</h2>
+    <p>Las 6 cuerdas aprobadas en ±10 cents.<br>Ya puedes seguir con los videos de la etapa.</p>
+    <button onclick="location.reload()">Afinar de nuevo</button>
+  </div>
+</div>
+
+<script src="js/pitch.js"></script>
+<script>
+/* Afinador guiado: E(6ª) → A(5ª) → D(4ª) → G(3ª) → B(2ª) → e(1ª).
+   Aprueba cuando la cuerda se mantiene dentro de ±10 cents durante 1 segundo.
+   Paquete B — spike de audio (detección monofónica real). */
+const SECUENCIA = [
+  { letra:'E', nombre:'6ª cuerda — la más grave' },
+  { letra:'A', nombre:'5ª cuerda' },
+  { letra:'D', nombre:'4ª cuerda' },
+  { letra:'G', nombre:'3ª cuerda' },
+  { letra:'B', nombre:'2ª cuerda' },
+  { letra:'e', nombre:'1ª cuerda — la más aguda' }
+];
+const TOLERANCIA = 10;      // cents para aprobar
+const SOSTENIDO_MS = 1000;  // tiempo sostenido en tolerancia para aprobar
+const $ = id => document.getElementById(id);
+
+let paso = 0, aprobadoDesde = 0, running = false;
+
+function renderProgress(){
+  $('progress').innerHTML = SECUENCIA.map((s,i)=>{
+    const cls = i < paso ? 'done' : i === paso ? 'current' : '';
+    return `<div class="p-dot ${cls}">${i < paso ? '✓' : s.letra}</div>`;
+  }).join('');
+}
+renderProgress();
+
+$('btnMic').onclick = async () => {
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false } });
+    start(stream);
+  }catch(err){
+    $('status').textContent = 'Sin acceso al micrófono: ' + err.message;
+  }
+};
+
+function start(stream){
+  $('btnMic').style.display = 'none';
+  running = true;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const analyser = ctx.createAnalyser(); analyser.fftSize = 2048;
+  ctx.createMediaStreamSource(stream).connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+
+  (function tick(){
+    if(!running) return;
+    analyser.getFloatTimeDomainData(buf);
+    const freq = Cuerdas.autoCorrelate(buf, ctx.sampleRate);
+    const objetivo = Cuerdas.STRINGS[paso]; // STRINGS va E..e, mismo orden que SECUENCIA
+    if(freq > 60 && freq < 400){
+      const cents = Cuerdas.centsBetween(freq, objetivo.freq);
+      updateGauge(cents, freq);
+      checkAprobacion(cents);
+    } else {
+      resetGauge();
+    }
+    requestAnimationFrame(tick);
+  })();
+}
+
+function updateGauge(cents, freq){
+  const clamped = Math.max(-50, Math.min(50, cents));
+  $('needle').style.left = (50 + clamped) + '%'; // 0% = -50¢, 100% = +50¢
+  const inTune = Math.abs(cents) <= TOLERANCIA;
+  $('needle').classList.toggle('in', inTune);
+  $('zone').classList.toggle('ok', inTune);
+  const h = $('hint');
+  if(inTune){ h.className='hint in'; h.textContent='✓ Ahí — sostén…'; }
+  else if(cents < 0){ h.className='hint up'; h.textContent='↑ Está baja — aprieta la clavija'; }
+  else { h.className='hint down'; h.textContent='↓ Está alta — afloja la clavija'; }
+  $('cents').textContent = freq.toFixed(1) + ' Hz · ' + (cents>=0?'+':'') + Math.round(cents) + ' cents';
+}
+
+function resetGauge(){
+  $('needle').classList.remove('in');
+  $('zone').classList.remove('ok');
+  aprobadoDesde = 0;
+}
+
+function checkAprobacion(cents){
+  const inTune = Math.abs(cents) <= TOLERANCIA;
+  const now = performance.now();
+  if(inTune){
+    if(!aprobadoDesde) aprobadoDesde = now;
+    if(now - aprobadoDesde >= SOSTENIDO_MS) aprobarCuerda();
+  } else {
+    aprobadoDesde = 0;
+  }
+}
+
+function aprobarCuerda(){
+  aprobadoDesde = 0;
+  $('letra').classList.add('approved');
+  setTimeout(()=>{
+    paso++;
+    if(paso >= SECUENCIA.length){
+      running = false;
+      $('tunerUI').style.display = 'none';
+      $('doneAll').style.display = 'block';
+      return;
+    }
+    $('letra').classList.remove('approved');
+    $('letra').textContent = SECUENCIA[paso].letra;
+    $('nombre').textContent = SECUENCIA[paso].nombre;
+    $('hint').className = 'hint';
+    $('hint').textContent = 'Toca la cuerda ' + SECUENCIA[paso].letra + ' al aire…';
+    renderProgress();
+  }, 600);
+}
+</script>
+</body>
+</html>
