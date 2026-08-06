@@ -296,12 +296,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           </div>
         )}
 
-        {path.status === "success" && viewModel?.isComplete && (
-          <div className="path-intro-stack pb-4">
-            <CompletedPathPanel setPage={setPage} onReviewPath={() => setReviewCompletedPath(true)} />
-          </div>
-        )}
-
         {isLoading && (
           <div
             className="flex items-center justify-center py-12 text-sm"
@@ -311,7 +305,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
           </div>
         )}
 
-        {path.status === "success" && viewModel && !viewModel.isEmpty && (!viewModel.isComplete || reviewCompletedPath) && (
+        {path.status === "success" && viewModel && !viewModel.isEmpty && (
           <>
             {(lessonStart.status === "error" || sessionOpenError) && (
               <div className="path-intro-stack mb-3">
@@ -358,47 +352,58 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                 onTabChange={setActiveTab}
                 tarjetasPanel={
                   <div className="space-y-6">
-                    <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
-                      <PathCarouselCards
-                        nodes={pathNodes}
-                        buildCardModels={buildCardModels}
-                        initialFocusIndex={initialFocusIndex}
-                        visualVariant="stage"
-                        hintText="Desliza para explorar tu camino →"
-                        buildFooterText={(focusedIdx, nodes) =>
-                          nodes.length > 99
-                            ? `Paso ${focusedIdx + 1} de ${nodes.length}`
-                            : null
-                        }
-                        useDotFooter={false}
-                        onFocusedIndexChange={setFocusedNodeIndex}
+                    {viewModel.isComplete ? (
+                      <CompletedPathPanel
+                        setPage={setPage}
+                        onReviewPath={() => setReviewCompletedPath(true)}
                       />
-                    </div>
-                    {focusedNode ? (
-                      <PathNodeVideoCard node={focusedNode} />
                     ) : null}
-                    {activeNode && canStartLessonFromNode(activeNode) ? (
-                      <div className="flex flex-col gap-2 sm:flex-row">
-                        <button
-                          type="button"
-                          onClick={() => void handleStartNode(activeNode.id)}
-                          disabled={loadingNodeId === activeNode.id}
-                          className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
-                          style={{ background: GM_GOLD, color: "#0A0A0A" }}
-                        >
-                          {loadingNodeId === activeNode.id
-                            ? "Abriendo sesión…"
-                            : "Ir a Práctica"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleGoToPracticaTab}
-                          className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border px-5 text-xs font-semibold uppercase tracking-[0.1em]"
-                          style={{ borderColor: "rgba(201, 168, 76, 0.35)", color: GM_GOLD }}
-                        >
-                          Ver pestaña Práctica
-                        </button>
-                      </div>
+                    {!viewModel.isComplete || reviewCompletedPath ? (
+                      <>
+                        <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
+                          <PathCarouselCards
+                            nodes={pathNodes}
+                            buildCardModels={buildCardModels}
+                            initialFocusIndex={initialFocusIndex}
+                            visualVariant="stage"
+                            reviewCompleted={reviewCompletedPath}
+                            hintText="Desliza para explorar tu camino →"
+                            buildFooterText={(focusedIdx, nodes) =>
+                              nodes.length > 99
+                                ? `Paso ${focusedIdx + 1} de ${nodes.length}`
+                                : null
+                            }
+                            useDotFooter={false}
+                            onFocusedIndexChange={setFocusedNodeIndex}
+                          />
+                        </div>
+                        {focusedNode ? (
+                          <PathNodeVideoCard node={focusedNode} />
+                        ) : null}
+                        {activeNode && canStartLessonFromNode(activeNode) ? (
+                          <div className="flex flex-col gap-2 sm:flex-row">
+                            <button
+                              type="button"
+                              onClick={() => void handleStartNode(activeNode.id)}
+                              disabled={loadingNodeId === activeNode.id}
+                              className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
+                              style={{ background: GM_GOLD, color: "#0A0A0A" }}
+                            >
+                              {loadingNodeId === activeNode.id
+                                ? "Abriendo sesión…"
+                                : "Ir a Práctica"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleGoToPracticaTab}
+                              className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border px-5 text-xs font-semibold uppercase tracking-[0.1em]"
+                              style={{ borderColor: "rgba(201, 168, 76, 0.35)", color: GM_GOLD }}
+                            >
+                              Ver pestaña Práctica
+                            </button>
+                          </div>
+                        ) : null}
+                      </>
                     ) : null}
                   </div>
                 }

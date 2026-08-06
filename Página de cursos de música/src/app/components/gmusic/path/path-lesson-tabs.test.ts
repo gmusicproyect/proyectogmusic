@@ -49,6 +49,7 @@ describe("T-UX-LESSON-01 CP3 — shell de 3 pestañas", () => {
 
   it("Práctica embebe PathLessonRunner sin overlay de pantalla completa", () => {
     assert.match(practicaSource, /variant="embedded"/);
+    assert.match(practicaSource, /LessonYousicianGate/);
     assert.match(runnerSource, /variant\?: "overlay" \| "embedded"/);
     assert.match(runnerSource, /isEmbedded \? "practice" : "video"/);
   });

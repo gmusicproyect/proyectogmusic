@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Button } from "../../ui/button";
+import { LessonYousicianGate } from "../lesson/LessonYousicianGate";
 import { PathLessonRunner } from "./PathLessonRunner";
 import { canStartLessonFromNode } from "./path-lesson-start";
 import type { PathNodeData } from "../../../data/gmusic-path-types";
@@ -99,5 +100,10 @@ export function PathPracticaTab({
     );
   }
 
-  return <div className="w-full min-w-0">{content}</div>;
+  return (
+    <div className="w-full min-w-0 space-y-6">
+      <LessonYousicianGate />
+      {content}
+    </div>
+  );
 }

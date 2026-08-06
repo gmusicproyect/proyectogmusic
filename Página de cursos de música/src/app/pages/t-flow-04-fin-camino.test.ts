@@ -24,7 +24,24 @@ describe("T-FLOW-04 — pantalla fin de contenido publicado", () => {
     assert.match(gmusicPathSource, /onReviewPath=\{\(\) => setReviewCompletedPath\(true\)\}/);
   });
 
+  it("panel vive en la pestaña Tarjetas cuando el camino está completo", () => {
+    assert.match(gmusicPathSource, /tarjetasPanel=\{/);
+    assert.match(gmusicPathSource, /viewModel\.isComplete \? \(/);
+    assert.match(gmusicPathSource, /<CompletedPathPanel/);
+    assert.doesNotMatch(gmusicPathSource, /path-intro-stack pb-4[\s\S]*CompletedPathPanel/);
+  });
+
   it("carrusel se remonta en revisión sin habilitar replay", () => {
-    assert.match(gmusicPathSource, /\(!viewModel\.isComplete \|\| reviewCompletedPath\)/);
+    assert.match(gmusicPathSource, /!viewModel\.isComplete \|\| reviewCompletedPath/);
+    assert.match(gmusicPathSource, /reviewCompleted=\{reviewCompletedPath\}/);
+    assert.match(gmusicPathSource, /canStartLessonFromNode\(activeNode\)/);
+  });
+
+  it("las 3 pestañas siguen visibles con camino completo (no se oculta el shell)", () => {
+    assert.match(gmusicPathSource, /PathLessonTabsShell/);
+    assert.doesNotMatch(
+      gmusicPathSource,
+      /!viewModel\.isEmpty && \(!viewModel\.isComplete \|\| reviewCompletedPath\)/
+    );
   });
 });
