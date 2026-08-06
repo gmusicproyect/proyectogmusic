@@ -2,7 +2,7 @@
 
 **Producto:** Academia GMusic
 **Fecha:** agosto 2026
-**Estado:** Aprobada para spike (fase 0) — resolución emitida por Juan el 2026-08-05 (conversación con Fable), tras verificación de la entrega Kimi. Nota de procedencia: una versión previa de este doc traía la resolución pre-escrita antes de ser emitida; queda registrado como discrepancia corregida.
+**Estado:** Fase 0 **completada** (2026-08-06) — **pase con reserva** (falsos positivos voz). Resolución spike emitida por Juan 2026-08-05; veredicto manual 2026-08-06. Nota de procedencia: una versión previa de este doc traía la resolución pre-escrita antes de ser emitida; queda registrado como discrepancia corregida.
 **Origen:** Evaluación de Fable sobre `ESTRUCTURA-JSON-MODO-PRACTICA.md` — el doc asumió un runner que «escucha la guitarra»; esa capacidad **no existe** en ninguna capa del producto. Esta decisión la crea como proyecto propio, con expectativas honestas.
 
 ---
@@ -86,4 +86,21 @@ Lo que la experiencia tipo Yousician requiere construir desde cero:
 
 ---
 
-*Decisión D-GOV registrada. Aprobada para spike (fase 0) — resolución emitida por Juan el 2026-08-05 (conversación con Fable), tras verificación de la entrega Kimi. Nombre del producto: Academia GMusic.*
+## 7. Veredicto fase 0 (2026-08-06)
+
+**Prueba:** Juan · Mac · localhost:8000 · Paquete B (`PRUEBA-EN-5-PASOS.md`).
+
+| Criterio | Resultado |
+|---|---|
+| Precisión cuerda al aire (≥90%) | **Pase** — 6 cuerdas; mayoría en rango |
+| Latencia (<100 ms Mac) | **Pase** — reconocimiento inmediato al tocar |
+| Falsos positivos (<10%) | **No pase** — voz humana dispara detección de tono |
+| Solo navegador | **Pase** |
+
+**Conclusión:** detección monofónica **viable**; filtrado voz/ruido **requerido** antes de fase 1. Tablet sin evidencia en esta sesión.
+
+**Evidencia:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-b-audio/VEREDICTO-SPIKE-2026-08-06.md`
+
+---
+
+*Decisión D-GOV registrada. Fase 0 completada 2026-08-06 (pase con reserva). Nombre del producto: Academia GMusic.*

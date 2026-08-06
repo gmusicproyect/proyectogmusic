@@ -1,6 +1,14 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **5 Ago 2026** (Entrega Kimi aprobada · layout pestañas · spike audio fase 0) · base **`origin/main`** · `app:test` **614/614**
+Última actualización: **6 Ago 2026** (Spike audio fase 0 — veredicto Juan) · base **`origin/main`** · `app:test` **614/614**
+
+## Hito — 6 Ago 2026 · Spike audio fase 0
+
+| Item | Estado |
+|------|--------|
+| **D-GOV-AUDIO-01 fase 0** | ✅ **Completada** — pase con reserva: precisión + latencia Mac + solo navegador ✓; **falsos positivos voz ✗** |
+| **Evidencia** | `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-b-audio/VEREDICTO-SPIKE-2026-08-06.md` |
+| **Siguiente gate** | Fase 1 condicionada: filtros voz/ruido + prueba tablet (<150 ms) — **sin schema ni UI lúdica aún** |
 
 ## Hito — 5 Ago 2026 · Entrega Kimi aprobada
 
@@ -8,7 +16,7 @@
 |------|--------|
 | **Entrega Kimi 2026-08-05** | ✅ **APROBADA como dirección** — archivada en `docs/ux/entregas/entrega-kimi-2026-08-05/` |
 | **Layout de lección** | ✅ **Decidido:** pestañas (Tarjetas · Práctica · Resumen PDF). Variantes 3-zonas (`propuesta-t-ux-lesson-01.md`) y fusionada (`propuesta-t-ux-camino-01.md` si existe) → **insumo archivado, superado** |
-| **D-GOV Motor de Audio** | ✅ **Spike fase 0 aprobado** — prueba de guitarra Juan **PENDIENTE** (gate de fase 0; `PRUEBA-EN-5-PASOS.md`) |
+| **D-GOV Motor de Audio** | ✅ **Fase 0 completada** (6 Ago) — veredicto Juan; fase 1 pendiente filtros voz + tablet |
 | **Docs Kimi** | `ESTRUCTURA-JSON-MODO-PRACTICA.md` v2 · `PROPUESTA-T-UX-LESSON-01.md` v1.1 · `PROPUESTA-D-GOV-MOTOR-AUDIO.md` en `docs/ux/` |
 
 **Ops pendiente (sin cambio):** `ADMIN_PASSWORD_RESET_KEY` en Render (Juan). **Dirección semana:** material real Fundamento 1 · piloto 50 MB · prueba guitarra Paquete B.
