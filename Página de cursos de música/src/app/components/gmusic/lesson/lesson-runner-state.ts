@@ -1,3 +1,4 @@
+import { isFretboardStringId } from "./lesson-fretboard";
 import type { ParsedExerciseView } from "./lesson-runner-types";
 
 export const MAX_RESPONSE_TIME_MS = 3 * 60 * 60 * 1000;
@@ -21,6 +22,7 @@ export interface LessonRunnerState {
 
 export type LessonRunnerAction =
   | { type: "SELECT_OPTION"; optionId: string }
+  | { type: "SELECT_FRETBOARD_STRING"; stringId: string; nowMs: number }
   | { type: "NEXT_EXERCISE"; nowMs: number }
   | { type: "COMPLETE_TAP"; nowMs: number }
   | { type: "MARK_EXPIRED" }
@@ -63,7 +65,23 @@ function isValidOptionForCurrentExercise(
     return false;
   }
 
+  if (exercise.answerInput === "fretboard") {
+    return false;
+  }
+
   return exercise.options.some((option) => option.id === optionId);
+}
+
+function isValidFretboardSelectionForCurrentExercise(
+  state: LessonRunnerState,
+  stringId: string
+): boolean {
+  const exercise = getCurrentExercise(state);
+  if (!exercise || exercise.answerInput !== "fretboard") {
+    return false;
+  }
+
+  return isFretboardStringId(stringId);
 }
 
 function hasAttemptForExercise(
@@ -130,6 +148,38 @@ function advanceAfterAttempt(
     exerciseStartedAtMs: normalizedNowMs,
     attemptsDraft,
   };
+}
+
+function selectFretboardString(
+  state: LessonRunnerState,
+  stringId: string,
+  nowMs: number
+): LessonRunnerState {
+  if (state.status !== "ready") {
+    return state;
+  }
+
+  const currentExercise = getCurrentExercise(state);
+  if (!currentExercise || !isValidFretboardSelectionForCurrentExercise(state, stringId)) {
+    return state;
+  }
+
+  if (hasAttemptForExercise(state, currentExercise.id)) {
+    return state;
+  }
+
+  const normalizedNowMs = normalizeTimestampMs(nowMs);
+  const attempt: RunnerAttemptDraft = {
+    microExerciseId: currentExercise.id,
+    selectedAnswer: stringId,
+    responseTimeMs: computeResponseTimeMs(state.exerciseStartedAtMs, normalizedNowMs),
+  };
+
+  return advanceAfterAttempt(
+    { ...state, selectedOptionId: stringId },
+    attempt,
+    normalizedNowMs
+  );
 }
 
 function nextExercise(
@@ -205,6 +255,8 @@ export function lessonRunnerReducer(
   switch (action.type) {
     case "SELECT_OPTION":
       return selectOption(state, action.optionId);
+    case "SELECT_FRETBOARD_STRING":
+      return selectFretboardString(state, action.stringId, action.nowMs);
     case "NEXT_EXERCISE":
       return nextExercise(state, action.nowMs);
     case "COMPLETE_TAP":

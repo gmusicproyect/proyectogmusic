@@ -18,6 +18,7 @@ const componentSources = {
   stepper: readFileSync(join(root, "LessonExerciseStepper.tsx"), "utf8"),
   media: readFileSync(join(root, "ExerciseMediaBlock.tsx"), "utf8"),
   multipleChoice: readFileSync(join(root, "MultipleChoiceExercise.tsx"), "utf8"),
+  fretboard: readFileSync(join(root, "LessonFretboard.tsx"), "utf8"),
   unsupported: readFileSync(join(root, "UnsupportedExercisePanel.tsx"), "utf8"),
 };
 

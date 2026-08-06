@@ -16,6 +16,7 @@ import {
 } from "../tokens";
 import { ExerciseMediaBlock } from "./ExerciseMediaBlock";
 import { LessonExerciseStepper } from "./LessonExerciseStepper";
+import { LessonFretboard } from "./LessonFretboard";
 import { MultipleChoiceExercise } from "./MultipleChoiceExercise";
 import { RhythmTapExercise } from "./RhythmTapExercise";
 import { prepareLessonRunner } from "./prepare-lesson-runner";
@@ -309,10 +310,11 @@ function LessonRunnerActive({
   submission?: LessonRunnerSubmissionView;
   showSecondaryExit?: boolean;
 }) {
-  const { state, currentExercise, selectOption, nextExercise, completeTap } = useLessonRunner({
-    exercises,
-    expiresAt,
-  });
+  const { state, currentExercise, selectOption, selectFretboardString, nextExercise, completeTap } =
+    useLessonRunner({
+      exercises,
+      expiresAt,
+    });
 
   const finishedSentRef = useRef(false);
 
@@ -338,8 +340,11 @@ function LessonRunnerActive({
   const isLastExercise =
     state.exercises.length > 0 && state.currentIndex === state.exercises.length - 1;
   const isTapExercise = currentExercise?.interaction.mode === "tap";
+  const isFretboardAnswer = currentExercise?.answerInput === "fretboard";
   const canAdvance =
-    !isTapExercise && canAdvanceLessonRunner(state.status, state.selectedOptionId);
+    !isTapExercise &&
+    !isFretboardAnswer &&
+    canAdvanceLessonRunner(state.status, state.selectedOptionId);
 
   return (
     <div className="space-y-6">
@@ -364,14 +369,21 @@ function LessonRunnerActive({
               exercise={currentExercise}
               selectedOptionId={state.selectedOptionId}
               disabled={interactionDisabled}
+              showOptions={!isFretboardAnswer}
               onSelect={selectOption}
+            />
+            <LessonFretboard
+              selectedStringId={isFretboardAnswer ? state.selectedOptionId : null}
+              interactive={isFretboardAnswer}
+              disabled={interactionDisabled}
+              onSelectStringId={selectFretboardString}
             />
           </>
         )
       ) : null}
 
       <div className="flex flex-col gap-3 pt-2">
-        {!isTapExercise ? (
+        {!isTapExercise && !isFretboardAnswer ? (
           <Button
             type="button"
             onClick={nextExercise}

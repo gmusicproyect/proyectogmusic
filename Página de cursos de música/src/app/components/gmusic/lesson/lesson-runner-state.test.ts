@@ -72,6 +72,20 @@ const EXERCISE_TAP: ParsedExerciseView = {
   answerInput: "options",
 };
 
+const EXERCISE_FRETBOARD: ParsedExerciseView = {
+  id: "ex-fret",
+  type: "IDENTIFY_NOTE",
+  difficulty: 1,
+  instruction: "Toca la cuerda señalada.",
+  options: [
+    { id: "E", text: "Mi grave" },
+    { id: "e", text: "Mi agudo" },
+  ],
+  media: {},
+  interaction: { mode: "mcq" },
+  answerInput: "fretboard",
+};
+
 const STARTED_AT_MS = 1_000_000;
 
 function reduce(state: LessonRunnerState, ...actions: Parameters<typeof lessonRunnerReducer>[1][]) {
@@ -106,6 +120,71 @@ describe("createInitialLessonRunnerState", () => {
       assert.equal(state.exerciseStartedAtMs, 0);
       assert.equal(Number.isFinite(state.exerciseStartedAtMs), true);
     }
+  });
+});
+
+describe("SELECT_FRETBOARD_STRING", () => {
+  it("registra selectedAnswer E (sexta) distinto de e (primera)", () => {
+    const initial = createInitialLessonRunnerState(
+      [EXERCISE_FRETBOARD, EXERCISE_A],
+      STARTED_AT_MS
+    );
+
+    const graveE = lessonRunnerReducer(initial, {
+      type: "SELECT_FRETBOARD_STRING",
+      stringId: "E",
+      nowMs: STARTED_AT_MS + 1_200,
+    });
+
+    assert.equal(graveE.attemptsDraft[0]?.selectedAnswer, "E");
+    assert.notEqual(graveE.attemptsDraft[0]?.selectedAnswer, "e");
+    assert.equal(graveE.currentIndex, 1);
+
+    const acuteE = reduce(
+      createInitialLessonRunnerState([EXERCISE_FRETBOARD], STARTED_AT_MS),
+      {
+        type: "SELECT_FRETBOARD_STRING",
+        stringId: "e",
+        nowMs: STARTED_AT_MS + 800,
+      }
+    );
+
+    assert.equal(acuteE.attemptsDraft[0]?.selectedAnswer, "e");
+    assert.notEqual(acuteE.attemptsDraft[0]?.selectedAnswer, "E");
+    assert.equal(acuteE.status, "finished");
+  });
+
+  it("rechaza stringId con casing inválido", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_FRETBOARD], STARTED_AT_MS);
+    const blocked = lessonRunnerReducer(initial, {
+      type: "SELECT_FRETBOARD_STRING",
+      stringId: "b",
+      nowMs: STARTED_AT_MS + 100,
+    });
+
+    assert.equal(blocked, initial);
+    assert.deepEqual(blocked.attemptsDraft, []);
+  });
+
+  it("ignora SELECT_FRETBOARD_STRING en ejercicio options", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_A], STARTED_AT_MS);
+    const blocked = lessonRunnerReducer(initial, {
+      type: "SELECT_FRETBOARD_STRING",
+      stringId: "E",
+      nowMs: STARTED_AT_MS + 100,
+    });
+
+    assert.equal(blocked, initial);
+  });
+
+  it("SELECT_OPTION no acepta ids de cuerda en modo fretboard", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_FRETBOARD], STARTED_AT_MS);
+    const blocked = lessonRunnerReducer(initial, {
+      type: "SELECT_OPTION",
+      optionId: "E",
+    });
+
+    assert.equal(blocked.selectedOptionId, null);
   });
 });
 

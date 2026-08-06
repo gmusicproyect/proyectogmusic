@@ -178,6 +178,10 @@ export function useLessonRunner({
     dispatch({ type: "SELECT_OPTION", optionId });
   }, []);
 
+  const selectFretboardString = useCallback((stringId: string) => {
+    dispatch({ type: "SELECT_FRETBOARD_STRING", stringId, nowMs: nowRef.current() });
+  }, []);
+
   const nextExercise = useCallback(() => {
     dispatch({ type: "NEXT_EXERCISE", nowMs: nowRef.current() });
   }, []);
@@ -201,6 +205,7 @@ export function useLessonRunner({
     state,
     currentExercise,
     selectOption,
+    selectFretboardString,
     nextExercise,
     completeTap,
     reset,
