@@ -57,6 +57,7 @@ export interface PathCarouselCardsProps {
   useDotFooter?: boolean;
   /** D-022B2 — preset stage suscriptor; demo mantiene default */
   visualVariant?: "default" | "stage";
+  onFocusedIndexChange?: (index: number) => void;
 }
 
 function stageCtaShortLabel(label: string): string {
@@ -100,6 +101,7 @@ export function PathCarouselCards({
   buildFooterText,
   useDotFooter,
   visualVariant = "default",
+  onFocusedIndexChange,
 }: PathCarouselCardsProps) {
   const isStage = visualVariant === "stage";
   const safeInitial = Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0)));
@@ -116,6 +118,10 @@ export function PathCarouselCards({
   useEffect(() => {
     setFocusedIdx(Math.max(0, Math.min(initialFocusIndex, Math.max(nodes.length - 1, 0))));
   }, [initialFocusIndex, nodes.length]);
+
+  useEffect(() => {
+    onFocusedIndexChange?.(focusedIdx);
+  }, [focusedIdx, onFocusedIndexChange]);
 
   useEffect(() => {
     if (!stageFitEligible) {

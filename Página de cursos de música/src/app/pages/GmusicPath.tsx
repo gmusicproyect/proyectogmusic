@@ -14,7 +14,11 @@ import { DashboardErrorBanner, StudioAtmosphere } from "../components/gmusic/das
 import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
 import { PathShell } from "../components/gmusic/path/PathShell";
 import { CompletedPathPanel } from "../components/gmusic/path/CompletedPathPanel";
-import { PathLessonRunner } from "../components/gmusic/path/PathLessonRunner";
+import { PathLessonTabsShell } from "../components/gmusic/path/PathLessonTabsShell";
+import { PathNodeVideoCard } from "../components/gmusic/path/PathNodeVideoCard";
+import { PathPracticaTab } from "../components/gmusic/path/PathPracticaTab";
+import { PathResumenPdfTab } from "../components/gmusic/path/PathResumenPdfTab";
+import type { PathLessonTabId } from "../components/gmusic/path/path-lesson-tab-ids";
 import { canStartLessonFromNode } from "../components/gmusic/path/path-lesson-start";
 import { buildLessonRunnerLaunchFromResult } from "../components/gmusic/path/path-lesson-runner-open";
 import { GM_GOLD, GM_TEXT, GM_TEXT_SEC } from "../components/gmusic/tokens";
@@ -47,6 +51,8 @@ type LessonStartState =
   | { status: "error"; nodeId: string; message: string };
 
 export function GmusicPath({ setPage }: GmusicPathProps) {
+  const [activeTab, setActiveTab] = useState<PathLessonTabId>("tarjetas");
+  const [focusedNodeIndex, setFocusedNodeIndex] = useState(0);
   const [modal, setModal] = useState<ModalKind>(null);
   const [activeRunner, setActiveRunner] = useState<ActivePathRunner | null>(null);
   const [sessionOpenError, setSessionOpenError] = useState<string | null>(null);
@@ -67,6 +73,17 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     () => resolveCarouselFocusIndex(pathNodes, viewModel?.activeNodeId ?? null),
     [pathNodes, viewModel?.activeNodeId]
   );
+
+  useEffect(() => {
+    setFocusedNodeIndex(initialFocusIndex);
+  }, [initialFocusIndex]);
+
+  const activeNode = useMemo(() => {
+    if (!viewModel?.activeNodeId) return null;
+    return findPathNodeById(viewModel.modules, viewModel.activeNodeId);
+  }, [viewModel?.activeNodeId, viewModel?.modules]);
+
+  const focusedNode = pathNodes[focusedNodeIndex] ?? null;
   const activeClass = useMemo(
     () => resolveCarouselActiveClass(pathNodes, viewModel?.activeNodeId ?? null),
     [pathNodes, viewModel?.activeNodeId]
@@ -162,6 +179,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         const launch = buildLessonRunnerLaunchFromResult(modules, nodeId, outcome.result);
         if (launch.kind === "open") {
           setActiveRunner(launch.runner);
+          setActiveTab("practica");
           setLessonStart({ status: "idle" });
           return;
         }
@@ -188,6 +206,15 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
     setLessonStart({ status: "idle" });
     path.retry();
   }, [path]);
+
+  const handleStartActiveNode = useCallback(() => {
+    if (!activeNode) return;
+    void handleStartNode(activeNode.id);
+  }, [activeNode, handleStartNode]);
+
+  const handleGoToPracticaTab = useCallback(() => {
+    setActiveTab("practica");
+  }, []);
 
   const loadingNodeId = lessonStart.status === "loading" ? lessonStart.nodeId : null;
 
@@ -325,21 +352,68 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                 isLoading={isLoading}
                 progressRail={progressRail}
               />
-              <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
-                <PathCarouselCards
-                  nodes={pathNodes}
-                  buildCardModels={buildCardModels}
-                  initialFocusIndex={initialFocusIndex}
-                  visualVariant="stage"
-                  hintText="Desliza para explorar tu camino →"
-                  buildFooterText={(focusedIdx, nodes) =>
-                    nodes.length > 99
-                      ? `Paso ${focusedIdx + 1} de ${nodes.length}`
-                      : null
-                  }
-                  useDotFooter={false}
-                />
-              </div>
+
+              <PathLessonTabsShell
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                tarjetasPanel={
+                  <div className="space-y-6">
+                    <div className="path-stage flex flex-col justify-center w-full min-w-0 min-h-[280px]">
+                      <PathCarouselCards
+                        nodes={pathNodes}
+                        buildCardModels={buildCardModels}
+                        initialFocusIndex={initialFocusIndex}
+                        visualVariant="stage"
+                        hintText="Desliza para explorar tu camino →"
+                        buildFooterText={(focusedIdx, nodes) =>
+                          nodes.length > 99
+                            ? `Paso ${focusedIdx + 1} de ${nodes.length}`
+                            : null
+                        }
+                        useDotFooter={false}
+                        onFocusedIndexChange={setFocusedNodeIndex}
+                      />
+                    </div>
+                    {focusedNode ? (
+                      <PathNodeVideoCard node={focusedNode} />
+                    ) : null}
+                    {activeNode && canStartLessonFromNode(activeNode) ? (
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <button
+                          type="button"
+                          onClick={() => void handleStartNode(activeNode.id)}
+                          disabled={loadingNodeId === activeNode.id}
+                          className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md px-5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
+                          style={{ background: GM_GOLD, color: "#0A0A0A" }}
+                        >
+                          {loadingNodeId === activeNode.id
+                            ? "Abriendo sesión…"
+                            : "Ir a Práctica"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleGoToPracticaTab}
+                          className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border px-5 text-xs font-semibold uppercase tracking-[0.1em]"
+                          style={{ borderColor: "rgba(201, 168, 76, 0.35)", color: GM_GOLD }}
+                        >
+                          Ver pestaña Práctica
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                }
+                practicaPanel={
+                  <PathPracticaTab
+                    activeRunner={activeRunner}
+                    activeNode={activeNode}
+                    onStartActiveNode={handleStartActiveNode}
+                    onExitPractice={handleCloseRunner}
+                    onSessionCompleted={path.retry}
+                    loadingNodeId={loadingNodeId}
+                  />
+                }
+                resumenPdfPanel={<PathResumenPdfTab modules={viewModel.modules} />}
+              />
             </section>
           </>
         )}
@@ -353,18 +427,6 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
         footer={mp.footer}
       />
 
-      {activeRunner && (
-        <PathLessonRunner
-          key={activeRunner.session.sessionId}
-          session={activeRunner.session}
-          nodeTitle={activeRunner.nodeTitle}
-          lessonNode={activeRunner.lessonNode}
-          videoUrl={activeRunner.videoUrl}
-          nodeDuration={activeRunner.nodeDuration}
-          onExit={handleCloseRunner}
-          onSessionCompleted={path.retry}
-        />
-      )}
     </StudioAtmosphere>
   );
 }

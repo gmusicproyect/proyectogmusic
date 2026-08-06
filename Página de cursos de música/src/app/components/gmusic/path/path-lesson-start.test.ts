@@ -91,10 +91,10 @@ describe("abbreviateSessionId", () => {
 });
 
 describe("GmusicPath conectado a sesión", () => {
-  it("usa loadLessonSessionOnce y abre PathLessonRunner (D-GOV-14 Fase A)", () => {
+  it("usa loadLessonSessionOnce y abre práctica embebida (D-GOV-14 Fase A)", () => {
     assert.match(gmusicPathSource, /loadLessonSessionOnce/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
-    assert.match(gmusicPathSource, /PathLessonRunner/);
+    assert.match(gmusicPathSource, /PathPracticaTab/);
     assert.match(gmusicPathSource, /activeRunner/);
     assert.match(gmusicPathSource, /buildLessonRunnerLaunchFromResult/);
     assert.match(gmusicPathSource, /await loadLessonSessionOnce/);

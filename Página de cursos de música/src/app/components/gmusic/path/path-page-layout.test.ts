@@ -48,7 +48,7 @@ describe("D-022A — Mi Camino shell y layout", () => {
   it("carrusel y sesión sin cambios de lógica", () => {
     assert.match(gmusicPathSource, /PathCarouselCards/);
     assert.match(gmusicPathSource, /buildSubscriberPathCardModels/);
-    assert.match(gmusicPathSource, /PathLessonRunner/);
+    assert.match(gmusicPathSource, /PathPracticaTab/);
     assert.match(gmusicPathSource, /canStartLessonFromNode/);
     assert.match(gmusicPathSource, /visualVariant="stage"/);
     assert.match(gmusicPathSource, /path-scene/);

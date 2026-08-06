@@ -22,6 +22,8 @@ export interface PathLessonRunnerProps {
   nodeDuration?: string;
   onExit: () => void;
   onSessionCompleted?: () => void;
+  /** embedded = pestaña Práctica en Mi Camino; overlay = diálogo pantalla completa (legacy) */
+  variant?: "overlay" | "embedded";
 }
 
 function formatCompleteError(error: unknown): string {
@@ -46,8 +48,10 @@ export function PathLessonRunner({
   nodeDuration,
   onExit,
   onSessionCompleted,
+  variant = "overlay",
 }: PathLessonRunnerProps) {
-  const hasVideo = isLessonVideoUrl(videoUrl ?? lessonNode.videoUrl);
+  const isEmbedded = variant === "embedded";
+  const hasVideo = !isEmbedded && isLessonVideoUrl(videoUrl ?? lessonNode.videoUrl);
   const prepareNode = useMemo(
     () => ({
       ...lessonNode,
@@ -57,10 +61,10 @@ export function PathLessonRunner({
     [lessonNode, nodeDuration, videoUrl]
   );
 
-  const [phase, setPhase] = useState<SubscriberLessonPhase>("video");
+  const [phase, setPhase] = useState<SubscriberLessonPhase>(isEmbedded ? "practice" : "video");
   const [submission, setSubmission] = useState<LessonRunnerSubmissionView>({ status: "idle" });
 
-  useBodyScrollLock(true);
+  useBodyScrollLock(!isEmbedded);
 
   useEffect(() => {
     if (submission.status === "success") {
@@ -84,6 +88,28 @@ export function PathLessonRunner({
     },
     [session.sessionId, onSessionCompleted]
   );
+
+  const runnerBody =
+    !isEmbedded && phase === "video" ? (
+      <LessonPrepareScreen
+        node={prepareNode}
+        onContinueToPractice={() => setPhase("practice")}
+      />
+    ) : (
+      <LessonRunnerShell
+        key={session.sessionId}
+        session={session}
+        nodeTitle={nodeTitle}
+        onExit={onExit}
+        onPracticeFinished={handlePracticeFinished}
+        submission={submission}
+        variant="embedded"
+      />
+    );
+
+  if (isEmbedded) {
+    return <div className="space-y-6">{runnerBody}</div>;
+  }
 
   return (
     <div
@@ -129,24 +155,7 @@ export function PathLessonRunner({
       </header>
 
       <div className="px-4 py-6 md:px-6 md:py-8">
-        <div className="mx-auto max-w-3xl space-y-6">
-          {phase === "video" ? (
-            <LessonPrepareScreen
-              node={prepareNode}
-              onContinueToPractice={() => setPhase("practice")}
-            />
-          ) : (
-            <LessonRunnerShell
-              key={session.sessionId}
-              session={session}
-              nodeTitle={nodeTitle}
-              onExit={onExit}
-              onPracticeFinished={handlePracticeFinished}
-              submission={submission}
-              variant="embedded"
-            />
-          )}
-        </div>
+        <div className="mx-auto max-w-3xl space-y-6">{runnerBody}</div>
       </div>
     </div>
   );

@@ -25,10 +25,11 @@ describe("T-UX-LESSON-01A — pantalla prepare", () => {
     assert.match(tabsSource, /También tienes la guía PDF/);
   });
 
-  it("PathLessonRunner integra prepare antes del runner evaluado", () => {
+  it("PathLessonRunner integra prepare antes del runner evaluado en overlay", () => {
     assert.match(runnerSource, /LessonPrepareScreen/);
     assert.match(runnerSource, /LessonRunnerShell/);
     assert.match(runnerSource, /completeLessonSession/);
     assert.match(runnerSource, /onContinueToPractice/);
+    assert.match(runnerSource, /variant\?: "overlay" \| "embedded"/);
   });
 });
