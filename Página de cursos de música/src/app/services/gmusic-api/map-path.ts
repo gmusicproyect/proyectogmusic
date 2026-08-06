@@ -8,10 +8,18 @@ import type {
 } from "../../data/gmusic-path-types";
 import { nonNegative } from "./map-dashboard";
 import type { PathContentKind, PathNodeStatus, PathResponse } from "./types";
+import {
+  flattenPathNodesWithStep,
+  type PathNodeWithStep,
+} from "../../utils/path-student-entries";
+
+export type { PathNodeWithStep };
 
 export interface PathViewModel {
   badge: PathBadgeData;
   modules: PathModuleData[];
+  /** Nodos del camino en orden único (Tarjetas + Resumen PDF). */
+  entries: PathNodeWithStep[];
   activeNodeId: string | null;
   completedSteps: number;
   totalSteps: number;
@@ -97,6 +105,7 @@ export function mapPathToViewModel(response: PathResponse): PathViewModel {
   }));
 
   const allNodes = modules.flatMap((module) => module.nodes);
+  const entries = flattenPathNodesWithStep(modules);
   const completedSteps = allNodes.filter((node) => node.status === "completed").length;
   const totalSteps = allNodes.length;
   const activeNodeId = response.activeNodeId;
@@ -110,6 +119,7 @@ export function mapPathToViewModel(response: PathResponse): PathViewModel {
       level: response.course.badge.level,
     },
     modules,
+    entries,
     activeNodeId,
     completedSteps,
     totalSteps,

@@ -96,8 +96,10 @@ describe("T-UX-LESSON-01 CP3 — video firmado en Tarjetas", () => {
     assert.match(resumenSource, /useSignedMaterialUrl/);
     assert.match(resumenSource, /expanded && needsSigning/);
     assert.doesNotMatch(resumenSource, /href=\{node\.guidePdfUrl\}/);
-    assert.match(resumenSource, /flattenPathNodesWithStep/);
+    assert.match(resumenSource, /entries: PathNodeWithStep\[\]/);
+    assert.match(gmusicPathSource, /PathResumenPdfTab entries=\{viewModel\.entries\}/);
     assert.match(resumenSource, /resolveLessonStageSlot\(node\.stageType, stepNumber\)/);
     assert.doesNotMatch(resumenSource, /node\.order\}/);
+    assert.doesNotMatch(resumenSource, /flattenPathNodesWithStep/);
   });
 });

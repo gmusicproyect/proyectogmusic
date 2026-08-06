@@ -6,10 +6,10 @@ import { DemoPathLevelBar } from "../components/gmusic/DemoPathLevelBar";
 import { PathCarouselCards } from "../components/gmusic/PathCarouselCards";
 import {
   buildSubscriberPathCardModels,
-  flattenPathNodes,
   resolveCarouselActiveClass,
   resolveCarouselFocusIndex,
 } from "../components/gmusic/subscriber-path-carousel";
+import { pathNodesFromEntries } from "../utils/path-student-entries";
 import { DashboardErrorBanner, StudioAtmosphere } from "../components/gmusic/dashboard";
 import { PathPageIntro } from "../components/gmusic/path/PathPageIntro";
 import { PathShell } from "../components/gmusic/path/PathShell";
@@ -64,7 +64,7 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
 
   const viewModel = path.status === "success" ? path.viewModel : null;
   const pathNodes = useMemo(
-    () => (viewModel ? flattenPathNodes(viewModel.modules) : []),
+    () => (viewModel ? pathNodesFromEntries(viewModel.entries) : []),
     [viewModel]
   );
   const initialFocusIndex = useMemo(
@@ -379,7 +379,9 @@ export function GmusicPath({ setPage }: GmusicPathProps) {
                     loadingNodeId={loadingNodeId}
                   />
                 }
-                resumenPdfPanel={<PathResumenPdfTab modules={viewModel.modules} />}
+                resumenPdfPanel={
+                  <PathResumenPdfTab entries={viewModel.entries} />
+                }
               />
             </section>
           </>

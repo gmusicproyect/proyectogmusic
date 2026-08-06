@@ -1,10 +1,25 @@
-import type { PathNodeData } from "../../data/gmusic-path-types";
+import type { PathModuleData, PathNodeData } from "../../data/gmusic-path-types";
 import { canStartLessonFromNode } from "./path/path-lesson-start";
+import {
+  flattenPathNodesWithStep,
+  pathNodesFromEntries,
+} from "../../utils/path-student-entries";
 import { pathCarouselGradientForIndex } from "./path-carousel-styles";
 import type { PathCarouselCardModel } from "./PathCarouselCards";
 
-export function flattenPathNodes(modules: { nodes: PathNodeData[] }[]): PathNodeData[] {
-  return modules.flatMap((module) => module.nodes);
+/** @deprecated Prefer viewModel.entries desde mapPathToViewModel. */
+export function flattenPathNodes(modules: Pick<PathModuleData, "nodes" | "title">[]): PathNodeData[] {
+  return pathNodesFromEntries(
+    flattenPathNodesWithStep(
+      modules.map((module, index) => ({
+        id: `legacy-${index}`,
+        index: index + 1,
+        title: module.title ?? "",
+        focus: "",
+        nodes: module.nodes,
+      }))
+    )
+  );
 }
 
 export function resolveCarouselFocusIndex(

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import type { PathModuleData, PathNodeData } from "../../../data/gmusic-path-types";
+import type { PathNodeData } from "../../../data/gmusic-path-types";
+import type { PathNodeWithStep } from "../../../utils/path-student-entries";
 import { useSignedMaterialUrl } from "../../../hooks/useSignedMaterialUrl";
 import { isPrivateSupabaseStorageMaterialUrl } from "../../../utils/supabase-storage";
 import {
@@ -8,10 +9,9 @@ import {
   resolveLessonStageSlot,
 } from "../lesson/lesson-stage";
 import { GM_BORDER, GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "../tokens";
-import { flattenPathNodesWithStep } from "./path-node-step";
 
 export interface PathResumenPdfTabProps {
-  modules: PathModuleData[];
+  entries: PathNodeWithStep[];
 }
 
 function PathPdfStageItem({
@@ -119,9 +119,7 @@ function PathPdfStageItem({
   );
 }
 
-export function PathResumenPdfTab({ modules }: PathResumenPdfTabProps) {
-  const entries = flattenPathNodesWithStep(modules);
-
+export function PathResumenPdfTab({ entries }: PathResumenPdfTabProps) {
   if (entries.length === 0) {
     return (
       <p className="text-sm text-center py-8" style={{ color: GM_TEXT_SEC }}>
