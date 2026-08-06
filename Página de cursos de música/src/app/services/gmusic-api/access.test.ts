@@ -62,11 +62,11 @@ describe("assertValidAccessResponse", () => {
   });
 
   it("acepta y propaga role válido; ignora role desconocido (T-FLOW-01)", () => {
-    const withRole = structuredClone(ALLOWED_RESPONSE) as Record<string, unknown>;
+    const withRole = structuredClone(ALLOWED_RESPONSE) as unknown as Record<string, unknown>;
     (withRole.user as Record<string, unknown>).role = "ADMIN";
     assert.equal(assertValidAccessResponse(withRole).user.role, "ADMIN");
 
-    const badRole = structuredClone(ALLOWED_RESPONSE) as Record<string, unknown>;
+    const badRole = structuredClone(ALLOWED_RESPONSE) as unknown as Record<string, unknown>;
     (badRole.user as Record<string, unknown>).role = "SUPERUSER";
     assert.equal(assertValidAccessResponse(badRole).user.role, undefined);
 

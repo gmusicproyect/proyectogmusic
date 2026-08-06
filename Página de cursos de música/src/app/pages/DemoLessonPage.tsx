@@ -148,6 +148,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       options: ex.options.map((o) => ({ id: o.id, text: o.text })),
       media: {},
       interaction: { mode: "mcq" },
+      answerInput: "options",
     };
   }, [lesson, lessonId]);
 
@@ -688,7 +689,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
                 fontFamily: "Inter, sans-serif",
               }}
             >
-              {phase === "video" ? "Continuar al ejercicio" : "Continuar"}
+              Continuar
             </button>
           </div>
         </footer>
