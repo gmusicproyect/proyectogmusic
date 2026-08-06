@@ -1,8 +1,9 @@
 # T-UX-LESSON-01 — Ticket formal (D-UX-LAYOUT-01)
 
 **Estado:** Handoff Cursor · **pendiente validación Fable (criterio binario)** · **NO implementar** hasta OK explícito post-validación.  
-**Frase de arranque recibida (Juan · 2026-08-06):** `arrancar T-UX-LESSON-01`  
-**Referencia visual:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-a-leccion/` (v2 delta 06/08)  
+**Commit spec:** `a6214e2` (revisión en curso — ver hash post-corrección rúbrica Fable)  
+**Frase de arranque (Juan · 2026-08-06):** `arrancar T-UX-LESSON-01`  
+**Referencia visual:** `docs/ux/entregas/entrega-kimi-2026-08-05/paquete-a-leccion/` (v2 · delta 2026-08-06)  
 **Propuesta insumo:** `docs/ux/propuesta-t-ux-lesson-01.md` v1.1 (Parte B pedagógica; layout = pestañas Kimi)
 
 ---
@@ -11,139 +12,192 @@
 
 | # | Tema | Resolución |
 |---|------|------------|
-| ① | OK implementación | **SÍ** — autorizado tocar `src/` vía ritual handoff → validación Fable → implementación → evidencia → smoke Juan → cierre |
-| ② | Alcance | Pestañas **Tarjetas · Práctica · Resumen PDF** · diapasón permanente · 1 `videoUrl`/etapa (sin tripleta Ⓡ/Ⓔ/Ⓣ) · gate Yousician visible · **fuera:** audio fase 1, afinador producto, polifonía, chip racha en lección |
-| ③ | Backend | **Solo frontend** sobre APIs actuales; cero schema. Parser tolera `answerInput` (④) |
-| ④ | Diapasón | `contentPayload.answerInput?: "options" \| "fretboard"` — default `"options"`. `"fretboard"` → respuesta en diapasón; `selectedAnswer` = `"E"\|"A"\|"D"\|"G"\|"B"\|"e"` |
-| ⑤ | `#4ADE80` (P-PALETA-01) | **NO en MVP** *(recomendación Fable; Juan no tachó — aplicar salvo corrección)* |
-| ⑥ | Entorno | **Local** (`start-smoke-local.sh` + Docker :5433) **+ smoke final Render** cuenta QA *(recomendación Fable)* |
+| ① | OK implementación | **SÍ** — autorizado tocar `src/` tras OK binario Fable |
+| ② | Alcance | Ver § Alcance IN / OUT (completo, no implícito) |
+| ③ | Backend | **Solo frontend** sobre APIs actuales; **cero** cambios Prisma/schema/migraciones |
+| ④ | Diapasón | `contentPayload.answerInput?: "options" \| "fretboard"` — default `"options"` |
+| ⑤ | `#4ADE80` (P-PALETA-01) | **NO en MVP** *(recomendación Fable; silencio Juan = adoptar)* |
+| ⑥ | Entorno | **Local** (`scripts/dev/start-smoke-local.sh` + Docker `:5433`) **+ smoke final Render** cuenta QA alumno *(recomendación Fable; silencio Juan = adoptar)* |
 
 ---
 
-## Situación actual en `src/` (baseline)
+## Objetivo
 
-| Superficie | Hoy | Gap vs Kimi v2 |
-|------------|-----|----------------|
-| `GmusicPath` | Carrusel `PathCarouselCards` + overlay `PathLessonRunner` | Falta shell de **3 pestañas** a nivel experiencia de bloque/lección |
-| `PathLessonRunner` | Stepper Video → Ejercicio → Éxito (`SubscriberLessonStepper`) | Sustituir/evolucionar hacia pestañas D-UX-LAYOUT-01; no chip racha |
-| `LessonPrepareScreen` | Video + materiales (`LessonMaterialTabs`: video/tablatura/pdf) | MVP: **un video** (`videoUrl` + signed URL); tablatura sigue «Próximamente» |
-| `LessonRunnerShell` | MCQ + `RhythmTapExercise`; sin diapasón | Falta diapasón permanente + modo `fretboard` |
-| `parse-exercise-payload.ts` | `interaction.mode`: `mcq` \| `tap` | Extender parser (tolerante, no rompe ejercicios existentes) |
+Entregar la **experiencia de lección en pestañas** (D-UX-LAYOUT-01) para suscriptor en `/mi-camino`, alineada al prototipo Kimi v2, **sin** prometer audio en vivo ni ampliar contratos backend.
 
 ---
 
-## Objetivo del ticket
+## Alcance IN (completo)
 
-Entregar la **experiencia de lección en pestañas** (D-UX-LAYOUT-01) para el suscriptor en `/mi-camino`, alineada al prototipo Kimi v2, **sin** prometer audio en vivo ni ampliar schema backend.
+1. **Tres pestañas** (shell principal; referencia `paquete-a-leccion/index.html`):
+   - **Tarjetas (Mi Camino):** nodos/etapas del path con estados reales de `GET /me/path` (`completed` / `active` / `locked` / `available`); CTA a Práctica en nodo activo.
+   - **Práctica:** `POST /lesson-sessions` → runner de ejercicios → `POST .../complete`.
+   - **Resumen PDF:** lista expandible por etapa; PDFs privados vía signed URL.
 
----
+2. **Un `videoUrl` por etapa (MVP):** renderizar el único `videoUrl` del nodo (YouTube embed **o** Supabase Storage vía signed URL). **No** tripleta Ⓡ/Ⓔ/Ⓣ; **no** migración multi-video; **no** campos nuevos en path.
 
-## Alcance IN
+3. **Diapasón permanente en Práctica:** siempre visible bajo el enunciado (como `engine.js` v2 Kimi).
+   - Campo opcional en payload: `answerInput?: "options" | "fretboard"` — **default `"options"`** si ausente.
+   - `"fretboard"`: cuerdas clicables = superficie de respuesta; `selectedAnswer` = identificador de cuerda **`"E" | "A" | "D" | "G" | "B" | "e"`** (string).
+   - `"options"`: diapasón visible, **no** clicable; respuesta por opciones MCQ existentes.
+   - **Prohibido** en producto: heurística `esDeCuerdas` (inferir fretboard por nombres de opciones).
 
-1. **Shell de pestañas** (referencia `paquete-a-leccion/index.html`):
-   - **Tarjetas (Mi Camino):** etapas/nodos del bloque activo con estados API (`done` / `current` / `locked`); CTA a Práctica en etapa activa.
-   - **Práctica:** flujo `POST /lesson-sessions` → runner → `complete` (contratos actuales).
-   - **Resumen PDF:** lista expandible por etapa con `guidePdfUrl` vía `POST /me/media/signed-url` cuando aplique.
+4. **Panel gate Yousician (informacional):** visible en pestaña Práctica. Copy honesto: hoy = ejercicios de respuesta; modo «app escucha guitarra» = **D-GOV-AUDIO-01 fase 1 pendiente**. Sin micrófono, sin permisos, sin CTA que prometa audio.
 
-2. **Tarjeta MVP = 1 video:** renderizar el `videoUrl` del nodo (YouTube embed o Storage firmado). **No** implementar tripleta Ⓡ/Ⓔ/Ⓣ ni migración multi-video.
+5. **Parser (solo tolerancia cliente):** `parse-exercise-payload.ts` lee `answerInput` opcional del `contentPayload` ya entregado por sesión. **No** es cambio de contrato API: el servidor puede ignorar el campo; el cliente lo usa solo para UI. Ejercicios legacy sin el campo siguen en modo `"options"`.
 
-3. **Diapasón permanente en Práctica:** siempre visible debajo del enunciado (como `engine.js` v2). Si `answerInput === "fretboard"`, las cuerdas son superficie de respuesta; si `"options"`, diapasón informativo/no clicable.
+6. **Paleta:** tokens verificados existentes (`#C9A84C`, etc.). **Sin** introducir `#4ADE80`.
 
-4. **Gate Yousician (informacional):** panel/candado en pestaña Práctica — copy honesto: ejercicios de **respuesta** hoy; modo «la app escucha tu guitarra» = **D-GOV-AUDIO-01 fase 1 pendiente**. Sin micrófono, sin CTA falso.
-
-5. **Parser `answerInput`:** en `parse-exercise-payload.ts` — leer campo opcional; ignorar si ausente (default `options`); **no** rechazar ejercicios legacy por claves extra en payload (verificar `findForbiddenLessonSessionKey` no bloquea `answerInput`).
-
-6. **Tokens:** dorado verificado `#C9A84C` / paleta existente — **sin** `#4ADE80` en este ticket.
-
-7. **Tests:** extender tests de parser + layout/runner según convención existente (`parse-exercise-payload.test.ts`, tests de path/lesson).
-
-8. **Evidencia:** capturas local + checklist binario; smoke Render post-merge con OK Juan.
+7. **Tests nuevos obligatorios:**
+   - Parsing `answerInput` (default, fretboard, valores inválidos → fallback seguro).
+   - Guards de UI al estilo casa (tests estáticos o unitarios sobre componentes clave, patrón `path-lesson-start.test.ts` / `parse-exercise-payload.test.ts`).
 
 ---
 
-## Alcance OUT (explícito)
+## Alcance OUT (escrito — no implícito)
 
-- Motor de audio fase 1, micrófono, pitch en producto
-- Afinador en producto (`afinador.html` queda en entrega docs)
-- Polifonía / notas cayendo / combos como calificador
-- Chip de racha dentro de la lección (T-UX-STREAK-01)
-- Tripleta de videos por etapa / cambios Prisma o seed de contenido
-- `#4ADE80` (P-PALETA-01 abierta)
-- Heurística `esDeCuerdas` — prohibida en producto; solo `answerInput`
+| Exclusión | Motivo |
+|-----------|--------|
+| **Chip / banner de racha dentro de la pantalla de lección** | Territorio **T-UX-STREAK-01**; fuente canónica pendiente; no se cuela por LESSON-01 |
+| **`#4ADE80` (P-PALETA-01)** | Decisión de paleta aparte; aciertos/completados = dorado en lo shippeado |
+| **Afinador en producto** | Prototipo aislado en `paquete-b-audio/afinador.html`; ticket/decisión propia |
+| **Motor de audio fase 1** | Micrófono, pitch, filtros voz — gate D-GOV-AUDIO-01 |
+| **Polifonía / UI lúdica Yousician** | Notas cayendo, combos calificadores, tempo game |
+| **Tripleta Ⓡ/Ⓔ/Ⓣ por etapa** | Requiere schema/migración — fuera MVP |
+| **Cambios server** | Prisma, routes, validación body sesión/complete, seed editorial |
+| **Heurística `esDeCuerdas`** | Solo campo explícito `answerInput` |
 
----
-
-## APIs (sin cambios de contrato)
-
-| Endpoint | Uso |
-|----------|-----|
-| `GET /api/v1/me/path` | Tarjetas, estados, `videoUrl`, `guidePdfUrl` |
-| `POST /api/v1/lesson-sessions` | Crear sesión al entrar Práctica |
-| `POST /api/v1/lesson-sessions/:id/complete` | Calificación servidor |
-| `POST /api/v1/me/media/signed-url` | Video/PDF privados |
-
-`attempts[]`: sin cambio — `{ microExerciseId, selectedAnswer, responseTimeMs }`.
+*(El header global de la app puede seguir mostrando racha en Mi Estudio / nav — esto prohíbe chip **dentro** del shell de lección/pestañas.)*
 
 ---
 
-## Copy sugerido — gate Yousician (Práctica)
+## Contratos API (formas exactas — cero inventados)
+
+Solo estos endpoints. **Ninguno nuevo.**
+
+### `GET /api/v1/me/path`
+
+Respuesta (formas usadas por UI):
+
+```json
+{
+  "course": { "id": "uuid", "title": "string", "slug": "string", "badge": { "instrument": "string", "month": "string", "level": "string" } },
+  "modules": [{
+    "id": "uuid", "index": 1, "title": "string", "focus": "string",
+    "nodesCompleted": 0, "nodesTotal": 5,
+    "nodes": [{
+      "id": "uuid", "title": "string", "order": 1,
+      "status": "locked|available|active|completed",
+      "duration": "string", "contentKind": "video|audio_lab|reward",
+      "videoUrl": "string|null", "stageType": "FUNDAMENTO_UNO|…|TOCAR|null",
+      "guideText": "string|null", "guidePdfUrl": "string|null",
+      "completionCriteria": "string|null", "ctaLabel": "string|null"
+    }]
+  }],
+  "activeNodeId": "uuid|null"
+}
+```
+
+### `POST /api/v1/lesson-sessions`
+
+Request: `{ "nodeId": "uuid" }`  
+Response: `{ "sessionId", "nodeId", "status": "STARTED", "startedAt", "expiresAt", "exercises": PublicExercise[] }`  
+`PublicExercise`: `{ "id", "type", "difficulty", "instruction", "contentPayload": object }` — sin secretos de calificación.
+
+### `POST /api/v1/lesson-sessions/:sessionId/complete`
+
+Request (**intocable**):
+
+```json
+{
+  "attempts": [
+    { "microExerciseId": "string", "selectedAnswer": "string", "responseTimeMs": 0 }
+  ]
+}
+```
+
+Response (T-PUB-02): `{ "sessionId", "status": "COMPLETED", "alreadyProcessed", "accuracy", "xpEarned", "streakUpdated", "currentStreak", "nodeCompleted", "completedAt" }`
+
+**Regla:** este ticket **no** modifica keys, tipos ni semántica de `attempts`. `answerInput` es solo lectura UI en `contentPayload`; la calificación sigue en servidor.
+
+### `POST /api/v1/me/media/signed-url`
+
+Request: `{ "materialUrl": "https://…supabase.co/storage/v1/object/…" }`  
+Response: `{ "signedUrl": "https://…", "expiresIn": 3600 }`  
+Uso: `videoUrl` / `guidePdfUrl` en bucket privado Supabase (patrón T1 Storage).
+
+### `GET /api/v1/me/dashboard`
+
+**No** consumido por el shell de lección en este ticket (evita acoplar chip racha — STREAK-01).
+
+---
+
+## Parser `answerInput` — alcance técnico acotado
+
+| Acción | Permitido |
+|--------|-----------|
+| Leer `contentPayload.answerInput` si presente y ∈ `{ "options", "fretboard" }` | Sí |
+| Default `"options"` si ausente o inválido | Sí |
+| Pasar a `ParsedExerciseView.interaction` (nuevo modo o flag) | Sí |
+| Rechazar ejercicio por llevar `answerInput` | **No** |
+| Añadir `answerInput` al schema Prisma / sanitización server | **No** |
+| Cambiar forma de `attempts` en `complete` | **No** |
+
+Verificar: `findForbiddenLessonSessionKey` **no** lista `answerInput` (no es secreto).
+
+---
+
+## Copy — gate Yousician (Práctica)
 
 > **Modo escucha — próximamente**  
 > Hoy practicas respondiendo en pantalla; el servidor califica al finalizar.  
-> La app escuchando tu guitarra en vivo está en evaluación (decisión D-GOV-AUDIO-01 · fase 1).  
+> La app escuchando tu guitarra en vivo está en evaluación (D-GOV-AUDIO-01 · fase 1).  
 > *No se activa el micrófono en esta versión.*
 
-*(Fable puede ajustar tono; debe permanecer honesto y no prometer audio.)*
+*(Fable puede ajustar tono; debe permanecer honesto.)*
 
 ---
 
-## Archivos probables
+## Proceso de implementación
 
-**Nuevos / refactor:**
-- Shell pestañas lección (componente bajo `src/app/components/gmusic/lesson/` o `path/`)
-- `FretboardExercise` (o equivalente) + integración en `LessonRunnerShell`
-- Gate panel Yousician (componente estático)
-
-**Modificar:**
-- `GmusicPath.tsx` — integrar shell pestañas vs solo modal runner
-- `PathLessonRunner.tsx` — alinear o delegar al shell de pestañas
-- `parse-exercise-payload.ts` + types + tests
-- `LessonRunnerShell.tsx` — diapasón permanente
-- Estilos/tokens existentes (sin verde P-PALETA)
-
-**No tocar:** server routes, Prisma, streak UI en header global, Paquete B en docs.
+1. **Validación Fable** de este spec (OK binario) → recién entonces código.
+2. **Commits separados:**
+   - **Código:** `feat(lesson): …` — solo `src/`, tests, estilos de producto.
+   - **Docs/evidencia:** commit G1 aparte (`docs/operations/…` cierre) **solo después** del smoke humano Juan — *la lección que ya costó una vez*.
+3. **Checkpoints Cursor → Juan/Fable:** tras parser+tests; tras shell pestañas; tras Práctica+complete; antes de pedir smoke.
+4. **Orden sugerido:** parser → diapasón → shell 3 pestañas → Práctica+gate → integración `GmusicPath` → suite verde → smoke Juan → doc cierre G1.
 
 ---
 
-## Orden de implementación sugerido
+## Criterios binarios de cierre (6/6 — sí/no + evidencia)
 
-1. Parser `answerInput` + tests (base segura)
-2. Componente diapasón + wire en runner
-3. Shell 3 pestañas (estructura + Tarjetas + PDF)
-4. Práctica + gate Yousician + sesión/complete
-5. Integración `GmusicPath` / salida del runner legacy
-6. Suite `app:test` + evidencia local
-7. Smoke Render (Juan)
-
----
-
-## Criterios binarios de cierre (6/6)
-
-| # | Criterio | Verificación |
-|---|----------|--------------|
-| 1 | Suscriptor ACTIVE en `/mi-camino` ve **3 pestañas** Tarjetas · Práctica · Resumen PDF | Smoke manual o test de integración UI |
-| 2 | Etapa activa: **un video** reproduce (YouTube o signed Storage) o estado vacío honesto | Nodo con `videoUrl` en path |
-| 3 | Práctica: sesión → ejercicios → `complete` sin regresión T-PUB-02 | `app:test` + flujo manual |
-| 4 | Diapasón **siempre visible** en Práctica; con `answerInput: "fretboard"` la cuerda tocada envía `selectedAnswer` válido | Payload de prueba en seed o fixture |
-| 5 | Panel gate Yousician visible en Práctica; **sin** micrófono ni copy engañoso | Inspección UI |
-| 6 | **Sin** `#4ADE80` nuevo · **sin** chip racha en lección · **sin** cambios API/schema | Diff + grep |
+| # | Criterio | ¿Pasa? | Evidencia requerida |
+|---|----------|--------|---------------------|
+| **1** | Suscriptor ACTIVE en `/mi-camino` ve **exactamente 3 pestañas**: Tarjetas (Mi Camino) · Práctica · Resumen PDF | ☐ | Captura + test UI/guard si aplica |
+| **2** | **Video MVP:** nodo con `videoUrl` YouTube → embed reproduce; nodo con `videoUrl` Supabase privado → UI llama `POST /me/media/signed-url` con `{ materialUrl }` → reproduce con `signedUrl` (o error honesto si falla firma) | ☐ | Captura + network log o test con mock de signed-url |
+| **3** | **Práctica T-PUB-02:** `POST /lesson-sessions` → ejercicios → `POST .../complete` con `attempts[]` sin cambio de forma → respuesta con `accuracy`, `xpEarned`, `nodeCompleted` | ☐ | Flujo manual alumno + `app:test` verde |
+| **4** | **Diapasón:** siempre visible en Práctica; ejercicio con `answerInput: "fretboard"` envía `selectedAnswer` ∈ `{E,A,D,G,B,e}`; sin `answerInput` comportamiento legacy MCQ | ☐ | Test parser + captura interacción |
+| **5** | **Gate Yousician** visible en Práctica; sin micrófono; copy no promete audio | ☐ | Captura |
+| **6** | **Sin regresiones operacionalizadas:** `npm run app:test` **614/614** (o total vigente en `main`) **verde**; `npm run api:test` verde si tocó proxy tipos; smokes nombrados PASS: **(a)** login ADMIN → redirige `/admin`; **(b)** alumno ACTIVE completa nodo por camino actual (mismo flujo T-PUB-02); **(c)** funnel demo `/clase-gratuita` intacto (sin rotura routing). Además: diff sin `#4ADE80`; **sin** chip racha en shell lección; **sin** cambios en `server/` | ☐ | Log CI local + checklist smoke Juan |
 
 ---
 
-## Frase de control post-implementación (Juan → cierre)
+## Frases de control
 
-> OK T-UX-LESSON-01 — cierre con evidencia 6/6 y smoke Render PASS.
+**Arranque (recibida):** `arrancar T-UX-LESSON-01`  
+**Cierre (Juan):** `OK T-UX-LESSON-01 — cierre con evidencia 6/6 y smoke Render PASS.`
 
 ---
 
-*Handoff generado por Cursor · 2026-08-06 · Pendiente dictamen Fable.*
+## Archivos probables (orientación — no exhaustivo)
+
+- `src/app/components/gmusic/lesson/` — shell pestañas, diapasón, gate
+- `src/app/components/gmusic/path/GmusicPath.tsx`, `PathLessonRunner.tsx`
+- `src/app/components/gmusic/lesson/parse-exercise-payload.ts` + `.test.ts`
+- `src/app/components/gmusic/lesson/LessonRunnerShell.tsx`
+
+**No tocar:** `server/**`, `prisma/**`, entrega Kimi en `docs/ux/entregas/`.
+
+---
+
+*Handoff Cursor · revisión rúbrica Fable · 2026-08-06 · Pendiente OK binario.*
