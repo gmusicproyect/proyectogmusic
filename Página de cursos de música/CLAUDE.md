@@ -78,6 +78,17 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 ## Para Cursor — prioridades actuales
 
+### Prioridad de Juan (2026-08-07) — leer primero
+
+> **Infraestructura ordenada primero. El material (YouTube, clips, PDFs definitivos) se coloca a su tiempo.**
+
+- Doc: `docs/operations/PRIORIDAD-INFRA-ANTES-QUE-MATERIAL.md`
+- No bloquear arquitectura ni contratos esperando links de YouTube.
+- No inventar URLs finales de material; stubs/fixtures/firmado OK; carga real por `/admin` cuando Juan diga.
+- Norte Práctica: `docs/ux/GUITARRA-INTERACTIVA-REFERENCIA.md` (si existe en el árbol).
+
+### Otras prioridades
+
 1. **Cerrar D-GOV-04** (pedagogía 6–75) con Juan/Opus.
 2. **Deploy rewrites SPA** — rutas funnel en hosting.
 3. **Fase visual hero** — `logogmusic.png` en ciclo aparte (cuando Juan autorice).

@@ -58,13 +58,48 @@ grep -rn "· id:" src/app/components/gmusic/lesson/LessonRunnerShell.tsx
 
 ---
 
-## Suite
+## Suite — desglose del delta (obligatorio)
+
+### Conteos verificados en esta máquina (2026-08-07)
+
+| Ref | Comando | Resultado |
+|-----|---------|-----------|
+| `main` (ee3072b, checkpoint 5) | `npm run app:test` | **652/652** |
+| `fix/t-ux-lesson-01-f1-f2` | `npm run app:test` | **656/656** |
+| Delta de esta rama | | **+4** tests (`it(...)`) |
+
+**No es +15.** Si alguien ve 641→656, ese salto **no** viene de F1/F2: 641→652 ya estaba en `main` por checkpoints previos de T-UX-LESSON-01; F1/F2 solo aportan **+4** sobre 652.
+
+### Los 4 tests nuevos — nombrados (evidencia de cierre)
+
+| ID | Archivo | Nombre del `it(...)` | Criterio |
+|----|---------|----------------------|----------|
+| F1-a | `src/app/utils/path-student-entries.test.ts` | `5 nodos H1: mismo orden, stepNumber global y guidePdfUrl 1:1 en entries` | Aceptación F1: 5 PDFs, nodos 4–5 |
+| F1-b | `src/app/utils/path-student-entries.test.ts` | `mapPathToViewModel expone entries alineadas con el carrusel` | Una sola fuente viewModel (multi-módulo) |
+| F2-a | `src/app/components/gmusic/lesson/lesson-runner-shell.test.ts` | `footLabel no expone microExerciseId ni id de ejercicio al alumno` | UI sin ID interno |
+| F2-b | mismo | `payload de attempts conserva microExerciseId (contrato intacto)` | No tocar contrato attempts |
+
+Además (sin sumar `it` nuevo): `path-lesson-tabs.test.ts` actualizó aserciones CP3 para exigir `entries` / prohibir re-aplanar en Resumen.
+
+### Regresión T-FLOW-04 (confirmación literal)
+
+- Archivo: `src/app/pages/t-flow-04-fin-camino.test.ts`
+- Diff vs `main`: **0 bytes** (archivo intacto)
+- Sigue con **5** `it(...)`:
+  1. `panel usa título y frase canónicos del mandato`
+  2. `CTA primario → mi-estudio · CTA secundario → revisión`
+  3. `panel vive en la pestaña Tarjetas cuando el camino está completo`
+  4. `carrusel se remonta en revisión sin habilitar replay`
+  5. `las 3 pestañas siguen visibles con camino completo (no se oculta el shell)`
+- Ejecución aislada en esta rama: **5/5 PASS** (junto a F1/F2: 40/40 en el lote local)
+
+`GmusicPath.tsx` sí se tocó (consume `viewModel.entries`), pero las aserciones de T-FLOW-04 sobre panel/carrusel/shell **siguen pasando**.
 
 | Momento | Resultado |
 |---------|-----------|
-| Antes | `app:test` **652/652** |
-| Después | `app:test` **656/656** (+4 tests F1/F2) |
-| Typecheck | OK |
+| Antes (`main`) | `app:test` **652/652** |
+| Después (rama F1/F2) | `app:test` **656/656** (+4 nombrados arriba) |
+| T-FLOW-04 | **5/5** PASS, archivo sin cambios |
 
 ---
 

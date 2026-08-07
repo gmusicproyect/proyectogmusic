@@ -174,21 +174,34 @@ Verificar: `findForbiddenLessonSessionKey` **no** lista `answerInput` (no es sec
 
 ## Criterios binarios de cierre (6/6 — sí/no + evidencia)
 
+> **Enmienda 2026-08-07 — Opción A (Juan):** cierre por **infraestructura**, no por material de producción.  
+> Prioridad: `docs/operations/PRIORIDAD-INFRA-ANTES-QUE-MATERIAL.md`.  
+> Video real de YouTube / clip Fundamento 1 = **pendiente de contenido**, no casilla de cierre ni bug abierto.
+
 | # | Criterio | ¿Pasa? | Evidencia requerida |
 |---|----------|--------|---------------------|
 | **1** | Suscriptor ACTIVE en `/mi-camino` ve **exactamente 3 pestañas**: Tarjetas (Mi Camino) · Práctica · Resumen PDF | ☐ | Captura + test UI/guard si aplica |
-| **2** | La tarjeta reproduce vía POST /me/media/signed-url (enlace firmado, TTL 3600); nunca URL directa del bucket en el DOM. | ☐ | Captura + network log o test con mock de signed-url |
+| **2** | **Pipeline de video (infra):** `videoUrl` de prueba/stub pasa por `POST /me/media/signed-url`; el DOM recibe **solo** URL firmada (nunca URL directa del bucket); sin material, el vacío es digno («esta etapa aún no tiene video» / «Video próximamente») | ☐ | Network/DevTools ofuscado con stub + captura estado vacío |
 | **3** | **Práctica T-PUB-02:** `POST /lesson-sessions` → ejercicios → `POST .../complete` con `attempts[]` sin cambio de forma → respuesta con `accuracy`, `xpEarned`, `nodeCompleted` | ☐ | Flujo manual alumno + `app:test` verde |
 | **4** | **Diapasón:** siempre visible en Práctica; ejercicio con `answerInput: "fretboard"` envía `selectedAnswer` ∈ `{E,A,D,G,B,e}`; sin `answerInput` comportamiento legacy MCQ | ☐ | Test parser + captura interacción |
 | **5** | **Gate Yousician** visible en Práctica; sin micrófono; copy no promete audio | ☐ | Captura |
-| **6** | Suite completa verde (app:test + api:test) Y tres smokes nombrados intactos: login ADMIN → /admin · alumno ACTIVE completa un nodo por el camino actual · demo /clase-gratuita → upsell WhatsApp. | ☐ | Log CI local + checklist smoke Juan |
+| **6** | Suite completa verde (app:test + api:test) Y tres smokes nombrados: (1) login ADMIN → /admin · (2) alumno ACTIVE completa un nodo del camino actual **con video stub + ejercicios reales** · (3) demo /clase-gratuita → upsell WhatsApp. **F1:** 5 PDFs distinguibles verificados en Resumen (estructura). **F2:** recorrido sin IDs internos en UI. | ☐ | Log local + checklist smoke Juan (stub OK; YouTube real no requerido) |
+
+### Fuera del 6/6 (pendiente de contenido explícito)
+
+- Enganchar video real de Fundamento 1 (YouTube / clip) por `/admin` — **cuando Juan cargue material**, no bloquea el cierre formal de este ticket.
+
+### Merge F1/F2
+
+Sigue requiriendo autorización Juan con evidencia: 5 PDFs en pantalla + smokes (video stub válido). Sin merge anticipado.
 
 ---
 
 ## Frases de control
 
 **Arranque (recibida):** `arrancar T-UX-LESSON-01`  
-**Cierre (Juan):** `OK T-UX-LESSON-01 — cierre con evidencia 6/6 y smoke Render PASS.`
+**Cierre (Juan):** `OK T-UX-LESSON-01 — cierre con evidencia 6/6 infra (stubs OK) y smoke PASS.`  
+*(Video YouTube real no forma parte de esta frase; es pendiente de contenido.)*
 
 ---
 

@@ -66,13 +66,14 @@
 | # | Criterio | Estado | Nota |
 |---|----------|--------|------|
 | 1 | 3 pestañas exactas | ✅ | Implementado + tests |
-| 2 | Video firmado, nunca URL directa bucket | ✅ | Hero tarjeta + hook compartido |
+| 2 | Video firmado, nunca URL directa bucket | ✅ infra / ☐ evidencia Juan | **Opción A (2026-08-07):** stub + signed-url + vacío digno; YouTube real = pendiente de contenido |
 | 3 | Práctica sesión → complete | ✅ | Flujo T-PUB-02 integrado en tab |
 | 4 | Diapasón + `answerInput` fretboard | ✅ | Parser + interacción cuerdas |
 | 5 | Gate Yousician sin micrófono | ✅ | Copy honesto |
-| 6 | Suite verde + smokes Render | ☐ | **app:test 652 PASS** · smoke humano Render pendiente Juan |
+| 6 | Suite verde + smokes (stub OK) | ☐ | app:test verde · smoke humano con video stub + 5 PDFs F1 pendiente Juan |
 
-**Cierre formal spec:** pendiente frase Juan `OK T-UX-LESSON-01 — cierre con evidencia 6/6 y smoke Render PASS.`
+**Cierre formal:** pendiente frase Juan `OK T-UX-LESSON-01 — cierre con evidencia 6/6 infra (stubs OK) y smoke PASS.`  
+Ver: `docs/operations/RESPUESTA-FABLE-OPCION-A-H1-2026-08-07.md`
 
 ---
 
