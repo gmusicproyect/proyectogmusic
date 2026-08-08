@@ -14,6 +14,48 @@ import {
 
 const CANVAS_MIN_HEIGHT = 220;
 const STRING_THICKNESS = [2, 2.5, 3, 4, 5, 6] as const; // index 0 = string 1 (thin)
+/** TAB cue: square cell with fret digit (0 = open string). */
+const TAB_SQUARE_SIZE = 28;
+const TAB_SQUARE_RADIUS = 6;
+
+function drawTabSquare(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  fret: number,
+  state: "current" | "done" | "pending"
+) {
+  const half = TAB_SQUARE_SIZE / 2;
+  const left = x - half;
+  const top = y - half;
+
+  ctx.beginPath();
+  if (typeof ctx.roundRect === "function") {
+    ctx.roundRect(left, top, TAB_SQUARE_SIZE, TAB_SQUARE_SIZE, TAB_SQUARE_RADIUS);
+  } else {
+    ctx.rect(left, top, TAB_SQUARE_SIZE, TAB_SQUARE_SIZE);
+  }
+
+  if (state === "done") {
+    ctx.fillStyle = "rgba(74, 222, 128, 0.9)";
+    ctx.strokeStyle = "rgba(34, 197, 94, 0.95)";
+  } else if (state === "current") {
+    ctx.fillStyle = "#D4AF37";
+    ctx.strokeStyle = "rgba(250, 250, 250, 0.95)";
+  } else {
+    ctx.fillStyle = "rgba(250, 250, 250, 0.2)";
+    ctx.strokeStyle = "rgba(250, 250, 250, 0.45)";
+  }
+  ctx.lineWidth = state === "current" ? 2.5 : 1.5;
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = state === "pending" ? "rgba(250, 250, 250, 0.75)" : "#0A0A0A";
+  ctx.font = "bold 15px ui-sans-serif, system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(String(Math.max(0, Math.floor(fret))), x, y + 0.5);
+}
 
 export interface FretboardCanvasProps {
   notes: readonly LabNote[];
@@ -131,7 +173,7 @@ export function FretboardCanvas({
       ctx.fillText(String(s), 4, y);
     }
 
-    // Recognition markers: distribute target notes horizontally (no tempo X)
+    // TAB recognition: square + fret digit (0 = al aire), Lab pedagogy pattern
     if (playable.length > 0) {
       const left = 48;
       const right = W - 36;
@@ -144,21 +186,13 @@ export function FretboardCanvas({
           playable.length === 1
             ? left + span * 0.5
             : left + (span * index) / (playable.length - 1);
-        const isCurrent = index === currentNoteIndex;
-        const done = index < currentNoteIndex;
-        ctx.beginPath();
-        ctx.arc(x, y, isCurrent ? 11 : 8, 0, Math.PI * 2);
-        ctx.fillStyle = done
-          ? "rgba(74, 222, 128, 0.85)"
-          : isCurrent
-            ? "#D4AF37"
-            : "rgba(250, 250, 250, 0.35)";
-        ctx.fill();
-        if (isCurrent) {
-          ctx.strokeStyle = "rgba(212, 175, 55, 0.9)";
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
+        const state =
+          index < currentNoteIndex
+            ? "done"
+            : index === currentNoteIndex
+              ? "current"
+              : "pending";
+        drawTabSquare(ctx, x, y, note.fret, state);
       });
     }
 
@@ -225,7 +259,7 @@ export function FretboardCanvas({
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label="Diapasón interactivo: seis cuerdas, la 1 arriba y la 6 abajo"
+        aria-label="Diapasón interactivo con tablatura: cuadrado y número de traste (0 al aire); cuerda 1 arriba, 6 abajo"
         className="w-full block rounded-md"
         style={{
           height,
@@ -237,7 +271,7 @@ export function FretboardCanvas({
       />
       {interactive && !disabled ? (
         <p className="mt-2 text-[11px] text-center" style={{ color: "rgba(250,250,250,0.45)" }}>
-          Toca una cuerda o pulsa 1–6
+          Cuadrado con 0 = cuerda al aire · Toca la cuerda o pulsa 1–6
         </p>
       ) : null}
     </div>

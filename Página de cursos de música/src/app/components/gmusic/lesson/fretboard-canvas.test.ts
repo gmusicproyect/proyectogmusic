@@ -36,4 +36,11 @@ describe("FretboardCanvas layout (patrón Lab)", () => {
     assert.equal(shellSource.includes("/Volumes/Juan lizama h"), false);
     assert.equal(canvasSource.includes("/Volumes/Juan lizama h"), false);
   });
+
+  it("dibuja cuadrado TAB con dígito de traste (0 = al aire)", () => {
+    assert.match(canvasSource, /drawTabSquare/);
+    assert.match(canvasSource, /TAB_SQUARE_SIZE/);
+    assert.match(canvasSource, /note\.fret/);
+    assert.match(canvasSource, /0 = cuerda al aire/);
+  });
 });

@@ -69,3 +69,4 @@ Normalization (`normalizeRawNotes`): `string || 1`, `fret || 0`, `type` from fre
 - `study` → canvas inert (P4).
 - `none` → no canvas.
 - Complete via existing POST `/complete`; `secureAnswer` server-only.
+- **TAB cue on canvas:** each playable `LabNote` draws a square with `fret` digit (`0` = open / al aire), Lab recognition pedagogy — not highway.
