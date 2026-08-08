@@ -1,5 +1,6 @@
 import type { ExerciseType } from "../../../services/gmusic-api/types";
 import type { FretboardStringId } from "./lesson-fretboard";
+import type { LabNote } from "./lab-note";
 
 export interface SafeExerciseOption {
   id: string;
@@ -54,6 +55,15 @@ export interface ParsedExerciseView {
   answerInput: AnswerInputMode;
   /** Derived: never response+study at once (GUITARRA-INTERACTIVA-REFERENCIA P4). */
   fretboardRole: FretboardRole;
+  /**
+   * LabNote[] from adaptPayloadToLabNotes(contentPayload).
+   * Empty = free-choice single tap (fretboard) or no recognition sequence.
+   */
+  labNotes: LabNote[];
+  /**
+   * Highway/moving stub. Always false while HIGHWAY_FEATURE_ENABLED is off.
+   */
+  highwayEnabled: boolean;
 }
 
 export type ExerciseParseResult =

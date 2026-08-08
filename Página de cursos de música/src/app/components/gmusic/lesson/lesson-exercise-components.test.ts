@@ -19,6 +19,7 @@ const componentSources = {
   media: readFileSync(join(root, "ExerciseMediaBlock.tsx"), "utf8"),
   multipleChoice: readFileSync(join(root, "MultipleChoiceExercise.tsx"), "utf8"),
   fretboard: readFileSync(join(root, "LessonFretboard.tsx"), "utf8"),
+  fretboardCanvas: readFileSync(join(root, "FretboardCanvas.tsx"), "utf8"),
   unsupported: readFileSync(join(root, "UnsupportedExercisePanel.tsx"), "utf8"),
 };
 
@@ -54,6 +55,8 @@ const SAMPLE_EXERCISE: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 describe("normalizeStepperValues", () => {

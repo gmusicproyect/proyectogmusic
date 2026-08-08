@@ -226,6 +226,27 @@ describe("parsePublicExercise — answerInput en payload", () => {
     });
     assert.equal(findForbiddenLessonSessionKey(parsed), null);
   });
+
+  it("T-PRACTICE-CANVAS-01: notes[] → labNotes; highway stub OFF", () => {
+    const parsed = assertSupported({
+      ...SEED_EAR_TRAINING,
+      contentPayload: {
+        answerInput: "fretboard",
+        stageType: "moving",
+        highwayEnabled: true,
+        notes: [
+          { time: 0, string: 1, fret: 0 },
+          { time: 1, string: 1, fret: 0 },
+          { time: 2, string: 1, fret: 0 },
+          { time: 3, string: 1, fret: 0 },
+        ],
+      },
+    });
+    assert.equal(parsed?.labNotes.length, 4);
+    assert.ok(parsed?.labNotes.every((n) => n.string === 1 && n.fret === 0));
+    assert.equal(parsed?.highwayEnabled, false);
+    assert.equal(parsed?.fretboardRole, "response");
+  });
 });
 
 describe("parsePublicExercise — options", () => {

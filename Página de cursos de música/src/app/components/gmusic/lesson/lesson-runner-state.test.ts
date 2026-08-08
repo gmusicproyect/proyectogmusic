@@ -24,6 +24,8 @@ const EXERCISE_A: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_B: ParsedExerciseView = {
@@ -39,6 +41,8 @@ const EXERCISE_B: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_C: ParsedExerciseView = {
@@ -54,6 +58,8 @@ const EXERCISE_C: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_TAP: ParsedExerciseView = {
@@ -75,6 +81,8 @@ const EXERCISE_TAP: ParsedExerciseView = {
   },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_FRETBOARD: ParsedExerciseView = {
@@ -90,6 +98,8 @@ const EXERCISE_FRETBOARD: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "fretboard",
   fretboardRole: "response",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_SEQUENCE: ParsedExerciseView = {
@@ -106,6 +116,8 @@ const EXERCISE_SEQUENCE: ParsedExerciseView = {
   interaction: { mode: "sequence", tokenIds: ["E", "A", "D"] },
   answerInput: "sequence",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const EXERCISE_STUDY: ParsedExerciseView = {
@@ -121,6 +133,8 @@ const EXERCISE_STUDY: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "study",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const STARTED_AT_MS = 1_000_000;

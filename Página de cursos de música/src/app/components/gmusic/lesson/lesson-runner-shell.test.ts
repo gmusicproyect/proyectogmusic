@@ -111,6 +111,8 @@ const PARSED_A: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 const PARSED_B: ParsedExerciseView = {
@@ -126,6 +128,8 @@ const PARSED_B: ParsedExerciseView = {
   interaction: { mode: "mcq" },
   answerInput: "options",
   fretboardRole: "none",
+  labNotes: [],
+  highwayEnabled: false,
 };
 
 function reduce(

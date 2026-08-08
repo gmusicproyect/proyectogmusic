@@ -1,6 +1,7 @@
 import { findForbiddenLessonSessionKey } from "../../../services/gmusic-api/assert-safe-lesson-session";
 import { GmusicApiError } from "../../../services/gmusic-api/client";
 import type { ExerciseType, PublicExercise } from "../../../services/gmusic-api/types";
+import { adaptPayloadToLabNotes } from "./adapt-payload-to-lab-notes";
 import { stringNumberToId } from "./lesson-fretboard";
 import type {
   AnswerInputMode,
@@ -335,6 +336,7 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
     return incompatible(exerciseId.trim(), roleResult.reason);
   }
   const fretboardRole = roleResult.role;
+  const adapted = adaptPayloadToLabNotes(payload);
 
   if (exercise.type === "RHYTHM_TAP" && "tapSequence" in payload && payload.tapSequence != null) {
     const tapResult = parseTapInteraction(payload, exerciseId.trim(), exercise.instruction.trim());
@@ -353,6 +355,8 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
       interaction: tapResult.interaction,
       answerInput,
       fretboardRole,
+      labNotes: adapted.notes,
+      highwayEnabled: adapted.highwayEnabled,
     };
 
     return { kind: "supported", exercise: parsed };
@@ -383,6 +387,8 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
       },
       answerInput,
       fretboardRole,
+      labNotes: adapted.notes,
+      highwayEnabled: adapted.highwayEnabled,
     };
     return { kind: "supported", exercise: parsed };
   }
@@ -397,6 +403,8 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
     interaction: { mode: "mcq" },
     answerInput,
     fretboardRole,
+    labNotes: adapted.notes,
+    highwayEnabled: adapted.highwayEnabled,
   };
 
   return { kind: "supported", exercise: parsed };

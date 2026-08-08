@@ -150,6 +150,8 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       interaction: { mode: "mcq" },
       answerInput: "options",
       fretboardRole: "none",
+      labNotes: [],
+      highwayEnabled: false,
     };
   }, [lesson, lessonId]);
 

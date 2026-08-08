@@ -68,6 +68,8 @@ export function buildFreeFundamentoChallengeExercise(): ParsedExerciseView {
     interaction: { mode: "mcq" },
     answerInput: "options",
     fretboardRole: "none",
+    labNotes: [],
+    highwayEnabled: false,
   };
 }
 

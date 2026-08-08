@@ -15,12 +15,14 @@ import {
   GM_TEXT_SEC,
 } from "../tokens";
 import { ExerciseMediaBlock } from "./ExerciseMediaBlock";
+import { FretboardCanvas } from "./FretboardCanvas";
 import { LessonExerciseStepper } from "./LessonExerciseStepper";
-import { LessonFretboard } from "./LessonFretboard";
 import {
   exerciseOptionsAreFretboardStrings,
+  stringNumberToId,
   type FretboardStringId,
 } from "./lesson-fretboard";
+import { playableLabNotes } from "./lab-note";
 import {
   buildLessonPracticeChipItems,
   LessonPracticeChips,
@@ -354,7 +356,12 @@ function LessonRunnerActive({
   const finishedSentRef = useRef(false);
   const [visualPoints, setVisualPoints] = useState(0);
   const [visualCombo, setVisualCombo] = useState(0);
+  const [recognitionNoteIndex, setRecognitionNoteIndex] = useState(0);
   const prevIndexRef = useRef(0);
+
+  useEffect(() => {
+    setRecognitionNoteIndex(0);
+  }, [currentExercise?.id]);
 
   useEffect(() => {
     if (!embedded || !onExerciseProgress || state.exercises.length === 0) return;
@@ -410,9 +417,15 @@ function LessonRunnerActive({
   const isStringOptionsExercise = currentExercise
     ? exerciseOptionsAreFretboardStrings(currentExercise.options)
     : false;
-  const fretboardInteractive = isFretboardAnswer || isStringOptionsExercise;
+  const recognitionNotes = currentExercise
+    ? playableLabNotes(currentExercise.labNotes)
+    : [];
+  const hasRecognitionSequence = isFretboardAnswer && recognitionNotes.length > 0;
+  const fretboardInteractive =
+    !isStudyFretboard && (isFretboardAnswer || isStringOptionsExercise);
   const showFretboardChrome =
     Boolean(currentExercise) &&
+    currentExercise?.fretboardRole !== "none" &&
     !isTapExercise &&
     !isSequenceExercise &&
     (fretboardInteractive || isStudyFretboard);
@@ -421,6 +434,19 @@ function LessonRunnerActive({
     if (!currentExercise || interactionDisabled) return;
     // P4: study = inert (no attempts)
     if (currentExercise.fretboardRole === "study") return;
+
+    if (hasRecognitionSequence && isFretboardAnswer) {
+      const target = recognitionNotes[recognitionNoteIndex];
+      if (!target) return;
+      const expectedId = stringNumberToId(target.string);
+      if (!expectedId || stringId !== expectedId) return;
+      if (recognitionNoteIndex + 1 >= recognitionNotes.length) {
+        selectFretboardString(stringId);
+        return;
+      }
+      setRecognitionNoteIndex((value) => value + 1);
+      return;
+    }
 
     if (isFretboardAnswer) {
       selectFretboardString(stringId);
@@ -454,7 +480,9 @@ function LessonRunnerActive({
       : null;
 
   const fretboardBlock = showFretboardChrome ? (
-    <LessonFretboard
+    <FretboardCanvas
+      notes={currentExercise?.labNotes ?? []}
+      currentNoteIndex={recognitionNoteIndex}
       selectedStringId={
         isFretboardAnswer
           ? state.selectedOptionId
@@ -465,6 +493,7 @@ function LessonRunnerActive({
       }
       interactive={fretboardInteractive}
       disabled={interactionDisabled || isStudyFretboard}
+      highwayEnabled={currentExercise?.highwayEnabled ?? false}
       onSelectStringId={handleFretboardTap}
     />
   ) : null;
