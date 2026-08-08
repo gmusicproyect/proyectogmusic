@@ -1,15 +1,26 @@
 # Prioridad operativa — infraestructura antes que material
 
-**Fecha:** 2026-08-07  
+**Fecha:** 2026-08-07 · **Actualizado:** 2026-08-08  
 **Decisión de Juan (producto Academia GMusic)**  
 **Para:** Claude / Cursor en cualquier sesión de este repo
 
 ---
 
-## Veredicto
+## Veredicto (2026-08-08 — orden de producto)
+
+> **Primero:** base sólida de **guitarra interactiva** (crear ejercicio → funciona en Práctica / en cualquier etapa).  
+> **Después:** cómo se montan las clases completas (teoría, armonía, orden pedagógico — aún no 100% cerrado).  
+> **Material** (YouTube/PDFs finales): a su tiempo; no bloquea el motor.  
+> Diferenciador vs Simply Guitar / Yousician: no solo “tocar canciones” — teoría/armonía sobre el motor.
+
+**H1 (cáscara Tarjetas / PDF / video firmado):** trabajo útil y casi cerrado; **merge / pulido menor** — no es el norte activo. Norte activo = motor de práctica.
+
+---
+
+## Veredicto (2026-08-07 — sigue vigente para material)
 
 > **Todo el material (incluidos los links de YouTube) se colocará a su tiempo.**  
-> **Ahora la prioridad es que la infraestructura quede ordenada.**  
+> **La infraestructura debe quedar ordenada.**  
 > Del material nos preocupamos después.
 
 ## Qué significa en la práctica

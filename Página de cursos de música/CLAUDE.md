@@ -78,20 +78,23 @@ Visual D obsoleto: `docs/vision/handoffs/2026-06-14-hero-d2-ux-handoff.md` (SUPE
 
 ## Para Cursor — prioridades actuales
 
-### Prioridad de Juan (2026-08-07) — leer primero
+### Prioridad de Juan (2026-08-08) — leer primero · D-GOV-PRACTICA-01
 
-> **Infraestructura ordenada primero. El material (YouTube, clips, PDFs definitivos) se coloca a su tiempo.**
+> **1) Base guitarra interactiva** (ejercicio → runner → Práctica; plataforma reutilizable).  
+> **2) Cáscara H1** (tarjetas/PDF/video) = cimiento; merge secundario.  
+> **3) Clases + teoría/armonía** = diferenciador (diseño Fable; no frena el motor).  
+> **4) Material** YouTube/PDF finales = después.
 
-- Doc: `docs/operations/PRIORIDAD-INFRA-ANTES-QUE-MATERIAL.md`
-- No bloquear arquitectura ni contratos esperando links de YouTube.
-- No inventar URLs finales de material; stubs/fixtures/firmado OK; carga real por `/admin` cuando Juan diga.
-- Norte Práctica: `docs/ux/GUITARRA-INTERACTIVA-REFERENCIA.md` (si existe en el árbol).
+- Doc: `docs/operations/PRIORIDAD-INFRA-ANTES-QUE-MATERIAL.md` · decisión `D-GOV-PRACTICA-01`
+- Norte Práctica: `docs/ux/GUITARRA-INTERACTIVA-REFERENCIA.md`
+- **No implementar** guitarra en `main`/F1-F2 sin ticket + frase Juan **«arrancar»** (WIP: `wip/guitarra-interactiva-sin-ticket`)
+- No inventar URLs finales de material; stubs/firmado OK.
 
 ### Otras prioridades
 
-1. **Cerrar D-GOV-04** (pedagogía 6–75) con Juan/Opus.
-2. **Deploy rewrites SPA** — rutas funnel en hosting.
-3. **Fase visual hero** — `logogmusic.png` en ciclo aparte (cuando Juan autorice).
+1. Brief Fable para **arrancar** motor Práctica (post-confirmación Juan).
+2. Merge H1 F1/F2 cuando Juan diga (no bloquea el norte).
+3. **Deploy rewrites SPA** — rutas funnel en hosting.
 4. **Fase 4 Auth** — pausada hasta conversión WhatsApp real.
 
 **NO TOCAR sin autorización Opus + Juan:** auth, pagos, schema, routing URL global (legacy), R-001, R-002, Track B.

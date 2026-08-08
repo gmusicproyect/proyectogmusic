@@ -1,9 +1,13 @@
 # Gmusic Estudio — Memoria de Continuidad
 
 Fable lee este archivo al inicio de cada sesión de trabajo en el proyecto Gmusic.
-Última actualización: **2 Jul 2026** · Admin Creador MVP + fix P0 `2134e71`
+Última actualización: **8 Ago 2026** · **D-GOV-PRACTICA-01** (prioridad motor guitarra interactiva)
 
-**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01..06 · **D-GOV-04 CERRADA** (mapa bloques + Admin MVP) · D-017 CERRADO.
+**Prioridad Juan (8 Ago):** (1) base Práctica / guitarra interactiva · (2) H1 cáscara merge secundario · (3) teoría/armonía con Fable · (4) material después.  
+**No codear guitarra** sin ticket + «arrancar». WIP: `wip/guitarra-interactiva-sin-ticket`.  
+**H1 F1/F2:** rama `fix/t-ux-lesson-01-f1-f2` — evidencia local OK; merge cuando Juan autorice.
+
+**Decisiones publicadas (`.agents/DECISIONS.md`):** D-GOV-01..19 · **D-GOV-PRACTICA-01** · D-UX-LAYOUT-01 · D-GOV-AUDIO-01 fase 0.
 
 **Incidente activo:** INC-2026-07-02 — credencial admin quemada. Repo cerrado; **prod DB pendiente rotación Juan** → `docs/operations/incident-2026-07-02-admin-credential.md`
 

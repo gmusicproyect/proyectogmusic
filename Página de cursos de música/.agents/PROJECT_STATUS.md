@@ -1,6 +1,15 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Ago 2026** (T-UX-LESSON-01 avance producto `/mi-camino`) · base **`main`** · `app:test` **652/652**
+Última actualización: **8 Ago 2026** (prioridad D-GOV-PRACTICA-01) · rama trabajo `fix/t-ux-lesson-01-f1-f2` @ `b8db4aa` (+ smoke local)
+
+## Prioridad activa (Juan 8 Ago 2026) — D-GOV-PRACTICA-01
+
+| Orden | Qué | Estado |
+|-------|-----|--------|
+| **1** | **Base guitarra interactiva** (ejercicio → funciona en Práctica; plataforma reutilizable) | Norte activo — falta brief Fable + frase **«arrancar»**; WIP en `wip/guitarra-interactiva-sin-ticket` |
+| **2** | Cáscara H1 (F1/F2 + video firmado stub) | Casi lista (evidencia local OK); **merge secundario** — no bloquear el norte |
+| **3** | Estructura clases + teoría/armonía (diferenciador) | Diseño con Fable; no frena el motor |
+| **4** | Material YouTube/PDF producción | Después |
 
 ## Hito — 6 Ago 2026 · T-UX-LESSON-01 producto real (no demo)
 
