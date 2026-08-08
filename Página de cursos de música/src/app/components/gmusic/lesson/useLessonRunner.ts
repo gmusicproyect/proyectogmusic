@@ -182,6 +182,22 @@ export function useLessonRunner({
     dispatch({ type: "SELECT_FRETBOARD_STRING", stringId, nowMs: nowRef.current() });
   }, []);
 
+  const sequenceAppend = useCallback((optionId: string) => {
+    dispatch({ type: "SEQUENCE_APPEND", optionId });
+  }, []);
+
+  const sequenceRemoveLast = useCallback(() => {
+    dispatch({ type: "SEQUENCE_REMOVE_LAST" });
+  }, []);
+
+  const sequenceClear = useCallback(() => {
+    dispatch({ type: "SEQUENCE_CLEAR" });
+  }, []);
+
+  const confirmSequence = useCallback(() => {
+    dispatch({ type: "CONFIRM_SEQUENCE", nowMs: nowRef.current() });
+  }, []);
+
   const nextExercise = useCallback(() => {
     dispatch({ type: "NEXT_EXERCISE", nowMs: nowRef.current() });
   }, []);
@@ -206,6 +222,10 @@ export function useLessonRunner({
     currentExercise,
     selectOption,
     selectFretboardString,
+    sequenceAppend,
+    sequenceRemoveLast,
+    sequenceClear,
+    confirmSequence,
     nextExercise,
     completeTap,
     reset,

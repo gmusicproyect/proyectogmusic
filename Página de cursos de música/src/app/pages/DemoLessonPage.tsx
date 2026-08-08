@@ -149,6 +149,7 @@ export function DemoLessonPage({ lessonId, setPage }: DemoLessonPageProps) {
       media: {},
       interaction: { mode: "mcq" },
       answerInput: "options",
+      fretboardRole: "none",
     };
   }, [lesson, lessonId]);
 

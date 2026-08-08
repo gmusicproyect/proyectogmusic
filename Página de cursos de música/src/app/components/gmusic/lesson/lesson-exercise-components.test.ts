@@ -53,6 +53,7 @@ const SAMPLE_EXERCISE: ParsedExerciseView = {
   media: {},
   interaction: { mode: "mcq" },
   answerInput: "options",
+  fretboardRole: "none",
 };
 
 describe("normalizeStepperValues", () => {

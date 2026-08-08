@@ -1,9 +1,11 @@
 import { findForbiddenLessonSessionKey } from "../../../services/gmusic-api/assert-safe-lesson-session";
 import { GmusicApiError } from "../../../services/gmusic-api/client";
 import type { ExerciseType, PublicExercise } from "../../../services/gmusic-api/types";
+import { stringNumberToId } from "./lesson-fretboard";
 import type {
   AnswerInputMode,
   ExerciseParseResult,
+  FretboardRole,
   ParsedExerciseView,
   SafeExerciseMedia,
   SafeExerciseOption,
@@ -24,13 +26,30 @@ const VALID_EXERCISE_TYPES = new Set<ExerciseType>([
   "RHYTHM_TAP",
 ]);
 
-const VALID_ANSWER_INPUT = new Set<AnswerInputMode>(["options", "fretboard"]);
+const VALID_ANSWER_INPUT = new Set<AnswerInputMode>(["options", "fretboard", "sequence"]);
 
 export function parseAnswerInput(raw: unknown): AnswerInputMode {
   if (typeof raw === "string" && VALID_ANSWER_INPUT.has(raw as AnswerInputMode)) {
     return raw as AnswerInputMode;
   }
   return "options";
+}
+
+/** Resolve P4 binary role. Rejects answerInput fretboard + showFretboard together. */
+export function resolveFretboardRole(
+  answerInput: AnswerInputMode,
+  showFretboard: boolean
+): { ok: true; role: FretboardRole } | { ok: false; reason: string } {
+  if (answerInput === "fretboard" && showFretboard) {
+    return {
+      ok: false,
+      reason:
+        "Diapasón respuesta y estudio no pueden coexistir (answerInput: fretboard + showFretboard).",
+    };
+  }
+  if (answerInput === "fretboard") return { ok: true, role: "response" };
+  if (showFretboard) return { ok: true, role: "study" };
+  return { ok: true, role: "none" };
 }
 
 function incompatible(exerciseId: string, reason: string): ExerciseParseResult {
@@ -65,19 +84,26 @@ function resolveExerciseId(exercise: PublicExercise): string {
 
 function parseOptions(
   raw: unknown,
-  exerciseId: string
+  exerciseId: string,
+  options: { requireMinTwo: boolean }
 ): { ok: true; options: SafeExerciseOption[] } | { ok: false; result: ExerciseParseResult } {
+  if (raw == null) {
+    if (options.requireMinTwo) {
+      return { ok: false, result: incompatible(exerciseId, "options debe ser un array.") };
+    }
+    return { ok: true, options: [] };
+  }
   if (!Array.isArray(raw)) {
     return { ok: false, result: incompatible(exerciseId, "options debe ser un array.") };
   }
-  if (raw.length < 2) {
+  if (options.requireMinTwo && raw.length < 2) {
     return { ok: false, result: incompatible(exerciseId, "Se requieren al menos 2 opciones.") };
   }
   if (raw.length > MAX_EXERCISE_OPTIONS) {
     return { ok: false, result: incompatible(exerciseId, "Demasiadas opciones.") };
   }
 
-  const options: SafeExerciseOption[] = [];
+  const parsedOptions: SafeExerciseOption[] = [];
   const seenIds = new Set<string>();
 
   for (const item of raw) {
@@ -102,10 +128,10 @@ function parseOptions(
     }
 
     seenIds.add(id);
-    options.push({ id, text });
+    parsedOptions.push({ id, text });
   }
 
-  return { ok: true, options };
+  return { ok: true, options: parsedOptions };
 }
 
 function parseMedia(
@@ -202,6 +228,13 @@ function parseTapSequence(
         result: incompatible(exerciseId, "stringNumber inválido en tapSequence."),
       };
     }
+    const stringId = stringNumberToId(stringNumber);
+    if (!stringId) {
+      return {
+        ok: false,
+        result: incompatible(exerciseId, "stringNumber fuera del mapa canónico 1–6."),
+      };
+    }
     if (!label || label.length > MAX_LABEL_OR_BEAT_LENGTH) {
       return { ok: false, result: incompatible(exerciseId, "label inválido en tapSequence.") };
     }
@@ -209,7 +242,7 @@ function parseTapSequence(
       return { ok: false, result: incompatible(exerciseId, "stringName inválido en tapSequence.") };
     }
 
-    beats.push({ stringNumber, label, stringName });
+    beats.push({ stringNumber, stringId, label, stringName });
   }
 
   return { ok: true, beats };
@@ -295,6 +328,13 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
   }
 
   const payload = exercise.contentPayload;
+  const answerInput = parseAnswerInput(payload.answerInput);
+  const showFretboard = payload.showFretboard === true;
+  const roleResult = resolveFretboardRole(answerInput, showFretboard);
+  if (!roleResult.ok) {
+    return incompatible(exerciseId.trim(), roleResult.reason);
+  }
+  const fretboardRole = roleResult.role;
 
   if (exercise.type === "RHYTHM_TAP" && "tapSequence" in payload && payload.tapSequence != null) {
     const tapResult = parseTapInteraction(payload, exerciseId.trim(), exercise.instruction.trim());
@@ -311,17 +351,41 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
       options: [],
       media: mediaResult.media,
       interaction: tapResult.interaction,
-      answerInput: parseAnswerInput(payload.answerInput),
+      answerInput,
+      fretboardRole,
     };
 
     return { kind: "supported", exercise: parsed };
   }
 
-  const optionsResult = parseOptions(exercise.contentPayload.options, exerciseId.trim());
+  const optionsResult = parseOptions(payload.options, exerciseId.trim(), {
+    requireMinTwo: answerInput !== "fretboard",
+  });
   if (!optionsResult.ok) return optionsResult.result;
 
-  const mediaResult = parseMedia(exercise.contentPayload, exerciseId.trim());
+  const mediaResult = parseMedia(payload, exerciseId.trim());
   if (!mediaResult.ok) return mediaResult.result;
+
+  if (answerInput === "sequence") {
+    if (optionsResult.options.length < 2) {
+      return incompatible(exerciseId.trim(), "sequence requiere al menos 2 opciones.");
+    }
+    const parsed: ParsedExerciseView = {
+      id: exerciseId.trim(),
+      type: exercise.type,
+      difficulty: exercise.difficulty,
+      instruction: exercise.instruction.trim(),
+      options: optionsResult.options,
+      media: mediaResult.media,
+      interaction: {
+        mode: "sequence",
+        tokenIds: optionsResult.options.map((option) => option.id),
+      },
+      answerInput,
+      fretboardRole,
+    };
+    return { kind: "supported", exercise: parsed };
+  }
 
   const parsed: ParsedExerciseView = {
     id: exerciseId.trim(),
@@ -331,7 +395,8 @@ export function parsePublicExercise(exercise: PublicExercise): ExerciseParseResu
     options: optionsResult.options,
     media: mediaResult.media,
     interaction: { mode: "mcq" },
-    answerInput: parseAnswerInput(payload.answerInput),
+    answerInput,
+    fretboardRole,
   };
 
   return { kind: "supported", exercise: parsed };

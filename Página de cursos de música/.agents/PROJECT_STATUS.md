@@ -1,6 +1,24 @@
 # Project Status — Gmusic Estudio
 
-Última actualización: **6 Ago 2026** (T-UX-LESSON-01 avance producto `/mi-camino`) · base **`main`** · `app:test` **652/652**
+Última actualización: **8 Ago 2026** · rama **`feat/t-practice-motor-01`** · base `main`
+
+## Prioridad activa (Juan 8 Ago 2026) — D-GOV-PRACTICA-01
+
+| Orden | Qué | Estado |
+|-------|-----|--------|
+| **1** | **Base guitarra interactiva** / motor Práctica | **T-PRACTICE-MOTOR-01** — Juan: «armonía cabe en los tres tipos» + **«arrancar T-PRACTICE-MOTOR-01»** + OK commit |
+| **2** | Cáscara H1 (F1/F2) | Rama `fix/t-ux-lesson-01-f1-f2` — merge secundario; **no** mezclar con este ticket |
+| **3** | Módulo dominio teoría (tonal-like) | Futuro post-motor; repos = referencia mental |
+| **4** | Material YouTube/PDF producción | Después |
+
+### T-PRACTICE-MOTOR-01 (8 Ago 2026) — motor MVP
+
+- Gate producto: armonía **sin** 4.º modo; contenido en `options` / `fretboard` / `sequence`
+- `answerInput`: `options` \| `fretboard` \| **`sequence`**
+- `fretboardRole` P4: `response` \| `study` \| `none` (study = diapasón inerte)
+- `selectedAnswer` sequence = `JSON.stringify(orderedIds)` (contrato string; `secureAnswer` solo servidor)
+- UI: `SequenceOrderExercise.tsx`
+- Verify pre-commit: `app:test` **663/663** · `api:test:local` **311/311** (1 skip) · typecheck OK · build OK
 
 ## Hito — 6 Ago 2026 · T-UX-LESSON-01 producto real (no demo)
 

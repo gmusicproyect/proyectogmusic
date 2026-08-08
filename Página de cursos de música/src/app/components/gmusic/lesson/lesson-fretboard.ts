@@ -3,6 +3,45 @@ export const FRETBOARD_STRING_IDS = ["E", "A", "D", "G", "B", "e"] as const;
 
 export type FretboardStringId = (typeof FRETBOARD_STRING_IDS)[number];
 
+/**
+ * Canonical stringNumber (1 = 1ª aguda … 6 = 6ª grave) ↔ id.
+ * GUITARRA-INTERACTIVA-REFERENCIA — never assume 6 === "e".
+ */
+export const FRETBOARD_STRING_NUMBER_TO_ID = {
+  1: "e",
+  2: "B",
+  3: "G",
+  4: "D",
+  5: "A",
+  6: "E",
+} as const satisfies Record<number, FretboardStringId>;
+
+export type FretboardStringNumber = keyof typeof FRETBOARD_STRING_NUMBER_TO_ID;
+
+export const FRETBOARD_STRING_ID_TO_NUMBER: Readonly<
+  Record<FretboardStringId, FretboardStringNumber>
+> = {
+  e: 1,
+  B: 2,
+  G: 3,
+  D: 4,
+  A: 5,
+  E: 6,
+};
+
+export function isFretboardStringNumber(value: number): value is FretboardStringNumber {
+  return Number.isInteger(value) && value >= 1 && value <= 6;
+}
+
+export function stringNumberToId(stringNumber: number): FretboardStringId | null {
+  if (!isFretboardStringNumber(stringNumber)) return null;
+  return FRETBOARD_STRING_NUMBER_TO_ID[stringNumber];
+}
+
+export function stringIdToNumber(stringId: FretboardStringId): FretboardStringNumber {
+  return FRETBOARD_STRING_ID_TO_NUMBER[stringId];
+}
+
 /** Visual order: high e at top → low E at bottom (player perspective). */
 export const FRETBOARD_DISPLAY_ORDER: readonly FretboardStringId[] = [
   "e",

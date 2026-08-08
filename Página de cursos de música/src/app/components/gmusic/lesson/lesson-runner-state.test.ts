@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { findForbiddenLessonSessionKey } from "../../../services/gmusic-api/assert-safe-lesson-session";
 import type { ParsedExerciseView } from "./lesson-runner-types";
+import { encodeSequenceAnswer } from "./lesson-runner-types";
 import {
   MAX_RESPONSE_TIME_MS,
   computeResponseTimeMs,
@@ -22,6 +23,7 @@ const EXERCISE_A: ParsedExerciseView = {
   media: {},
   interaction: { mode: "mcq" },
   answerInput: "options",
+  fretboardRole: "none",
 };
 
 const EXERCISE_B: ParsedExerciseView = {
@@ -36,6 +38,7 @@ const EXERCISE_B: ParsedExerciseView = {
   media: { diagramLabel: "Am abierto" },
   interaction: { mode: "mcq" },
   answerInput: "options",
+  fretboardRole: "none",
 };
 
 const EXERCISE_C: ParsedExerciseView = {
@@ -50,6 +53,7 @@ const EXERCISE_C: ParsedExerciseView = {
   media: { audioUrl: "https://cdn.example.com/chord.mp3" },
   interaction: { mode: "mcq" },
   answerInput: "options",
+  fretboardRole: "none",
 };
 
 const EXERCISE_TAP: ParsedExerciseView = {
@@ -65,11 +69,12 @@ const EXERCISE_TAP: ParsedExerciseView = {
     tapHeadline: "Pulso en cuerda 6",
     tapDescription: "Toca la cuerda 6 al aire en cada TAP.",
     tapSequence: [
-      { stringNumber: 6, label: "6", stringName: "Mi grave" },
-      { stringNumber: 6, label: "6", stringName: "Mi grave" },
+      { stringNumber: 6, stringId: "E", label: "6", stringName: "Mi grave" },
+      { stringNumber: 6, stringId: "E", label: "6", stringName: "Mi grave" },
     ],
   },
   answerInput: "options",
+  fretboardRole: "none",
 };
 
 const EXERCISE_FRETBOARD: ParsedExerciseView = {
@@ -84,6 +89,38 @@ const EXERCISE_FRETBOARD: ParsedExerciseView = {
   media: {},
   interaction: { mode: "mcq" },
   answerInput: "fretboard",
+  fretboardRole: "response",
+};
+
+const EXERCISE_SEQUENCE: ParsedExerciseView = {
+  id: "ex-seq",
+  type: "IDENTIFY_NOTE",
+  difficulty: 1,
+  instruction: "Ordena las cuerdas de grave a aguda.",
+  options: [
+    { id: "E", text: "Mi grave" },
+    { id: "A", text: "La" },
+    { id: "D", text: "Re" },
+  ],
+  media: {},
+  interaction: { mode: "sequence", tokenIds: ["E", "A", "D"] },
+  answerInput: "sequence",
+  fretboardRole: "none",
+};
+
+const EXERCISE_STUDY: ParsedExerciseView = {
+  id: "ex-study",
+  type: "IDENTIFY_NOTE",
+  difficulty: 1,
+  instruction: "Observa el diapasón y elige.",
+  options: [
+    { id: "a", text: "Cuerda 6" },
+    { id: "b", text: "Cuerda 1" },
+  ],
+  media: {},
+  interaction: { mode: "mcq" },
+  answerInput: "options",
+  fretboardRole: "study",
 };
 
 const STARTED_AT_MS = 1_000_000;
@@ -120,6 +157,68 @@ describe("createInitialLessonRunnerState", () => {
       assert.equal(state.exerciseStartedAtMs, 0);
       assert.equal(Number.isFinite(state.exerciseStartedAtMs), true);
     }
+  });
+});
+
+describe("SELECT_FRETBOARD_STRING — P4 study inerte", () => {
+  it("study no registra taps aunque el stringId sea válido", () => {
+    const studyAsFret = {
+      ...EXERCISE_STUDY,
+      answerInput: "fretboard" as const,
+      fretboardRole: "study" as const,
+    };
+    // Invalid combo shouldn't parse, but if forced in state reducer must still refuse non-response
+    const initial = createInitialLessonRunnerState([studyAsFret], STARTED_AT_MS);
+    const blocked = lessonRunnerReducer(initial, {
+      type: "SELECT_FRETBOARD_STRING",
+      stringId: "E",
+      nowMs: STARTED_AT_MS + 100,
+    });
+    assert.deepEqual(blocked.attemptsDraft, []);
+    assert.equal(blocked.currentIndex, 0);
+  });
+
+  it("options + study: SELECT_FRETBOARD_STRING no avanza", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_STUDY], STARTED_AT_MS);
+    const blocked = lessonRunnerReducer(initial, {
+      type: "SELECT_FRETBOARD_STRING",
+      stringId: "E",
+      nowMs: STARTED_AT_MS + 100,
+    });
+    assert.deepEqual(blocked.attemptsDraft, []);
+  });
+});
+
+describe("CONFIRM_SEQUENCE", () => {
+  it("nuevo ejercicio sequence solo por payload: confirma orden y encode JSON", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_SEQUENCE], STARTED_AT_MS);
+    const ordered = reduce(
+      initial,
+      { type: "SEQUENCE_APPEND", optionId: "E" },
+      { type: "SEQUENCE_APPEND", optionId: "A" },
+      { type: "SEQUENCE_APPEND", optionId: "D" },
+      { type: "CONFIRM_SEQUENCE", nowMs: STARTED_AT_MS + 2_000 }
+    );
+
+    assert.equal(ordered.status, "finished");
+    assert.equal(ordered.attemptsDraft.length, 1);
+    assert.equal(ordered.attemptsDraft[0]?.microExerciseId, "ex-seq");
+    assert.equal(
+      ordered.attemptsDraft[0]?.selectedAnswer,
+      encodeSequenceAnswer(["E", "A", "D"])
+    );
+    assert.equal(typeof ordered.attemptsDraft[0]?.selectedAnswer, "string");
+  });
+
+  it("no confirma si faltan piezas", () => {
+    const initial = createInitialLessonRunnerState([EXERCISE_SEQUENCE], STARTED_AT_MS);
+    const partial = reduce(
+      initial,
+      { type: "SEQUENCE_APPEND", optionId: "E" },
+      { type: "CONFIRM_SEQUENCE", nowMs: STARTED_AT_MS + 500 }
+    );
+    assert.deepEqual(partial.attemptsDraft, []);
+    assert.equal(partial.status, "ready");
   });
 });
 

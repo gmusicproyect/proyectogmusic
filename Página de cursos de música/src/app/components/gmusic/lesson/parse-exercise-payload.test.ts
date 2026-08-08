@@ -162,7 +162,47 @@ describe("parsePublicExercise — answerInput en payload", () => {
       },
     });
     assert.equal(parsed?.answerInput, "fretboard");
+    assert.equal(parsed?.fretboardRole, "response");
     assert.equal(parsed?.interaction.mode, "mcq");
+  });
+
+  it("answerInput sequence + options → interaction sequence", () => {
+    const parsed = assertSupported({
+      ...SEED_IDENTIFY_NOTE,
+      contentPayload: {
+        ...(SEED_IDENTIFY_NOTE.contentPayload as Record<string, unknown>),
+        answerInput: "sequence",
+      },
+    });
+    assert.equal(parsed?.answerInput, "sequence");
+    assert.equal(parsed?.interaction.mode, "sequence");
+    if (parsed?.interaction.mode === "sequence") {
+      assert.deepEqual(parsed.interaction.tokenIds, ["a", "b", "c", "d"]);
+    }
+  });
+
+  it("P4: fretboard + showFretboard → incompatible", () => {
+    const result = parsePublicExercise({
+      ...SEED_EAR_TRAINING,
+      contentPayload: {
+        ...(SEED_EAR_TRAINING.contentPayload as Record<string, unknown>),
+        answerInput: "fretboard",
+        showFretboard: true,
+      },
+    });
+    assert.equal(result.kind, "incompatible");
+  });
+
+  it("showFretboard sin answerInput fretboard → study", () => {
+    const parsed = assertSupported({
+      ...SEED_CHORD_SHAPE,
+      contentPayload: {
+        ...(SEED_CHORD_SHAPE.contentPayload as Record<string, unknown>),
+        showFretboard: true,
+      },
+    });
+    assert.equal(parsed?.answerInput, "options");
+    assert.equal(parsed?.fretboardRole, "study");
   });
 
   it("answerInput inválido → options sin incompatible", () => {

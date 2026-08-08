@@ -28,6 +28,7 @@ import {
 import { LessonPracticePanel } from "./LessonPracticePanel";
 import { MultipleChoiceExercise } from "./MultipleChoiceExercise";
 import { RhythmTapExercise } from "./RhythmTapExercise";
+import { SequenceOrderExercise } from "./SequenceOrderExercise";
 import { prepareLessonRunner } from "./prepare-lesson-runner";
 import type { ParsedExerciseView } from "./lesson-runner-types";
 import { UnsupportedExercisePanel } from "./UnsupportedExercisePanel";
@@ -331,11 +332,21 @@ function LessonRunnerActive({
   embedded?: boolean;
   onExerciseProgress?: (completedCount: number, totalExercises: number) => void;
 }) {
-  const { state, currentExercise, selectOption, selectFretboardString, nextExercise, completeTap } =
-    useLessonRunner({
-      exercises,
-      expiresAt,
-    });
+  const {
+    state,
+    currentExercise,
+    selectOption,
+    selectFretboardString,
+    sequenceAppend,
+    sequenceRemoveLast,
+    sequenceClear,
+    confirmSequence,
+    nextExercise,
+    completeTap,
+  } = useLessonRunner({
+    exercises,
+    expiresAt,
+  });
 
   const layoutMode = usePathPracticaLayout();
   const immersiveLayout = layoutMode === "immersive";
@@ -391,14 +402,25 @@ function LessonRunnerActive({
   const isLastExercise =
     state.exercises.length > 0 && state.currentIndex === state.exercises.length - 1;
   const isTapExercise = currentExercise?.interaction.mode === "tap";
-  const isFretboardAnswer = currentExercise?.answerInput === "fretboard";
+  const isSequenceExercise = currentExercise?.answerInput === "sequence";
+  const isFretboardAnswer =
+    currentExercise?.answerInput === "fretboard" &&
+    currentExercise.fretboardRole === "response";
+  const isStudyFretboard = currentExercise?.fretboardRole === "study";
   const isStringOptionsExercise = currentExercise
     ? exerciseOptionsAreFretboardStrings(currentExercise.options)
     : false;
   const fretboardInteractive = isFretboardAnswer || isStringOptionsExercise;
+  const showFretboardChrome =
+    Boolean(currentExercise) &&
+    !isTapExercise &&
+    !isSequenceExercise &&
+    (fretboardInteractive || isStudyFretboard);
 
   const handleFretboardTap = (stringId: FretboardStringId) => {
     if (!currentExercise || interactionDisabled) return;
+    // P4: study = inert (no attempts)
+    if (currentExercise.fretboardRole === "study") return;
 
     if (isFretboardAnswer) {
       selectFretboardString(stringId);
@@ -415,6 +437,7 @@ function LessonRunnerActive({
 
   const canAdvance =
     !isTapExercise &&
+    !isSequenceExercise &&
     !fretboardInteractive &&
     canAdvanceLessonRunner(state.status, state.selectedOptionId);
 
@@ -430,22 +453,21 @@ function LessonRunnerActive({
         }`
       : null;
 
-  const fretboardBlock =
-    currentExercise && !isTapExercise ? (
-      <LessonFretboard
-        selectedStringId={
-          isFretboardAnswer
-            ? state.selectedOptionId
-            : isStringOptionsExercise
-              ? currentExercise.options.find((option) => option.id === state.selectedOptionId)
-                  ?.text.trim() ?? null
-              : null
-        }
-        interactive={fretboardInteractive}
-        disabled={interactionDisabled}
-        onSelectStringId={handleFretboardTap}
-      />
-    ) : null;
+  const fretboardBlock = showFretboardChrome ? (
+    <LessonFretboard
+      selectedStringId={
+        isFretboardAnswer
+          ? state.selectedOptionId
+          : isStringOptionsExercise
+            ? currentExercise?.options.find((option) => option.id === state.selectedOptionId)
+                ?.text.trim() ?? null
+            : null
+      }
+      interactive={fretboardInteractive}
+      disabled={interactionDisabled || isStudyFretboard}
+      onSelectStringId={handleFretboardTap}
+    />
+  ) : null;
 
   const exerciseBody = currentExercise ? (
     isTapExercise ? (
@@ -454,9 +476,20 @@ function LessonRunnerActive({
         disabled={interactionDisabled}
         onComplete={completeTap}
       />
+    ) : isSequenceExercise ? (
+      <SequenceOrderExercise
+        exercise={currentExercise}
+        sequenceDraft={state.sequenceDraft}
+        disabled={interactionDisabled}
+        hideInstruction={embedded}
+        onAppend={sequenceAppend}
+        onRemoveLast={sequenceRemoveLast}
+        onClear={sequenceClear}
+        onConfirm={confirmSequence}
+      />
     ) : (
       <>
-        {!immersiveLayout ? fretboardBlock : null}
+        {!immersiveLayout || !embedded ? fretboardBlock : null}
         <ExerciseMediaBlock media={currentExercise.media} />
         <MultipleChoiceExercise
           exercise={currentExercise}
@@ -473,7 +506,7 @@ function LessonRunnerActive({
 
   const actionButtons = (
     <div className="flex flex-col gap-3 pt-2">
-      {!isTapExercise && !fretboardInteractive ? (
+      {!isTapExercise && !isSequenceExercise && !fretboardInteractive ? (
         <Button
           type="button"
           onClick={nextExercise}
@@ -531,40 +564,7 @@ function LessonRunnerActive({
         total={state.exercises.length}
       />
 
-      {currentExercise ? (
-        isTapExercise ? (
-          <RhythmTapExercise
-            exercise={currentExercise}
-            disabled={interactionDisabled}
-            onComplete={completeTap}
-          />
-        ) : (
-          <>
-            <ExerciseMediaBlock media={currentExercise.media} />
-            <MultipleChoiceExercise
-              exercise={currentExercise}
-              selectedOptionId={state.selectedOptionId}
-              disabled={interactionDisabled}
-              showOptions={!fretboardInteractive}
-              onSelect={selectOption}
-            />
-            <LessonFretboard
-              selectedStringId={
-                isFretboardAnswer
-                  ? state.selectedOptionId
-                  : isStringOptionsExercise
-                    ? currentExercise.options.find((option) => option.id === state.selectedOptionId)
-                        ?.text.trim() ?? null
-                    : null
-              }
-              interactive={fretboardInteractive}
-              disabled={interactionDisabled}
-              onSelectStringId={handleFretboardTap}
-            />
-          </>
-        )
-      ) : null}
-
+      {exerciseBody}
       {actionButtons}
     </div>
   );

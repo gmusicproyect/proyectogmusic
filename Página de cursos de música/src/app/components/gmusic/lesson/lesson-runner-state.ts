@@ -1,5 +1,8 @@
 import { isFretboardStringId } from "./lesson-fretboard";
-import type { ParsedExerciseView } from "./lesson-runner-types";
+import {
+  encodeSequenceAnswer,
+  type ParsedExerciseView,
+} from "./lesson-runner-types";
 
 export const MAX_RESPONSE_TIME_MS = 3 * 60 * 60 * 1000;
 
@@ -15,6 +18,8 @@ export interface LessonRunnerState {
   exercises: ParsedExerciseView[];
   currentIndex: number;
   selectedOptionId: string | null;
+  /** Ordered option ids while answering answerInput: "sequence". */
+  sequenceDraft: string[];
   exerciseStartedAtMs: number;
   attemptsDraft: RunnerAttemptDraft[];
   status: LessonRunnerStatus;
@@ -23,6 +28,10 @@ export interface LessonRunnerState {
 export type LessonRunnerAction =
   | { type: "SELECT_OPTION"; optionId: string }
   | { type: "SELECT_FRETBOARD_STRING"; stringId: string; nowMs: number }
+  | { type: "SEQUENCE_APPEND"; optionId: string }
+  | { type: "SEQUENCE_REMOVE_LAST" }
+  | { type: "SEQUENCE_CLEAR" }
+  | { type: "CONFIRM_SEQUENCE"; nowMs: number }
   | { type: "NEXT_EXERCISE"; nowMs: number }
   | { type: "COMPLETE_TAP"; nowMs: number }
   | { type: "MARK_EXPIRED" }
@@ -42,6 +51,7 @@ export function createInitialLessonRunnerState(
     exercises,
     currentIndex: 0,
     selectedOptionId: null,
+    sequenceDraft: [],
     exerciseStartedAtMs: normalizeTimestampMs(startedAtMs),
     attemptsDraft: [],
     status: isEmpty ? "finished" : "ready",
@@ -65,7 +75,7 @@ function isValidOptionForCurrentExercise(
     return false;
   }
 
-  if (exercise.answerInput === "fretboard") {
+  if (exercise.answerInput === "fretboard" || exercise.answerInput === "sequence") {
     return false;
   }
 
@@ -78,6 +88,10 @@ function isValidFretboardSelectionForCurrentExercise(
 ): boolean {
   const exercise = getCurrentExercise(state);
   if (!exercise || exercise.answerInput !== "fretboard") {
+    return false;
+  }
+  // P4: study fretboard never records attempts
+  if (exercise.fretboardRole !== "response") {
     return false;
   }
 
@@ -136,6 +150,7 @@ function advanceAfterAttempt(
     return {
       ...state,
       selectedOptionId: null,
+      sequenceDraft: [],
       attemptsDraft,
       status: "finished",
     };
@@ -145,6 +160,7 @@ function advanceAfterAttempt(
     ...state,
     currentIndex: state.currentIndex + 1,
     selectedOptionId: null,
+    sequenceDraft: [],
     exerciseStartedAtMs: normalizedNowMs,
     attemptsDraft,
   };
@@ -182,6 +198,82 @@ function selectFretboardString(
   );
 }
 
+function sequenceAppend(state: LessonRunnerState, optionId: string): LessonRunnerState {
+  if (state.status !== "ready") {
+    return state;
+  }
+
+  const currentExercise = getCurrentExercise(state);
+  if (!currentExercise || currentExercise.answerInput !== "sequence") {
+    return state;
+  }
+  if (currentExercise.interaction.mode !== "sequence") {
+    return state;
+  }
+  if (!currentExercise.interaction.tokenIds.includes(optionId)) {
+    return state;
+  }
+  if (state.sequenceDraft.includes(optionId)) {
+    return state;
+  }
+  if (state.sequenceDraft.length >= currentExercise.interaction.tokenIds.length) {
+    return state;
+  }
+
+  return {
+    ...state,
+    sequenceDraft: [...state.sequenceDraft, optionId],
+  };
+}
+
+function sequenceRemoveLast(state: LessonRunnerState): LessonRunnerState {
+  if (state.status !== "ready" || state.sequenceDraft.length === 0) {
+    return state;
+  }
+  return {
+    ...state,
+    sequenceDraft: state.sequenceDraft.slice(0, -1),
+  };
+}
+
+function sequenceClear(state: LessonRunnerState): LessonRunnerState {
+  if (state.status !== "ready") {
+    return state;
+  }
+  return { ...state, sequenceDraft: [] };
+}
+
+function confirmSequence(state: LessonRunnerState, nowMs: number): LessonRunnerState {
+  if (state.status !== "ready") {
+    return state;
+  }
+
+  const currentExercise = getCurrentExercise(state);
+  if (!currentExercise || currentExercise.answerInput !== "sequence") {
+    return state;
+  }
+  if (currentExercise.interaction.mode !== "sequence") {
+    return state;
+  }
+  if (hasAttemptForExercise(state, currentExercise.id)) {
+    return state;
+  }
+
+  const expectedCount = currentExercise.interaction.tokenIds.length;
+  if (state.sequenceDraft.length !== expectedCount) {
+    return state;
+  }
+
+  const normalizedNowMs = normalizeTimestampMs(nowMs);
+  const attempt: RunnerAttemptDraft = {
+    microExerciseId: currentExercise.id,
+    selectedAnswer: encodeSequenceAnswer(state.sequenceDraft),
+    responseTimeMs: computeResponseTimeMs(state.exerciseStartedAtMs, normalizedNowMs),
+  };
+
+  return advanceAfterAttempt(state, attempt, normalizedNowMs);
+}
+
 function nextExercise(
   state: LessonRunnerState,
   nowMs: number
@@ -192,6 +284,10 @@ function nextExercise(
 
   const currentExercise = getCurrentExercise(state);
   if (!currentExercise || state.selectedOptionId === null) {
+    return state;
+  }
+
+  if (currentExercise.answerInput === "sequence" || currentExercise.answerInput === "fretboard") {
     return state;
   }
 
@@ -244,6 +340,7 @@ function markExpired(state: LessonRunnerState): LessonRunnerState {
   return {
     ...state,
     selectedOptionId: null,
+    sequenceDraft: [],
     status: "expired",
   };
 }
@@ -257,6 +354,14 @@ export function lessonRunnerReducer(
       return selectOption(state, action.optionId);
     case "SELECT_FRETBOARD_STRING":
       return selectFretboardString(state, action.stringId, action.nowMs);
+    case "SEQUENCE_APPEND":
+      return sequenceAppend(state, action.optionId);
+    case "SEQUENCE_REMOVE_LAST":
+      return sequenceRemoveLast(state);
+    case "SEQUENCE_CLEAR":
+      return sequenceClear(state);
+    case "CONFIRM_SEQUENCE":
+      return confirmSequence(state, action.nowMs);
     case "NEXT_EXERCISE":
       return nextExercise(state, action.nowMs);
     case "COMPLETE_TAP":
