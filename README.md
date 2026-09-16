@@ -16,7 +16,7 @@ La carpeta de la app conserva el nombre acentuado original.
 
 ## Requisitos
 
-- Node.js 20+ (recomendado)
+- Node.js >=22.9.0 (CI usa la última versión disponible de Node 22 LTS)
 - PostgreSQL (local o Docker — ver `docker-compose.yml` dentro de la app)
 - npm
 
