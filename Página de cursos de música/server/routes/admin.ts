@@ -21,7 +21,7 @@ import {
   updateAdminSlot,
 } from "../services/curriculum.js";
 import { getAdminNodeAttempts } from "../services/adminReports.js";
-import { uploadStorageObject } from "../lib/supabaseStorage.js";
+import { uploadStorageObject } from "../lib/storage.js";
 
 export const adminRouter = Router();
 

@@ -3,10 +3,10 @@ import { ApiError } from "../lib/errors.js";
 import { prisma } from "../lib/prisma.js";
 import { resolveStudentAccess } from "../lib/studentAccess.js";
 import {
-  createSignedStorageUrl,
   isPilotFreeMaterialUrl,
   isPrivateSupabaseStorageUrl,
 } from "../lib/supabaseStorage.js";
+import { createSignedStorageUrl } from "../lib/storage.js";
 
 export async function assertActiveSubscription(student: User): Promise<void> {
   const subscriptions = await prisma.subscription.findMany({
