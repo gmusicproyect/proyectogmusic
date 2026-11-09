@@ -30,6 +30,7 @@ export type ApiErrorCode =
   | "STORAGE_SIGN_FAILED"
   | "STORAGE_UPLOAD_FAILED"
   | "INVALID_UPLOAD"
+  | "RATE_LIMITED"
   | "INTERNAL_ERROR";
 
 export class ApiError extends Error {

@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import express from "express";
 import request from "supertest";
 import { createApp } from "../app.js";
 import { ApiError } from "../lib/errors.js";
-import { parseTutorAskBody } from "../lib/parseTutorAskBody.js";
+import {
+  TUTOR_QUESTION_MAX_CHARS,
+  parseTutorAskBody,
+} from "../lib/parseTutorAskBody.js";
 import { askTutor } from "../lib/tutorAsk.js";
+import { createTutorRateLimit } from "../lib/tutorRateLimit.js";
 
 describe("parseTutorAskBody", () => {
   it("acepta question string", () => {
@@ -25,6 +30,13 @@ describe("parseTutorAskBody", () => {
       (error: unknown) => error instanceof ApiError && error.code === "VALIDATION_ERROR"
     );
   });
+
+  it("rechaza question demasiado larga", () => {
+    assert.throws(
+      () => parseTutorAskBody({ question: "x".repeat(TUTOR_QUESTION_MAX_CHARS + 1) }),
+      (error: unknown) => error instanceof ApiError && error.code === "VALIDATION_ERROR"
+    );
+  });
 });
 
 describe("askTutor (unit)", () => {
@@ -35,6 +47,8 @@ describe("askTutor (unit)", () => {
     for (const c of out.citations) {
       assert.match(out.answer, new RegExp(`\\[${c.id}\\]`));
     }
+    // Sin duplicar el excerpt del top en una viñeta aparte.
+    assert.equal((out.answer.match(/Sin suscripc/g) ?? []).length, 1);
   });
 
   it("responde inscripción WhatsApp con cita", () => {
@@ -92,5 +106,38 @@ describe("POST /api/v1/tutor/ask", () => {
   it("400 si falta question", async () => {
     const response = await request(app).post("/api/v1/tutor/ask").send({}).expect(400);
     assert.equal(response.body.error.code, "VALIDATION_ERROR");
+  });
+});
+
+describe("tutorRateLimit", () => {
+  it("429 tras superar el máximo en la ventana", async () => {
+    const limiter = createTutorRateLimit({
+      windowMs: 60_000,
+      max: 2,
+      keyFromRequest: () => "test-client",
+    });
+    const app = express();
+    app.use(express.json());
+    app.post("/ask", limiter.middleware, (_req, res) => {
+      res.status(200).json({ ok: true });
+    });
+    app.use(
+      (
+        err: unknown,
+        _req: express.Request,
+        res: express.Response,
+        _next: express.NextFunction
+      ) => {
+        if (err instanceof ApiError) {
+          return res.status(err.status).json({ error: { code: err.code, message: err.message } });
+        }
+        return res.status(500).json({ error: { code: "INTERNAL_ERROR" } });
+      }
+    );
+
+    await request(app).post("/ask").send({}).expect(200);
+    await request(app).post("/ask").send({}).expect(200);
+    const blocked = await request(app).post("/ask").send({}).expect(429);
+    assert.equal(blocked.body.error.code, "RATE_LIMITED");
   });
 });

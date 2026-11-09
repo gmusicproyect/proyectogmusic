@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import {
   Blocks,
+  BookOpenText,
   Guitar,
   Home,
   LogOut,
@@ -38,6 +39,7 @@ function SidebarNav({
   onGoList,
   onGoModule,
   onHome,
+  onTutor,
   onLogout,
 }: {
   navView: AdminNavView;
@@ -47,6 +49,7 @@ function SidebarNav({
   onGoList: () => void;
   onGoModule: (moduleId: string) => void;
   onHome: () => void;
+  onTutor: () => void;
   onLogout: () => void;
 }) {
   return (
@@ -108,6 +111,10 @@ function SidebarNav({
 
       <div className="admin-sidebar__footer">
         <Separator className="admin-sidebar__sep" />
+        <button type="button" className="admin-sidebar__link" onClick={onTutor}>
+          <BookOpenText aria-hidden="true" />
+          <span>Tutor corpus</span>
+        </button>
         <button type="button" className="admin-sidebar__link" onClick={onHome}>
           <Home aria-hidden="true" />
           <span>Inicio público</span>
@@ -153,6 +160,10 @@ export function AdminLayout({
       setPage("home");
       setMobileOpen(false);
     },
+    onTutor: () => {
+      setPage("tutor");
+      setMobileOpen(false);
+    },
     onLogout: () => {
       onLogout();
       setMobileOpen(false);
@@ -194,6 +205,7 @@ export function AdminLayout({
                   onGoList={sidebarProps.onGoList}
                   onGoModule={sidebarProps.onGoModule}
                   onHome={sidebarProps.onHome}
+                  onTutor={sidebarProps.onTutor}
                   onLogout={sidebarProps.onLogout}
                 />
               </SheetContent>

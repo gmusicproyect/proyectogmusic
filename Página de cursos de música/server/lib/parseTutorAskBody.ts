@@ -1,5 +1,7 @@
 import { ApiError } from "./errors.js";
 
+export const TUTOR_QUESTION_MAX_CHARS = 500;
+
 export interface TutorAskInput {
   question: string;
 }
@@ -16,6 +18,15 @@ export function parseTutorAskBody(body: unknown): TutorAskInput {
   }
   if (typeof record.question !== "string") {
     throw new ApiError(400, "VALIDATION_ERROR", "question debe ser string.");
+  }
+
+  const question = record.question.trim();
+  if (question.length > TUTOR_QUESTION_MAX_CHARS) {
+    throw new ApiError(
+      400,
+      "VALIDATION_ERROR",
+      `question supera ${TUTOR_QUESTION_MAX_CHARS} caracteres.`
+    );
   }
 
   return { question: record.question };

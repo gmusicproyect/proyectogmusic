@@ -148,19 +148,16 @@ function excerpt(text: string, n: number): string {
 }
 
 function composeGroundedAnswer(citations: TutorCitation[]): string {
-  const lines = ["Respuesta basada solo en el corpus Gmusic:"];
   const top = citations[0];
-  lines.push(`Según [${top.id}]: ${top.excerpt}`);
-  for (const c of citations) {
+  const lines = [
+    "Respuesta basada solo en el corpus Gmusic:",
+    `Según [${top.id}]: ${top.excerpt}`,
+  ];
+  // Evitar repetir el mismo excerpt del top en la lista.
+  for (const c of citations.slice(1)) {
     lines.push(`- [${c.id}] ${c.excerpt}`);
   }
   lines.push("");
   lines.push(`Citas: ${citations.map((c) => `[${c.id}]`).join(", ")}.`);
-  const withSource = citations.filter((c) => c.source_path);
-  if (withSource.length > 0) {
-    lines.push(
-      `Fuentes: ${withSource.map((c) => `${c.id} ← ${c.source_path}`).join("; ")}`
-    );
-  }
   return lines.join("\n");
 }
