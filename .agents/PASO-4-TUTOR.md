@@ -42,5 +42,7 @@ Evidence: `outputs/evidence/tutor-demo.json`, `tutor-answer.json`, `tutor-audit.
 - Corpus = resúmenes con provenance; no copy legal.
 - El producto (UI alumno) aún no consume este tutor.
 
-## Siguiente (opcional)
-Live LLM detrás del mismo contrato de citas + abstain; o superficie UI en la copia.
+## Siguiente
+
+**Paso 5** — ✅ hecho — ver `PASO-5-TUTOR-API.md` (endpoint en la app).
+

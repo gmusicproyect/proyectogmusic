@@ -11,6 +11,7 @@ import { lessonSessionsRouter } from "./routes/lessonSessions.js";
 import { meRouter } from "./routes/me.js";
 import { onboardingRouter } from "./routes/onboarding.js";
 import { localMediaRouter } from "./routes/localMedia.js";
+import { tutorRouter } from "./routes/tutor.js";
 
 export function createApp() {
   const app = express();
@@ -33,6 +34,7 @@ export function createApp() {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/me", meRouter);
   app.use("/api/v1/onboarding", onboardingRouter);
+  app.use("/api/v1/tutor", tutorRouter);
   app.use("/api/v1/lesson-sessions", lessonSessionsRouter);
   app.use("/api/v1/community", communityRouter);
   app.use("/api/v1/admin", adminRouter);
