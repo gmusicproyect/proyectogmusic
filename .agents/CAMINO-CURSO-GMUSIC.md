@@ -28,16 +28,14 @@ canvases del proyecto Cursor.
 | Durable jobs | Crash/recover idempotente | `jobs-demo` | Lab |
 | Grounded tutor | Citas o abstain | `/tutor` + API | **Visible** |
 
-## Pasos hechos (0–8)
+## Pasos hechos (0–9)
 
-0 Base copia · 1 Workbench · 2 Smoke Track A · 3 Corpus RAG · 4 Tutor lab ·  
-5 API · 5b UI · 6 Harden · 7 Entradas producto · **8 Deploy prod** (`PASO-8-DEPLOY.md`)
+0–8 tutor hasta prod · **9 Evidence admin** (`PASO-9-EVIDENCE.md`)
 
 Último push tutor producto: `44618c8`. Smoke prod tutor PASS 2026-11-09.
 
 ## Siguiente (recomendado)
 
-9 Evidence en admin (aporte traces)  
 10 Repair acotado (aporte agent loop)  
 11 LLM live (mismo contrato)  
 12 Jobs de producto  

@@ -1,5 +1,8 @@
 .DS_Store
 
+# Tutor audit log (Paso 9 — no versionar eventos locales)
+server/data/tutor-audit.jsonl
+
 # Dependencies
 node_modules/
 

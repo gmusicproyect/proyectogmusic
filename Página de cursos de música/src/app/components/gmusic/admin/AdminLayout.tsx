@@ -8,6 +8,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  ScrollText,
 } from "lucide-react";
 import { useState } from "react";
 import { StudioAtmosphere } from "../dashboard";
@@ -16,7 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../.
 import { Separator } from "../../ui/separator";
 import type { AdminModuleListItem } from "../../../services/gmusic-api/admin";
 
-export type AdminNavView = "list" | "detail" | "edit" | "attempts";
+export type AdminNavView = "list" | "detail" | "edit" | "attempts" | "evidence";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -27,6 +28,7 @@ interface AdminLayoutProps {
   activeModuleTitle: string | null;
   onGoList: () => void;
   onGoModule: (moduleId: string) => void;
+  onGoEvidence: () => void;
   onLogout: () => void;
   toast: ReactNode;
 }
@@ -38,6 +40,7 @@ function SidebarNav({
   activeModuleTitle,
   onGoList,
   onGoModule,
+  onGoEvidence,
   onHome,
   onTutor,
   onLogout,
@@ -48,6 +51,7 @@ function SidebarNav({
   activeModuleTitle: string | null;
   onGoList: () => void;
   onGoModule: (moduleId: string) => void;
+  onGoEvidence: () => void;
   onHome: () => void;
   onTutor: () => void;
   onLogout: () => void;
@@ -86,6 +90,15 @@ function SidebarNav({
             <span className="admin-sidebar__link-truncate">{activeModuleTitle}</span>
           </button>
         ) : null}
+
+        <button
+          type="button"
+          className={`admin-sidebar__link${navView === "evidence" ? " admin-sidebar__link--active" : ""}`}
+          onClick={onGoEvidence}
+        >
+          <ScrollText aria-hidden="true" />
+          <span>Evidence tutor</span>
+        </button>
       </nav>
 
       {modules.length > 0 ? (
@@ -137,6 +150,7 @@ export function AdminLayout({
   activeModuleTitle,
   onGoList,
   onGoModule,
+  onGoEvidence,
   onLogout,
   toast,
 }: AdminLayoutProps) {
@@ -154,6 +168,10 @@ export function AdminLayout({
     },
     onGoModule: (moduleId: string) => {
       onGoModule(moduleId);
+      setMobileOpen(false);
+    },
+    onGoEvidence: () => {
+      onGoEvidence();
       setMobileOpen(false);
     },
     onHome: () => {
@@ -204,6 +222,7 @@ export function AdminLayout({
                   activeModuleTitle={activeModuleTitle}
                   onGoList={sidebarProps.onGoList}
                   onGoModule={sidebarProps.onGoModule}
+                  onGoEvidence={sidebarProps.onGoEvidence}
                   onHome={sidebarProps.onHome}
                   onTutor={sidebarProps.onTutor}
                   onLogout={sidebarProps.onLogout}

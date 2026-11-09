@@ -22,6 +22,7 @@ import {
 } from "../services/curriculum.js";
 import { getAdminNodeAttempts } from "../services/adminReports.js";
 import { uploadStorageObject } from "../lib/storage.js";
+import { readTutorAudit } from "../lib/tutorAudit.js";
 
 export const adminRouter = Router();
 
@@ -145,6 +146,24 @@ adminRouter.get("/nodes/:nodeId/attempts", async (req, res, next) => {
     const payload = await getAdminNodeAttempts(req.params.nodeId);
     res.set("Cache-Control", "no-store");
     res.json(payload);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/** Paso 9 — evidence/traces del tutor (JSONL local, solo admin). */
+adminRouter.get("/tutor/evidence", (req, res, next) => {
+  try {
+    assertAdmin(req);
+    const rawLimit = typeof req.query.limit === "string" ? Number(req.query.limit) : 50;
+    const limit = Number.isFinite(rawLimit) ? rawLimit : 50;
+    const events = readTutorAudit({ limit });
+    res.set("Cache-Control", "no-store");
+    res.json({
+      schema_version: 1,
+      count: events.length,
+      events,
+    });
   } catch (error) {
     next(error);
   }

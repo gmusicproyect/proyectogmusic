@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { CheckCircle2, CircleDashed, FileText, Plus, Rocket, Trash2, XCircle } from "lucide-react";
 import { AdminLayout } from "../components/gmusic/admin/AdminLayout";
+import { AdminTutorEvidencePanel } from "../components/gmusic/admin/AdminTutorEvidencePanel";
 import {
   BLOCK_STARTER_TITLES,
   STAGE_HINTS,
@@ -65,7 +66,8 @@ type AdminView =
   | { kind: "list" }
   | { kind: "detail"; moduleId: string }
   | { kind: "edit"; moduleId: string; slotOrder: number }
-  | { kind: "attempts"; moduleId: string; nodeId: string; slotOrder: number };
+  | { kind: "attempts"; moduleId: string; nodeId: string; slotOrder: number }
+  | { kind: "evidence" };
 
 type Toast = { message: string; tone: "success" | "error" } | null;
 
@@ -133,11 +135,13 @@ export function AdminPage({ setPage }: AdminPageProps) {
   const navView =
     view.kind === "list"
       ? "list"
-      : view.kind === "edit"
-        ? "edit"
-        : view.kind === "attempts"
-          ? "attempts"
-          : "detail";
+      : view.kind === "evidence"
+        ? "evidence"
+        : view.kind === "edit"
+          ? "edit"
+          : view.kind === "attempts"
+            ? "attempts"
+            : "detail";
 
   const showToast = useCallback((message: string, tone: "success" | "error" = "success") => {
     setToast({ message, tone });
@@ -1337,6 +1341,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
 
   let content: ReactNode;
   if (view.kind === "list") content = renderList();
+  else if (view.kind === "evidence") content = <AdminTutorEvidencePanel />;
   else if (view.kind === "detail") content = renderDetail();
   else if (view.kind === "attempts") content = renderAttempts();
   else content = renderEdit();
@@ -1350,6 +1355,7 @@ export function AdminPage({ setPage }: AdminPageProps) {
       activeModuleTitle={activeModuleTitle}
       onGoList={() => setView({ kind: "list" })}
       onGoModule={(moduleId) => setView({ kind: "detail", moduleId })}
+      onGoEvidence={() => setView({ kind: "evidence" })}
       onLogout={() => void handleLogout()}
       toast={toastNode}
     >

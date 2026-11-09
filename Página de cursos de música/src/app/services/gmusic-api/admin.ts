@@ -128,3 +128,29 @@ export async function fetchAdminNodeAttempts(nodeId: string, options?: { signal?
     options
   );
 }
+
+export interface TutorAuditEvent {
+  ts: string;
+  question: string;
+  status: "answered" | "abstain";
+  refusal_reason: string | null;
+  citation_ids: string[];
+  answer_preview: string;
+  ip?: string | null;
+}
+
+export interface AdminTutorEvidenceResponse {
+  schema_version: number;
+  count: number;
+  events: TutorAuditEvent[];
+}
+
+export async function fetchAdminTutorEvidence(
+  options?: { signal?: AbortSignal; limit?: number }
+) {
+  const limit = options?.limit ?? 50;
+  return apiGet<AdminTutorEvidenceResponse>(
+    `${getApiBaseUrl()}/admin/tutor/evidence?limit=${limit}`,
+    options
+  );
+}
