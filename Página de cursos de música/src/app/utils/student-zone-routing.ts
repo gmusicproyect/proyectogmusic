@@ -67,6 +67,17 @@ const PROTECTED_ENTRY_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
 
 const PROTECTED_ENTRY_PAGES = new Set(Object.keys(PROTECTED_ENTRY_PAGE_TO_PATH));
 
+/** Lab / ops públicos (Paso 5b tutor grounded). */
+const LAB_PAGE_TO_PATH: Record<string, string> = {
+  tutor: "/tutor",
+};
+
+const LAB_PATH_TO_PAGE: Record<string, string> = Object.fromEntries(
+  Object.entries(LAB_PAGE_TO_PATH).map(([page, path]) => [path, page])
+);
+
+const LAB_PAGES = new Set(Object.keys(LAB_PAGE_TO_PATH));
+
 const PAGE_TITLES: Record<string, string> = {
   home: "Gmusic Estudio",
   "mi-estudio": "Gmusic Estudio · Panel del alumno",
@@ -80,6 +91,7 @@ const PAGE_TITLES: Record<string, string> = {
   "login-cuenta": "Gmusic Estudio · Iniciar sesión",
   "registro-exito": "Gmusic Estudio · Registro exitoso",
   admin: "Gmusic Estudio · Admin Creador",
+  tutor: "Gmusic Estudio · Tutor",
 };
 
 export function isAdminPage(page: string): boolean {
@@ -122,6 +134,14 @@ export function isProtectedEntryPath(pathname: string): boolean {
   return pathname in PROTECTED_ENTRY_PATH_TO_PAGE;
 }
 
+export function isLabPage(page: string): boolean {
+  return LAB_PAGES.has(page);
+}
+
+export function isLabPath(pathname: string): boolean {
+  return pathname in LAB_PATH_TO_PAGE;
+}
+
 export function pathnameForPage(page: string): string | null {
   if (page === "mi-estudio" || page === "welcome") return "/alumno";
   if (page === "mi-camino") return "/mi-camino";
@@ -135,6 +155,8 @@ export function pathnameForPage(page: string): string | null {
   if (protectedPath) return protectedPath;
   const adminPath = ADMIN_PAGE_TO_PATH[page];
   if (adminPath) return adminPath;
+  const labPath = LAB_PAGE_TO_PATH[page];
+  if (labPath) return labPath;
   return null;
 }
 
@@ -152,6 +174,8 @@ export function pageFromPathname(pathname: string): string {
   if (protectedPage) return protectedPage;
   const adminPage = ADMIN_PATH_TO_PAGE[pathname];
   if (adminPage) return adminPage;
+  const labPage = LAB_PATH_TO_PAGE[pathname];
+  if (labPage) return labPage;
   return "home";
 }
 
@@ -174,7 +198,9 @@ function isOnSyncedUrl(currentPage: string, pathname: string): boolean {
     isProtectedEntryPage(currentPage) ||
     isProtectedEntryPath(pathname) ||
     isAdminPage(currentPage) ||
-    isAdminPath(pathname)
+    isAdminPath(pathname) ||
+    isLabPage(currentPage) ||
+    isLabPath(pathname)
   );
 }
 

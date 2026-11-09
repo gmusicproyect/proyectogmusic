@@ -53,4 +53,4 @@ NODE_ENV=test node --import tsx --test server/tests/tutor-ask.test.ts
 
 ## Siguiente
 
-**Paso 5b** — superficie mínima UI que llame a `/api/v1/tutor/ask` y muestre citas o abstain.
+**Paso 5b** — ✅ hecho — ver `PASO-5B-TUTOR-UI.md`.

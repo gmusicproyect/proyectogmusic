@@ -168,6 +168,22 @@ describe("student-zone-routing — mapa D-GOV-02", () => {
     assert.equal(pageFromPathname("/legacy-courses"), "home");
   });
 
+  it("lab tutor: page ↔ /tutor y carga directa", () => {
+    assert.equal(pathnameForPage("tutor"), "/tutor");
+    assert.equal(pageFromPathname("/tutor"), "tutor");
+    withMockLocation("/tutor", () => {
+      assert.equal(getInitialPageFromPath(), "tutor");
+    });
+    let nextPage = "home";
+    const result = withMockLocation("/", () => {
+      navigateStudentZoneAware("tutor", (page) => {
+        nextPage = page;
+      }, "home");
+    });
+    assert.equal(nextPage, "tutor");
+    assert.equal(result.pathname, "/tutor");
+  });
+
   it("carga directa /quiz-temperamento → onboarding-quiz", () => {
     withMockLocation("/quiz-temperamento", () => {
       assert.equal(getInitialPageFromPath(), "onboarding-quiz");
