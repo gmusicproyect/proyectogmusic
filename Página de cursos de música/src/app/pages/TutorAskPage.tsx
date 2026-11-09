@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { askTutor, type TutorAskResponse } from "../services/gmusic-api/ask-tutor";
 import { formatAuthFormError } from "../services/gmusic-api/client";
 import { GOLD, TEXT_SEC, WHITE_WARM } from "../components/marketing/tokens";
+import { CLASE_GRATUITA_MAP_PAGE } from "../utils/clase-gratuita-routing";
 
 interface TutorAskPageProps {
   setPage: (page: string) => void;
@@ -44,21 +45,36 @@ export function TutorAskPage({ setPage }: TutorAskPageProps) {
       }}
     >
       <div style={{ maxWidth: 640, margin: "0 auto" }}>
-        <button
-          type="button"
-          onClick={() => setPage("home")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: TEXT_SEC,
-            cursor: "pointer",
-            padding: 0,
-            marginBottom: 28,
-            fontSize: 13,
-          }}
-        >
-          ← Volver
-        </button>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginBottom: 28 }}>
+          <button
+            type="button"
+            onClick={() => setPage(CLASE_GRATUITA_MAP_PAGE)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: TEXT_SEC,
+              cursor: "pointer",
+              padding: 0,
+              fontSize: 13,
+            }}
+          >
+            ← Clase gratuita
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage("home")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: TEXT_SEC,
+              cursor: "pointer",
+              padding: 0,
+              fontSize: 13,
+            }}
+          >
+            Inicio
+          </button>
+        </div>
 
         <p
           style={{

@@ -89,6 +89,11 @@ describe("GmusicInternalHeader — Inicio e identidad (continuación)", () => {
     assert.equal(headerSource.includes('setPage("home")'), true);
   });
 
+  it("Tutor invoca navegación tutor (Paso 7)", () => {
+    assert.equal(headerSource.includes('setPage("tutor")'), true);
+    assert.equal(headerSource.includes("BookOpenText"), true);
+  });
+
   it("no depende de MOCK_USER ni muestra Carlos", () => {
     assert.equal(headerSource.includes("MOCK_USER"), false);
     assert.equal(headerSource.includes("Carlos"), false);

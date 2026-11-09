@@ -3,7 +3,7 @@
 Última actualización: 2026-11-09
 
 ## En curso
-- Paso 6 harden en curso / recién implementado (sin commit hasta OK JP).
+- Paso 7 — tutor en clase gratuita + header alumno (sin commit hasta OK JP).
 
 ## Hecho (ruta gradual)
 - Paso 0 — base copia · `PASO-0-BASE.md`

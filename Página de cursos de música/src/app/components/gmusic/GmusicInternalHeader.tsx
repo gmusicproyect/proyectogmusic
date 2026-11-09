@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Guitar, Home, Menu, Lock } from "lucide-react";
+import { BookOpenText, Guitar, Home, Menu, Lock } from "lucide-react";
 import { GM_GOLD, GM_SURFACE, GM_TEXT, GM_TEXT_SEC } from "./tokens";
 import { deriveStudentInitials } from "../../utils/student-zone-identity";
 
@@ -52,6 +52,11 @@ export function GmusicInternalHeader({
   const navigateHome = () => {
     setMobileMenuOpen(false);
     setPage("home");
+  };
+
+  const navigateTutor = () => {
+    setMobileMenuOpen(false);
+    setPage("tutor");
   };
 
   const handleNav = (item: (typeof NAV_ITEMS)[number]) => {
@@ -119,6 +124,16 @@ export function GmusicInternalHeader({
             >
               <Home className="w-4 h-4 shrink-0" style={{ color: GM_GOLD }} aria-hidden />
               Inicio
+            </button>
+            <button
+              type="button"
+              onClick={navigateTutor}
+              className="hidden md:inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
+              style={homeButtonStyle}
+              aria-label="Tutor"
+            >
+              <BookOpenText className="w-4 h-4 shrink-0" style={{ color: GM_GOLD }} aria-hidden />
+              Tutor
             </button>
           </div>
 
@@ -224,6 +239,15 @@ export function GmusicInternalHeader({
             >
               <Home className="w-4 h-4 shrink-0" style={{ color: GM_GOLD }} aria-hidden />
               Inicio
+            </button>
+            <button
+              type="button"
+              onClick={navigateTutor}
+              className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium min-h-[44px] transition-colors inline-flex items-center gap-2"
+              style={{ color: GM_TEXT_SEC }}
+            >
+              <BookOpenText className="w-4 h-4 shrink-0" style={{ color: GM_GOLD }} aria-hidden />
+              Tutor
             </button>
             {NAV_ITEMS.map((item) => (
               <button

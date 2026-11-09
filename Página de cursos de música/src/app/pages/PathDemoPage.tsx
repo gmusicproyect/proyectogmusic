@@ -3,6 +3,7 @@ import { DemoAcademyNav } from "../components/gmusic/DemoAcademyNav";
 import { DemoPathCards } from "../components/gmusic/DemoPathCards";
 import { DemoPathCompletedFab } from "../components/gmusic/DemoPathCompletedFab";
 import { DemoPathLevelBar } from "../components/gmusic/DemoPathLevelBar";
+import { TutorEntryLink } from "../components/gmusic/TutorEntryLink";
 import { Button } from "../components/ui/button";
 import {
   DEMO_ACADEMY_MORE_COUNT,
@@ -258,6 +259,9 @@ export function PathDemoPage({ setPage }: PathDemoPageProps) {
             freeClassCount={DEMO_FREE_LESSON_COUNT}
             variant="rail"
           />
+          <div className="mt-2">
+            <TutorEntryLink onOpen={() => setPage("tutor")} />
+          </div>
         </div>
       </div>
 
