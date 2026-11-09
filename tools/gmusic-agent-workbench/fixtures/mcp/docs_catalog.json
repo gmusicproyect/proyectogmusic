@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "policy-refunds",
+      "title": "Refund policy",
+      "tags": ["refund", "billing", "policy"],
+      "text": "Gmusic Academy refunds unused course months within 14 days of purchase. Partial months are not prorated after the first lesson is completed."
+    },
+    {
+      "id": "policy-billing",
+      "title": "Billing and cancellation",
+      "tags": ["cancel", "subscription", "billing"],
+      "text": "Cancel a subscription from Cuenta > Facturacion. Access continues until the paid period ends. No charges after a confirmed cancellation receipt."
+    },
+    {
+      "id": "lesson-tuning",
+      "title": "How to tune a guitar",
+      "tags": ["guitar", "tuning", "lesson"],
+      "text": "Standard tuning is E A D G B E. Use a clip tuner or a reference pitch, then tune each string from low E to high E and recheck the low E."
+    },
+    {
+      "id": "lesson-scales",
+      "title": "Major scale primer",
+      "tags": ["scales", "theory", "lesson"],
+      "text": "The major scale pattern is W W H W W W H. Practice one octave slowly before linking positions."
+    },
+    {
+      "id": "marketing-home",
+      "title": "Homepage blurb",
+      "tags": ["marketing", "home"],
+      "text": "Learn music with guided lessons at Gmusic Academy. Start free, upgrade when ready."
+    }
+  ]
+}

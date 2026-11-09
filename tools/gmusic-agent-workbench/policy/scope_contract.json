@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "task_id": "T-GMUSIC-001",
+  "allowed_paths": ["app.py", "test_app.py"],
+  "forbidden_paths": [".env", "secrets/", "../"],
+  "allowed_commands": ["python3 -m unittest test_app -v"]
+}

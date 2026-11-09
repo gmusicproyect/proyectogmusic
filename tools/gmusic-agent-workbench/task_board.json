@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "active_task_id": "T-GMUSIC-001",
+  "tasks": [
+    {
+      "id": "T-GMUSIC-001",
+      "title": "Fix greeting regression in sample app",
+      "status": "done",
+      "scope_paths": [
+        "app.py",
+        "test_app.py"
+      ],
+      "acceptance_criteria": [
+        "python3 -m unittest test_app -v"
+      ],
+      "budget": {
+        "max_steps": 8,
+        "max_writes": 2
+      },
+      "notes": "Expected greeting is 'Bienvenido a Gmusic Academy'."
+    }
+  ]
+}

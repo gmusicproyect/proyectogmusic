@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "pack_version": "0.8.0",
+  "status": "ready",
+  "active_task_id": "T-GMUSIC-001",
+  "last_event": null,
+  "workspace_path": null,
+  "planner_mode": "offline"
+}

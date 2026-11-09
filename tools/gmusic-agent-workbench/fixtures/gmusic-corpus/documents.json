@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "corpus": "gmusic-proyectogmusic-cursor",
+  "documents": [
+    {
+      "id": "doc-access-subscription",
+      "title": "Acceso a zona alumno (suscripción)",
+      "tags": ["acceso", "suscripcion", "ACTIVE", "me/access"],
+      "source_path": "Página de cursos de música/docs/architecture/api-contract.md",
+      "text": "GET /api/v1/me/access decide si el alumno entra a Mi Estudio / Mi Camino. canAccessStudentZone es true solo con al menos una Subscription status ACTIVE y endsAt null o futuro (reason ACTIVE_SUBSCRIPTION). Sin suscripción válida (vencida, CANCELED, PAST_DUE) el acceso es false (NO_ACTIVE_SUBSCRIPTION). El backend también puede denegar con: Necesitas una suscripción activa para acceder a la zona de alumno."
+    },
+    {
+      "id": "doc-mi-camino-flow",
+      "title": "Flujo Mi Camino suscriptor",
+      "tags": ["mi-camino", "practica", "nodos", "video"],
+      "source_path": "Página de cursos de música/docs/flows/02-mi-camino-suscriptor.md",
+      "text": "En /mi-camino el alumno ACTIVE pasa StudentZoneGuard (GET /me/access), carga la ruta publicada y usa el carrusel de nodos. Nodo locked espera completar el anterior. Nodos active/available pueden iniciar lección: si hay videoUrl se ve el video primero y luego ejercicios; al finalizar se hace POST complete, se guarda XP/racha y se desbloquea el siguiente."
+    },
+    {
+      "id": "doc-fin-camino",
+      "title": "Fin de camino publicado (T-FLOW-04)",
+      "tags": ["mi-camino", "completado", "T-FLOW-04"],
+      "source_path": "Página de cursos de música/docs/flows/02-mi-camino-suscriptor.md",
+      "text": "Cuando el alumno completa todo lo publicado, CompletedPathPanel muestra Completaste lo publicado y No hay más clases publicadas por ahora, con CTA Ir a Mi Estudio y Seguir en Mi Camino para revisar nodos completed sin reiniciarlos."
+    },
+    {
+      "id": "doc-whatsapp-inscripcion",
+      "title": "Inscripción por WhatsApp",
+      "tags": ["inscripcion", "whatsapp", "funnel", "wa.me"],
+      "source_path": "Página de cursos de música/src/app/pages/InscripcionGatePage.tsx",
+      "text": "En el funnel de inscripción, al continuar se abre WhatsApp con la selección lista para confirmar. No se cobra en la web en ese paso: el contacto confirma acceso y forma de pago por WhatsApp (enlace wa.me). El bridge puede vincular el lead del quiz antes de abrir WhatsApp."
+    },
+    {
+      "id": "doc-garantia-30",
+      "title": "Garantía de reembolso 30 días",
+      "tags": ["reembolso", "garantia", "checkout"],
+      "source_path": "Página de cursos de música/src/app/pages/legacy/CheckoutPage.tsx",
+      "text": "Copy de checkout legacy: Garantía de reembolso de 30 días. En detalle de curso también aparece Garantía de 30 días junto a acceso de por vida. Es mensaje de UI de marketing; no sustituye un contrato legal formal."
+    },
+    {
+      "id": "doc-planes-contacto",
+      "title": "Planes: contacto antes de pagar",
+      "tags": ["planes", "whatsapp", "marketing"],
+      "source_path": "Página de cursos de música/src/app/components/marketing/sections/PlanesSection.tsx",
+      "text": "En la sección Planes: No pagarás aquí todavía — te contactamos por WhatsApp para confirmar tu plan. El pago no ocurre en la landing; el cierre es conversación por WhatsApp."
+    },
+    {
+      "id": "doc-clase-gratuita",
+      "title": "Clase gratuita (funnel demo)",
+      "tags": ["clase-gratuita", "demo", "D-GOV-19"],
+      "source_path": "Página de cursos de música/AGENTS.md",
+      "text": "El funnel demo usa /clase-gratuita (mapa) y /clase-gratuita/1 a /clase-gratuita/5 (lecciones). Teaser B: 5 jugables + bloqueadas + card +60. La ruta legacy /mi-camino-demo redirige; no es la URL primaria."
+    }
+  ]
+}

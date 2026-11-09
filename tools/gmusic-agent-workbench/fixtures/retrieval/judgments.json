@@ -1,0 +1,30 @@
+{
+  "acceso-zona-alumno": {
+    "doc-access-subscription": 3,
+    "doc-mi-camino-flow": 2,
+    "doc-clase-gratuita": 0,
+    "doc-garantia-30": 0,
+    "doc-planes-contacto": 0
+  },
+  "completar-mi-camino": {
+    "doc-mi-camino-flow": 3,
+    "doc-fin-camino": 2,
+    "doc-access-subscription": 1,
+    "doc-whatsapp-inscripcion": 0,
+    "doc-garantia-30": 0
+  },
+  "inscripcion-whatsapp": {
+    "doc-whatsapp-inscripcion": 3,
+    "doc-planes-contacto": 2,
+    "doc-clase-gratuita": 1,
+    "doc-mi-camino-flow": 0,
+    "doc-garantia-30": 0
+  },
+  "garantia-reembolso": {
+    "doc-garantia-30": 3,
+    "doc-planes-contacto": 1,
+    "doc-access-subscription": 0,
+    "doc-mi-camino-flow": 0,
+    "doc-clase-gratuita": 0
+  }
+}

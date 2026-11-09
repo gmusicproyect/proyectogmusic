@@ -1,0 +1,22 @@
+{
+  "acceso-zona-alumno": [
+    "doc-access-subscription",
+    "doc-mi-camino-flow",
+    "doc-fin-camino"
+  ],
+  "completar-mi-camino": [
+    "doc-mi-camino-flow",
+    "doc-fin-camino",
+    "doc-access-subscription"
+  ],
+  "inscripcion-whatsapp": [
+    "doc-whatsapp-inscripcion",
+    "doc-planes-contacto",
+    "doc-clase-gratuita"
+  ],
+  "garantia-reembolso": [
+    "doc-garantia-30",
+    "doc-planes-contacto",
+    "doc-whatsapp-inscripcion"
+  ]
+}

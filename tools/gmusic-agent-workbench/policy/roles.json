@@ -1,0 +1,44 @@
+{
+  "roles": {
+    "reader": {
+      "tools": [
+        "read_file",
+        "list_files",
+        "run_tests",
+        "catalog_search",
+        "get_document",
+        "rag_compare"
+      ]
+    },
+    "tutor": {
+      "tools": ["catalog_search", "get_document"]
+    },
+    "repairer": {
+      "tools": [
+        "read_file",
+        "list_files",
+        "write_file",
+        "run_tests",
+        "catalog_search",
+        "get_document",
+        "rag_compare",
+        "plan_repair"
+      ],
+      "requires_approval": ["write_file"]
+    },
+    "admin": {
+      "tools": [
+        "read_file",
+        "list_files",
+        "write_file",
+        "run_tests",
+        "run_shell",
+        "catalog_search",
+        "get_document",
+        "rag_compare",
+        "plan_repair"
+      ],
+      "requires_approval": ["write_file", "run_shell"]
+    }
+  }
+}
